@@ -58,8 +58,8 @@ IRA = IndoxRetrievalAugmentation(docs='path/to/your/file', embeddings='your_embe
 ### Generate Chunks
 
 ```python
-chunks = IRA.get_all_chunks()
-print("Chunks:", chunks)
+all_chunks = IRA.get_all_chunks()
+print("Chunks:", all_chunks)
 ```
 
 
