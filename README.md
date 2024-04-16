@@ -51,6 +51,7 @@ Ensure your PostgreSQL database is up and running, and accessible from your appl
 ### Initialize the Retrieval System
 
 ```python
+embeddings = OpenAIEmbeddings(openai_api_key='your-openai-api-key', model="text-embedding-3-small")
 from Indox import IndoxRetrievalAugmentation
 IRA = IndoxRetrievalAugmentation(file_path='path/to/your/file', model='your_embedding_model', max_tokens=500)
 ```
