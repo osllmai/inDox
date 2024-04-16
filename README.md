@@ -51,7 +51,7 @@ Ensure your PostgreSQL database is up and running, and accessible from your appl
 ### Initialize the Retrieval System
 
 ```python
-from inDox import IndoxRetrievalAugmentation
+from Indox import IndoxRetrievalAugmentation
 IRA = IndoxRetrievalAugmentation(file_path='path/to/your/file', model='your_embedding_model', max_tokens=500)
 ```
 
