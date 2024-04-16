@@ -1,0 +1,9 @@
+langchain_community==0.0.33
+numpy==1.26.4
+openai==1.19.0
+pandas==2.2.2
+PyPDF2==3.0.1
+scikit_learn==1.4.2
+tenacity==8.2.3
+tiktoken==0.6.0
+umap_learn==0.5.6
