@@ -21,8 +21,8 @@ Ensure your system also meets the following requirements:
 Clone the repository and navigate to the directory:
 
 ```bash
-git clone https://github.com/yourusername/yourrepository.git
-cd yourrepository
+git clone https://github.com/osllmai/inDox.git
+cd inDox
 ```
 
 Install the required Python packages:
