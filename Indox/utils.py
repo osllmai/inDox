@@ -3,10 +3,17 @@ import re
 import PyPDF2
 from typing import List
 import pandas as pd
+import yaml
+import os
+
+CONFIG_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 def split_text(
-        text: str, max_tokens, tokenizer=tiktoken.get_encoding("cl100k_base"), overlap: int = 0
+    text: str,
+    max_tokens,
+    tokenizer=tiktoken.get_encoding("cl100k_base"),
+    overlap: int = 0,
 ):
     """
     Splits the input text into smaller chunks based on the tokenizer and maximum allowed tokens.
@@ -40,7 +47,10 @@ def split_text(
         # If the sentence is too long, split it into smaller parts
         if token_count > max_tokens:
             sub_sentences = re.split(r"[,;:]", sentence)
-            sub_token_counts = [len(tokenizer.encode(" " + sub_sentence)) for sub_sentence in sub_sentences]
+            sub_token_counts = [
+                len(tokenizer.encode(" " + sub_sentence))
+                for sub_sentence in sub_sentences
+            ]
 
             sub_chunk = []
             sub_length = 0
@@ -49,7 +59,11 @@ def split_text(
                 if sub_length + sub_token_count > max_tokens:
                     chunks.append(" ".join(sub_chunk))
                     sub_chunk = sub_chunk[-overlap:] if overlap > 0 else []
-                    sub_length = sum(sub_token_counts[max(0, len(sub_chunk) - overlap):len(sub_chunk)])
+                    sub_length = sum(
+                        sub_token_counts[
+                            max(0, len(sub_chunk) - overlap) : len(sub_chunk)
+                        ]
+                    )
 
                 sub_chunk.append(sub_sentence)
                 sub_length += sub_token_count
@@ -61,7 +75,9 @@ def split_text(
         elif current_length + token_count > max_tokens:
             chunks.append(" ".join(current_chunk))
             current_chunk = current_chunk[-overlap:] if overlap > 0 else []
-            current_length = sum(n_tokens[max(0, len(current_chunk) - overlap):len(current_chunk)])
+            current_length = sum(
+                n_tokens[max(0, len(current_chunk) - overlap) : len(current_chunk)]
+            )
             current_chunk.append(sentence)
             current_length += token_count
 
@@ -78,18 +94,20 @@ def split_text(
 
 
 def create_document(file_path):
-    if file_path.lower().endswith('.pdf'):
+    if file_path.lower().endswith(".pdf"):
         text = ""
         reader = PyPDF2.PdfReader(file_path)
         num_pages = len(reader.pages)
         for page_num in range(num_pages):
             page = reader.pages[page_num]
             text += page.extract_text()
-    elif file_path.lower().endswith('.txt'):
-        with open(file_path, 'r') as file:
+    elif file_path.lower().endswith(".txt"):
+        with open(file_path, "r") as file:
             text = file.read()
     else:
-        print("Error: Unsupported document format. Please provide a string path to a PDF file or text.")
+        print(
+            "Error: Unsupported document format. Please provide a string path to a PDF file or text."
+        )
 
     return text
 
@@ -106,3 +124,24 @@ def fmt_txt(df: pd.DataFrame) -> str:
     """
     unique_txt = df["text"].tolist()
     return "--- --- \n --- --- ".join(unique_txt)
+
+
+def read_config() -> dict:
+    current_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    file = os.path.join(current_directory, "config.yaml")
+    with open(file, "r") as stream:
+        try:
+            config = yaml.safe_load(stream)
+            return config
+        except yaml.YAMLError as exc:
+            raise RuntimeError("Can't open the config file.")
+
+
+def construct_postgres_connection_string() -> str:
+    config = read_config()
+    username = config["postgres"]["username"]
+    host = config["postgres"]["host"]
+    port = config["postgres"]["port"]
+    password = config["postgres"]["password"]
+    db_name = config["postgres"]["name"]
+    return f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{db_name}"

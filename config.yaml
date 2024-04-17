@@ -1,0 +1,25 @@
+postgres:
+  host: localhost
+  port: 5432
+  username: postgres
+  password: aminkhosroshahi328
+  name: vector_db
+
+qa_model:
+  temperature: 0
+
+summary_model:
+  max_tokens: 100
+  min_len: 30
+  model_name: Falconsai/text_summarization # [gpt-3.5-turbo-0125, 
+                                          #facebook/bart-large-cnn (1.63GB), 
+                                          #Falconsai/text_summarization (242MB)]
+
+
+prompts:
+  summary_model:
+    content: You are a helpful assistant. Give a detailed summary of the documentation provided
+  
+clustering:
+  dim: 10
+  threshold: 0.1

@@ -7,10 +7,10 @@ RANDOM_SEED = 42  # Fixed seed for reproducibility
 
 
 def global_cluster_embeddings(
-        embeddings: np.ndarray,
-        dim: int,
-        n_neighbors: Optional[int] = None,
-        metric: str = "cosine",
+    embeddings: np.ndarray,
+    dim: int,
+    n_neighbors: Optional[int] = None,
+    metric: str = "cosine",
 ) -> np.ndarray:
     """
     Perform global dimensionality reduction on the embeddings using UMAP.
@@ -33,7 +33,7 @@ def global_cluster_embeddings(
 
 
 def local_cluster_embeddings(
-        embeddings: np.ndarray, dim: int, num_neighbors: int = 10, metric: str = "cosine"
+    embeddings: np.ndarray, dim: int, num_neighbors: int = 10, metric: str = "cosine"
 ) -> np.ndarray:
     """
     Perform local dimensionality reduction on the embeddings using UMAP, typically after global clustering.
@@ -53,7 +53,7 @@ def local_cluster_embeddings(
 
 
 def get_optimal_clusters(
-        embeddings: np.ndarray, max_clusters: int = 50, random_state: int = RANDOM_SEED
+    embeddings: np.ndarray, max_clusters: int = 50, random_state: int = RANDOM_SEED
 ):
     """
     Determine the optimal number of clusters using the Bayesian Information Criterion (BIC) with a Gaussian Mixture Model.
@@ -97,9 +97,9 @@ def GMM_cluster(embeddings: np.ndarray, threshold: float, random_state: int = 0)
 
 
 def perform_clustering(
-        embeddings: np.ndarray,
-        dim: int,
-        threshold: float,
+    embeddings: np.ndarray,
+    dim: int,
+    threshold: float,
 ) -> List[np.ndarray]:
     """
     Perform clustering on the embeddings by first reducing their dimensionality globally, then clustering

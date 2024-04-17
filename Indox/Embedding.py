@@ -2,6 +2,7 @@ import numpy as np
 from .Clustering import perform_clustering
 import pandas as pd
 from typing import List
+from .utils import read_config
 
 
 def embed(texts: List[str], embeddings) -> np.ndarray:
@@ -21,6 +22,7 @@ def embed(texts: List[str], embeddings) -> np.ndarray:
 
 
 def embed_cluster_texts(texts: List[str], embeddings) -> pd.DataFrame:
+    config = read_config()
     """
     Embeds and clusters a list of texts using a provided embeddings object, returning a DataFrame with texts, their embeddings, and cluster labels.
 
@@ -34,8 +36,14 @@ def embed_cluster_texts(texts: List[str], embeddings) -> pd.DataFrame:
     Returns:
     - pandas.DataFrame: A DataFrame containing the original texts, their embeddings, and the assigned cluster labels.
     """
-    text_embeddings_np = embed(texts, embeddings)  # Generate embeddings using the provided embeddings object
-    cluster_labels = perform_clustering(text_embeddings_np, 10, 0.1)  # Perform clustering on the embeddings
+    text_embeddings_np = embed(
+        texts, embeddings
+    )  # Generate embeddings using the provided embeddings object
+    cluster_labels = perform_clustering(
+        text_embeddings_np,
+        config["clustering"]["dim"],
+        config["clustering"]["threshold"],
+    )  # Perform clustering on the embeddings
     df = pd.DataFrame()  # Initialize a DataFrame to store the results
     df["text"] = texts  # Store original texts
     df["embd"] = list(text_embeddings_np)  # Store embeddings as a list in the DataFrame
