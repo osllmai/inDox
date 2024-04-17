@@ -84,13 +84,11 @@ CREATE EXTENSION vector;
 ### Store in PostgreSQL
 
 ```python
-# Replace the placeholders with your actual PostgreSQL credentials and details
-connection_string = "postgresql+psycopg2://username:password@hostname:port/database_name"
-collection_name = "collection_name"
+# you need to set your database credentials in th config.yaml file
+collection_name = "sample_collection"
 
 IRA.store_in_postgres(collection_name=collection_name,
-                     connection_string=connection_string,
-                     all_chunks=all_chunks)
+                    all_chunks=all_chunks)
 ```
 
 In this snippet:
@@ -105,7 +103,7 @@ In this snippet:
 ### Querying
 
 ```python
-response, scores = IRA.answer_question(query="your question here", top_k=5)
+response, scores = IRA.answer_question(query="How did Cinderella reach her happy ending?", collection_name='CINDRELLA', top_k=5)
 print("Responses:", response)
 print("Scores:", scores)
 ```
