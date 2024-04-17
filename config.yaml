@@ -2,7 +2,7 @@ postgres:
   host: localhost
   port: 5432
   username: postgres
-  password: aminkhosroshahi328
+  password: xxx
   name: vector_db
 
 qa_model:
