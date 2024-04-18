@@ -140,7 +140,7 @@ def read_config() -> dict:
 def construct_postgres_connection_string() -> str:
     config = read_config()
     username = config["postgres"]["username"]
-    host = config["postgres"]["host"]
+    host = config["postgres"]["host"]   
     port = config["postgres"]["port"]
     password = config["postgres"]["password"]
     db_name = config["postgres"]["name"]

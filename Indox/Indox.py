@@ -10,7 +10,7 @@ from typing import List, Tuple, Optional, Any, Dict
 import pandas as pd
 from langchain_community.vectorstores.pgvector import PGVector
 from .QAModels import GPT3TurboQAModel
-
+from .vectorstore import PGVectorStore
 
 def embed_cluster_summarize_texts(
     texts: List[str], embeddings, level: int
@@ -138,6 +138,7 @@ class IndoxRetrievalAugmentation:
         self,
         docs,
         embeddings,
+        collection_name: str,
         qa_model: Optional[Any] = None,
         db: Optional[Any] = None,
         max_tokens: Optional[int] = 512,
@@ -156,6 +157,9 @@ class IndoxRetrievalAugmentation:
         self.qa_model = qa_model if qa_model is not None else GPT3TurboQAModel()
         self.docs = docs
         self.max_tokens = max_tokens
+        self.db = PGVectorStore(conn_string=construct_postgres_connection_string(),
+                                collection_name=collection_name,
+                                embedding=embeddings)
 
     def get_all_chunks(self) -> List[str]:
         """
@@ -168,40 +172,26 @@ class IndoxRetrievalAugmentation:
             print(f"Error while getting chunks: {e}")
             return []
 
-    def store_in_postgres(self, collection_name: str, all_chunks: List[str]) -> Any:
+    def store_in_vectorstore(self, all_chunks: List[str]) -> Any:
         """
         Store text chunks into a PostgreSQL database.
         """
         try:
-            if self.db is None:
-                conn_string = construct_postgres_connection_string()
-                self.db = PGVector.from_texts(
-                    embedding=self.embeddings,
-                    texts=all_chunks,
-                    collection_name=collection_name,
-                    connection_string=conn_string,
-                )
+            if self.db is not None:
+                self.db.add_document(all_chunks)
             return self.db
         except Exception as e:
             print(f"Error while storing in PostgreSQL: {e}")
             return None
 
     def answer_question(
-        self, query: str, collection_name: str, top_k: int
+        self, query: str, top_k: int
     ) -> Tuple[str, List[float]]:
         """
         Answer a query using the QA model based on similar document chunks found in the database.
         """
-        try:
-            conn_string = construct_postgres_connection_string()
-            db = PGVector(
-                embedding_function=self.embeddings,
-                collection_name=collection_name,
-                connection_string=conn_string,
-            )
-            similar = db.similarity_search_with_score(query, k=top_k)
-            context = [d[0].page_content for d in similar]
-            scores = [d[1] for d in similar]
+        try:  
+            context, scores = self.db.retrieve(query, top_k=top_k)
             answer = self.qa_model.answer_question(context=context, question=query)
             return answer, scores
         except Exception as e:

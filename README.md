@@ -52,7 +52,8 @@ Ensure your PostgreSQL database is up and running, and accessible from your appl
 
 ```python
 from Indox import IndoxRetrievalAugmentation
-IRA = IndoxRetrievalAugmentation(docs='path/to/your/file', embeddings='your_embedding_model', max_tokens=500)
+from langchain_openai import OpenAIEmbeddings
+IRA = IndoxRetrievalAugmentation(docs='./sample.txt', collection_name='sample_c',embeddings=OpenAIEmbeddings(), max_tokens=100)
 ```
 
 ### Generate Chunks
@@ -85,25 +86,14 @@ CREATE EXTENSION vector;
 
 ```python
 # you need to set your database credentials in th config.yaml file
-collection_name = "sample_collection"
-
-IRA.store_in_postgres(collection_name=collection_name,
-                    all_chunks=all_chunks)
+IRA.store_in_vectorstore(all_chunks=all_chunks)
 ```
-
-In this snippet:
-- **username**: Replace with your PostgreSQL username.
-- **password**: Replace with your PostgreSQL password.
-- **hostname**: Replace with the address of your PostgreSQL server (e.g., localhost).
-- **port**: Replace with the port number your PostgreSQL server is running on (e.g., 5432).
-- **database_name**: Replace with the name of your PostgreSQL database.
-- **collection_name**: Replace with the name of the collection where you want to store the chunks.
 
 
 ### Querying
 
 ```python
-response, scores = IRA.answer_question(query="How did Cinderella reach her happy ending?", collection_name='CINDRELLA', top_k=5)
+response, scores = IRA.answer_question(query="How did Cinderella reach her happy ending?", top_k=5)
 print("Responses:", response)
 print("Scores:", scores)
 ```
