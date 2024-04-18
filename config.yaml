@@ -2,7 +2,7 @@ postgres:
   host: localhost
   port: 5432
   username: postgres
-  password: aminkhosroshahi328
+  password: xxx
   name: vector_db
 
 qa_model:
@@ -11,7 +11,7 @@ qa_model:
 summary_model:
   max_tokens: 100
   min_len: 30
-  model_name: gpt-3.5-turbo-0125 # [gpt-3.5-turbo-0125, 
+  model_name: Falconsai/text_summarization # [gpt-3.5-turbo-0125, 
                                           #facebook/bart-large-cnn (1.63GB), 
                                           #Falconsai/text_summarization (242MB)]
 
