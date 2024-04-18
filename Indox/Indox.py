@@ -8,9 +8,8 @@ from .utils import (
 from .Summary import summarize
 from typing import List, Tuple, Optional, Any, Dict
 import pandas as pd
-from langchain_community.vectorstores.pgvector import PGVector
 from .QAModels import GPT3TurboQAModel
-from .vectorstore import PGVectorStore
+from .vectorstore import get_vector_store
 
 def embed_cluster_summarize_texts(
     texts: List[str], embeddings, level: int
@@ -157,9 +156,8 @@ class IndoxRetrievalAugmentation:
         self.qa_model = qa_model if qa_model is not None else GPT3TurboQAModel()
         self.docs = docs
         self.max_tokens = max_tokens
-        self.db = PGVectorStore(conn_string=construct_postgres_connection_string(),
-                                collection_name=collection_name,
-                                embedding=embeddings)
+        self.db = get_vector_store(collection_name=collection_name,
+                                embeddings=embeddings)
 
     def get_all_chunks(self) -> List[str]:
         """
