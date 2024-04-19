@@ -56,6 +56,17 @@ from langchain_openai import OpenAIEmbeddings
 IRA = IndoxRetrievalAugmentation(docs='./sample.txt', collection_name='sample_c',embeddings=OpenAIEmbeddings(), max_tokens=100)
 ```
 
+### Initialize from other config than the default one
+
+```python
+config = {"clustering": {"dim": 10, "threshold": 0.1},
+"postgres": {"host": "localhost", "name": "vector_db", "password": "xxx", "port": 5432,
+"username": "postgres"}, "qa_model": {"temperature": 0}, "summary_model": {"max_tokens": 100,
+"min_len": 30, "model_name": "gpt-3.5-turbo-0125"}, "vector_store": "pgvector"}
+IRA = IndoxRetrievalAugmentation(config=config, docs='./sample.txt', collection_name='sample_c',embeddings=OpenAIEmbeddings(), max_tokens=100)
+```
+**Note**: You need to change postgres config to your postgres credentials if you set vector_store to pgvector
+
 ### Generate Chunks
 
 ```python
@@ -97,4 +108,6 @@ response, scores = IRA.answer_question(query="How did Cinderella reach her happy
 print("Responses:", response)
 print("Scores:", scores)
 ```
+
+
 

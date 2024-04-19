@@ -4,6 +4,7 @@ from .utils import (
     fmt_txt,
     split_text,
     construct_postgres_connection_string,
+    reconfig
 )
 from .Summary import summarize
 from typing import List, Tuple, Optional, Any, Dict
@@ -139,7 +140,6 @@ class IndoxRetrievalAugmentation:
         embeddings,
         collection_name: str,
         qa_model: Optional[Any] = None,
-        db: Optional[Any] = None,
         max_tokens: Optional[int] = 512,
     ):
         """
@@ -152,7 +152,6 @@ class IndoxRetrievalAugmentation:
         :param max_tokens: Optional maximum number of tokens for splitting texts
         """
         self.embeddings = embeddings
-        self.db = db
         self.qa_model = qa_model if qa_model is not None else GPT3TurboQAModel()
         self.docs = docs
         self.max_tokens = max_tokens
@@ -195,3 +194,16 @@ class IndoxRetrievalAugmentation:
         except Exception as e:
             print(f"Error while answering question: {e}")
             return "", []
+    
+    @classmethod
+    def from_config(cls, config: dict, 
+                    docs,
+                    embeddings,
+                    collection_name: str,
+                    qa_model: Optional[Any] = None,
+                    max_tokens: Optional[int] = 512):
+        reconfig(config)
+        return cls(docs, embeddings, collection_name,
+                    qa_model, max_tokens)
+        
+        

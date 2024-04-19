@@ -127,7 +127,7 @@ def fmt_txt(df: pd.DataFrame) -> str:
 
 
 def read_config() -> dict:
-    current_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    current_directory = os.path.dirname(os.path.abspath(__file__))
     file = os.path.join(current_directory, "config.yaml")
     with open(file, "r") as stream:
         try:
@@ -145,3 +145,25 @@ def construct_postgres_connection_string() -> str:
     password = config["postgres"]["password"]
     db_name = config["postgres"]["name"]
     return f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{db_name}"
+
+def reconfig(config: dict):
+    """
+        Edit a YAML file based on the provided dictionary.
+
+        Args:
+        - data_dict (dict): The dictionary containing the data to be written to the YAML file.
+        - file_path (str): The file path of the YAML file to be edited.
+
+        Returns:
+        - None
+        """
+
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    file_ = os.path.join(current_directory, "config.yaml")
+    with open(file_, 'r') as file:
+        existing_data = yaml.safe_load(file)
+
+    existing_data.update(config)
+
+    with open(file_, 'w') as file:
+        yaml.dump(existing_data, file)
