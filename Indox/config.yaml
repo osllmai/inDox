@@ -4,7 +4,7 @@ clustering:
 postgres:
   host: localhost
   name: vector_db
-  password: aminkhosroshahi328
+  password: xxx
   port: 5432
   username: postgres
 prompts:
