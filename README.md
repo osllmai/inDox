@@ -109,4 +109,26 @@ response, scores = IRA.answer_question(query="your question here", top_k=5)
 print("Responses:", response)
 print("Scores:", scores)
 ```
+## Roadmap
+
+### Vectorstores
+- [x] pgvector
+- [x] chromadb
+- [ ] lancedb
+### Summary models
+- [x] openai
+- [x] huggingface models
+
+### Embedding models
+- [x] openai embeddings
+- [ ] sentence transformer embeddings
+
+### Chunking strategies
+- [ ] semantic chunking
+
+### Metrics
+- [ ] add some metrics for measuring performance and quality of the system
+      
+### Other features
+- [x] Add yaml file
 
