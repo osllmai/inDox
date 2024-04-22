@@ -1,0 +1,20 @@
+clustering:
+  dim: 10
+  threshold: 0.1
+postgres:
+  host: localhost
+  name: vector_db
+  password: xxx
+  port: 5432
+  username: postgres
+prompts:
+  summary_model:
+    content: You are a helpful assistant. Give a detailed summary of the documentation
+      provided
+qa_model:
+  temperature: 0
+summary_model:
+  max_tokens: 100
+  min_len: 30
+  model_name: gpt-3.5-turbo-0125
+vector_store: pgvector
