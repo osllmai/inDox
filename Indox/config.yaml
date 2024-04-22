@@ -2,11 +2,7 @@ clustering:
   dim: 10
   threshold: 0.1
 postgres:
-  host: localhost
-  name: vector_db
-  password: xxx
-  port: 5432
-  username: postgres
+  conn_string: postgresql+psycopg2://postgres:username@localhost:port/database_name # Adjust with your postgres database configuration
 prompts:
   summary_model:
     content: You are a helpful assistant. Give a detailed summary of the documentation
@@ -18,3 +14,5 @@ summary_model:
   min_len: 30
   model_name: gpt-3.5-turbo-0125
 vector_store: pgvector
+embedding_model: openai #or SBert
+splitter: semantic-text-splitter #or raptor-text-splitter

@@ -3,9 +3,9 @@ from .utils import read_config
 from transformers import pipeline
 import logging
 
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
-)
+# logging.basicConfig(
+#     format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
+# )
 
 
 def summarize(context):

@@ -1,4 +1,4 @@
-from .Embedding import embed_cluster_texts
+from .Embedding import embed_cluster_texts, embedding_model
 from .utils import (
     create_document,
     fmt_txt,
@@ -11,9 +11,12 @@ from typing import List, Tuple, Optional, Any, Dict
 import pandas as pd
 from .QAModels import GPT3TurboQAModel
 from .vectorstore import get_vector_store
+from .utils import read_config
+import warnings
+warnings.filterwarnings("ignore")
 
 def embed_cluster_summarize_texts(
-    texts: List[str], embeddings, level: int
+        texts: List[str], embeddings, level: int
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Embeds, clusters, and summarizes a list of texts. This function first generates embeddings for the texts,
@@ -80,7 +83,7 @@ def get_all_texts(results, texts):
 
 
 def recursive_embed_cluster_summarize(
-    texts: List[str], embeddings, level: int = 1, n_levels: int = 3
+        texts: List[str], embeddings, level: int = 1, n_levels: int = 3
 ):
     """
     Recursively embeds, clusters, and summarizes texts up to a specified level or until
@@ -120,9 +123,7 @@ def get_chunks(docs, embeddings, max_tokens: Optional[int] = 500) -> List[str]:
     try:
         print("Starting processing...")
         texts = create_document(docs)
-        leaf_chunks = split_text(
-            texts, max_tokens=max_tokens
-        )  # Pass max_tokens to split_text
+        leaf_chunks = split_text(texts, max_tokens=max_tokens)
         results = recursive_embed_cluster_summarize(
             texts=leaf_chunks, embeddings=embeddings, level=1, n_levels=3
         )
@@ -135,28 +136,25 @@ def get_chunks(docs, embeddings, max_tokens: Optional[int] = 500) -> List[str]:
 
 class IndoxRetrievalAugmentation:
     def __init__(
-        self,
-        docs,
-        embeddings,
-        collection_name: str,
-        qa_model: Optional[Any] = None,
-        max_tokens: Optional[int] = 512,
+            self,
+            docs,
+            collection_name: str,
+            qa_model: Optional[Any] = None,
+            max_tokens: Optional[int] = 512,
     ):
         """
         Initialize the IndoxRetrievalAugmentation class with documents, embeddings object, an optional QA model, database connection, and maximum token count for text splitting.
 
         :param docs: List of documents to process
-        :param embeddings: Embeddings object to be used for text processing
         :param qa_model: Optional pre-initialized QA model
-        :param db: Optional pre-initialized database connection
         :param max_tokens: Optional maximum number of tokens for splitting texts
         """
-        self.embeddings = embeddings
+        self.embeddings, self.embed_documents = embedding_model()
         self.qa_model = qa_model if qa_model is not None else GPT3TurboQAModel()
         self.docs = docs
         self.max_tokens = max_tokens
         self.db = get_vector_store(collection_name=collection_name,
-                                embeddings=embeddings)
+                                   embeddings=self.embeddings)
 
     def get_all_chunks(self) -> List[str]:
         """
@@ -181,22 +179,20 @@ class IndoxRetrievalAugmentation:
             print(f"Error while storing in PostgreSQL: {e}")
             return None
 
-    def answer_question(
-        self, query: str, top_k: int
-    ) -> Tuple[str, List[float]]:
+    def answer_question(self, query: str, top_k: int):
         """
         Answer a query using the QA model based on similar document chunks found in the database.
         """
-        try:  
+        try:
             context, scores = self.db.retrieve(query, top_k=top_k)
             answer = self.qa_model.answer_question(context=context, question=query)
-            return answer, scores
+            return answer, scores, context
         except Exception as e:
             print(f"Error while answering question: {e}")
             return "", []
-    
+
     @classmethod
-    def from_config(cls, config: dict, 
+    def from_config(cls, config: dict,
                     docs,
                     embeddings,
                     collection_name: str,
@@ -204,6 +200,4 @@ class IndoxRetrievalAugmentation:
                     max_tokens: Optional[int] = 512):
         reconfig(config)
         return cls(docs, embeddings, collection_name,
-                    qa_model, max_tokens)
-        
-        
+                   qa_model, max_tokens)
