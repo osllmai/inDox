@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 from typing import Iterable
 from langchain_community.vectorstores.pgvector import PGVector
 from langchain_community.vectorstores.chroma import Chroma
+from langchain_community.vectorstores.faiss import FAISS
+from langchain.docstore.in_memory import InMemoryDocstore
+import faiss
 import logging
 from .utils import read_config, construct_postgres_connection_string
 
@@ -65,6 +68,42 @@ class ChromaVectorStore(VectorStoreBase):
         scores = [d[1] for d in retrieved]
         return context, scores
 
+class FAISSVectorStore(VectorStoreBase):
+    """A concrete implementation of VectorStoreBase using FAISS for storage."""
+    def __init__(self, embedding) -> None:
+        
+        super().__init__()
+        embedding_dim = len(embedding.embed_query(""))
+
+        index = faiss.IndexFlatL2(embedding_dim)
+
+        docstore = InMemoryDocstore({})
+
+        index_to_docstore_id = {}
+
+        self.db = FAISS(
+            embedding,
+            index,
+            docstore,
+            index_to_docstore_id,
+            relevance_score_fn=None,
+            normalize_L2=False,
+            distance_strategy="euclidean_distance"
+        )
+    
+    def add_document(self, texts: Iterable[str]):
+        try:
+            self.db.add_texts(texts=texts)
+            logging.info(f"document added successfuly to the vector store")
+        except:
+            raise RuntimeError("Can't add document to the vector store")
+    
+    def retrieve(self, query: str, top_k: int = 5):
+        retrieved = self.db.similarity_search_with_score(query, k=top_k)
+        context = [d[0].page_content for d in retrieved]
+        scores = [d[1] for d in retrieved]
+        return context, scores
+        
 def get_vector_store(collection_name, embeddings):
     config = read_config()
     if config['vector_store'] == 'pgvector':
@@ -72,3 +111,6 @@ def get_vector_store(collection_name, embeddings):
         return PGVectorStore(conn_string=conn_string, collection_name=collection_name, embedding=embeddings)
     elif config['vector_store'] == 'chroma':
         return ChromaVectorStore(collection_name=collection_name, embedding=embeddings)
+    elif config['vector_store'] == 'faiss':
+            db = FAISSVectorStore(embedding=embeddings)
+            return db
