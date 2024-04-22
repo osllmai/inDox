@@ -163,18 +163,3 @@ sample.txt
 test2.ipynb
 .test2.ipynb
 
-/Application Data/
-/Cookies/
-/Local Settings/
-/My Documents/
-/NetHood/
-/PrintHood/
-/Recent/
-/SendTo/
-/Start Menu/
-/Templates/
-
-# Ignore specific directories not related to your project
-/.anaconda/
-/.angular-config.json
-/.bash_history
