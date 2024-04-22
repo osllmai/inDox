@@ -135,7 +135,7 @@ print("Scores:", scores)
 - [ ] vector stores
    - [x] pgvector
    - [x] chromadb  
-   - [ ] faiss
+   - [x] faiss
 
 - [x] summary models
    - [x] openai chatgpt
