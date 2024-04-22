@@ -1,13 +1,23 @@
-from .Embedding import embed_cluster_texts
-from .utils import create_document, fmt_txt, split_text
+from .Embedding import embed_cluster_texts, embedding_model
+from .utils import (
+    create_document,
+    fmt_txt,
+    split_text,
+    construct_postgres_connection_string,
+    reconfig
+)
 from .Summary import summarize
 from typing import List, Tuple, Optional, Any, Dict
 import pandas as pd
-from langchain_community.vectorstores.pgvector import PGVector
 from .QAModels import GPT3TurboQAModel
+from .vectorstore import get_vector_store
+from .utils import read_config
+import warnings
+warnings.filterwarnings("ignore")
 
-
-def embed_cluster_summarize_texts(texts: List[str], embeddings, level: int) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def embed_cluster_summarize_texts(
+        texts: List[str], embeddings, level: int
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Embeds, clusters, and summarizes a list of texts. This function first generates embeddings for the texts,
     clusters them based on similarity, expands the cluster assignments for easier processing, and then summarizes
@@ -28,8 +38,11 @@ def embed_cluster_summarize_texts(texts: List[str], embeddings, level: int) -> T
     df_clusters = embed_cluster_texts(texts, embeddings)
 
     # Expand DataFrame entries to document-cluster pairings for straightforward processing
-    expanded_list = [{"text": row["text"], "embd": row["embd"], "cluster": cluster}
-                     for index, row in df_clusters.iterrows() for cluster in row["cluster"]]
+    expanded_list = [
+        {"text": row["text"], "embd": row["embd"], "cluster": cluster}
+        for index, row in df_clusters.iterrows()
+        for cluster in row["cluster"]
+    ]
     expanded_df = pd.DataFrame(expanded_list)
 
     # Retrieve unique cluster identifiers for processing
@@ -41,15 +54,19 @@ def embed_cluster_summarize_texts(texts: List[str], embeddings, level: int) -> T
     for cluster in all_clusters:
         cluster_texts = expanded_df[expanded_df["cluster"] == cluster]["text"].tolist()
         # Assuming `summarize` is a function that takes a list of texts and returns a summary
-        summary = summarize(cluster_texts)  # Need to define or adjust this function accordingly
+        summary = summarize(
+            cluster_texts
+        )  # Need to define or adjust this function accordingly
         summaries.append(summary)
 
     # Create a DataFrame to store summaries with their corresponding cluster and level
-    df_summary = pd.DataFrame({
-        "summaries": summaries,
-        "level": [level] * len(summaries),
-        "cluster": list(all_clusters)
-    })
+    df_summary = pd.DataFrame(
+        {
+            "summaries": summaries,
+            "level": [level] * len(summaries),
+            "cluster": list(all_clusters),
+        }
+    )
 
     return df_clusters, df_summary
 
@@ -66,7 +83,8 @@ def get_all_texts(results, texts):
 
 
 def recursive_embed_cluster_summarize(
-        texts: List[str], embeddings, level: int = 1, n_levels: int = 3):
+        texts: List[str], embeddings, level: int = 1, n_levels: int = 3
+):
     """
     Recursively embeds, clusters, and summarizes texts up to a specified level or until
     the number of unique clusters becomes 1, storing the results at each level using a specified embeddings object.
@@ -105,8 +123,10 @@ def get_chunks(docs, embeddings, max_tokens: Optional[int] = 500) -> List[str]:
     try:
         print("Starting processing...")
         texts = create_document(docs)
-        leaf_chunks = split_text(texts, max_tokens=max_tokens)  # Pass max_tokens to split_text
-        results = recursive_embed_cluster_summarize(texts=leaf_chunks, embeddings=embeddings, level=1, n_levels=3)
+        leaf_chunks = split_text(texts, max_tokens=max_tokens)
+        results = recursive_embed_cluster_summarize(
+            texts=leaf_chunks, embeddings=embeddings, level=1, n_levels=3
+        )
         all_chunks = get_all_texts(results=results, texts=leaf_chunks)
         return all_chunks
     except Exception as e:
@@ -115,22 +135,26 @@ def get_chunks(docs, embeddings, max_tokens: Optional[int] = 500) -> List[str]:
 
 
 class IndoxRetrievalAugmentation:
-    def __init__(self, docs, embeddings, qa_model: Optional[Any] = None, db: Optional[Any] = None,
-                 max_tokens: Optional[int] = 512):
+    def __init__(
+            self,
+            docs,
+            collection_name: str,
+            qa_model: Optional[Any] = None,
+            max_tokens: Optional[int] = 512,
+    ):
         """
         Initialize the IndoxRetrievalAugmentation class with documents, embeddings object, an optional QA model, database connection, and maximum token count for text splitting.
 
         :param docs: List of documents to process
-        :param embeddings: Embeddings object to be used for text processing
         :param qa_model: Optional pre-initialized QA model
-        :param db: Optional pre-initialized database connection
         :param max_tokens: Optional maximum number of tokens for splitting texts
         """
-        self.embeddings = embeddings
-        self.db = db
+        self.embeddings, self.embed_documents = embedding_model()
         self.qa_model = qa_model if qa_model is not None else GPT3TurboQAModel()
         self.docs = docs
         self.max_tokens = max_tokens
+        self.db = get_vector_store(collection_name=collection_name,
+                                   embeddings=self.embeddings)
 
     def get_all_chunks(self) -> List[str]:
         """
@@ -143,30 +167,37 @@ class IndoxRetrievalAugmentation:
             print(f"Error while getting chunks: {e}")
             return []
 
-    def store_in_postgres(self, collection_name: str, connection_string: str, all_chunks: List[str]) -> Any:
+    def store_in_vectorstore(self, all_chunks: List[str]) -> Any:
         """
         Store text chunks into a PostgreSQL database.
         """
         try:
-            if self.db is None:
-                self.db = PGVector.from_texts(embedding=self.embeddings, texts=all_chunks,
-                                              collection_name=collection_name,
-                                              connection_string=connection_string)
+            if self.db is not None:
+                self.db.add_document(all_chunks)
             return self.db
         except Exception as e:
             print(f"Error while storing in PostgreSQL: {e}")
             return None
 
-    def answer_question(self, query: str, top_k: int) -> Tuple[str, List[float]]:
+    def answer_question(self, query: str, top_k: int):
         """
         Answer a query using the QA model based on similar document chunks found in the database.
         """
         try:
-            similar = self.db.similarity_search_with_score(query, k=top_k)
-            context = [d[0].page_content for d in similar]
-            scores = [d[1] for d in similar]
+            context, scores = self.db.retrieve(query, top_k=top_k)
             answer = self.qa_model.answer_question(context=context, question=query)
-            return answer, scores
+            return answer, scores, context
         except Exception as e:
             print(f"Error while answering question: {e}")
             return "", []
+
+    @classmethod
+    def from_config(cls, config: dict,
+                    docs,
+                    embeddings,
+                    collection_name: str,
+                    qa_model: Optional[Any] = None,
+                    max_tokens: Optional[int] = 512):
+        reconfig(config)
+        return cls(docs, embeddings, collection_name,
+                   qa_model, max_tokens)

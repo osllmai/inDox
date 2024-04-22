@@ -52,8 +52,20 @@ Ensure your PostgreSQL database is up and running, and accessible from your appl
 
 ```python
 from Indox import IndoxRetrievalAugmentation
-IRA = IndoxRetrievalAugmentation(docs='path/to/your/file', embeddings='your_embedding_model', max_tokens=500)
+from langchain_openai import OpenAIEmbeddings
+IRA = IndoxRetrievalAugmentation(docs='./sample.txt', collection_name='sample_c',embeddings=OpenAIEmbeddings(), max_tokens=100)
 ```
+
+### Initialize from other config than the default one
+
+```python
+config = {"clustering": {"dim": 10, "threshold": 0.1},
+"postgres": {"host": "localhost", "name": "vector_db", "password": "xxx", "port": 5432,
+"username": "postgres"}, "qa_model": {"temperature": 0}, "summary_model": {"max_tokens": 100,
+"min_len": 30, "model_name": "gpt-3.5-turbo-0125"}, "vector_store": "pgvector"}
+IRA = IndoxRetrievalAugmentation(config=config, docs='./sample.txt', collection_name='sample_c',embeddings=OpenAIEmbeddings(), max_tokens=100)
+```
+**Note**: You need to change postgres config to your postgres credentials if you set vector_store to pgvector
 
 ### Generate Chunks
 
@@ -84,28 +96,15 @@ CREATE EXTENSION vector;
 ### Store in PostgreSQL
 
 ```python
-# Replace the placeholders with your actual PostgreSQL credentials and details
-connection_string = "postgresql+psycopg2://username:password@hostname:port/database_name"
-collection_name = "collection_name"
-
-IRA.store_in_postgres(collection_name=collection_name,
-                     connection_string=connection_string,
-                     all_chunks=all_chunks)
+# you need to set your database credentials in th config.yaml file
+IRA.store_in_vectorstore(all_chunks=all_chunks)
 ```
-
-In this snippet:
-- **username**: Replace with your PostgreSQL username.
-- **password**: Replace with your PostgreSQL password.
-- **hostname**: Replace with the address of your PostgreSQL server (e.g., localhost).
-- **port**: Replace with the port number your PostgreSQL server is running on (e.g., 5432).
-- **database_name**: Replace with the name of your PostgreSQL database.
-- **collection_name**: Replace with the name of the collection where you want to store the chunks.
 
 
 ### Querying
 
 ```python
-response, scores = IRA.answer_question(query="your question here", top_k=5)
+response, scores = IRA.answer_question(query="How did Cinderella reach her happy ending?", top_k=5)
 print("Responses:", response)
 print("Scores:", scores)
 ```
@@ -114,7 +113,7 @@ print("Scores:", scores)
 - [ ] vector stores
    - [x] pgvector
    - [x] chromadb  
-   - [ ] faiss
+   - [x] faiss
 
 - [x] summary models
    - [x] openai chatgpt
@@ -127,6 +126,8 @@ print("Scores:", scores)
 - [ ] chunking strategies
    - [ ] semantic chunking
 
+- [x] add unstructured support
+   
 - [ ] minor features
    - [x] yaml file
 

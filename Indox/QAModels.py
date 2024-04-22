@@ -2,6 +2,7 @@ import os
 from openai import OpenAI
 from abc import ABC, abstractmethod
 from tenacity import retry, stop_after_attempt, wait_random_exponential
+from .utils import read_config
 
 
 class BaseQAModel(ABC):
@@ -20,10 +21,11 @@ class GPT3TurboQAModel(BaseQAModel):
         """
         self.model = model
         self.client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+        self.config = read_config()
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
     def _attempt_answer_question(
-            self, context, question, max_tokens=150, stop_sequence=None
+        self, context, question, max_tokens=150, stop_sequence=None, temperature=0
     ):
         """
         Generates a summary of the given context using the GPT-3 model.
@@ -45,7 +47,7 @@ class GPT3TurboQAModel(BaseQAModel):
                     "content": f"Given Context: {context} Give the best full answer amongst the option to question {question}",
                 },
             ],
-            temperature=0,
+            temperature=temperature,
         )
 
         return response.choices[0].message.content.strip()
@@ -55,7 +57,11 @@ class GPT3TurboQAModel(BaseQAModel):
 
         try:
             return self._attempt_answer_question(
-                context, question, max_tokens=max_tokens, stop_sequence=stop_sequence
+                context,
+                question,
+                max_tokens=max_tokens,
+                stop_sequence=stop_sequence,
+                temperature=self.config["qa_model"]["temperature"],
             )
         except Exception as e:
             print(e)
