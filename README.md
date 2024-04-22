@@ -127,6 +127,8 @@ print("Scores:", scores)
 - [ ] chunking strategies
    - [ ] semantic chunking
 
+- [x] add unstructured support
+   
 - [ ] minor features
    - [x] yaml file
 
