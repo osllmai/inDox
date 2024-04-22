@@ -108,6 +108,27 @@ response, scores = IRA.answer_question(query="How did Cinderella reach her happy
 print("Responses:", response)
 print("Scores:", scores)
 ```
+### Roadmap
+
+- [ ] vector stores
+   - [x] pgvector
+   - [x] chromadb  
+   - [ ] faiss
+
+- [x] summary models
+   - [x] openai chatgpt
+   - [x] huggingface models
+
+- [ ] embedding models
+   - [x] openai embeddings
+   - [ ] sentence transformer embeddings
+
+- [ ] chunking strategies
+   - [ ] semantic chunking
+
+- [ ] minor features
+   - [x] yaml file
+
 
 ### Roadmap
 
