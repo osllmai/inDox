@@ -9,7 +9,7 @@ This project combines advanced clustering techniques provided by Raptor with the
 Before you can run this project, you need the following installed:
 - Python 3.8+
 - PostgreSQL
-- OpenAI API Key (for embedding models)
+- OpenAI API Key (if using OpenAI embedding model)
 
 Ensure your system also meets the following requirements:
 - Access to environmental variables for sensitive information (API keys).
@@ -104,8 +104,9 @@ IRA.store_in_vectorstore(all_chunks=all_chunks)
 ### Querying
 
 ```python
-response, scores = IRA.answer_question(query="How did Cinderella reach her happy ending?", top_k=5)
+response, scores, context = IRA.answer_question(query="How did Cinderella reach her happy ending?", top_k=5)
 print("Responses:", response)
+print("Retrieve chunks:", context)
 print("Scores:", scores)
 ```
 ### Roadmap
@@ -121,10 +122,10 @@ print("Scores:", scores)
 
 - [ ] embedding models
    - [x] openai embeddings
-   - [ ] sentence transformer embeddings
+   - [x] sentence transformer embeddings
 
 - [ ] chunking strategies
-   - [ ] semantic chunking
+   - [x] semantic chunking
 
 - [x] add unstructured support
 
