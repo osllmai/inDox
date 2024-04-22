@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
   name = 'Indox',        
-  version = '0.1',      
+  version = '0.2',      
   license='MIT',      
   packages=find_packages(),
   package_data={'Indox': ['config.yaml']},
@@ -27,7 +27,9 @@ setup(
         'chromadb',
         'psycopg2',
         'pgvector',
-        'langchain-openai'
+        'langchain-openai',
+        'langchain',
+        'faiss-cpu',
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',     
