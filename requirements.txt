@@ -12,3 +12,4 @@ black==24.4.0
 chromadb==0.4.24
 PyYAML~=6.0.1
 tokenizers~=0.15.2
+python-dotenv~=1.0.1
