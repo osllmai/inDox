@@ -1,4 +1,4 @@
-# inDox Retrieval Augmentation
+# inDox : Advance Search and Retrieval Augmentation Generative  
 
 ## Overview
 
