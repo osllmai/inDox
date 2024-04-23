@@ -63,7 +63,7 @@ config = {"clustering": {"dim": 10, "threshold": 0.1},
 "postgres": {"host": "localhost", "name": "vector_db", "password": "xxx", "port": 5432,
 "username": "postgres"}, "qa_model": {"temperature": 0}, "summary_model": {"max_tokens": 100,
 "min_len": 30, "model_name": "gpt-3.5-turbo-0125"}, "vector_store": "pgvector"}
-IRA = IndoxRetrievalAugmentation(config=config, docs='./sample.txt', collection_name='sample_c',embeddings=OpenAIEmbeddings(), max_tokens=100)
+IRA = IndoxRetrievalAugmentation.from_config(config=config, docs='./sample.txt', collection_name='sample_c',embeddings=OpenAIEmbeddings(), max_tokens=100)
 ```
 **Note**: You need to change postgres config to your postgres credentials if you set vector_store to pgvector
 
@@ -129,6 +129,8 @@ print("Scores:", scores)
 
 - [x] add unstructured support
 
+- [ ] add simple RAG support
+      
 - [ ] cleaning pipeline
 
 - [ ] minor features
