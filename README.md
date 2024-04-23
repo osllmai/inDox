@@ -1,6 +1,6 @@
 # inDox : Advance Search and Retrieval Augmentation Generative  
 
-## Overview
+## Overview 
 
 This project combines advanced clustering techniques provided by Raptor with the efficient retrieval capabilities of pgvector. It allows users to interact with and visualize their data in a PostgreSQL database. The solution involves segmenting text data into manageable chunks, enhancing retrieval through a custom model, and providing an interface for querying and retrieving relevant information.
 
