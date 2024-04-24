@@ -8,10 +8,10 @@ import faiss
 import logging
 from .utils import read_config, construct_postgres_connection_string
 
-
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
 )
+
 
 class VectorStoreBase(ABC):
     """Abstract base class defining the interface for vector-based document stores."""
@@ -25,6 +25,7 @@ class VectorStoreBase(ABC):
     def retrieve(self, query: str, top_k: int = 5):
         """Retrieve documents similar to the given query from the vector store."""
         pass
+
 
 class PGVectorStore(VectorStoreBase):
     """A concrete implementation using PostgreSQL for storage."""
@@ -47,6 +48,7 @@ class PGVectorStore(VectorStoreBase):
         scores = [d[1] for d in retrieved]
         return context, scores
 
+
 class ChromaVectorStore(VectorStoreBase):
     """A concrete implementation using Chroma for storage."""
 
@@ -68,11 +70,14 @@ class ChromaVectorStore(VectorStoreBase):
         scores = [d[1] for d in retrieved]
         return context, scores
 
+
 class FAISSVectorStore(VectorStoreBase):
     """A concrete implementation of VectorStoreBase using FAISS for storage."""
+
     def __init__(self, embedding) -> None:
-        
+
         super().__init__()
+
         embedding_dim = len(embedding.embed_query(""))
 
         index = faiss.IndexFlatL2(embedding_dim)
@@ -90,20 +95,21 @@ class FAISSVectorStore(VectorStoreBase):
             normalize_L2=False,
             distance_strategy="euclidean_distance"
         )
-    
+
     def add_document(self, texts: Iterable[str]):
         try:
             self.db.add_texts(texts=texts)
             logging.info(f"document added successfuly to the vector store")
         except:
             raise RuntimeError("Can't add document to the vector store")
-    
+
     def retrieve(self, query: str, top_k: int = 5):
         retrieved = self.db.similarity_search_with_score(query, k=top_k)
         context = [d[0].page_content for d in retrieved]
         scores = [d[1] for d in retrieved]
         return context, scores
-        
+
+
 def get_vector_store(collection_name, embeddings):
     config = read_config()
     if config['vector_store'] == 'pgvector':
@@ -112,5 +118,5 @@ def get_vector_store(collection_name, embeddings):
     elif config['vector_store'] == 'chroma':
         return ChromaVectorStore(collection_name=collection_name, embedding=embeddings)
     elif config['vector_store'] == 'faiss':
-            db = FAISSVectorStore(embedding=embeddings)
-            return db
+        db = FAISSVectorStore(embedding=embeddings)
+        return db
