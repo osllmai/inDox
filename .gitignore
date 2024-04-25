@@ -163,3 +163,10 @@ sample.txt
 test2.ipynb
 .test2.ipynb
 
+.idea/inDox.iml
+.idea/inspectionProfiles/
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
+

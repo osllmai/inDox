@@ -14,6 +14,7 @@ from .vectorstore import get_vector_store
 from .utils import read_config
 import warnings
 import tiktoken
+from .metrics.metrics import metrics
 
 warnings.filterwarnings("ignore")
 
@@ -123,11 +124,11 @@ def recursive_embed_cluster_summarize(texts: List[str], embeddings, level: int =
     return results, input_tokens_all, output_tokens_all
 
 
-def get_chunks(docs, embeddings, do_clustering, max_tokens: Optional[int] = 500):
+def get_chunks(docs, embeddings, do_clustering, chunk_size: Optional[int] = 500):
     try:
         print("Starting processing...")
         texts = create_document(docs)
-        leaf_chunks = split_text(texts, max_tokens=max_tokens)
+        leaf_chunks = split_text(texts, max_tokens=chunk_size)
         for i in range(len(leaf_chunks)):
             leaf_chunks[i] = leaf_chunks[i].replace("\n", " ")
         if do_clustering:
@@ -135,7 +136,8 @@ def get_chunks(docs, embeddings, do_clustering, max_tokens: Optional[int] = 500)
                 texts=leaf_chunks, embeddings=embeddings, level=1, n_levels=3
             )
             all_chunks = get_all_texts(results=results, texts=leaf_chunks)
-            print(f"Create {len(all_chunks)} Chunks, {len(leaf_chunks)} leaf chunks plus {int(len(all_chunks)-len(leaf_chunks))} extra chunks")
+            print(
+                f"Create {len(all_chunks)} Chunks, {len(leaf_chunks)} leaf chunks plus {int(len(all_chunks) - len(leaf_chunks))} extra chunks")
             print("End Chunking & Clustering process")
             return all_chunks, input_tokens_all, output_tokens_all
         elif not do_clustering:
@@ -158,44 +160,45 @@ def get_user_input():
         print("Invalid input. Please enter 'y' for yes or 'n' for no.")
 
 
+def get_metrics(inputs):
+    # mP, mR, mF1, dilaouges_scores, K = metrics(inputs)
+    mP, mR, mF1, K = metrics(inputs)
+    print(f"BertScore scores:\n   Precision@{K}: {mP:.4f}\n   Recall@{K}: {mR:.4f}\n   F1@{K}: {mF1:.4f}")
+    # print("\n\nUni Eval Sores")
+    # [print(f"   {key}@{K}: {np.array(value).mean():4f}") for key, value in dilaouges_scores.items()]
+
+
 class IndoxRetrievalAugmentation:
     def __init__(
             self,
-            docs,
-            # collection_name: str,
             qa_model: Optional[Any] = None,
-            max_tokens: Optional[int] = 512,
     ):
         """
         Initialize the IndoxRetrievalAugmentation class with documents, embeddings object, an optional QA model, database connection, and maximum token count for text splitting.
 
-        :param docs: List of documents to process
         :param qa_model: Optional pre-initialized QA model
-        :param max_tokens: Optional maximum number of tokens for splitting texts
         """
         self.embeddings, self.embed_documents = embedding_model()
         self.qa_model = qa_model if qa_model is not None else GPT3TurboQAModel()
-        self.docs = docs
-        self.max_tokens = max_tokens
-        # self.db = get_vector_store(collection_name=collection_name,
-        #                            embeddings=self.embeddings)
         self.input_tokens_all = 0
         self.embedding_tokens = 0
         self.output_tokens_all = 0
-        self.do_clustering = True if get_user_input() == "y" else False
         self.db = None
+        self.config = read_config()
+        self.inputs = {}
 
-    def get_all_chunks(self):
+    def create_chunks_from_document(self, docs, max_chunk_size: Optional[int] = 512):
         """
         Retrieve all chunks from the documents, using the specified maximum number of tokens if provided.
         """
+        do_clustering = True if get_user_input() == "y" else False
         all_chunks = None
         try:
-            if self.do_clustering:
-                all_chunks, input_tokens_all, output_tokens_all = get_chunks(docs=self.docs,
+            if do_clustering:
+                all_chunks, input_tokens_all, output_tokens_all = get_chunks(docs=docs,
                                                                              embeddings=self.embeddings,
-                                                                             max_tokens=self.max_tokens,
-                                                                             do_clustering=self.do_clustering)
+                                                                             chunk_size=max_chunk_size,
+                                                                             do_clustering=do_clustering)
                 encoding = tiktoken.get_encoding("cl100k_base")
                 embedding_tokens = 0
                 for chunk in all_chunks:
@@ -204,11 +207,11 @@ class IndoxRetrievalAugmentation:
                 self.input_tokens_all = input_tokens_all
                 self.embedding_tokens = embedding_tokens
                 self.output_tokens_all = output_tokens_all
-            elif not self.do_clustering:
-                all_chunks = get_chunks(docs=self.docs,
+            elif not do_clustering:
+                all_chunks = get_chunks(docs=docs,
                                         embeddings=self.embeddings,
-                                        max_tokens=self.max_tokens,
-                                        do_clustering=self.do_clustering)
+                                        chunk_size=max_chunk_size,
+                                        do_clustering=do_clustering)
                 encoding = tiktoken.get_encoding("cl100k_base")
                 embedding_tokens = 0
                 for chunk in all_chunks:
@@ -221,16 +224,24 @@ class IndoxRetrievalAugmentation:
             print(f"Error while getting chunks: {e}")
             return []
 
-    def add_vector_store(self, collection_name: str):
-        self.db = get_vector_store(collection_name=collection_name,
-                                   embeddings=self.embeddings)
+    def connect_to_vectorstore(self):
+        """
+        Establish a connection to the vector store database using configuration parameters.
+        """
+        try:
+            self.db = get_vector_store(collection_name=self.config["postgres"]["collection_name"],
+                                       embeddings=self.embeddings)
+            if self.db is None:
+                raise RuntimeError('Failed to connect to the vector store database.')
+            print("Connection established successfully.")
+        except Exception as e:
+            raise RuntimeError(f"Failed to connect to the database: {e}")
 
     def store_in_vectorstore(self, all_chunks: List[str]) -> Any:
         """
         Store text chunks into a PostgreSQL database.
         """
-        if self.db is None:
-            raise RuntimeError('you need to run add_vector_store before storing in it')
+        self.db = get_vector_store(embeddings=self.embeddings)
         try:
             if self.db is not None:
                 self.db.add_document(all_chunks)
@@ -246,13 +257,20 @@ class IndoxRetrievalAugmentation:
         try:
             context, scores = self.db.retrieve(query, top_k=top_k)
             answer = self.qa_model.answer_question(context=context, question=query)
+            self.inputs = {"answer": answer, "query": query, "context": context}
             return answer, scores, context
         except Exception as e:
             print(f"Error while answering question: {e}")
             return "", []
 
+    def evaluate(self):
+        if self.inputs:
+            return get_metrics(self.inputs)
+        else:
+            print("You should make a query first!!!")
+
     def get_tokens_info(self):
-        if self.do_clustering:
+        if self.output_tokens_all > 0:
             print(
                 f"""
                 Overview of All Tokens Used:
@@ -261,13 +279,16 @@ class IndoxRetrievalAugmentation:
                 Tokens used in the embedding section that were sent to the database: {self.embedding_tokens}
                 """
             )
-        elif not self.do_clustering:
+        else:
             print(
                 f"""
                 Overview of All Tokens Used:
                 Tokens used in the embedding section that were sent to the database: {self.embedding_tokens}
                            """
             )
+
+    def update_config(self):
+        return reconfig(self.config)
 
     @classmethod
     def from_config(cls, config: dict,
