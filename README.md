@@ -129,7 +129,7 @@ print("Scores:", scores)
 
 - [x] add unstructured support
 
-- [ ] add simple RAG support
+- [x] add simple RAG support
       
 - [ ] cleaning pipeline
 
