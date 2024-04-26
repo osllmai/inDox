@@ -60,7 +60,7 @@ IRA = IndoxRetrievalAugmentation(re_chunk=False)
 
 ```python
 config = {"clustering": {"dim": 10, "threshold": 0.1},
-"postgres": {"conn_string": 'postgresql+psycopg2://postgres:aminkhosroshahi328@localhost:5432/vector_db'},
+"postgres": {"conn_string": 'postgresql+psycopg2://postgres:xxx@localhost:port/da_name'},
           "qa_model": {"temperature": 0}, "summary_model": {"max_tokens": 100,
 "min_len": 30, "model_name": "gpt-3.5-turbo-0125"}, "vector_store": "pgvector"}
 IRA = IndoxRetrievalAugmentation.from_config(config=config, re_chunk=False)
