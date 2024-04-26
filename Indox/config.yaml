@@ -3,7 +3,7 @@ clustering:
   threshold: 0.1
 embedding_model: openai
 postgres:
-  conn_string: postgresql+psycopg2://postgres:aminkhosroshahi328@localhost:5432/vector_db
+  conn_string: postgresql+psycopg2://postgres:xxx@localhost:port/db_name
 prompts:
   summary_model:
     content: You are a helpful assistant. Give a detailed summary of the documentation
