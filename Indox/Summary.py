@@ -10,6 +10,16 @@ import logging
 
 
 def summarize(context):
+    """
+    Summarizes the given context using either OpenAI's GPT-3.5 model or a Hugging Face model based on the configuration.
+
+    Args:
+        context (str): The input context to be summarized.
+
+    Returns:
+        tuple: A tuple containing the summarized text, input tokens used for the summary, and output tokens generated.
+        (if you use openai). there is no return other than summary itself if you use huggingface model.
+    """
     config = read_config()
     try:
         if config["summary_model"]["model_name"] == "gpt-3.5-turbo-0125":

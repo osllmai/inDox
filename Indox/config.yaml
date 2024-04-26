@@ -1,19 +1,18 @@
 clustering:
   dim: 10
   threshold: 0.1
-collection_name: Collection_name
 embedding_model: openai
 postgres:
-  conn_string: postgresql+psycopg2://postgres:username@localhost:port/your_database_name # Adjust with your postgres database configuration
+  conn_string: postgresql+psycopg2://postgres:aminkhosroshahi328@localhost:5432/vector_db
 prompts:
   summary_model:
     content: You are a helpful assistant. Give a detailed summary of the documentation
       provided
 qa_model:
   temperature: 0
-splitter: semantic-text-splitter #or raptor-text-splitter
+splitter: semantic-text-splitter
 summary_model:
   max_tokens: 100
   min_len: 30
   model_name: gpt-3.5-turbo-0125
-vector_store: pgvector  # other options: Chroma , faiss
+vector_store: pgvector

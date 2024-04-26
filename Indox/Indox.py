@@ -20,7 +20,7 @@ warnings.filterwarnings("ignore")
 
 
 def embed_cluster_summarize_texts(
-        texts: List[str], embeddings, level: int):
+        texts: List[str], embeddings, level: int, re_chunk=False, max_chunk: int = 100):
     """
     Embeds, clusters, and summarizes a list of texts. This function first generates embeddings for the texts,
     clusters them based on similarity, expands the cluster assignments for easier processing, and then summarizes
@@ -74,10 +74,21 @@ def embed_cluster_summarize_texts(
         }
     )
 
+    if re_chunk == True:
+        re_chunked = []
+        for i, row in df_summary.iterrows():
+            re_chunked.append(split_text(row['summaries'], max_chunk))
+        df_summary['summaries'] = re_chunked
+        df_summary = df_summary.explode('summaries') 
+        df_summary = df_summary.reset_index(drop=True)  
+
     return df_clusters, df_summary, input_tokens_all, output_tokens_all
 
 
 def get_all_texts(results, texts):
+    """
+    Extracts text from summaries 
+    """
     all_texts = texts.copy()
     # Iterate through the results to extract summaries from each level and add them to all_texts
     for level in sorted(results.keys()):
@@ -88,7 +99,8 @@ def get_all_texts(results, texts):
     return all_texts
 
 
-def recursive_embed_cluster_summarize(texts: List[str], embeddings, level: int = 1, n_levels: int = 3):
+def recursive_embed_cluster_summarize(texts: List[str], embeddings, level: int = 1, n_levels: int = 3,
+                                      re_chunk=False, max_chunk: int = 100):
     """
     Recursively embeds, clusters, and summarizes texts up to a specified level or until
     the number of unique clusters becomes 1, storing the results at each level using a specified embeddings object.
@@ -103,8 +115,10 @@ def recursive_embed_cluster_summarize(texts: List[str], embeddings, level: int =
     results = {}
 
     # Perform embedding, clustering, and summarization for the current level
-    df_clusters, df_summary, input_tokens, output_tokens = embed_cluster_summarize_texts(texts, embeddings,
-                                                                                         level)
+    df_clusters, df_summary, input_tokens, output_tokens = \
+        embed_cluster_summarize_texts(texts, embeddings,
+        level, re_chunk=re_chunk,
+        max_chunk=max_chunk)
     input_tokens_all = input_tokens
     output_tokens_all = output_tokens
     # Store the results of the current level
@@ -124,7 +138,11 @@ def recursive_embed_cluster_summarize(texts: List[str], embeddings, level: int =
     return results, input_tokens_all, output_tokens_all
 
 
-def get_chunks(docs, embeddings, do_clustering, chunk_size: Optional[int] = 500):
+def get_chunks(docs, embeddings, do_clustering, chunk_size: Optional[int] = 500, 
+               re_chunk: bool = False):
+    """
+    Extract chunks using an embedding function and recursively 
+    """
     try:
         print("Starting processing...")
         texts = create_document(docs)
@@ -133,7 +151,8 @@ def get_chunks(docs, embeddings, do_clustering, chunk_size: Optional[int] = 500)
             leaf_chunks[i] = leaf_chunks[i].replace("\n", " ")
         if do_clustering:
             results, input_tokens_all, output_tokens_all = recursive_embed_cluster_summarize(
-                texts=leaf_chunks, embeddings=embeddings, level=1, n_levels=3
+                texts=leaf_chunks, embeddings=embeddings, level=1, n_levels=3, 
+                re_chunk=re_chunk, max_chunk=int(chunk_size/2)
             )
             all_chunks = get_all_texts(results=results, texts=leaf_chunks)
             print(
@@ -161,6 +180,9 @@ def get_user_input():
 
 
 def get_metrics(inputs):
+    """
+    prints Precision, Recall and F1 obtained from BertScore
+    """
     # mP, mR, mF1, dilaouges_scores, K = metrics(inputs)
     mP, mR, mF1, K = metrics(inputs)
     print(f"BertScore scores:\n   Precision@{K}: {mP:.4f}\n   Recall@{K}: {mR:.4f}\n   F1@{K}: {mF1:.4f}")
@@ -172,6 +194,7 @@ class IndoxRetrievalAugmentation:
     def __init__(
             self,
             qa_model: Optional[Any] = None,
+            re_chunk: bool = False
     ):
         """
         Initialize the IndoxRetrievalAugmentation class with documents, embeddings object, an optional QA model, database connection, and maximum token count for text splitting.
@@ -186,6 +209,7 @@ class IndoxRetrievalAugmentation:
         self.db = None
         self.config = read_config()
         self.inputs = {}
+        self.re_chunk = re_chunk
 
     def create_chunks_from_document(self, docs, max_chunk_size: Optional[int] = 512):
         """
@@ -195,10 +219,12 @@ class IndoxRetrievalAugmentation:
         all_chunks = None
         try:
             if do_clustering:
-                all_chunks, input_tokens_all, output_tokens_all = get_chunks(docs=docs,
-                                                                             embeddings=self.embeddings,
-                                                                             chunk_size=max_chunk_size,
-                                                                             do_clustering=do_clustering)
+                all_chunks, input_tokens_all, output_tokens_all = \
+                    get_chunks(docs=docs,
+                            embeddings=self.embeddings,
+                            chunk_size=max_chunk_size,
+                            do_clustering=do_clustering,
+                            re_chunk=self.re_chunk)
                 encoding = tiktoken.get_encoding("cl100k_base")
                 embedding_tokens = 0
                 for chunk in all_chunks:
@@ -211,7 +237,8 @@ class IndoxRetrievalAugmentation:
                 all_chunks = get_chunks(docs=docs,
                                         embeddings=self.embeddings,
                                         chunk_size=max_chunk_size,
-                                        do_clustering=do_clustering)
+                                        do_clustering=do_clustering,
+                                        re_chunk=self.re_chunk)
                 encoding = tiktoken.get_encoding("cl100k_base")
                 embedding_tokens = 0
                 for chunk in all_chunks:
@@ -224,12 +251,12 @@ class IndoxRetrievalAugmentation:
             print(f"Error while getting chunks: {e}")
             return []
 
-    def connect_to_vectorstore(self):
+    def connect_to_vectorstore(self, collection_name: str):
         """
         Establish a connection to the vector store database using configuration parameters.
         """
         try:
-            self.db = get_vector_store(collection_name=self.config["postgres"]["collection_name"],
+            self.db = get_vector_store(collection_name=collection_name,
                                        embeddings=self.embeddings)
             if self.db is None:
                 raise RuntimeError('Failed to connect to the vector store database.')
@@ -241,7 +268,7 @@ class IndoxRetrievalAugmentation:
         """
         Store text chunks into a PostgreSQL database.
         """
-        self.db = get_vector_store(embeddings=self.embeddings)
+
         try:
             if self.db is not None:
                 self.db.add_document(all_chunks)
@@ -270,6 +297,9 @@ class IndoxRetrievalAugmentation:
             print("You should make a query first!!!")
 
     def get_tokens_info(self):
+        """
+        prints out number of tokens used
+        """
         if self.output_tokens_all > 0:
             print(
                 f"""
@@ -289,14 +319,11 @@ class IndoxRetrievalAugmentation:
 
     def update_config(self):
         return reconfig(self.config)
-
+    
     @classmethod
     def from_config(cls, config: dict,
-                    docs,
-                    embeddings,
-                    collection_name: str,
                     qa_model: Optional[Any] = None,
-                    max_tokens: Optional[int] = 512):
+                    re_chunk: bool = False):
         reconfig(config)
-        return cls(docs, embeddings, collection_name,
-                   qa_model, max_tokens)
+        return cls(qa_model, re_chunk)
+

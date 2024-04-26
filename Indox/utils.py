@@ -11,6 +11,18 @@ CONFIG_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 def split_text(text: str, max_tokens, overlap: int = 0):
+    """
+    Splits the input text into chunks of approximately equal token counts, based on the specified maximum token count
+    and overlap. The method of splitting depends on the configured splitter in the system.
+
+    Args:
+        text (str): The input text to be split into chunks.
+        max_tokens (int): The maximum number of tokens allowed in each chunk.
+        overlap (int, optional): The number of tokens to overlap between adjacent chunks. Defaults to 0.
+
+    Returns:
+        list: A list of chunks, each containing a portion of the original text.
+    """
     config = read_config()
     if config["splitter"] == "semantic-text-splitter":
         tokenizer = Tokenizer.from_pretrained("bert-base-uncased")
@@ -140,7 +152,7 @@ def reconfig(config: dict):
 
         Returns:
         - None
-        """
+    """
 
     current_directory = os.path.dirname(os.path.abspath(__file__))
     file_ = os.path.join(current_directory, "config.yaml")
