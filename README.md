@@ -111,7 +111,7 @@ print("Scores:", scores)
 ```
 ### Roadmap
 
-- [ ] vector stores
+- [x] vector stores
    - [x] pgvector
    - [x] chromadb  
    - [x] faiss
@@ -120,11 +120,11 @@ print("Scores:", scores)
    - [x] openai chatgpt
    - [x] huggingface models
 
-- [ ] embedding models
+- [x] embedding models
    - [x] openai embeddings
    - [x] sentence transformer embeddings
 
-- [ ] chunking strategies
+- [x] chunking strategies
    - [x] semantic chunking
 
 - [x] add unstructured support
@@ -133,7 +133,7 @@ print("Scores:", scores)
       
 - [ ] cleaning pipeline
 
-- [ ] minor features
+- [x] minor features
    - [x] yaml file
 
 
