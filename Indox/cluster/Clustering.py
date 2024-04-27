@@ -78,7 +78,7 @@ def get_optimal_clusters(
 
 def GMM_cluster(embeddings: np.ndarray, threshold: float, random_state: int = 0):
     """
-    Cluster embeddings using a Gaussian Mixture Model (GMM) based on a probability threshold.
+    cluster embeddings using a Gaussian Mixture Model (GMM) based on a probability threshold.
 
     Parameters:
     - embeddings: The input embeddings as a numpy array.

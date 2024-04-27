@@ -4,7 +4,7 @@ import re
 from semantic_text_splitter import TextSplitter
 from tokenizers import Tokenizer
 from typing import List, Tuple, Optional, Any, Dict
-from .Cluster.EmbedClusterSummarize import recursive_embed_cluster_summarize
+from .cluster.EmbedClusterSummarize import recursive_embed_cluster_summarize
 
 
 def split_text(text: str, max_tokens, overlap: int = 0):

@@ -112,12 +112,12 @@ class FAISSVectorStore(VectorStoreBase):
 
 def get_vector_store(embeddings, collection_name: str):
     config = read_config()
-    if config['vector_store'] == 'pgvector':
+    if config['vector_store'].lower() == 'pgvector':
         conn_string = construct_postgres_connection_string()
         return PGVectorStore(conn_string=conn_string, collection_name=collection_name,
                              embedding=embeddings)
-    elif config['vector_store'] == 'chroma':
+    elif config['vector_store'].lower() == 'chroma':
         return ChromaVectorStore(collection_name=collection_name, embedding=embeddings)
-    elif config['vector_store'] == 'faiss':
+    elif config['vector_store'].lower() == 'faiss':
         db = FAISSVectorStore(embedding=embeddings)
         return db
