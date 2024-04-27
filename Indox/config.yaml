@@ -10,7 +10,7 @@ prompts:
       provided
 qa_model:
   temperature: 0
-splitter: semantic-text-splitter
+splitter: semantic-text-splitter # or raptor-text-splitter
 summary_model:
   max_tokens: 100
   min_len: 30
