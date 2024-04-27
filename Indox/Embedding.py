@@ -1,5 +1,5 @@
 import numpy as np
-from .Clustering import perform_clustering
+from .Cluster.Clustering import perform_clustering
 import pandas as pd
 from typing import List
 from .utils import read_config

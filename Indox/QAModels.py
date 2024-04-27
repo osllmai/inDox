@@ -25,7 +25,7 @@ class GPT3TurboQAModel(BaseQAModel):
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
     def _attempt_answer_question(
-        self, context, question, max_tokens=150, stop_sequence=None, temperature=0
+            self, context, question, max_tokens=150, stop_sequence=None, temperature=0
     ):
         """
         Generates a summary of the given context using the GPT-3 model.
@@ -54,7 +54,7 @@ class GPT3TurboQAModel(BaseQAModel):
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
     def answer_question(self, context, question, max_tokens=150, stop_sequence=None):
-        
+
         try:
             return self._attempt_answer_question(
                 context,

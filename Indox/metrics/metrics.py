@@ -1,7 +1,8 @@
-# import gc
 import numpy as np
 from bert_score import BERTScorer
 from collections import defaultdict
+
+
 # from unieval import DialogEvaluator
 
 
@@ -53,7 +54,6 @@ class BertEvaluator(BERTScorer):
         K = len(context)
         for i in range(K):
             P, R, F1 = self.score(answer, [context[i]], verbose=False)
-            print(P)
             [scores[key].append(value) for key, value in [('P', P.numpy()), ('R', R.numpy()), ('F1', F1.numpy())]]
         scores['K'].append(K)
         mP, mR, mF1 = np.array(scores['P']).mean(), np.array(scores['R']).mean(), np.array(scores['F1']).mean()
@@ -91,4 +91,3 @@ def metrics(inputs):
     # dilaouges_scores, K = dilaouges.evaluate(inputs)
     # return mP, mR, mF1, dilaouges_scores, K
     return mP, mR, mF1, K
-

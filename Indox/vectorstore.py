@@ -99,7 +99,7 @@ class FAISSVectorStore(VectorStoreBase):
     def add_document(self, texts: Iterable[str]):
         try:
             self.db.add_texts(texts=texts)
-            logging.info(f"document added successfuly to the vector store")
+            print("document added successfuly to the vector store")
         except:
             raise RuntimeError("Can't add document to the vector store")
 
@@ -115,7 +115,7 @@ def get_vector_store(embeddings, collection_name: str):
     if config['vector_store'] == 'pgvector':
         conn_string = construct_postgres_connection_string()
         return PGVectorStore(conn_string=conn_string, collection_name=collection_name,
-                              embedding=embeddings)
+                             embedding=embeddings)
     elif config['vector_store'] == 'chroma':
         return ChromaVectorStore(collection_name=collection_name, embedding=embeddings)
     elif config['vector_store'] == 'faiss':

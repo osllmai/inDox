@@ -1,95 +1,11 @@
-import tiktoken
-import re
 import PyPDF2
 import pandas as pd
 import yaml
 import os
-from semantic_text_splitter import TextSplitter
-from tokenizers import Tokenizer
+
+from .metrics.metrics import metrics
 
 CONFIG_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
-
-
-def split_text(text: str, max_tokens, overlap: int = 0):
-    """
-    Splits the input text into chunks of approximately equal token counts, based on the specified maximum token count
-    and overlap. The method of splitting depends on the configured splitter in the system.
-
-    Args:
-        text (str): The input text to be split into chunks.
-        max_tokens (int): The maximum number of tokens allowed in each chunk.
-        overlap (int, optional): The number of tokens to overlap between adjacent chunks. Defaults to 0.
-
-    Returns:
-        list: A list of chunks, each containing a portion of the original text.
-    """
-    config = read_config()
-    if config["splitter"] == "semantic-text-splitter":
-        tokenizer = Tokenizer.from_pretrained("bert-base-uncased")
-        splitter = TextSplitter.from_huggingface_tokenizer(tokenizer)
-        chunks = splitter.chunks(text, max_tokens)
-        return chunks
-    elif config["splitter"] == "raptor-text-splitter":
-        tokenizer = tiktoken.get_encoding("cl100k_base")
-        delimiters = [".", "!", "?", "\n"]
-        regex_pattern = "|".join(map(re.escape, delimiters))
-        sentences = re.split(regex_pattern, text)
-        # Calculate the number of tokens for each sentence
-        n_tokens = [len(tokenizer.encode(" " + sentence)) for sentence in sentences]
-        chunks = []
-        current_chunk = []
-        current_length = 0
-        for sentence, token_count in zip(sentences, n_tokens):
-            # If the sentence is empty or consists only of whitespace, skip it
-            if not sentence.strip():
-                continue
-            # If the sentence is too long, split it into smaller parts
-            if token_count > max_tokens:
-                sub_sentences = re.split(r"[,;:]", sentence)
-                sub_token_counts = [
-                    len(tokenizer.encode(" " + sub_sentence))
-                    for sub_sentence in sub_sentences
-                ]
-
-                sub_chunk = []
-                sub_length = 0
-
-                for sub_sentence, sub_token_count in zip(sub_sentences, sub_token_counts):
-                    if sub_length + sub_token_count > max_tokens:
-                        chunks.append(" ".join(sub_chunk))
-                        sub_chunk = sub_chunk[-overlap:] if overlap > 0 else []
-                        sub_length = sum(
-                            sub_token_counts[
-                            max(0, len(sub_chunk) - overlap): len(sub_chunk)
-                            ]
-                        )
-
-                    sub_chunk.append(sub_sentence)
-                    sub_length += sub_token_count
-
-                if sub_chunk:
-                    chunks.append(" ".join(sub_chunk))
-
-            # If adding the sentence to the current chunk exceeds the max tokens, start a new chunk
-            elif current_length + token_count > max_tokens:
-                chunks.append(" ".join(current_chunk))
-                current_chunk = current_chunk[-overlap:] if overlap > 0 else []
-                current_length = sum(
-                    n_tokens[max(0, len(current_chunk) - overlap): len(current_chunk)]
-                )
-                current_chunk.append(sentence)
-                current_length += token_count
-
-            # Otherwise, add the sentence to the current chunk
-            else:
-                current_chunk.append(sentence)
-                current_length += token_count
-
-        # Add the last chunk if it's not empty
-        if current_chunk:
-            chunks.append(" ".join(current_chunk))
-
-        return chunks
 
 
 def create_document(file_path):
@@ -163,3 +79,24 @@ def reconfig(config: dict):
 
     with open(file_, 'w') as file:
         yaml.dump(existing_data, file)
+
+
+def get_user_input():
+    response = input(
+        "Would you like to add a clustering and summarization layer? This may double your token usage. Please select "
+        "'y' for yes or 'n' for no: ")
+    if response.lower() in ['y', 'n']:
+        return response
+    else:
+        print("Invalid input. Please enter 'y' for yes or 'n' for no.")
+
+
+def get_metrics(inputs):
+    """
+    prints Precision, Recall and F1 obtained from BertScore
+    """
+    # mP, mR, mF1, dilaouges_scores, K = metrics(inputs)
+    mP, mR, mF1, K = metrics(inputs)
+    print(f"BertScore scores:\n   Precision@{K}: {mP:.4f}\n   Recall@{K}: {mR:.4f}\n   F1@{K}: {mF1:.4f}")
+    # print("\n\nUni Eval Sores")
+    # [print(f"   {key}@{K}: {np.array(value).mean():4f}") for key, value in dilaouges_scores.items()]

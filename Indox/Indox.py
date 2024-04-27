@@ -1,193 +1,16 @@
-from .Embedding import embed_cluster_texts, embedding_model
+from .Splitter import get_chunks
+from .Embedding import embedding_model
 from .utils import (
-    create_document,
-    fmt_txt,
-    split_text,
-    construct_postgres_connection_string,
-    reconfig
+    reconfig, get_user_input, get_metrics
 )
-from .Summary import summarize
 from typing import List, Tuple, Optional, Any, Dict
-import pandas as pd
 from .QAModels import GPT3TurboQAModel
 from .vectorstore import get_vector_store
 from .utils import read_config
 import warnings
 import tiktoken
-from .metrics.metrics import metrics
 
 warnings.filterwarnings("ignore")
-
-
-def embed_cluster_summarize_texts(
-        texts: List[str], embeddings, level: int, re_chunk=False, max_chunk: int = 100):
-    """
-    Embeds, clusters, and summarizes a list of texts. This function first generates embeddings for the texts,
-    clusters them based on similarity, expands the cluster assignments for easier processing, and then summarizes
-    the content within each cluster.
-
-    Parameters:
-    - texts: A list of text documents to be processed.
-    - embeddings: An object capable of generating embeddings, must have an `embed_documents` method.
-    - level: An integer parameter that could define the depth or detail of processing.
-
-    Returns:
-    - Tuple containing two DataFrames:
-      1. The first DataFrame (`df_clusters`) includes the original texts, their embeddings, and cluster assignments.
-      2. The second DataFrame (`df_summary`) contains summaries for each cluster, the specified level of detail,
-         and the cluster identifiers.
-    """
-    input_tokens_all = 0
-    output_tokens_all = 0
-    # Embed and cluster the texts, resulting in a DataFrame with 'text', 'embd', and 'cluster' columns
-    df_clusters = embed_cluster_texts(texts, embeddings)
-
-    # Expand DataFrame entries to document-cluster pairings for straightforward processing
-    expanded_list = [
-        {"text": row["text"], "embd": row["embd"], "cluster": cluster}
-        for index, row in df_clusters.iterrows()
-        for cluster in row["cluster"]
-    ]
-    expanded_df = pd.DataFrame(expanded_list)
-
-    # Retrieve unique cluster identifiers for processing
-    all_clusters = expanded_df["cluster"].unique()
-    print(f"--Generated {len(all_clusters)} clusters--")
-
-    # Summarize the texts in each cluster
-    summaries = []
-    for cluster in all_clusters:
-        cluster_texts = expanded_df[expanded_df["cluster"] == cluster]["text"].tolist()
-        # Assuming `summarize` is a function that takes a list of texts and returns a summary
-        summary, input_tokens, output_tokens = summarize(
-            cluster_texts
-        )  # Need to define or adjust this function accordingly
-        summaries.append(summary)
-        input_tokens_all += input_tokens
-        output_tokens_all += output_tokens
-    # Create a DataFrame to store summaries with their corresponding cluster and level
-    df_summary = pd.DataFrame(
-        {
-            "summaries": summaries,
-            "level": [level] * len(summaries),
-            "cluster": list(all_clusters),
-        }
-    )
-
-    if re_chunk == True:
-        re_chunked = []
-        for i, row in df_summary.iterrows():
-            re_chunked.append(split_text(row['summaries'], max_chunk))
-        df_summary['summaries'] = re_chunked
-        df_summary = df_summary.explode('summaries') 
-        df_summary = df_summary.reset_index(drop=True)  
-
-    return df_clusters, df_summary, input_tokens_all, output_tokens_all
-
-
-def get_all_texts(results, texts):
-    """
-    Extracts text from summaries 
-    """
-    all_texts = texts.copy()
-    # Iterate through the results to extract summaries from each level and add them to all_texts
-    for level in sorted(results.keys()):
-        # Extract summaries from the current level's DataFrame
-        summaries = results[level][1]["summaries"].tolist()
-        # Extend all_texts with the summaries from the current level
-        all_texts.extend(summaries)
-    return all_texts
-
-
-def recursive_embed_cluster_summarize(texts: List[str], embeddings, level: int = 1, n_levels: int = 3,
-                                      re_chunk=False, max_chunk: int = 100):
-    """
-    Recursively embeds, clusters, and summarizes texts up to a specified level or until
-    the number of unique clusters becomes 1, storing the results at each level using a specified embeddings object.
-
-    Parameters:
-    - texts: List[str], texts to be processed.
-    - embeddings: An object capable of generating embeddings, must have an `embed_documents` method.
-    - level: int, current recursion level (starts at 1).
-    - n_levels: int, maximum depth of recursion.
-
-    """
-    results = {}
-
-    # Perform embedding, clustering, and summarization for the current level
-    df_clusters, df_summary, input_tokens, output_tokens = \
-        embed_cluster_summarize_texts(texts, embeddings,
-        level, re_chunk=re_chunk,
-        max_chunk=max_chunk)
-    input_tokens_all = input_tokens
-    output_tokens_all = output_tokens
-    # Store the results of the current level
-    results[level] = (df_clusters, df_summary)
-
-    # Determine if further recursion is possible and meaningful
-    unique_clusters = df_summary["cluster"].nunique()
-    if level < n_levels and unique_clusters > 1:
-        new_texts = df_summary["summaries"].tolist()
-        next_level_results, input_tokens, output_tokens = recursive_embed_cluster_summarize(
-            new_texts, embeddings, level + 1, n_levels
-        )
-        input_tokens_all += input_tokens
-        output_tokens_all += output_tokens
-        results.update(next_level_results)
-
-    return results, input_tokens_all, output_tokens_all
-
-
-def get_chunks(docs, embeddings, do_clustering, chunk_size: Optional[int] = 500, 
-               re_chunk: bool = False):
-    """
-    Extract chunks using an embedding function and recursively 
-    """
-    try:
-        print("Starting processing...")
-        texts = create_document(docs)
-        leaf_chunks = split_text(texts, max_tokens=chunk_size)
-        for i in range(len(leaf_chunks)):
-            leaf_chunks[i] = leaf_chunks[i].replace("\n", " ")
-        if do_clustering:
-            results, input_tokens_all, output_tokens_all = recursive_embed_cluster_summarize(
-                texts=leaf_chunks, embeddings=embeddings, level=1, n_levels=3, 
-                re_chunk=re_chunk, max_chunk=int(chunk_size/2)
-            )
-            all_chunks = get_all_texts(results=results, texts=leaf_chunks)
-            print(
-                f"Create {len(all_chunks)} Chunks, {len(leaf_chunks)} leaf chunks plus {int(len(all_chunks) - len(leaf_chunks))} extra chunks")
-            print("End Chunking & Clustering process")
-            return all_chunks, input_tokens_all, output_tokens_all
-        elif not do_clustering:
-            all_chunks = leaf_chunks
-            print(f"Create {len(all_chunks)} Chunks")
-            print("End Chunking process")
-            return all_chunks
-    except Exception as e:
-        print(f"Failed at step with error: {e}")
-        raise  # Re-raises the current exception to propagate the error up the call stack
-
-
-def get_user_input():
-    response = input(
-        "Would you like to add a clustering and summarization layer? This may double your token usage. Please select "
-        "'y' for yes or 'n' for no: ")
-    if response.lower() in ['y', 'n']:
-        return response
-    else:
-        print("Invalid input. Please enter 'y' for yes or 'n' for no.")
-
-
-def get_metrics(inputs):
-    """
-    prints Precision, Recall and F1 obtained from BertScore
-    """
-    # mP, mR, mF1, dilaouges_scores, K = metrics(inputs)
-    mP, mR, mF1, K = metrics(inputs)
-    print(f"BertScore scores:\n   Precision@{K}: {mP:.4f}\n   Recall@{K}: {mR:.4f}\n   F1@{K}: {mF1:.4f}")
-    # print("\n\nUni Eval Sores")
-    # [print(f"   {key}@{K}: {np.array(value).mean():4f}") for key, value in dilaouges_scores.items()]
 
 
 class IndoxRetrievalAugmentation:
@@ -221,10 +44,10 @@ class IndoxRetrievalAugmentation:
             if do_clustering:
                 all_chunks, input_tokens_all, output_tokens_all = \
                     get_chunks(docs=docs,
-                            embeddings=self.embeddings,
-                            chunk_size=max_chunk_size,
-                            do_clustering=do_clustering,
-                            re_chunk=self.re_chunk)
+                               embeddings=self.embeddings,
+                               chunk_size=max_chunk_size,
+                               do_clustering=do_clustering,
+                               re_chunk=self.re_chunk)
                 encoding = tiktoken.get_encoding("cl100k_base")
                 embedding_tokens = 0
                 for chunk in all_chunks:
@@ -319,11 +142,10 @@ class IndoxRetrievalAugmentation:
 
     def update_config(self):
         return reconfig(self.config)
-    
+
     @classmethod
     def from_config(cls, config: dict,
                     qa_model: Optional[Any] = None,
                     re_chunk: bool = False):
         reconfig(config)
         return cls(qa_model, re_chunk)
-

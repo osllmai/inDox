@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
 from transformers import AutoConfig, AutoTokenizer, AutoModelForSeq2SeqLM
-from tqdm import tqdm
-import sys
 import numpy as np
 from nltk import sent_tokenize
 
