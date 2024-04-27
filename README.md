@@ -138,7 +138,5 @@ print("Scores:", scores)
       
 - [ ] cleaning pipeline
 
-- [X] minor features
-   - [x] yaml file
 
 
