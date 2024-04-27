@@ -3,12 +3,23 @@ from .utils import read_config
 from transformers import pipeline
 import logging
 
+
 # logging.basicConfig(
 #     format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
 # )
 
 
 def summarize(context):
+    """
+    Summarizes the given context using either OpenAI's GPT-3.5 model or a Hugging Face model based on the configuration.
+
+    Args:
+        context (str): The input context to be summarized.
+
+    Returns:
+        tuple: A tuple containing the summarized text, input tokens used for the summary, and output tokens generated.
+        (if you use openai). there is no return other than summary itself if you use huggingface model.
+    """
     config = read_config()
     try:
         if config["summary_model"]["model_name"] == "gpt-3.5-turbo-0125":
@@ -28,8 +39,9 @@ def summarize(context):
                 max_tokens=config["summary_model"]["max_tokens"],
                 model="gpt-3.5-turbo-0125",
             )
-            return response.choices[0].message.content
-
+            input_tokens = response.usage.prompt_tokens
+            output_tokens = response.usage.total_tokens - response.usage.prompt_tokens
+            return response.choices[0].message.content.replace("\n", " "), input_tokens, output_tokens
         else:
             hf_model = SummarizationModelHuggingFace(
                 config["summary_model"]["model_name"],

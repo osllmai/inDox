@@ -1,5 +1,5 @@
 import numpy as np
-from .Clustering import perform_clustering
+from .Cluster.Clustering import perform_clustering
 import pandas as pd
 from typing import List
 from .utils import read_config
@@ -39,7 +39,7 @@ def embed(texts: List[str], embeddings) -> np.ndarray:
     - numpy.ndarray: An array of embeddings for the given text documents.
     """
     embeddings, embed_documents = embedding_model()
-    text_embeddings = embeddings.embed_documents(texts)
+    text_embeddings = embed_documents(texts)
 
     text_embeddings_np = np.array(text_embeddings)
     return text_embeddings_np

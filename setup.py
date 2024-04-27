@@ -30,6 +30,8 @@ setup(
         'langchain-openai',
         'langchain',
         'faiss-cpu',
+        'bert-score',
+        'sentence-transformers'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',     

@@ -53,24 +53,24 @@ Ensure your PostgreSQL database is up and running, and accessible from your appl
 ```python
 from Indox import IndoxRetrievalAugmentation
 from langchain_openai import OpenAIEmbeddings
-IRA = IndoxRetrievalAugmentation(docs='./sample.txt', collection_name='sample_c',embeddings=OpenAIEmbeddings(), max_tokens=100)
+IRA = IndoxRetrievalAugmentation(re_chunk=False)
 ```
 
-### Initialize from other config than the default one
+### Initialize from your own configuration: 
 
 ```python
 config = {"clustering": {"dim": 10, "threshold": 0.1},
-"postgres": {"host": "localhost", "name": "vector_db", "password": "xxx", "port": 5432,
-"username": "postgres"}, "qa_model": {"temperature": 0}, "summary_model": {"max_tokens": 100,
+"postgres": {"conn_string": 'postgresql+psycopg2://postgres:xxx@localhost:port/da_name'},
+          "qa_model": {"temperature": 0}, "summary_model": {"max_tokens": 100,
 "min_len": 30, "model_name": "gpt-3.5-turbo-0125"}, "vector_store": "pgvector"}
-IRA = IndoxRetrievalAugmentation.from_config(config=config, docs='./sample.txt', collection_name='sample_c',embeddings=OpenAIEmbeddings(), max_tokens=100)
+IRA = IndoxRetrievalAugmentation.from_config(config=config, re_chunk=False)
 ```
 **Note**: You need to change postgres config to your postgres credentials if you set vector_store to pgvector
 
 ### Generate Chunks
 
 ```python
-all_chunks = IRA.get_all_chunks()
+all_chunks = indox.create_chunks_from_document(docs='./sample.txt', max_chunk_size=100)
 print("Chunks:", all_chunks)
 ```
 
@@ -92,12 +92,17 @@ psql -U username -d database_name
 CREATE EXTENSION vector;
 # Replace the placeholders with your actual PostgreSQL credentials and details
 ```
+### First, you need to connect to the vectorstore
+
+```python
+indox.connect_to_vectorstore(collection_name='sample_c')
+```
 
 ### Store in PostgreSQL
 
 ```python
 # you need to set your database credentials in th config.yaml file
-IRA.store_in_vectorstore(all_chunks=all_chunks)
+indox.store_in_vectorstore(all_chunks)
 ```
 
 
@@ -133,7 +138,5 @@ print("Scores:", scores)
       
 - [ ] cleaning pipeline
 
-- [x] minor features
-   - [x] yaml file
 
 
