@@ -23,8 +23,8 @@ def split_text(text: str, max_tokens, overlap: int = 0):
     config = read_config()
     if config["splitter"] == "semantic-text-splitter":
         tokenizer = Tokenizer.from_pretrained("bert-base-uncased")
-        splitter = TextSplitter.from_huggingface_tokenizer(tokenizer)
-        chunks = splitter.chunks(text, max_tokens)
+        splitter = TextSplitter.from_huggingface_tokenizer(tokenizer, max_tokens)
+        chunks = splitter.chunks(text)
         return chunks
     elif config["splitter"] == "raptor-text-splitter":
         tokenizer = tiktoken.get_encoding("cl100k_base")
