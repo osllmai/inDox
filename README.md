@@ -67,7 +67,8 @@ IRA = IndoxRetrievalAugmentation(re_chunk=True)
 config = {"clustering": {"dim": 10, "threshold": 0.1},
 "postgres": {"conn_string": 'postgresql+psycopg2://postgres:xxx@localhost:port/da_name'},
           "qa_model": {"temperature": 0}, "summary_model": {"max_tokens": 100,
-"min_len": 30, "model_name": "gpt-3.5-turbo-0125"}, "vector_store": "pgvector", "embedding_model": "openai"}
+"min_len": 30, "model_name": "gpt-3.5-turbo-0125"}, "vector_store": "pgvector", "embedding_model": "openai",
+"splitter": "semantic-text-splitter"}
 
 IRA = IndoxRetrievalAugmentation.from_config(config=config, re_chunk=False)
 ```
@@ -103,6 +104,7 @@ let's examine the config dictionary and its properties:
 ```python
 {"embedding_model": "SBert"}
 ```
+- splitter: The algorithm used for splitting the text. options are raptor-text-splitter and semantic-text-splitter.
 
 ### Generate Chunks
 
