@@ -48,7 +48,7 @@ def summarize(context):
                 max_len=config["summary_model"]["max_tokens"],
                 min_len=config["summary_model"]["min_len"],
             )
-            return hf_model.summarize(context)
+            return hf_model.summarize(context), 0, None
 
     except Exception as e:
         print(e)
