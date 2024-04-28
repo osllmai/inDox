@@ -24,7 +24,7 @@ class IndoxRetrievalAugmentation:
 
         :param qa_model: Optional pre-initialized QA model
         """
-        self.embeddings, self.embed_documents = embedding_model()
+        self.embeddings = embedding_model()
         self.qa_model = qa_model if qa_model is not None else GPT3TurboQAModel()
         self.input_tokens_all = 0
         self.embedding_tokens = 0
