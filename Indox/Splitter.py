@@ -5,7 +5,7 @@ from semantic_text_splitter import TextSplitter
 from tokenizers import Tokenizer
 from typing import List, Tuple, Optional, Any, Dict
 from .cluster.EmbedClusterSummarize import recursive_embed_cluster_summarize
-
+from .clean import remove_stopwords_chunk
 
 def split_text(text: str, max_tokens, overlap: int = 0):
     """
@@ -104,7 +104,7 @@ def get_all_texts(results, texts):
 
 
 def get_chunks(docs, embeddings, do_clustering, chunk_size: Optional[int] = 500,
-               re_chunk: bool = False):
+               re_chunk: bool = False, remove_sword=False):
     """
     Extract chunks using an embedding function and recursively
     """
@@ -114,10 +114,14 @@ def get_chunks(docs, embeddings, do_clustering, chunk_size: Optional[int] = 500,
         leaf_chunks = split_text(texts, max_tokens=chunk_size)
         for i in range(len(leaf_chunks)):
             leaf_chunks[i] = leaf_chunks[i].replace("\n", " ")
+
+        if remove_sword == True:
+            leaf_chunks = remove_stopwords_chunk(leaf_chunks)
+
         if do_clustering:
             results, input_tokens_all, output_tokens_all = recursive_embed_cluster_summarize(
                 texts=leaf_chunks, embeddings=embeddings, level=1, n_levels=3,
-                re_chunk=re_chunk, max_chunk=int(chunk_size / 2)
+                re_chunk=re_chunk, max_chunk=int(chunk_size / 2), remove_sword=remove_sword
             )
             all_chunks = get_all_texts(results=results, texts=leaf_chunks)
             print(

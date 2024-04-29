@@ -2,7 +2,7 @@ from typing import List, Tuple, Optional, Any, Dict
 import pandas as pd
 from ..Embedding import embed_cluster_texts
 from ..Summary import summarize
-
+from ..clean import remove_stopwords_chunk
 
 def embed_cluster_summarize_texts(
         texts: List[str], embeddings, level: int, re_chunk=False, max_chunk: int = 100):
@@ -66,7 +66,7 @@ def embed_cluster_summarize_texts(
 
 
 def recursive_embed_cluster_summarize(texts: List[str], embeddings, level: int = 1, n_levels: int = 3,
-                                      re_chunk=False, max_chunk: int = 100):
+                                      re_chunk=False, max_chunk: int = 100, remove_sword=False):
     """
     Recursively embeds, clusters, and summarizes texts up to a specified level or until
     the number of unique clusters becomes 1, storing the results at each level using a specified embeddings object.
@@ -78,6 +78,9 @@ def recursive_embed_cluster_summarize(texts: List[str], embeddings, level: int =
     - n_levels: int, maximum depth of recursion.
 
     """
+    if remove_sword == True:
+        texts = remove_stopwords_chunk(texts)
+
     results = {}
 
     # Perform embedding, clustering, and summarization for the current level

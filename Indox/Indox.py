@@ -17,7 +17,8 @@ class IndoxRetrievalAugmentation:
     def __init__(
             self,
             qa_model: Optional[Any] = None,
-            re_chunk: bool = False
+            re_chunk: bool = False,
+            remove_sword=False
     ):
         """
         Initialize the IndoxRetrievalAugmentation class with documents, embeddings object, an optional QA model, database connection, and maximum token count for text splitting.
@@ -33,6 +34,7 @@ class IndoxRetrievalAugmentation:
         self.config = read_config()
         self.inputs = {}
         self.re_chunk = re_chunk
+        self.remove_sword = remove_sword
 
     def create_chunks_from_document(self, docs, max_chunk_size: Optional[int] = 512):
         """
@@ -47,7 +49,8 @@ class IndoxRetrievalAugmentation:
                                embeddings=self.embeddings,
                                chunk_size=max_chunk_size,
                                do_clustering=do_clustering,
-                               re_chunk=self.re_chunk)
+                               re_chunk=self.re_chunk,
+                               remove_sword=self.remove_sword)
                 encoding = tiktoken.get_encoding("cl100k_base")
                 embedding_tokens = 0
                 for chunk in all_chunks:
@@ -146,6 +149,7 @@ class IndoxRetrievalAugmentation:
     @classmethod
     def from_config(cls, config: dict,
                     qa_model: Optional[Any] = None,
-                    re_chunk: bool = False):
+                    re_chunk: bool = False,
+                    remove_sword=False):
         reconfig(config)
-        return cls(qa_model, re_chunk)
+        return cls(qa_model=qa_model, re_chunk=re_chunk, remove_sword=remove_sword)
