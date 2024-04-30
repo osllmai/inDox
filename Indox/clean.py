@@ -17,5 +17,4 @@ def remove_stopwords(text):
 def remove_stopwords_chunk(chunks: List[str]) -> List[str]:
     return [remove_stopwords(a) for a in chunks]
 
-#print(remove_stopwords_chunk(['this is a sample 1', 'this is a sample 2']))
 

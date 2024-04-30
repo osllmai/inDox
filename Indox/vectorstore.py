@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Iterable
 from langchain_community.vectorstores.pgvector import PGVector
+from langchain_community.vectorstores.pgvector import DistanceStrategy as PGDistancesTRATEGY
 from langchain_community.vectorstores.chroma import Chroma
 from langchain_community.vectorstores.faiss import FAISS
+from langchain_community.vectorstores.utils import DistanceStrategy
 from langchain.docstore.in_memory import InMemoryDocstore
 import faiss
 import logging
@@ -32,7 +34,8 @@ class PGVectorStore(VectorStoreBase):
 
     def __init__(self, conn_string, collection_name, embedding):
         super().__init__()
-        self.db = PGVector(embedding_function=embedding, collection_name=collection_name, connection_string=conn_string)
+        self.db = PGVector(embedding_function=embedding, collection_name=collection_name, 
+                           connection_string=conn_string, distance_strategy=PGDistancesTRATEGY.COSINE)
 
     def add_document(self, texts: Iterable[str]):
         try:
@@ -93,7 +96,7 @@ class FAISSVectorStore(VectorStoreBase):
             index_to_docstore_id,
             relevance_score_fn=None,
             normalize_L2=False,
-            distance_strategy="euclidean_distance"
+            distance_strategy= DistanceStrategy.COSINE
         )
 
     def add_document(self, texts: Iterable[str]):

@@ -3,7 +3,7 @@ clustering:
   threshold: 0.1
 embedding_model: openai
 postgres:
-  conn_string: postgresql+psycopg2://postgres:xxx@localhost:port/da_name
+  conn_string: postgresql+psycopg2://postgres:aminkhosroshahi328@localhost:5432/vector_db
 prompts:
   summary_model:
     content: You are a helpful assistant. Give a detailed summary of the documentation
@@ -15,4 +15,4 @@ summary_model:
   max_tokens: 100
   min_len: 30
   model_name: gpt-3.5-turbo-0125
-vector_store: chroma
+vector_store: pgvector
