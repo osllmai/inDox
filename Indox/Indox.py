@@ -7,6 +7,7 @@ from typing import List, Tuple, Optional, Any, Dict
 from .QAModels import GPT3TurboQAModel
 from .vectorstore import get_vector_store
 from .utils import read_config
+from .Graph import RAGGraph
 import warnings
 import tiktoken
 
@@ -18,7 +19,8 @@ class IndoxRetrievalAugmentation:
             self,
             qa_model: Optional[Any] = None,
             re_chunk: bool = False,
-            remove_sword=False
+            remove_sword=False,
+            document_relevancy_filter=False
     ):
         """
         Initialize the IndoxRetrievalAugmentation class with documents, embeddings object, an optional QA model, database connection, and maximum token count for text splitting.
@@ -35,6 +37,7 @@ class IndoxRetrievalAugmentation:
         self.inputs = {}
         self.re_chunk = re_chunk
         self.remove_sword = remove_sword
+        self.document_relevancy_filter = document_relevancy_filter
 
     def create_chunks_from_document(self, docs, max_chunk_size: Optional[int] = 512):
         """
@@ -109,8 +112,14 @@ class IndoxRetrievalAugmentation:
         """
         try:
             context, scores = self.db.retrieve(query, top_k=top_k)
-            answer = self.qa_model.answer_question(context=context, question=query)
-            self.inputs = {"answer": answer, "query": query, "context": context}
+            if self.document_relevancy_filter == False:
+                answer = self.qa_model.answer_question(context=context, question=query)
+                self.inputs = {"answer": answer, "query": query, "context": context}
+            elif self.document_relevancy_filter == True:
+                graph = RAGGraph()
+                graph_out = graph.run({'question': query, 'documents': context, 'scores': scores})
+                answer = self.qa_model.answer_question(context=graph_out['documents'], question=graph_out['question'])
+                context, scores = graph_out['documents'], graph_out['scores']
             return answer, scores, context
         except Exception as e:
             print(f"Error while answering question: {e}")
@@ -150,6 +159,9 @@ class IndoxRetrievalAugmentation:
     def from_config(cls, config: dict,
                     qa_model: Optional[Any] = None,
                     re_chunk: bool = False,
-                    remove_sword=False):
+                    remove_sword=False,
+                    document_relevancy_filter=False):
         reconfig(config)
-        return cls(qa_model=qa_model, re_chunk=re_chunk, remove_sword=remove_sword)
+        return cls(qa_model=qa_model, re_chunk=re_chunk, 
+                   remove_sword=remove_sword, 
+                   document_relevancy_filter=document_relevancy_filter)

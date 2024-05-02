@@ -27,6 +27,10 @@ class VectorStoreBase(ABC):
     def retrieve(self, query: str, top_k: int = 5):
         """Retrieve documents similar to the given query from the vector store."""
         pass
+    
+    def as_retriever(self, ):
+        """Return the vectorstore as retriever."""
+        return self.db.as_retriever()
 
 
 class PGVectorStore(VectorStoreBase):
