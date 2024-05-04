@@ -18,7 +18,6 @@ class IndoxRetrievalAugmentation:
     def __init__(
             self,
             qa_model: Optional[Any] = None,
-            re_chunk: bool = False,
             remove_sword=False,
             document_relevancy_filter=False
     ):
@@ -35,11 +34,10 @@ class IndoxRetrievalAugmentation:
         self.db = None
         self.config = read_config()
         self.inputs = {}
-        self.re_chunk = re_chunk
         self.remove_sword = remove_sword
         self.document_relevancy_filter = document_relevancy_filter
 
-    def create_chunks_from_document(self, docs, max_chunk_size: Optional[int] = 512):
+    def create_chunks_from_document(self, docs, max_chunk_size: Optional[int] = 512, re_chunk: bool = False,):
         """
         Retrieve all chunks from the documents, using the specified maximum number of tokens if provided.
         """
@@ -52,7 +50,7 @@ class IndoxRetrievalAugmentation:
                                embeddings=self.embeddings,
                                chunk_size=max_chunk_size,
                                do_clustering=do_clustering,
-                               re_chunk=self.re_chunk,
+                               re_chunk=re_chunk,
                                remove_sword=self.remove_sword)
                 encoding = tiktoken.get_encoding("cl100k_base")
                 embedding_tokens = 0
@@ -67,7 +65,7 @@ class IndoxRetrievalAugmentation:
                                         embeddings=self.embeddings,
                                         chunk_size=max_chunk_size,
                                         do_clustering=do_clustering,
-                                        re_chunk=self.re_chunk)
+                                        re_chunk=re_chunk)
                 encoding = tiktoken.get_encoding("cl100k_base")
                 embedding_tokens = 0
                 for chunk in all_chunks:
