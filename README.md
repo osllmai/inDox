@@ -75,16 +75,13 @@ For changes that need to be applied after the initial setup or during runtime:
 
 ```python
 from Indox import IndoxRetrievalAugmentation
-IRA = IndoxRetrievalAugmentation(re_chunk=False)
+IRA = IndoxRetrievalAugmentation()
 ```
 
-The re_chunk argument in the IndoxRetrievalAugmentation class specifies whether to perform re-chunking of the data:
+The re_chunk argument in the create_chunks function of IRA object, specifies whether to perform re-chunking of the data:
 
 False: Chunking occurs only at the start of the process.
 True: Chunking happens after each summarization process.
-```python
-IRA = IndoxRetrievalAugmentation(re_chunk=True)
-```
 
 ## Configuration Details
 Here's a breakdown of the config dictionary and its properties:
@@ -120,12 +117,13 @@ Options include `raptor-text-splitter` and `semantic-text-splitter`.
 ### Generate Chunks
 
 ```python
-documents = IRA.create_chunks(file_path=file_path, unstructured=True)
+documents = IRA.create_chunks(file_path=html, max_chunk_size=200, content_type=None,
+                                             unstructured=False, re_chunk= False, remove_sword=False)
 print("Documents:", documents)
 ```
 - The `max_chunk_size` parameter specifies the maximum number of tokens in each chunk.
 - Using the `unstructured` library, users can add files in PDF, HTML, Markdown, LaTeX, or plain text formats. In this scenario, chunking is performed using the `chunk_by_title` method from the `unstructured` library, which organizes the content by titles within the document.
-
+- The remove_sword specifies if the stop words are going to be removed or not.
 
 ### PostgreSQL Setup with pgvector
 
@@ -167,11 +165,12 @@ indox.store_in_vectorstore(chunks=documents)
 Lastly, we can use the IRA and asnwer to queries using answer_question function from IRA object.
 
 ```python
-response = IRA.answer_question(query="your query?!", top_k=5)
+response = IRA.answer_question(query="your query?!", top_k=5, document_relevancy_filter=False)
 print("Responses:", response[0])
 print("Retrieve chunks and scores:", response[1])
 ```
 - the top_k argument speficies how many similar documents will be returned from vectorstore.
+- the document_relevancy_filter argument: if set to True, filters out irrelevant documents in the top_k documents.
 ### Roadmap
 
 - [x] vector stores
