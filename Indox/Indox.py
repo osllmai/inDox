@@ -34,13 +34,13 @@ class IndoxRetrievalAugmentation:
         self.inputs = {}
 
     def create_chunks(self, file_path, content_type=None, unstructured=False,
-                       max_chunk_size: Optional[int] = 512,
-                                     re_chunk: bool = False, remove_sword=False,
-                                     ):
+                      max_chunk_size: Optional[int] = 512,
+                      re_chunk: bool = False, remove_sword=False,
+                      ):
         """
         Retrieve all chunks from the documents, using the specified maximum number of tokens if provided.
         """
-        if unstructured == True and re_chunk == True:
+        if unstructured and re_chunk:
             raise RuntimeError("Can't re-chunk unstructered data.")
         all_chunks = None
         self.unstructured = unstructured
@@ -51,11 +51,11 @@ class IndoxRetrievalAugmentation:
                 if do_clustering:
                     all_chunks, input_tokens_all, output_tokens_all = \
                         get_chunks(docs=file_path,
-                               embeddings=self.embeddings,
-                               chunk_size=max_chunk_size,
-                               do_clustering=do_clustering,
-                               re_chunk=re_chunk,
-                               remove_sword=remove_sword)
+                                   embeddings=self.embeddings,
+                                   chunk_size=max_chunk_size,
+                                   do_clustering=do_clustering,
+                                   re_chunk=re_chunk,
+                                   remove_sword=remove_sword)
                     encoding = tiktoken.get_encoding("cl100k_base")
                     embedding_tokens = 0
                     for chunk in all_chunks:
@@ -77,7 +77,7 @@ class IndoxRetrievalAugmentation:
                         token_count = len(encoding.encode(chunk))
                         embedding_tokens = embedding_tokens + token_count
                     self.embedding_tokens = embedding_tokens
-            
+
             elif unstructured:
                 all_chunks = get_chunks_unstructured(file_path=file_path,
                                                      chunk_size=max_chunk_size,
@@ -87,8 +87,6 @@ class IndoxRetrievalAugmentation:
                     token_count = len(encoding.encode(chunk.page_content))
                     embedding_tokens = embedding_tokens + token_count
                 self.embedding_tokens = embedding_tokens
-            return all_chunks
-
             return all_chunks
         except Exception as e:
             print(f"Error while getting chunks: {e}")
@@ -126,15 +124,16 @@ class IndoxRetrievalAugmentation:
         """
         try:
             context, scores = self.db.retrieve(query, top_k=top_k)
-            if document_relevancy_filter == False:
+            if not document_relevancy_filter:
                 answer = self.qa_model.answer_question(context=context, question=query)
                 self.inputs = {"answer": answer, "query": query, "context": context}
-            elif document_relevancy_filter == True:
+            elif document_relevancy_filter:
                 graph = RAGGraph()
                 graph_out = graph.run({'question': query, 'documents': context, 'scores': scores})
                 answer = self.qa_model.answer_question(context=graph_out['documents'], question=graph_out['question'])
                 context, scores = graph_out['documents'], graph_out['scores']
-            return answer, scores, context
+            retrieve_context = (context, scores)
+            return answer, retrieve_context
         except Exception as e:
             print(f"Error while answering question: {e}")
             return "", []
