@@ -1,4 +1,4 @@
-from .Splitter import get_chunks
+from .Splitter import get_chunks, get_chunks_unstructured
 from .Embedding import embedding_model
 from .utils import (
     reconfig, get_user_input, get_metrics
@@ -18,8 +18,6 @@ class IndoxRetrievalAugmentation:
     def __init__(
             self,
             qa_model: Optional[Any] = None,
-            remove_sword=False,
-            document_relevancy_filter=False
     ):
         """
         Initialize the IndoxRetrievalAugmentation class with documents, embeddings object, an optional QA model, database connection, and maximum token count for text splitting.
@@ -34,44 +32,62 @@ class IndoxRetrievalAugmentation:
         self.db = None
         self.config = read_config()
         self.inputs = {}
-        self.remove_sword = remove_sword
-        self.document_relevancy_filter = document_relevancy_filter
 
-    def create_chunks_from_document(self, docs, max_chunk_size: Optional[int] = 512, re_chunk: bool = False,):
+    def create_chunks(self, file_path, content_type=None, unstructured=False,
+                       max_chunk_size: Optional[int] = 512,
+                                     re_chunk: bool = False, remove_sword=False,
+                                     ):
         """
         Retrieve all chunks from the documents, using the specified maximum number of tokens if provided.
         """
-        do_clustering = True if get_user_input() == "y" else False
+        if unstructured == True and re_chunk == True:
+            raise RuntimeError("Can't re-chunk unstructered data.")
         all_chunks = None
+        self.unstructured = unstructured
+        embedding_tokens = 0
         try:
-            if do_clustering:
-                all_chunks, input_tokens_all, output_tokens_all = \
-                    get_chunks(docs=docs,
+            if not unstructured:
+                do_clustering = True if get_user_input() == "y" else False
+                if do_clustering:
+                    all_chunks, input_tokens_all, output_tokens_all = \
+                        get_chunks(docs=file_path,
                                embeddings=self.embeddings,
                                chunk_size=max_chunk_size,
                                do_clustering=do_clustering,
                                re_chunk=re_chunk,
-                               remove_sword=self.remove_sword)
-                encoding = tiktoken.get_encoding("cl100k_base")
-                embedding_tokens = 0
+                               remove_sword=remove_sword)
+                    encoding = tiktoken.get_encoding("cl100k_base")
+                    embedding_tokens = 0
+                    for chunk in all_chunks:
+                        token_count = len(encoding.encode(chunk))
+                        embedding_tokens = embedding_tokens + token_count
+                    self.input_tokens_all = input_tokens_all
+                    self.embedding_tokens = embedding_tokens
+                    self.output_tokens_all = output_tokens_all
+                elif not do_clustering:
+                    all_chunks = get_chunks(docs=file_path,
+                                            embeddings=self.embeddings,
+                                            chunk_size=max_chunk_size,
+                                            do_clustering=do_clustering,
+                                            re_chunk=re_chunk,
+                                            remove_sword=remove_sword)
+                    encoding = tiktoken.get_encoding("cl100k_base")
+                    embedding_tokens = 0
+                    for chunk in all_chunks:
+                        token_count = len(encoding.encode(chunk))
+                        embedding_tokens = embedding_tokens + token_count
+                    self.embedding_tokens = embedding_tokens
+            
+            elif unstructured:
+                all_chunks = get_chunks_unstructured(file_path=file_path,
+                                                     chunk_size=max_chunk_size,
+                                                     content_type=content_type)
                 for chunk in all_chunks:
-                    token_count = len(encoding.encode(chunk))
-                    embedding_tokens = embedding_tokens + token_count
-                self.input_tokens_all = input_tokens_all
-                self.embedding_tokens = embedding_tokens
-                self.output_tokens_all = output_tokens_all
-            elif not do_clustering:
-                all_chunks = get_chunks(docs=docs,
-                                        embeddings=self.embeddings,
-                                        chunk_size=max_chunk_size,
-                                        do_clustering=do_clustering,
-                                        re_chunk=re_chunk)
-                encoding = tiktoken.get_encoding("cl100k_base")
-                embedding_tokens = 0
-                for chunk in all_chunks:
-                    token_count = len(encoding.encode(chunk))
+                    encoding = tiktoken.get_encoding("cl100k_base")
+                    token_count = len(encoding.encode(chunk.page_content))
                     embedding_tokens = embedding_tokens + token_count
                 self.embedding_tokens = embedding_tokens
+            return all_chunks
 
             return all_chunks
         except Exception as e:
@@ -104,16 +120,16 @@ class IndoxRetrievalAugmentation:
             print(f"Error while storing in PostgreSQL: {e}")
             return None
 
-    def answer_question(self, query: str, top_k: int):
+    def answer_question(self, query: str, top_k: int, document_relevancy_filter=False):
         """
         Answer a query using the QA model based on similar document chunks found in the database.
         """
         try:
             context, scores = self.db.retrieve(query, top_k=top_k)
-            if self.document_relevancy_filter == False:
+            if document_relevancy_filter == False:
                 answer = self.qa_model.answer_question(context=context, question=query)
                 self.inputs = {"answer": answer, "query": query, "context": context}
-            elif self.document_relevancy_filter == True:
+            elif document_relevancy_filter == True:
                 graph = RAGGraph()
                 graph_out = graph.run({'question': query, 'documents': context, 'scores': scores})
                 answer = self.qa_model.answer_question(context=graph_out['documents'], question=graph_out['question'])
@@ -155,11 +171,6 @@ class IndoxRetrievalAugmentation:
 
     @classmethod
     def from_config(cls, config: dict,
-                    qa_model: Optional[Any] = None,
-                    re_chunk: bool = False,
-                    remove_sword=False,
-                    document_relevancy_filter=False):
+                    qa_model: Optional[Any] = None):
         reconfig(config)
-        return cls(qa_model=qa_model, re_chunk=re_chunk, 
-                   remove_sword=remove_sword, 
-                   document_relevancy_filter=document_relevancy_filter)
+        return cls(qa_model=qa_model)

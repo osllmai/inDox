@@ -1,11 +1,14 @@
-from .utils import create_document, read_config
+from .utils import create_document, read_config, create_documents_unstructured
 import tiktoken
 import re
+from langchain_core.documents import Document
 from semantic_text_splitter import TextSplitter
 from tokenizers import Tokenizer
 from typing import List, Tuple, Optional, Any, Dict
 from .cluster.EmbedClusterSummarize import recursive_embed_cluster_summarize
 from .clean import remove_stopwords_chunk
+from unstructured.chunking.title import chunk_by_title
+from langchain_community.vectorstores.utils import filter_complex_metadata
 
 def split_text(text: str, max_tokens, overlap: int = 0):
     """
@@ -137,12 +140,38 @@ def get_chunks(docs, embeddings, do_clustering, chunk_size: Optional[int] = 500,
         print(f"Failed at step with error: {e}")
         raise  # Re-raises the current exception to propagate the error up the call stack
 
+def get_chunks_unstructured(file_path, content_type, chunk_size: Optional[int] = 500):
+    """
+    Extract chunks using unstructured library
+    """
+    try:
+        print("Starting processing...")
+        elements = create_documents_unstructured(file_path, content_type=content_type)
+        elements = chunk_by_title(elements, max_characters=chunk_size)
+        documents = []
+        for element in elements:
+            metadata = element.metadata.to_dict()
+            del metadata["languages"]
+            for key, value in metadata.items():
+                if isinstance(value, list):
+                    value = str(value)
+                metadata[key] = value
+
+            documents.append(Document(page_content=element.text, metadata=metadata))
+            documents = filter_complex_metadata(documents=documents)
+        print("End Chunking process")
+        return documents
+
+    except Exception as e:
+        print(f"Failed at step with error: {e}")
+        raise  # Re-raises the current exception to propagate the error up the call stack
+
 
 def rechunk(df_summary, max_chunk):
     re_chunked = []
     for i, row in df_summary.iterrows():
         chunks = split_text(row['summaries'], max_chunk)
-        re_chunked.extend(chunks)
+        re_chunked.append(chunks)
     df_summary['summaries'] = re_chunked
     df_summary = df_summary.explode('summaries')
     df_summary.reset_index(drop=True, inplace=True)

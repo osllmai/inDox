@@ -41,9 +41,12 @@ class PGVectorStore(VectorStoreBase):
         self.db = PGVector(embedding_function=embedding, collection_name=collection_name, 
                            connection_string=conn_string, distance_strategy=PGDistancesTRATEGY.COSINE)
 
-    def add_document(self, texts: Iterable[str]):
+    def add_document(self, docs, unstructured):
         try:
-            self.db.add_texts(texts)
+            if unstructured:
+                self.db.add_documents(docs)
+            elif not unstructured:
+                self.db.add_texts(docs)
             logging.info("Document added successfully to the vector store.")
         except Exception as e:
             logging.error(f"Failed to add document: {e}")
@@ -63,14 +66,17 @@ class ChromaVectorStore(VectorStoreBase):
         super().__init__()
         self.db = Chroma(collection_name=collection_name, embedding_function=embedding)
 
-    def add_document(self, texts: Iterable[str]):
+    def add_document(self, docs, unstructured):
         try:
-            self.db.add_texts(texts)
+            if unstructured:
+                self.db.add_documents(documents=docs)
+            elif not unstructured:
+                self.db.add_texts(texts=docs)
             logging.info("Document added successfully to the vector store.")
         except Exception as e:
             logging.error(f"Failed to add document: {e}")
             raise RuntimeError(f"Can't add document to the vector store: {e}")
-
+        
     def retrieve(self, query: str, top_k: int = 5):
         retrieved = self.db.similarity_search_with_score(query, k=top_k)
         context = [d[0].page_content for d in retrieved]
@@ -103,12 +109,17 @@ class FAISSVectorStore(VectorStoreBase):
             distance_strategy= DistanceStrategy.COSINE
         )
 
-    def add_document(self, texts: Iterable[str]):
+    def add_document(self, docs, unstructured):
+
         try:
-            self.db.add_texts(texts=texts)
-            print("document added successfuly to the vector store")
-        except:
-            raise RuntimeError("Can't add document to the vector store")
+            if unstructured:
+                self.db.add_documents(docs)
+            elif not unstructured:
+                self.db.add_texts(docs)
+            logging.info("Document added successfully to the vector store.")
+        except Exception as e:
+            logging.error(f"Failed to add document: {e}")
+            raise RuntimeError(f"Can't add document to the vector store: {e}")
 
     def retrieve(self, query: str, top_k: int = 5):
         retrieved = self.db.similarity_search_with_score(query, k=top_k)
