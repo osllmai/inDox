@@ -1,19 +1,28 @@
-# inDox : Advance Search and Retrieval Augmentation Generative  
+# inDox: Advanced Search and Retrieval Augmentation Generative
 
-## Overview 
-
-This project combines advanced clustering techniques provided by Raptor with the efficient retrieval capabilities of pgvector and other vectorstores. It allows users to interact with and visualize their data in a PostgreSQL database. The solution involves segmenting text data into manageable chunks, enhancing retrieval through a custom model, and providing an interface for querying and retrieving relevant information.
+## Overview
+This project, **inDox**, leverages advanced clustering techniques provided by **Raptor** alongside the efficient retrieval capabilities of **pgvector** and other vector stores. It is designed to allow users to interact with and visualize data within a PostgreSQL database effectively. The solution involves segmenting text data into manageable chunks, enhancing retrieval through a custom model, and providing an intuitive interface for querying and retrieving relevant information.
 
 ## Prerequisites
+Before running this project, ensure that you have the following installed:
+- **Python 3.8+**: Required for running the Python backend.
+- **PostgreSQL**: Needed if you wish to store your data in a PostgreSQL database.
+- **OpenAI API Key**: Necessary if you are using the OpenAI embedding model.
 
-Before you can run this project, you need the following installed:
-- Python 3.8+
-- PostgreSQL (if you want to store your data on postgres)
-- OpenAI API Key (if using OpenAI embedding model)
+Ensure your system also meets these requirements:
+- Access to environmental variables for handling sensitive information like API keys.
+- Suitable hardware capable of supporting intensive computational tasks.
 
-Ensure your system also meets the following requirements:
-- Access to environmental variables for sensitive information (API keys).
-- Suitable hardware to support intensive computational tasks.
+## Optional Libraries and Enhancements
+### Unstructured Data Handling
+For those looking to process unstructured data such as PDF, HTML, Markdown, LaTeX, and plain text files.
+
+### Additional Clustering Layer
+- If the `unstructured` library is not used, you can opt to add an extra clustering layer specifically optimized for structured PDFs or text files to enhance data handling.
+
+### PostgreSQL with pgVector
+- **Required Version**: Make sure to use PostgreSQL versions that are compatible with `pgvector`. We recommend PostgreSQL 12 or newer to ensure full compatibility with all features.
+
 
 
 ## Installation
@@ -46,6 +55,20 @@ Ensure your PostgreSQL database is up and running, and accessible from your appl
 1. **Define the File Path**: Specify the path to your text or PDF file.
 2. **Load Embedding Models**: Initialize your embedding model from OpenAI's selection of pre-trained models.
 
+## Config Setup
+Before launching your first instance of **inDox**, it's crucial to properly configure the QA model and the embedding model. This configuration is done through the `IRA_3.config` YAML file.
+
+### Initial Configuration
+- **Configuration File**: Ensure you locate and modify the `IRA_3.config` YAML file according to your needs before starting the application. This file sets the parameters for the QA and embedding models which are critical for the application’s performance.
+
+### Dynamic Configuration Changes
+For changes that need to be applied after the initial setup or during runtime:
+- **Modifying Configurations**: Use the following Python snippet to update your settings dynamically:
+  ```python
+  IRA.config["your_setting_that_need_to_change"] = "new_setting"
+  IRA.update_config()
+
+
 ## Clustering and Retrieval
 
 ### Initialize the Retrieval System
@@ -55,93 +78,87 @@ from Indox import IndoxRetrievalAugmentation
 IRA = IndoxRetrievalAugmentation(re_chunk=False)
 ```
 
-- in the above code, re_chunk is an argument of class IndoxRetrievalAugmentation that specifies if you want to perform re chunking or not. if you enable it, chunking will happen after each summarization, if not, the ckunking will happen only in start of the process. so you also can initialize the code this way:
+The re_chunk argument in the IndoxRetrievalAugmentation class specifies whether to perform re-chunking of the data:
 
+False: Chunking occurs only at the start of the process.
+True: Chunking happens after each summarization process.
 ```python
 IRA = IndoxRetrievalAugmentation(re_chunk=True)
 ```
 
-### Initialize from your own configuration: 
+## Configuration Details
+Here's a breakdown of the config dictionary and its properties:
 
-```python
-config = {"clustering": {"dim": 10, "threshold": 0.1},
-"postgres": {"conn_string": 'postgresql+psycopg2://postgres:xxx@localhost:port/da_name'},
-          "qa_model": {"temperature": 0}, "summary_model": {"max_tokens": 100,
-"min_len": 30, "model_name": "gpt-3.5-turbo-0125"}, "vector_store": "pgvector", "embedding_model": "openai",
-"splitter": "semantic-text-splitter"}
+### Clustering
+- `dim`: Specifies the dimension of clustering.
+- `threshold`: Lower thresholds mean more samples will be clustered together; higher thresholds increase the number of clusters but decrease their size.
 
-IRA = IndoxRetrievalAugmentation.from_config(config=config, re_chunk=False)
-```
-**Note**: You need to change postgres config to your postgres credentials if you set vector_store to pgvector
+### PostgreSQL
+- `conn_string`: Your PostgreSQL database credentials.
 
-let's examine the config dictionary and its properties:
+### QA Model
+- `temperature`: Controls the diversity of the QA model's responses. Higher values increase diversity but also the risk of nonsensical outputs; lower values decrease diversity and reduce risks.
 
-- clustering
-   - dim: Specifies dimension of clustering
-   - threshold: Specifies threshold of clustering. if this number is low, more samples will be clustered together. in other words, if you increase this parameter, the number of clusters will increase but size of them will decrease.
-- postgres
-   - conn_string: Credentials of your postgres database
-- qa_model
-   - temperature: The temperature of Question Answering model. if this parameter is high, the diversity of the would be high but probability of nonsense and hallucinations would incearse, and if this parameter is low, the diversity of the output would be low but also probability of hallucinations would decrease.
-- summary_model
-   - max_tokens: Specifies max number of tokens that summary model could generate. more tokens means more cost and also potentially more quality.
+### Summary Model
+- `max_tokens`: Maximum token count the summary model can generate.
+- `min_len`: Minimum token count the summary model generates.
+- `model_name`: Default is `gpt-3.5-turbo-0125`, but it can be replaced with any Hugging Face model supporting the summarization pipeline.
 
-   - min_len: Minimum number of tokens that summary model generates.
+### Embedding Model
+- The default embedding model is OpenAI embeddings. Optionally, "SBert" can be used:
+  ```python
+  {"embedding_model": "SBert"}
 
-   - model_name: The model you want to use as your summary model. the defualt is gpt-3.5-turbo-0125. you can use huggingface models that support summarize pipeline, for example, you can use:
+### Splitter
+Options include `raptor-text-splitter` and `semantic-text-splitter`.
 
-```python
-  {"summary_model": {"max_tokens":   100, "min_len": 30, "model_name": "Falconsai/medical_summarization"}}
-   ```
-- vector_store: Specify which vectorstore you want to use. defualt is pgvector, but you also can use "chroma" and "faiss" instead:
+### Considerations for Re-Chunking
 
-```python
-{"vector_store": "chroma"}
-
-```
--  embedding_model: The model that is used to embed text. the defualt is openai embeddings, but you can also use "SBert" instead:
-
-```python
-{"embedding_model": "SBert"}
-```
-- splitter: The algorithm used for splitting the text. options are raptor-text-splitter and semantic-text-splitter.
+- **Using `unstructured` Library**: Setting `re_chunk` to `True` disables the use of the `unstructured` library due to compatibility issues.
+- **Extra Clustering Layer**: If `re_chunk` is set to `True` and the user opts for an additional clustering layer, re-chunking is applied to the outputs of the summary model. However, it is crucial to note that if the summary model's output is less than 500 tokens, re-chunking is not recommended due to potential inefficiency and lack of necessity.
 
 ### Generate Chunks
 
 ```python
-all_chunks = indox.create_chunks_from_document(docs='./sample.txt', max_chunk_size=100)
-print("Chunks:", all_chunks)
+documents = IRA.create_chunks(file_path=file_path, unstructured=True)
+print("Documents:", documents)
 ```
-- The max_chunk_size parameter specifies max number of tokens in each chunk.
+- The `max_chunk_size` parameter specifies the maximum number of tokens in each chunk.
+- Using the `unstructured` library, users can add files in PDF, HTML, Markdown, LaTeX, or plain text formats. In this scenario, chunking is performed using the `chunk_by_title` method from the `unstructured` library, which organizes the content by titles within the document.
+
 
 ### PostgreSQL Setup with pgvector
 
-1. **Install pgvector**: To install `pgvector` on your PostgreSQL server, follow the detailed installation instructions available on the official pgvector GitHub repository:
+If you want to use PostgreSQL for vector storage, you should perform the following steps:
 
-[pgvector Installation Instructions](https://github.com/pgvector/pgvector)
+1. **Install pgvector**: To install `pgvector` on your PostgreSQL server, follow the detailed installation instructions available on the official pgvector GitHub repository:
+   [pgvector Installation Instructions](https://github.com/pgvector/pgvector)
 
 2. **Add Vector Extension**:
-   Connect to your PostgreSQL database and run the following SQL command to create the `pgvector` extension:
+   Connect to your PostgreSQL database and execute the following SQL command to create the `pgvector` extension:
 
-```sql
--- Connect to your database
-psql -U username -d database_name
+   ```sql
+   -- Connect to your database
+   psql -U username -d database_name
 
--- Run inside your psql terminal
-CREATE EXTENSION vector;
-# Replace the placeholders with your actual PostgreSQL credentials and details
-```
-### First, you need to connect to the vectorstore
+   -- Run inside your psql terminal
+   CREATE EXTENSION vector;
+   # Replace the placeholders with your actual PostgreSQL credentials and details
+
+
+Additionally, for those interested in exploring other vector database options, you can consider using **Chroma** or **Faiss**. These provide alternative approaches to vector storage and retrieval that may better suit specific use cases or performance requirements.
+
+### Next, you need to connect to the vectorstore
 
 ```python
-indox.connect_to_vectorstore(collection_name='sample_c')
+indox.connect_to_vectorstore(collection_name='your_collection_name')
 ```
 
-### Store in PostgreSQL
+### Store in vectorstore
 
 ```python
 # you need to set your database credentials in th config.yaml file
-indox.store_in_vectorstore(all_chunks)
+indox.store_in_vectorstore(chunks=documents)
 ```
 
 
@@ -150,10 +167,9 @@ indox.store_in_vectorstore(all_chunks)
 Lastly, we can use the IRA and asnwer to queries using answer_question function from IRA object.
 
 ```python
-response, scores, context = IRA.answer_question(query="How did Cinderella reach her happy ending?", top_k=5)
-print("Responses:", response)
-print("Retrieve chunks:", context)
-print("Scores:", scores)
+response = IRA.answer_question(query="your query?!", top_k=5)
+print("Responses:", response[0])
+print("Retrieve chunks and scores:", response[1])
 ```
 - the top_k argument speficies how many similar documents will be returned from vectorstore.
 ### Roadmap
