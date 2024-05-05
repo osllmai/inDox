@@ -13,14 +13,36 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 
 def embedding_model():
+    """
+    Retrieve the embedding model based on the configuration settings.
+
+    Returns:
+    - embeddings: An instance of the appropriate embeddings model as specified in the configuration.
+
+    Raises:
+    - KeyError: If the `embedding_model` key is missing in the configuration.
+    - ValueError: If the specified embedding model name isn't recognized.
+
+    Notes:
+    - The function relies on the `read_config` method to determine which model to use.
+    - The function currently supports 'openai' and 'sbert' as embedding models.
+    """
+    # Load configuration settings
     config = read_config()
-    if config['embedding_model'].lower() == 'openai':
+
+    # Verify the embedding model type from the configuration
+    embedding_model_name = config.get('embedding_model', '').lower()
+
+    if embedding_model_name == 'openai':
         model = "text-embedding-3-small"
         embeddings = OpenAIEmbeddings(model=model, openai_api_key=OPENAI_API_KEY)
         return embeddings
-    elif config['embedding_model'].lower() == 'sbert':
+    elif embedding_model_name == 'sbert':
         embeddings = HuggingFaceEmbeddings(model_name="multi-qa-mpnet-base-cos-v1")
         return embeddings
+    else:
+        raise ValueError(f"Unrecognized embedding model specified in the configuration: {embedding_model_name}")
+
 
 
 def embed(texts: List[str], embeddings) -> np.ndarray:

@@ -10,45 +10,60 @@ from .clean import remove_stopwords_chunk
 from unstructured.chunking.title import chunk_by_title
 from langchain_community.vectorstores.utils import filter_complex_metadata
 
-def split_text(text: str, max_tokens, overlap: int = 0):
+
+def split_text(text: str, max_tokens: int, overlap: int = 0) -> list:
     """
-    Splits the input text into chunks of approximately equal token counts, based on the specified maximum token count
-    and overlap. The method of splitting depends on the configured splitter in the system.
+    Split the input text into chunks of approximately equal token counts, based on the specified maximum token count
+    and overlap. The splitting approach depends on the system's configured splitter.
 
     Args:
-        text (str): The input text to be split into chunks.
-        max_tokens (int): The maximum number of tokens allowed in each chunk.
-        overlap (int, optional): The number of tokens to overlap between adjacent chunks. Defaults to 0.
+    - text (str): The input text to be split into chunks.
+    - max_tokens (int): The maximum number of tokens allowed in each chunk.
+    - overlap (int, optional): The number of tokens to overlap between adjacent chunks. Defaults to 0.
 
     Returns:
-        list: A list of chunks, each containing a portion of the original text.
+    - list: A list of chunks, each containing a portion of the original text.
+
+    Splitting logic:
+    - If the "semantic-text-splitter" is configured, use the Hugging Face tokenizer with the specified maximum tokens.
+    - If the "raptor-text-splitter" is configured, split by sentences and further refine by sub-sentences if any exceed
+      the maximum token count.
+
+    Notes:
+    - The function reads a `splitter` configuration to determine which splitting method to apply.
+    - Sentences that exceed `max_tokens` are split using internal delimiters like `,`, `;`, or `:`.
+    - The `overlap` parameter allows for repeating tokens between adjacent chunks to provide better context.
     """
     config = read_config()
+
     if config["splitter"] == "semantic-text-splitter":
         tokenizer = Tokenizer.from_pretrained("bert-base-uncased")
         splitter = TextSplitter.from_huggingface_tokenizer(tokenizer, max_tokens)
         chunks = splitter.chunks(text)
         return chunks
+
     elif config["splitter"] == "raptor-text-splitter":
         tokenizer = tiktoken.get_encoding("cl100k_base")
         delimiters = [".", "!", "?", "\n"]
         regex_pattern = "|".join(map(re.escape, delimiters))
         sentences = re.split(regex_pattern, text)
+
         # Calculate the number of tokens for each sentence
         n_tokens = [len(tokenizer.encode(" " + sentence)) for sentence in sentences]
         chunks = []
         current_chunk = []
         current_length = 0
+
         for sentence, token_count in zip(sentences, n_tokens):
-            # If the sentence is empty or consists only of whitespace, skip it
+            # Skip empty sentences
             if not sentence.strip():
                 continue
-            # If the sentence is too long, split it into smaller parts
+
+            # Split overly long sentences into smaller chunks
             if token_count > max_tokens:
                 sub_sentences = re.split(r"[,;:]", sentence)
                 sub_token_counts = [
-                    len(tokenizer.encode(" " + sub_sentence))
-                    for sub_sentence in sub_sentences
+                    len(tokenizer.encode(" " + sub_sentence)) for sub_sentence in sub_sentences
                 ]
 
                 sub_chunk = []
@@ -59,9 +74,7 @@ def split_text(text: str, max_tokens, overlap: int = 0):
                         chunks.append(" ".join(sub_chunk))
                         sub_chunk = sub_chunk[-overlap:] if overlap > 0 else []
                         sub_length = sum(
-                            sub_token_counts[
-                            max(0, len(sub_chunk) - overlap): len(sub_chunk)
-                            ]
+                            sub_token_counts[max(0, len(sub_chunk) - overlap): len(sub_chunk)]
                         )
 
                     sub_chunk.append(sub_sentence)
@@ -70,7 +83,7 @@ def split_text(text: str, max_tokens, overlap: int = 0):
                 if sub_chunk:
                     chunks.append(" ".join(sub_chunk))
 
-            # If adding the sentence to the current chunk exceeds the max tokens, start a new chunk
+            # Start a new chunk if adding the current sentence exceeds the max limit
             elif current_length + token_count > max_tokens:
                 chunks.append(" ".join(current_chunk))
                 current_chunk = current_chunk[-overlap:] if overlap > 0 else []
@@ -85,7 +98,7 @@ def split_text(text: str, max_tokens, overlap: int = 0):
                 current_chunk.append(sentence)
                 current_length += token_count
 
-        # Add the last chunk if it's not empty
+        # Add the last remaining chunk
         if current_chunk:
             chunks.append(" ".join(current_chunk))
 
@@ -107,72 +120,153 @@ def get_all_texts(results, texts):
 
 
 def get_chunks(docs, embeddings, do_clustering, chunk_size: Optional[int] = 500,
-               re_chunk: bool = False, remove_sword=False):
+               re_chunk: bool = False, remove_sword: bool = False):
     """
-    Extract chunks using an embedding function and recursively
+    Extract chunks from the provided documents using an embedding function. Optionally, recursively cluster
+    and summarize the chunks.
+
+    Parameters:
+    - docs (Any): The source documents to be chunked and processed.
+    - embeddings (Any): The embeddings model to use for clustering and summarization.
+    - do_clustering (bool): If `True`, apply recursive clustering and summarization.
+    - chunk_size (int, optional): The maximum size (in tokens) for each chunk. Defaults to 500.
+    - re_chunk (bool, optional): Whether to re-chunk the clustered data for smaller summarization. Defaults to `False`.
+    - remove_sword (bool, optional): If `True`, remove stopwords from the chunks. Defaults to `False`.
+
+    Returns:
+    - Tuple or List:
+      - If `do_clustering` is `True`, returns a tuple containing:
+        - `all_chunks` (List[str]): A list of all document chunks (leaf and extra).
+        - `input_tokens_all` (int): The total number of input tokens used.
+        - `output_tokens_all` (int): The total number of output tokens received.
+      - Otherwise, returns a list of leaf chunks without further clustering.
+
+    Raises:
+    - Exception: Any errors occurring during the chunking, clustering, or summarization process.
+
+    Notes:
+    - The function creates document chunks, optionally applies stopword removal, and clusters chunks based on the
+      specified settings. The output varies depending on whether clustering is enabled or not.
     """
     try:
         print("Starting processing...")
+
+        # Create initial document chunks
         texts = create_document(docs)
         leaf_chunks = split_text(texts, max_tokens=chunk_size)
+
         for i in range(len(leaf_chunks)):
             leaf_chunks[i] = leaf_chunks[i].replace("\n", " ")
 
-        if remove_sword == True:
+        # Optionally remove stopwords from the chunks
+        if remove_sword:
             leaf_chunks = remove_stopwords_chunk(leaf_chunks)
 
+        # Apply clustering if enabled
         if do_clustering:
             results, input_tokens_all, output_tokens_all = recursive_embed_cluster_summarize(
                 texts=leaf_chunks, embeddings=embeddings, level=1, n_levels=3,
                 re_chunk=re_chunk, max_chunk=int(chunk_size / 2), remove_sword=remove_sword
             )
             all_chunks = get_all_texts(results=results, texts=leaf_chunks)
-            print(
-                f"Create {len(all_chunks)} Chunks, {len(leaf_chunks)} leaf chunks plus {int(len(all_chunks) - len(leaf_chunks))} extra chunks")
-            print("End Chunking & Clustering process")
+
+            print(f"Create {len(all_chunks)} chunks: {len(leaf_chunks)} leaf chunks plus "
+                  f"{int(len(all_chunks) - len(leaf_chunks))} extra chunks.")
+            print("End Chunking & Clustering process.")
             return all_chunks, input_tokens_all, output_tokens_all
-        elif not do_clustering:
+        else:
             all_chunks = leaf_chunks
-            print(f"Create {len(all_chunks)} Chunks")
-            print("End Chunking process")
+            print(f"Create {len(all_chunks)} chunks.")
+            print("End Chunking process.")
             return all_chunks
+
     except Exception as e:
         print(f"Failed at step with error: {e}")
-        raise  # Re-raises the current exception to propagate the error up the call stack
+        raise
+
 
 def get_chunks_unstructured(file_path, content_type, chunk_size: Optional[int] = 500):
     """
-    Extract chunks using unstructured library
+    Extract chunks from an unstructured document file using an unstructured data processing library.
+
+    Parameters:
+    - file_path (str): The path to the file containing unstructured data.
+    - content_type (str): The type of content (e.g., "pdf", "html", etc.) to process.
+    - chunk_size (int, optional): The maximum size (in characters) for each chunk. Defaults to 500.
+
+    Returns:
+    - list: A list of `Document` objects, each containing a portion of the original content with relevant metadata.
+
+    Raises:
+    - Exception: Any errors that occur during document processing or chunking.
+
+    Notes:
+    - The function uses a title-based chunking method to segment the unstructured data into logical parts.
+    - Metadata is cleaned and filtered to ensure proper structure before being added to the `Document` objects.
+    - The `filter_complex_metadata` function is used to simplify and sanitize metadata attributes.
+
     """
     try:
         print("Starting processing...")
+
+        # Create initial document elements using the unstructured library
         elements = create_documents_unstructured(file_path, content_type=content_type)
+
+        # Split elements based on the title and the specified max characters per chunk
         elements = chunk_by_title(elements, max_characters=chunk_size)
+
         documents = []
+
+        # Convert each element into a `Document` object with relevant metadata
         for element in elements:
             metadata = element.metadata.to_dict()
-            del metadata["languages"]
+            del metadata["languages"]  # Remove unnecessary metadata field
+
             for key, value in metadata.items():
                 if isinstance(value, list):
                     value = str(value)
                 metadata[key] = value
 
             documents.append(Document(page_content=element.text, metadata=metadata))
-            documents = filter_complex_metadata(documents=documents)
-        print("End Chunking process")
+
+        # Filter and sanitize complex metadata
+        documents = filter_complex_metadata(documents=documents)
+
+        print("End Chunking process.")
         return documents
 
     except Exception as e:
         print(f"Failed at step with error: {e}")
-        raise  # Re-raises the current exception to propagate the error up the call stack
+        raise
 
 
-def rechunk(df_summary, max_chunk):
+def rechunk(df_summary, max_chunk: int):
+    """
+    Re-chunk the summaries in the DataFrame into smaller chunks based on a specified maximum chunk size.
+
+    Parameters:
+    - df_summary (pandas.DataFrame): The DataFrame containing summary text to be re-chunked.
+    - max_chunk (int): The maximum size (in tokens) allowed for each chunk.
+
+    Returns:
+    - pandas.DataFrame: A new DataFrame where each row contains one of the smaller chunks.
+
+    Notes:
+    - The function splits the summary text in each row into smaller chunks using the `split_text` function.
+    - The `explode` method is used to expand the list of chunks into individual rows for each summary.
+    """
     re_chunked = []
-    for i, row in df_summary.iterrows():
+
+    # Split the summary text in each row into smaller chunks
+    for _, row in df_summary.iterrows():
         chunks = split_text(row['summaries'], max_chunk)
         re_chunked.append(chunks)
+
+    # Update the 'summaries' column with the new chunks
     df_summary['summaries'] = re_chunked
+
+    # Explode the list into individual rows and reset the index
     df_summary = df_summary.explode('summaries')
     df_summary.reset_index(drop=True, inplace=True)
+
     return df_summary
