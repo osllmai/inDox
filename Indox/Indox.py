@@ -1,10 +1,10 @@
 from .Splitter import get_chunks, get_chunks_unstructured
 from .Embedding import embedding_model
 from .utils import (
-    reconfig, get_user_input, get_metrics, update_config
+     get_user_input, get_metrics, update_config
 )
-from typing import List, Tuple, Optional, Any, Dict
-from .QAModels import GPT3TurboQAModel, choose_qa_model
+from typing import List, Optional, Any
+from .QAModels import choose_qa_model
 from .vectorstore import get_vector_store
 from .utils import read_config
 from .Graph import RAGGraph
@@ -34,10 +34,10 @@ class IndoxRetrievalAugmentation:
     def initialize(self):
         """
         Initialize the configuration, embeddings, and QA model.
-        Calls `reconfig` to update the configuration, then loads
+        Calls `update_config` to update the configuration, then loads
         the embedding model and the QA model.
         """
-        # Read and update the configuration
+        # Update the configuration
         update_config(self.config)
 
         # Initialize embeddings and QA model with the updated configuration
