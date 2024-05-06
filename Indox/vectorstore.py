@@ -19,7 +19,7 @@ class VectorStoreBase(ABC):
     """Abstract base class defining the interface for vector-based document stores."""
 
     @abstractmethod
-    def add_document(self, texts):
+    def add_document(self, texts, unstructured):
         """Add documents to the vector store."""
         pass
 
@@ -27,7 +27,7 @@ class VectorStoreBase(ABC):
     def retrieve(self, query: str, top_k: int = 5):
         """Retrieve documents similar to the given query from the vector store."""
         pass
-    
+
     def as_retriever(self, ):
         """Return the vectorstore as retriever."""
         return self.db.as_retriever()
@@ -38,7 +38,7 @@ class PGVectorStore(VectorStoreBase):
 
     def __init__(self, conn_string, collection_name, embedding):
         super().__init__()
-        self.db = PGVector(embedding_function=embedding, collection_name=collection_name, 
+        self.db = PGVector(embedding_function=embedding, collection_name=collection_name,
                            connection_string=conn_string, distance_strategy=PGDistancesTRATEGY.COSINE)
 
     def add_document(self, docs, unstructured):
@@ -76,7 +76,7 @@ class ChromaVectorStore(VectorStoreBase):
         except Exception as e:
             logging.error(f"Failed to add document: {e}")
             raise RuntimeError(f"Can't add document to the vector store: {e}")
-        
+
     def retrieve(self, query: str, top_k: int = 5):
         retrieved = self.db.similarity_search_with_score(query, k=top_k)
         context = [d[0].page_content for d in retrieved]
@@ -85,8 +85,7 @@ class ChromaVectorStore(VectorStoreBase):
 
 
 class FAISSVectorStore(VectorStoreBase):
-    """A concrete implementation of VectorStoreBase using FAISS for storage."""
-
+    """implementation using FAISS for storage."""
     def __init__(self, embedding) -> None:
 
         super().__init__()
@@ -106,7 +105,7 @@ class FAISSVectorStore(VectorStoreBase):
             index_to_docstore_id,
             relevance_score_fn=None,
             normalize_L2=False,
-            distance_strategy= DistanceStrategy.COSINE
+            distance_strategy=DistanceStrategy.COSINE
         )
 
     def add_document(self, docs, unstructured):

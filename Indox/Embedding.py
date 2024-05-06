@@ -5,11 +5,7 @@ from typing import List
 from .utils import read_config
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_openai import OpenAIEmbeddings
-from dotenv import load_dotenv
 import os
-
-load_dotenv()
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 
 def embedding_model():
@@ -31,18 +27,17 @@ def embedding_model():
     config = read_config()
 
     # Verify the embedding model type from the configuration
-    embedding_model_name = config.get('embedding_model', '').lower()
+    embedding_model_name = config['embedding_model'].lower()
 
     if embedding_model_name == 'openai':
         model = "text-embedding-3-small"
-        embeddings = OpenAIEmbeddings(model=model, openai_api_key=OPENAI_API_KEY)
+        embeddings = OpenAIEmbeddings(model=model, openai_api_key=os.environ["OPENAI_API_KEY"])
         return embeddings
     elif embedding_model_name == 'sbert':
         embeddings = HuggingFaceEmbeddings(model_name="multi-qa-mpnet-base-cos-v1")
         return embeddings
     else:
         raise ValueError(f"Unrecognized embedding model specified in the configuration: {embedding_model_name}")
-
 
 
 def embed(texts: List[str], embeddings) -> np.ndarray:
