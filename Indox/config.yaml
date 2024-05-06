@@ -1,9 +1,9 @@
 clustering:
   dim: 10
   threshold: 0.1
-embedding_model: openai
+embedding_model: sbert # or openai
 postgres:
-  conn_string: postgresql+psycopg2://postgres:aminkhosroshahi328@localhost:5432/vector_db
+  conn_string: postgresql+psycopg2://postgres:xxx@localhost:port/db_name
 prompts:
   document_relevancy_prompt: 'You are a grader assessing relevance of a retrieved
     document to a user question. If the document contains keywords related to the
@@ -27,10 +27,11 @@ prompts:
     content: You are a helpful assistant. Give a detailed summary of the documentation
       provided
 qa_model:
-  temperature: 0
-splitter: raptor-text-splitter
+  name: mistral #openai
+  temperature: 9.0e-05
+splitter: raptor-text-splitter  # or semantic-text-splitter
 summary_model:
   max_tokens: 100
   min_len: 30
   model_name: gpt-3.5-turbo-0125
-vector_store: chroma
+vector_store: chroma  # other options : pgvector, faiss
