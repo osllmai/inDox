@@ -1,10 +1,10 @@
 from .Splitter import get_chunks, get_chunks_unstructured
 from .Embedding import embedding_model
 from .utils import (
-    reconfig, get_user_input, get_metrics
+    reconfig, get_user_input, get_metrics, update_config
 )
 from typing import List, Tuple, Optional, Any, Dict
-from .QAModels import GPT3TurboQAModel
+from .QAModels import GPT3TurboQAModel, choose_qa_model
 from .vectorstore import get_vector_store
 from .utils import read_config
 from .Graph import RAGGraph
@@ -15,24 +15,34 @@ warnings.filterwarnings("ignore")
 
 
 class IndoxRetrievalAugmentation:
-    def __init__(
-            self,
-            qa_model: Optional[Any] = None,
-    ):
+    def __init__(self):
         """
-        Initialize the IndoxRetrievalAugmentation class with documents, embeddings object, an optional QA model, database connection, and maximum token count for text splitting.
+        Initialize the IndoxRetrievalAugmentation class
 
-        :param qa_model: Optional pre-initialized QA model
-        """
-        self.embeddings = embedding_model()
-        self.qa_model = qa_model if qa_model is not None else GPT3TurboQAModel()
+             """
         self.input_tokens_all = 0
         self.embedding_tokens = 0
         self.output_tokens_all = 0
         self.db = None
-        self.config = read_config()
         self.inputs = {}
         self.unstructured = None
+        self.embeddings = None
+        self.config = None
+        self.qa_model = None
+        self.config = read_config()
+
+    def initialize(self):
+        """
+        Initialize the configuration, embeddings, and QA model.
+        Calls `reconfig` to update the configuration, then loads
+        the embedding model and the QA model.
+        """
+        # Read and update the configuration
+        update_config(self.config)
+
+        # Initialize embeddings and QA model with the updated configuration
+        self.embeddings = embedding_model()
+        self.qa_model = choose_qa_model()
 
     def create_chunks(self, file_path, content_type=None, unstructured=False,
                       max_chunk_size: Optional[int] = 512,
@@ -59,6 +69,7 @@ class IndoxRetrievalAugmentation:
         - The function supports two modes of document processing: structured and unstructured.
         - It updates class attributes for input, embedding, and output tokens, based on the chunks processed.
         """
+
         if unstructured and re_chunk:
             raise RuntimeError("Can't re-chunk unstructered data.")
         all_chunks = None
@@ -163,7 +174,7 @@ class IndoxRetrievalAugmentation:
 
         try:
             if self.db is not None:
-                self.db.add_document(chunks,unstructured=self.unstructured)
+                self.db.add_document(chunks, unstructured=self.unstructured)
             else:
                 raise RuntimeError("The vector store database is not initialized.")
 
@@ -270,11 +281,4 @@ class IndoxRetrievalAugmentation:
                 """
             )
 
-    def update_config(self):
-        return reconfig(self.config)
 
-    @classmethod
-    def from_config(cls, config: dict,
-                    qa_model: Optional[Any] = None):
-        reconfig(config)
-        return cls(qa_model=qa_model)

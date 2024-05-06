@@ -6,6 +6,7 @@ import importlib
 from .metrics.metrics import metrics
 from unstructured.partition.pdf import partition_pdf
 import latex2markdown
+
 CONFIG_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -55,7 +56,6 @@ def create_document(file_path: str) -> str:
         raise ValueError("Unsupported document format. Please provide a PDF or plain text file.")
 
     return text
-
 
 
 def fmt_txt(df: pd.DataFrame) -> str:
@@ -137,7 +137,6 @@ def get_user_input() -> str:
             print("Invalid input. Please enter 'y' for yes or 'n' for no.")
 
 
-
 def get_metrics(inputs):
     """
     prints Precision, Recall and F1 obtained from BertScore
@@ -147,6 +146,7 @@ def get_metrics(inputs):
     print(f"BertScore scores:\n   Precision@{K}: {mP:.4f}\n   Recall@{K}: {mR:.4f}\n   F1@{K}: {mF1:.4f}")
     # print("\n\nUni Eval Sores")
     # [print(f"   {key}@{K}: {np.array(value).mean():4f}") for key, value in dilaouges_scores.items()]
+
 
 def create_documents_unstructured(file_path: str, content_type: str):
     """
@@ -225,7 +225,6 @@ def create_documents_unstructured(file_path: str, content_type: str):
         return e
 
 
-
 def convert_latex_to_md(latex_path):
     """Converts a LaTeX file to Markdown using the latex2markdown library.
 
@@ -247,3 +246,7 @@ def convert_latex_to_md(latex_path):
     except Exception as e:
         print(f"Error during conversion: {e}")
         return None
+
+
+def update_config(config):
+    return reconfig(config)

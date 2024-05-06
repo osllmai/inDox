@@ -10,7 +10,6 @@ pandas==2.2.2
 PyPDF2==3.0.1
 python-dotenv==1.0.1
 PyYAML==6.0.1
-PyYAML==6.0.1
 scikit_learn==1.4.2
 semantic_text_splitter==0.12.1
 sentence_transformers==2.2.2
@@ -30,3 +29,5 @@ unstructured.pytesseract
 scikit-learn~=1.4.2
 latex2markdown~=0.2.1
 unstructured~=0.11.8
+langgraph~=0.0.44
+requests~=2.31.0
