@@ -58,30 +58,26 @@ Ensure your PostgreSQL database is up and running, and accessible from your appl
 ## Config Setup
 Before launching your first instance of **inDox**, it's crucial to properly configure the QA model and the embedding model. This configuration is done through the `IRA_3.config` YAML file.
 
-### Initial Configuration
-- **Configuration File**: Ensure you locate and modify the `IRA_3.config` YAML file according to your needs before starting the application. This file sets the parameters for the QA and embedding models which are critical for the application’s performance.
-
-### Dynamic Configuration Changes
-For changes that need to be applied after the initial setup or during runtime:
-- **Modifying Configurations**: Use the following Python snippet to update your settings dynamically:
-  ```python
-  IRA.config["your_setting_that_need_to_change"] = "new_setting"
-  IRA.update_config()
 
 
-## Clustering and Retrieval
 
-### Initialize the Retrieval System
+## Initialize the Retrieval System
 
 ```python
 from Indox import IndoxRetrievalAugmentation
 IRA = IndoxRetrievalAugmentation()
 ```
 
-The re_chunk argument in the create_chunks function of IRA object, specifies whether to perform re-chunking of the data:
+### Initial Configuration
+- **Configuration File**: Ensure you locate and modify the `IRA.config` YAML file according to your needs before starting the application. 
 
-False: Chunking occurs only at the start of the process.
-True: Chunking happens after each summarization process.
+## Dynamic Configuration Changes
+For changes that need to be applied after the initial setup or during runtime:
+- **Modifying Configurations**: Use the following Python snippet to update your settings dynamically:
+  ```python
+  IRA.config["your_setting_that_need_to_change"] = "new_setting"
+  IRA.initialize()
+
 
 ## Configuration Details
 Here's a breakdown of the config dictionary and its properties:
@@ -121,6 +117,12 @@ documents = IRA.create_chunks(file_path=html, max_chunk_size=200, content_type=N
                                              unstructured=False, re_chunk= False, remove_sword=False)
 print("Documents:", documents)
 ```
+
+  
+- The re_chunk argument in the create_chunks function of IRA object, specifies whether to perform re-chunking of the data:
+False: Chunking occurs only at the start of the process.
+True: Chunking happens after each summarization process.
+
 - The `max_chunk_size` parameter specifies the maximum number of tokens in each chunk.
 - Using the `unstructured` library, users can add files in PDF, HTML, Markdown, LaTeX, or plain text formats. In this scenario, chunking is performed using the `chunk_by_title` method from the `unstructured` library, which organizes the content by titles within the document.
 - The remove_sword specifies if the stop words are going to be removed or not.
