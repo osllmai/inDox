@@ -56,7 +56,7 @@ Ensure your PostgreSQL database is up and running, and accessible from your appl
 2. **Load Embedding Models**: Initialize your embedding model from OpenAI's selection of pre-trained models.
 
 ## Config Setup
-Before launching your first instance of **inDox**, it's crucial to properly configure the QA model and the embedding model. This configuration is done through the `IRA_3.config` YAML file.
+Before launching your first instance of **inDox**, it's crucial to properly configure the QA model and the embedding model. This configuration is done through the `IRA.config` YAML file.
 
 
 
