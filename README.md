@@ -59,14 +59,14 @@ Ensure your PostgreSQL database is up and running, and accessible from your appl
 Before launching your first instance of **inDox**, it's crucial to properly configure the QA model and the embedding model. This configuration is done through the `IRA_3.config` YAML file.
 
 ### Initial Configuration
-- **Configuration File**: Ensure you locate and modify the `IRA_3.config` YAML file according to your needs before starting the application. This file sets the parameters for the QA and embedding models which are critical for the application’s performance.
+- **Configuration File**: Ensure you locate and modify the `IRA.config` YAML file according to your needs before starting the application. 
 
 ### Dynamic Configuration Changes
 For changes that need to be applied after the initial setup or during runtime:
 - **Modifying Configurations**: Use the following Python snippet to update your settings dynamically:
   ```python
   IRA.config["your_setting_that_need_to_change"] = "new_setting"
-  IRA.update_config()
+  IRA.initialize()
 
 
 ## Clustering and Retrieval
