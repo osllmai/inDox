@@ -6,10 +6,9 @@ from semantic_text_splitter import TextSplitter
 from tokenizers import Tokenizer
 from typing import List, Tuple, Optional, Any, Dict
 from .cluster.EmbedClusterSummarize import recursive_embed_cluster_summarize
-from .clean import remove_stopwords_chunk
+from .clean import remove_stopwords_chunk, remove_stopwords
 from unstructured.chunking.title import chunk_by_title
 from langchain_community.vectorstores.utils import filter_complex_metadata
-
 
 def initialize_tokenizer(tokenizer_name: str):
     """
@@ -211,7 +210,7 @@ def get_chunks(docs, embeddings, do_clustering, chunk_size: Optional[int] = 500,
         raise
 
 
-def get_chunks_unstructured(file_path, content_type, chunk_size: Optional[int] = 500):
+def get_chunks_unstructured(file_path, content_type, chunk_size: Optional[int] = 500, remove_sword=False):
     """
     Extract chunks from an unstructured document file using an unstructured data processing library.
 
@@ -252,6 +251,9 @@ def get_chunks_unstructured(file_path, content_type, chunk_size: Optional[int] =
                 if isinstance(value, list):
                     value = str(value)
                 metadata[key] = value
+            
+            if remove_sword == True:
+                element.text = remove_stopwords(element.text)
 
             documents.append(Document(page_content=element.text, metadata=metadata))
 

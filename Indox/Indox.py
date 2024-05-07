@@ -111,7 +111,8 @@ class IndoxRetrievalAugmentation:
             elif unstructured:
                 all_chunks = get_chunks_unstructured(file_path=file_path,
                                                      chunk_size=max_chunk_size,
-                                                     content_type=content_type)
+                                                     content_type=content_type,
+                                                     remove_sword=remove_sword)
                 for chunk in all_chunks:
                     encoding = tiktoken.get_encoding("cl100k_base")
                     token_count = len(encoding.encode(chunk.page_content))

@@ -1,13 +1,14 @@
 import nltk
 from nltk.corpus import stopwords
-from collections import Counter
 from typing import List
 from nltk.tokenize import word_tokenize
 
-nltk.download('stopwords')
-nltk.download('punkt')
+def download():
+    nltk.download('stopwords')
+    nltk.download('punkt')
 
 def remove_stopwords(text):
+    download()
     words = word_tokenize(text)
     stop_words = set(stopwords.words('english'))
     filtered_words = [word for word in words if word.lower() not in stop_words]

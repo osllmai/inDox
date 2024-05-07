@@ -1,7 +1,7 @@
 clustering:
   dim: 10
   threshold: 0.1
-embedding_model: sbert
+embedding_model: sbert # or openai
 postgres:
   conn_string: postgresql+psycopg2://postgres:xxx@localhost:port/db_name
 prompts:
@@ -27,12 +27,12 @@ prompts:
     content: You are a helpful assistant. Give a detailed summary of the documentation
       provided
 qa_model:
-  name: mistral
+  name: mistral # or openai
   temperature: 9.0e-05
-splitter: semantic-text-splitter
+splitter: semantic-text-splitter # or raptor-text-splitter
 summary_model:
   max_tokens: 100
   min_len: 30
   model_name: gpt-3.5-turbo-0125
-tokenizer: openai
-vector_store: chroma
+tokenizer: openai # or bert
+vector_store: chroma # other options : faiss, pgvector
