@@ -34,5 +34,5 @@ summary_model:
   max_tokens: 100
   min_len: 30
   model_name: gpt-3.5-turbo-0125
-tokenizer: openai # or bert
-vector_store: chroma # other options : faiss, pgvector
+tokenizer: openai
+vector_store: chroma
