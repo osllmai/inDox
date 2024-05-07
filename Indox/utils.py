@@ -208,6 +208,8 @@ def create_documents_unstructured(file_path: str, content_type: str):
                 elements = prt(url=file_path)
             elif content_type == "md" and not latex_file:
                 elements = prt(filename=file_path)
+            elif content_type == "text":
+                elements = prt(filename=file_path)
             elif latex_file:
                 md_text = convert_latex_to_md(latex_path=file_path)
                 elements = prt(text=md_text)
