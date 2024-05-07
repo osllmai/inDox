@@ -11,39 +11,71 @@ from unstructured.chunking.title import chunk_by_title
 from langchain_community.vectorstores.utils import filter_complex_metadata
 
 
-def split_text(text: str, max_tokens: int, overlap: int = 0) -> list:
+def initialize_tokenizer(tokenizer_name: str):
     """
-    Split the input text into chunks of approximately equal token counts, based on the specified maximum token count
-    and overlap. The splitting approach depends on the system's configured splitter.
+    Initialize a tokenizer based on the name provided.
 
     Args:
-    - text (str): The input text to be split into chunks.
-    - max_tokens (int): The maximum number of tokens allowed in each chunk.
-    - overlap (int, optional): The number of tokens to overlap between adjacent chunks. Defaults to 0.
+        tokenizer_name (str): Name of the tokenizer (e.g., "bert" or "openai").
 
     Returns:
-    - list: A list of chunks, each containing a portion of the original text.
-
-    Splitting logic:
-    - If the "semantic-text-splitter" is configured, use the Hugging Face tokenizer with the specified maximum tokens.
-    - If the "raptor-text-splitter" is configured, split by sentences and further refine by sub-sentences if any exceed
-      the maximum token count.
-
-    Notes:
-    - The function reads a `splitter` configuration to determine which splitting method to apply.
-    - Sentences that exceed `max_tokens` are split using internal delimiters like `,`, `;`, or `:`.
-    - The `overlap` parameter allows for repeating tokens between adjacent chunks to provide better context.
+        tokenizer: The initialized tokenizer object.
     """
-    config = read_config()
+    if tokenizer_name == "bert":
+        return Tokenizer.from_pretrained("bert-base-uncased")
+    elif tokenizer_name == "openai":
+        return tiktoken.get_encoding("cl100k_base")
+    else:
+        raise ValueError(f"Unknown tokenizer: {tokenizer_name}")
+
+
+def initialize_splitter(splitter_name: str, tokenizer, max_tokens: int):
+    """
+    Initialize a text splitter based on the splitter name and tokenizer.
+
+    Args:
+        splitter_name (str): Name of the splitter ("semantic-text-splitter" or "raptor-text-splitter").
+        tokenizer: The tokenizer object.
+        max_tokens (int): Maximum number of tokens per chunk.
+
+    Returns:
+        splitter: The initialized text splitter object.
+    """
+    if splitter_name == "semantic-text-splitter":
+        if isinstance(tokenizer, tiktoken.Encoding):
+            return TextSplitter.from_tiktoken_model("gpt-3.5-turbo", max_tokens)
+        elif isinstance(tokenizer, Tokenizer):
+            return TextSplitter.from_huggingface_tokenizer(tokenizer, max_tokens)
+        else:
+            raise ValueError("Unsupported tokenizer for semantic-text-splitter.")
+    else:
+        raise ValueError(f"Invalid splitter specified: {splitter_name}")
+
+
+def split_text(text: str, max_tokens: int, overlap: int = 0):
+    """
+    Split the input text based on the splitting method defined in the configuration
+    and apply the tokenizer as specified.
+
+    Args:
+        text (str): The input text to be split into chunks.
+        max_tokens (int): The maximum number of tokens allowed per chunk.
+        overlap (int, optional): The number of tokens to overlap between chunks. Defaults to 0.
+
+    Returns:
+        list: A list of chunks, each containing a portion of the original text.
+    """
+    config = read_config()  # Assuming this reads the YAML configuration file
+
+    # Initialize the appropriate tokenizer
+    tokenizer_name = config["tokenizer"]
+    tokenizer = initialize_tokenizer(tokenizer_name)
 
     if config["splitter"] == "semantic-text-splitter":
-        tokenizer = Tokenizer.from_pretrained("bert-base-uncased")
-        splitter = TextSplitter.from_huggingface_tokenizer(tokenizer, max_tokens)
-        chunks = splitter.chunks(text)
-        return chunks
+        splitter = initialize_splitter("semantic-text-splitter", tokenizer, max_tokens)
+        return splitter.chunks(text)
 
     elif config["splitter"] == "raptor-text-splitter":
-        tokenizer = tiktoken.get_encoding("cl100k_base")
         delimiters = [".", "!", "?", "\n"]
         regex_pattern = "|".join(map(re.escape, delimiters))
         sentences = re.split(regex_pattern, text)
@@ -55,16 +87,13 @@ def split_text(text: str, max_tokens: int, overlap: int = 0) -> list:
         current_length = 0
 
         for sentence, token_count in zip(sentences, n_tokens):
-            # Skip empty sentences
             if not sentence.strip():
                 continue
 
-            # Split overly long sentences into smaller chunks
+            # Split long sentences into sub-chunks
             if token_count > max_tokens:
                 sub_sentences = re.split(r"[,;:]", sentence)
-                sub_token_counts = [
-                    len(tokenizer.encode(" " + sub_sentence)) for sub_sentence in sub_sentences
-                ]
+                sub_token_counts = [len(tokenizer.encode(" " + sub_sentence)) for sub_sentence in sub_sentences]
 
                 sub_chunk = []
                 sub_length = 0
@@ -73,9 +102,7 @@ def split_text(text: str, max_tokens: int, overlap: int = 0) -> list:
                     if sub_length + sub_token_count > max_tokens:
                         chunks.append(" ".join(sub_chunk))
                         sub_chunk = sub_chunk[-overlap:] if overlap > 0 else []
-                        sub_length = sum(
-                            sub_token_counts[max(0, len(sub_chunk) - overlap): len(sub_chunk)]
-                        )
+                        sub_length = sum(sub_token_counts[max(0, len(sub_chunk) - overlap): len(sub_chunk)])
 
                     sub_chunk.append(sub_sentence)
                     sub_length += sub_token_count
@@ -83,26 +110,25 @@ def split_text(text: str, max_tokens: int, overlap: int = 0) -> list:
                 if sub_chunk:
                     chunks.append(" ".join(sub_chunk))
 
-            # Start a new chunk if adding the current sentence exceeds the max limit
+            # Start a new chunk if adding this sentence exceeds the limit
             elif current_length + token_count > max_tokens:
                 chunks.append(" ".join(current_chunk))
                 current_chunk = current_chunk[-overlap:] if overlap > 0 else []
-                current_length = sum(
-                    n_tokens[max(0, len(current_chunk) - overlap): len(current_chunk)]
-                )
+                current_length = sum(n_tokens[max(0, len(current_chunk) - overlap): len(current_chunk)])
                 current_chunk.append(sentence)
                 current_length += token_count
 
-            # Otherwise, add the sentence to the current chunk
             else:
                 current_chunk.append(sentence)
                 current_length += token_count
 
-        # Add the last remaining chunk
         if current_chunk:
             chunks.append(" ".join(current_chunk))
 
         return chunks
+
+    else:
+        raise ValueError("Invalid splitter specified in the configuration.")
 
 
 def get_all_texts(results, texts):
