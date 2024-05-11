@@ -1,15 +1,21 @@
 import os
 from openai import OpenAI
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, ABCMeta
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 from .utils import read_config
 import requests
+import dspy
+from dspy import Signature, Module, ChainOfThought, Prediction
 
 
-class BaseQAModel(ABC):
+class BaseQAModel(metaclass=ABCMeta):
     @abstractmethod
     def answer_question(self, context, question):
         pass
+
+
+class UnifiedMeta(type(Module), type(BaseQAModel)):
+    pass
 
 
 class GPT3TurboQAModel(BaseQAModel):
@@ -144,11 +150,50 @@ class Mistral7BQAModel(BaseQAModel):
             return str(e)
 
 
+class GenerateAnswer(Signature):
+    """Assess the context and answer the question."""
+    context = dspy.InputField(desc="Helpful information for answering the question.")
+    question = dspy.InputField()
+    answer = dspy.OutputField(desc="A detailed answer that is supported by the context. ONLY OUTPUT THE ANSWER!!")
+
+
+class RAG(Module):
+    def __init__(self, model, client):
+        super().__init__()
+        self.generate_answer = ChainOfThought(GenerateAnswer)
+        self.model = model
+        self.client = client
+
+    def forward(self, context, question):
+        response = self.generate_answer(context=context, question=question, model=self.model, client=self.client)
+        return Prediction(context=context, question=question, answer=response.answer)
+
+
+class DSPY(BaseQAModel, Module, metaclass=UnifiedMeta):
+    def __init__(self, model="gpt-3.5-turbo-0125", api_key=os.environ["OPENAI_API_KEY"]):
+        super().__init__()
+        self.model = model
+        self.client = dspy.OpenAI(model=self.model, api_key=api_key)
+        dspy.settings.configure(lm=self.client)
+
+    def answer_question(self, context, question):
+        """
+        Implement the abstract method from BaseQAModel.
+        Answers a question given a context using the specified model.
+        """
+        rag = RAG(model=self.model, client=self.client)
+        prediction = rag.forward(context, question)
+        # print(self.client.inspect_history(n=3))
+        return prediction.answer
+
+
 def choose_qa_model():
     config = read_config()
     model_name = config["qa_model"]["name"].lower()
     if model_name == "openai" or "":
         return GPT3TurboQAModel()
+    elif model_name == "dspy-openai":
+        return DSPY()
     elif model_name == "mistral":
         return Mistral7BQAModel()
     else:
