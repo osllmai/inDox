@@ -1,5 +1,5 @@
-from .Splitter import get_chunks, get_chunks_unstructured
-from .Embedding import embedding_model
+# from .Splitter import get_chunks, get_chunks_unstructured
+# from .Embedding import embedding_model
 from .utils import (
      get_user_input, get_metrics, update_config
 )
@@ -25,7 +25,7 @@ class IndoxRetrievalAugmentation:
         self.db = None
         self.inputs = {}
         self.unstructured = None
-        self.embeddings = None
+        # self.embeddings = None
         self.config = None
         self.qa_model = None
         self.config = read_config()
@@ -40,7 +40,7 @@ class IndoxRetrievalAugmentation:
         update_config(self.config)
 
         # Initialize embeddings and QA model with the updated configuration
-        self.embeddings = embedding_model()
+        # self.embeddings = embedding_model()
 
     def create_chunks(self, file_path, content_type=None, unstructured=False,
                       max_chunk_size: Optional[int] = 512,
@@ -76,35 +76,33 @@ class IndoxRetrievalAugmentation:
         try:
             if not unstructured:
                 do_clustering = True if get_user_input() == "y" else False
-                if do_clustering:
-                    all_chunks, input_tokens_all, output_tokens_all = \
-                        get_chunks(docs=file_path,
-                                   embeddings=self.embeddings,
-                                   chunk_size=max_chunk_size,
-                                   do_clustering=do_clustering,
-                                   re_chunk=re_chunk,
-                                   remove_sword=remove_sword)
-                    encoding = tiktoken.get_encoding("cl100k_base")
-                    embedding_tokens = 0
-                    for chunk in all_chunks:
-                        token_count = len(encoding.encode(chunk))
-                        embedding_tokens = embedding_tokens + token_count
-                    self.input_tokens_all = input_tokens_all
-                    self.embedding_tokens = embedding_tokens
-                    self.output_tokens_all = output_tokens_all
-                elif not do_clustering:
-                    all_chunks = get_chunks(docs=file_path,
-                                            embeddings=self.embeddings,
-                                            chunk_size=max_chunk_size,
-                                            do_clustering=do_clustering,
-                                            re_chunk=re_chunk,
-                                            remove_sword=remove_sword)
-                    encoding = tiktoken.get_encoding("cl100k_base")
-                    embedding_tokens = 0
-                    for chunk in all_chunks:
-                        token_count = len(encoding.encode(chunk))
-                        embedding_tokens = embedding_tokens + token_count
-                    self.embedding_tokens = embedding_tokens
+                # if do_clustering:
+                #     all_chunks, input_tokens_all, output_tokens_all = \
+                #         get_chunks(docs=file_path,
+                #                    chunk_size=max_chunk_size,
+                #                    do_clustering=do_clustering,
+                #                    re_chunk=re_chunk,
+                #                    remove_sword=remove_sword)
+                #     encoding = tiktoken.get_encoding("cl100k_base")
+                #     embedding_tokens = 0
+                #     for chunk in all_chunks:
+                #         token_count = len(encoding.encode(chunk))
+                #         embedding_tokens = embedding_tokens + token_count
+                #     self.input_tokens_all = input_tokens_all
+                #     self.embedding_tokens = embedding_tokens
+                #     self.output_tokens_all = output_tokens_all
+                if not do_clustering:
+                    # all_chunks = get_chunks(docs=file_path,
+                    #                         chunk_size=max_chunk_size,
+                    #                         do_clustering=do_clustering,
+                    #                         re_chunk=re_chunk,
+                    #                         remove_sword=remove_sword)
+                    # encoding = tiktoken.get_encoding("cl100k_base")
+                    # embedding_tokens = 0
+                    # for chunk in all_chunks:
+                    #     token_count = len(encoding.encode(chunk))
+                    #     embedding_tokens = embedding_tokens + token_count
+                    # self.embedding_tokens = embedding_tokens
 
             elif unstructured:
                 all_chunks = get_chunks_unstructured(file_path=file_path,
@@ -121,7 +119,7 @@ class IndoxRetrievalAugmentation:
             print(f"Error while getting chunks: {e}")
             return []
 
-    def connect_to_vectorstore(self, collection_name: str):
+    def connect_to_vectorstore(self, embeddings,collection_name: str):
         """
         Establish a connection to the vector store database using configuration parameters.
 
@@ -140,7 +138,7 @@ class IndoxRetrievalAugmentation:
             raise ValueError("Collection name cannot be empty.")
 
         try:
-            self.db = get_vector_store(collection_name=collection_name, embeddings=self.embeddings)
+            self.db = get_vector_store(collection_name=collection_name, embeddings=embeddings)
 
             if self.db is None:
                 raise RuntimeError('Failed to connect to the vector store database.')

@@ -58,18 +58,18 @@ def create_document(file_path: str) -> str:
     return text
 
 
-def fmt_txt(df: pd.DataFrame) -> str:
-    """
-    Formats the text documents in a DataFrame into a single string.
-
-    Parameters:
-    - df: DataFrame containing the 'text' column with text documents to format.
-
-    Returns:
-    - A single string where all text documents are joined by a specific delimiter.
-    """
-    unique_txt = df["text"].tolist()
-    return "--- --- \n --- --- ".join(unique_txt)
+# def fmt_txt(df: pd.DataFrame) -> str:
+#     """
+#     Formats the text documents in a DataFrame into a single string.
+#
+#     Parameters:
+#     - df: DataFrame containing the 'text' column with text documents to format.
+#
+#     Returns:
+#     - A single string where all text documents are joined by a specific delimiter.
+#     """
+#     unique_txt = df["text"].tolist()
+#     return "--- --- \n --- --- ".join(unique_txt)
 
 
 def read_config() -> dict:

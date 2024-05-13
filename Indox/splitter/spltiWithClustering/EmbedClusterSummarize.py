@@ -1,11 +1,15 @@
 from typing import List, Tuple, Optional, Any, Dict
 import pandas as pd
-from ..Embedding import embed_cluster_texts
-from ..Summary import summarize
-from ..clean import remove_stopwords_chunk
+# from ..Embedding import embed_cluster_texts
+# from ..Summary import summarize
+# from ..clean import remove_stopwords_chunk
+from .Embed import embed_cluster_texts
+from .Summary import summarize
+from .clean import remove_stopwords_chunk
+
 
 def embed_cluster_summarize_texts(
-        texts: List[str], embeddings, level: int, re_chunk=False, max_chunk: int = 100):
+        texts: List[str], embeddings, dim, threshold, level: int, re_chunk=False, max_chunk: int = 100):
     """
     Embeds, clusters, and summarizes a list of texts. This function first generates embeddings for the texts,
     clusters them based on similarity, expands the cluster assignments for easier processing, and then summarizes
@@ -25,7 +29,7 @@ def embed_cluster_summarize_texts(
     input_tokens_all = 0
     output_tokens_all = 0
     # Embed and cluster the texts, resulting in a DataFrame with 'text', 'embd', and 'cluster' columns
-    df_clusters = embed_cluster_texts(texts, embeddings)
+    df_clusters = embed_cluster_texts(texts, embeddings, dim, threshold)
 
     # Expand DataFrame entries to document-cluster pairings for straightforward processing
     expanded_list = [
@@ -65,7 +69,7 @@ def embed_cluster_summarize_texts(
     return df_clusters, df_summary, input_tokens_all, output_tokens_all
 
 
-def recursive_embed_cluster_summarize(texts: List[str], embeddings, level: int = 1, n_levels: int = 3,
+def recursive_embed_cluster_summarize(texts: List[str], embeddings,dim,threshold, level: int = 1, n_levels: int = 3,
                                       re_chunk=False, max_chunk: int = 100, remove_sword=False):
     """
     Recursively embeds, clusters, and summarizes texts up to a specified level or until
@@ -78,14 +82,14 @@ def recursive_embed_cluster_summarize(texts: List[str], embeddings, level: int =
     - n_levels: int, maximum depth of recursion.
 
     """
-    if remove_sword == True:
+    if remove_sword:
         texts = remove_stopwords_chunk(texts)
 
     results = {}
 
     # Perform embedding, clustering, and summarization for the current level
     df_clusters, df_summary, input_tokens, output_tokens = \
-        embed_cluster_summarize_texts(texts, embeddings,
+        embed_cluster_summarize_texts(texts, embeddings,dim,threshold,
                                       level, re_chunk=re_chunk,
                                       max_chunk=max_chunk)
     input_tokens_all = input_tokens
