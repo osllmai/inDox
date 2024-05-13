@@ -3,7 +3,7 @@ import pandas as pd
 import yaml
 import os
 import importlib
-from .metrics.metrics import metrics
+# from .metrics.metrics import metrics
 from unstructured.partition.pdf import partition_pdf
 import latex2markdown
 
@@ -53,17 +53,15 @@ def reconfig(config: dict):
         yaml.dump(existing_data, file)
 
 
-
-
-def get_metrics(inputs):
-    """
-    prints Precision, Recall and F1 obtained from BertScore
-    """
-    # mP, mR, mF1, dilaouges_scores, K = metrics(inputs)
-    mP, mR, mF1, K = metrics(inputs)
-    print(f"BertScore scores:\n   Precision@{K}: {mP:.4f}\n   Recall@{K}: {mR:.4f}\n   F1@{K}: {mF1:.4f}")
-    # print("\n\nUni Eval Sores")
-    # [print(f"   {key}@{K}: {np.array(value).mean():4f}") for key, value in dilaouges_scores.items()]
+# def get_metrics(inputs):
+#     """
+#     prints Precision, Recall and F1 obtained from BertScore
+#     """
+#     # mP, mR, mF1, dilaouges_scores, K = metrics(inputs)
+#     mP, mR, mF1, K = metrics(inputs)
+#     print(f"BertScore scores:\n   Precision@{K}: {mP:.4f}\n   Recall@{K}: {mR:.4f}\n   F1@{K}: {mF1:.4f}")
+#     # print("\n\nUni Eval Sores")
+#     # [print(f"   {key}@{K}: {np.array(value).mean():4f}") for key, value in dilaouges_scores.items()]
 
 
 def create_documents_unstructured(file_path: str, content_type: str):
