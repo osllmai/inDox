@@ -181,6 +181,7 @@ class DialogEvaluator:
 
         return eval_scores
 
+
 def add_question(dimension, output, src=None, ref=None, context=None):
     """
         Add questions to generate input in Bool-QA format for UniEval.
