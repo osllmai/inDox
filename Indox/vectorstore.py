@@ -9,6 +9,7 @@ from langchain.docstore.in_memory import InMemoryDocstore
 import faiss
 import logging
 from .utils import read_config, construct_postgres_connection_string
+from langchain_core.documents import Document
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -19,7 +20,7 @@ class VectorStoreBase(ABC):
     """Abstract base class defining the interface for vector-based document stores."""
 
     @abstractmethod
-    def add_document(self, texts, unstructured):
+    def add_document(self, texts):
         """Add documents to the vector store."""
         pass
 
@@ -41,12 +42,12 @@ class PGVectorStore(VectorStoreBase):
         self.db = PGVector(embedding_function=embedding, collection_name=collection_name,
                            connection_string=conn_string, distance_strategy=PGDistancesTRATEGY.COSINE)
 
-    def add_document(self, docs, unstructured):
+    def add_document(self, docs):
         try:
-            if unstructured:
-                self.db.add_documents(docs)
-            elif not unstructured:
-                self.db.add_texts(docs)
+            if isinstance(docs[0], Document):
+                self.db.add_documents(documents=docs)
+            elif not isinstance(docs[0], Document):
+                self.db.add_texts(texts=docs)
             logging.info("Document added successfully to the vector store.")
         except Exception as e:
             logging.error(f"Failed to add document: {e}")
@@ -66,11 +67,11 @@ class ChromaVectorStore(VectorStoreBase):
         super().__init__()
         self.db = Chroma(collection_name=collection_name, embedding_function=embedding)
 
-    def add_document(self, docs, unstructured):
+    def add_document(self, docs):
         try:
-            if unstructured:
+            if isinstance(docs[0], Document):
                 self.db.add_documents(documents=docs)
-            elif not unstructured:
+            elif not isinstance(docs[0], Document):
                 self.db.add_texts(texts=docs)
             logging.info("Document added successfully to the vector store.")
         except Exception as e:
@@ -86,6 +87,7 @@ class ChromaVectorStore(VectorStoreBase):
 
 class FAISSVectorStore(VectorStoreBase):
     """implementation using FAISS for storage."""
+
     def __init__(self, embedding) -> None:
 
         super().__init__()
@@ -108,13 +110,13 @@ class FAISSVectorStore(VectorStoreBase):
             distance_strategy=DistanceStrategy.COSINE
         )
 
-    def add_document(self, docs, unstructured):
+    def add_document(self, docs):
 
         try:
-            if unstructured:
-                self.db.add_documents(docs)
-            elif not unstructured:
-                self.db.add_texts(docs)
+            if isinstance(docs[0], Document):
+                self.db.add_documents(documents=docs)
+            elif not isinstance(docs[0], Document):
+                self.db.add_texts(texts=docs)
             logging.info("Document added successfully to the vector store.")
         except Exception as e:
             logging.error(f"Failed to add document: {e}")

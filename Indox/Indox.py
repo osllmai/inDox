@@ -1,14 +1,11 @@
-# from .Splitter import get_chunks, get_chunks_unstructured
-# from .Embedding import embedding_model
 from .utils import (
-     get_user_input, get_metrics, update_config
+      get_metrics, update_config
 )
 from typing import List, Optional, Any
 from .vectorstore import get_vector_store
 from .utils import read_config
 from .Graph import RAGGraph
 import warnings
-import tiktoken
 
 warnings.filterwarnings("ignore")
 
@@ -25,7 +22,6 @@ class IndoxRetrievalAugmentation:
         self.db = None
         self.inputs = {}
         self.unstructured = None
-        # self.embeddings = None
         self.config = None
         self.qa_model = None
         self.config = read_config()
@@ -38,86 +34,6 @@ class IndoxRetrievalAugmentation:
         """
         # Update the configuration
         update_config(self.config)
-
-        # Initialize embeddings and QA model with the updated configuration
-        # self.embeddings = embedding_model()
-
-    def create_chunks(self, file_path, content_type=None, unstructured=False,
-                      max_chunk_size: Optional[int] = 512,
-                      re_chunk: bool = False, remove_sword=False):
-        """
-        Retrieve all chunks from a document based on the provided configurations.
-
-        Parameters:
-        - file_path (str): The path to the document file to be processed.
-        - content_type (str, optional): The content type of the document, required if `unstructured` is `True`.
-        - unstructured (bool, optional): Whether to handle the document as unstructured data. Default is `False`.
-        - max_chunk_size (int, optional): The maximum size (in tokens) for each chunk. Default is 512.
-        - re_chunk (bool, optional): Whether to re-chunk the structured data. Default is `False`.
-        - remove_sword (bool, optional): Whether to exclude specific stopwords during chunking. Default is `False`.
-
-        Returns:
-        - list: A list of chunks extracted from the document. Each chunk could be a string or an object, depending on
-          the content type and chunking mode.
-
-        Raises:
-        - RuntimeError: If both `unstructured` and `re_chunk` are set to `True`.
-
-        Notes:
-        - The function supports two modes of document processing: structured and unstructured.
-        - It updates class attributes for input, embedding, and output tokens, based on the chunks processed.
-        """
-
-        if unstructured and re_chunk:
-            raise RuntimeError("Can't re-chunk unstructered data.")
-        all_chunks = None
-        self.unstructured = unstructured
-        embedding_tokens = 0
-        try:
-            if not unstructured:
-                do_clustering = True if get_user_input() == "y" else False
-                # if do_clustering:
-                #     all_chunks, input_tokens_all, output_tokens_all = \
-                #         get_chunks(docs=file_path,
-                #                    chunk_size=max_chunk_size,
-                #                    do_clustering=do_clustering,
-                #                    re_chunk=re_chunk,
-                #                    remove_sword=remove_sword)
-                #     encoding = tiktoken.get_encoding("cl100k_base")
-                #     embedding_tokens = 0
-                #     for chunk in all_chunks:
-                #         token_count = len(encoding.encode(chunk))
-                #         embedding_tokens = embedding_tokens + token_count
-                #     self.input_tokens_all = input_tokens_all
-                #     self.embedding_tokens = embedding_tokens
-                #     self.output_tokens_all = output_tokens_all
-                if not do_clustering:
-                    # all_chunks = get_chunks(docs=file_path,
-                    #                         chunk_size=max_chunk_size,
-                    #                         do_clustering=do_clustering,
-                    #                         re_chunk=re_chunk,
-                    #                         remove_sword=remove_sword)
-                    # encoding = tiktoken.get_encoding("cl100k_base")
-                    # embedding_tokens = 0
-                    # for chunk in all_chunks:
-                    #     token_count = len(encoding.encode(chunk))
-                    #     embedding_tokens = embedding_tokens + token_count
-                    # self.embedding_tokens = embedding_tokens
-
-            elif unstructured:
-                all_chunks = get_chunks_unstructured(file_path=file_path,
-                                                     chunk_size=max_chunk_size,
-                                                     content_type=content_type,
-                                                     remove_sword=remove_sword)
-                for chunk in all_chunks:
-                    encoding = tiktoken.get_encoding("cl100k_base")
-                    token_count = len(encoding.encode(chunk.page_content))
-                    embedding_tokens = embedding_tokens + token_count
-                self.embedding_tokens = embedding_tokens
-            return all_chunks
-        except Exception as e:
-            print(f"Error while getting chunks: {e}")
-            return []
 
     def connect_to_vectorstore(self, embeddings,collection_name: str):
         """
@@ -171,7 +87,7 @@ class IndoxRetrievalAugmentation:
 
         try:
             if self.db is not None:
-                self.db.add_document(chunks, unstructured=self.unstructured)
+                self.db.add_document(chunks)
             else:
                 raise RuntimeError("The vector store database is not initialized.")
 

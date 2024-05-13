@@ -1,11 +1,9 @@
-from typing import List, Tuple, Optional, Any, Dict
+from typing import List
 import pandas as pd
-# from ..Embedding import embed_cluster_texts
-# from ..Summary import summarize
-# from ..clean import remove_stopwords_chunk
 from .Embed import embed_cluster_texts
 from .Summary import summarize
-from .clean import remove_stopwords_chunk
+from .utils import rechunk
+from ..utils.clean import remove_stopwords_chunk
 
 
 def embed_cluster_summarize_texts(
@@ -63,14 +61,15 @@ def embed_cluster_summarize_texts(
     )
 
     if re_chunk:
-        from ..Splitter import rechunk
         df_summary = rechunk(df_summary=df_summary, max_chunk=max_chunk)
 
     return df_clusters, df_summary, input_tokens_all, output_tokens_all
 
 
-def recursive_embed_cluster_summarize(texts: List[str], embeddings,dim,threshold, level: int = 1, n_levels: int = 3,
-                                      re_chunk=False, max_chunk: int = 100, remove_sword=False):
+def recursive_embed_cluster_summarize(texts: List[str], embeddings, dim, threshold, max_chunk: int = 100,
+                                      level: int = 1,
+                                      n_levels: int = 3,
+                                      re_chunk=False, remove_sword=False):
     """
     Recursively embeds, clusters, and summarizes texts up to a specified level or until
     the number of unique clusters becomes 1, storing the results at each level using a specified embeddings object.
@@ -89,7 +88,7 @@ def recursive_embed_cluster_summarize(texts: List[str], embeddings,dim,threshold
 
     # Perform embedding, clustering, and summarization for the current level
     df_clusters, df_summary, input_tokens, output_tokens = \
-        embed_cluster_summarize_texts(texts, embeddings,dim,threshold,
+        embed_cluster_summarize_texts(texts, embeddings, dim, threshold,
                                       level, re_chunk=re_chunk,
                                       max_chunk=max_chunk)
     input_tokens_all = input_tokens

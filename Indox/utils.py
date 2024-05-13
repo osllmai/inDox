@@ -10,66 +10,7 @@ import latex2markdown
 CONFIG_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
-def create_document(file_path: str) -> str:
-    """
-    Extract the text content from a specified document file.
 
-    Parameters:
-    - file_path (str): The path to the document file to be processed. Supported formats are PDF and plain text.
-
-    Returns:
-    - str: The text content extracted from the document.
-
-    Raises:
-    - ValueError: If the file extension is not `.pdf` or `.txt`.
-    - FileNotFoundError: If the specified file path does not exist.
-
-    Notes:
-    - Uses the `PyPDF2` library for PDF extraction and standard file I/O for plain text files.
-    - Handles case-insensitive extensions.
-
-    """
-    # Check for valid file extensions and process accordingly
-    if file_path.lower().endswith(".pdf"):
-        text = ""
-        try:
-            reader = PyPDF2.PdfReader(file_path)
-            num_pages = len(reader.pages)
-            for page_num in range(num_pages):
-                page = reader.pages[page_num]
-                text += page.extract_text()
-        except FileNotFoundError:
-            raise FileNotFoundError(f"File not found: {file_path}")
-        except Exception as e:
-            raise RuntimeError(f"Error reading PDF file: {e}")
-
-    elif file_path.lower().endswith(".txt"):
-        try:
-            with open(file_path, "r") as file:
-                text = file.read()
-        except FileNotFoundError:
-            raise FileNotFoundError(f"File not found: {file_path}")
-        except Exception as e:
-            raise RuntimeError(f"Error reading text file: {e}")
-
-    else:
-        raise ValueError("Unsupported document format. Please provide a PDF or plain text file.")
-
-    return text
-
-
-# def fmt_txt(df: pd.DataFrame) -> str:
-#     """
-#     Formats the text documents in a DataFrame into a single string.
-#
-#     Parameters:
-#     - df: DataFrame containing the 'text' column with text documents to format.
-#
-#     Returns:
-#     - A single string where all text documents are joined by a specific delimiter.
-#     """
-#     unique_txt = df["text"].tolist()
-#     return "--- --- \n --- --- ".join(unique_txt)
 
 
 def read_config() -> dict:
@@ -112,29 +53,6 @@ def reconfig(config: dict):
         yaml.dump(existing_data, file)
 
 
-def get_user_input() -> str:
-    """
-    Prompt the user for input on whether to add a clustering and summarization layer.
-
-    Returns:
-    - str: The user's response, either 'y' for yes or 'n' for no.
-
-    Raises:
-    - ValueError: If the input is not 'y' or 'n'.
-
-    Notes:
-    - The function loops until the user provides a valid input, ensuring that only 'y' or 'n' are returned.
-    """
-    while True:
-        response = input(
-            "Would you like to add a clustering and summarization layer? This may double your token usage. "
-            "Please select 'y' for yes or 'n' for no: "
-        ).strip().lower()
-
-        if response in ['y', 'n']:
-            return response
-        else:
-            print("Invalid input. Please enter 'y' for yes or 'n' for no.")
 
 
 def get_metrics(inputs):

@@ -1,7 +1,3 @@
-clustering:
-  dim: 10
-  threshold: 0.1
-embedding_model: sbert
 postgres:
   conn_string: postgresql+psycopg2://postgres:xxx@localhost:port/db_name
 prompts:
