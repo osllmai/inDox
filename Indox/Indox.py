@@ -1,6 +1,4 @@
-from .utils import (
-      get_metrics, update_config
-)
+from .utils import update_config
 from typing import List, Optional, Any
 from .vectorstore import get_vector_store
 from .utils import read_config
