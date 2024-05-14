@@ -72,13 +72,11 @@ Indox.config["old_config"] = "new_config"
 
 # Applying the updated configuration
 Indox.update_config()
-
-::: {.cell ExecuteTime='{"end_time":"2024-05-14T12:01:11.598655900Z","start_time":"2024-05-14T12:01:11.582390700Z"}' execution_count=13}
-``` {.python .cell-code}
-file_path = "sample.txt"
 ```
 
-:::
+``` python
+file_path = "sample.txt"
+```
 
 In this section, we take advantage of the `unstructured` library to load
 documents and split them into chunks by title. This method helps in
