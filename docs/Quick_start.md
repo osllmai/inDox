@@ -34,11 +34,11 @@ from Indox import IndoxRetrievalAugmentation
 ### Importing QA and Embedding Models
 
 ``` python
-from Indox.qa_models import OpenAiQA
+from Indox.QaModels import OpenAiQA
 ```
 
 ``` python
-from Indox.embeddings import OpenAiEmbedding
+from Indox.Embeddings import OpenAiEmbedding
 ```
 
 ### Initialize Indox
@@ -86,7 +86,7 @@ organizing thme document into manageable sections for further
 processing.
 
 ``` python
-from Indox.splitter import SplitUnstructured
+from Indox.DataLoaderSplitter import UnstructuredLoadAndSplit
 ```
 
 ``` python

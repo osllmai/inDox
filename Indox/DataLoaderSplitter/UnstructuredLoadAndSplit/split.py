@@ -1,4 +1,4 @@
-from Indox.splitter.utils.clean import remove_stopwords
+from Indox.DataLoaderSplitter.utils.clean import remove_stopwords
 from Indox.utils import create_documents_unstructured
 from unstructured.chunking.title import chunk_by_title
 from langchain_community.vectorstores.utils import filter_complex_metadata
@@ -6,7 +6,7 @@ from typing import List, Tuple, Optional, Any, Dict
 from langchain_core.documents import Document
 
 
-def get_chunks_unstructured(file_path, content_type, chunk_size, remove_sword):
+def get_chunks_unstructured(file_path, content_type, chunk_size, remove_sword, splitter):
     """
     Extract chunks from an unstructured document file using an unstructured data processing library.
 
@@ -32,29 +32,35 @@ def get_chunks_unstructured(file_path, content_type, chunk_size, remove_sword):
 
         # Create initial document elements using the unstructured library
         elements = create_documents_unstructured(file_path, content_type=content_type)
+        if splitter:
+            text = ""
+            for el in elements:
+                text += el.text
 
-        # Split elements based on the title and the specified max characters per chunk
-        elements = chunk_by_title(elements, max_characters=chunk_size)
+            documents = splitter(text=text, max_tokens=chunk_size)
+        else:
+            # Split elements based on the title and the specified max characters per chunk
+            elements = chunk_by_title(elements, max_characters=chunk_size)
 
-        documents = []
+            documents = []
 
-        # Convert each element into a `Document` object with relevant metadata
-        for element in elements:
-            metadata = element.metadata.to_dict()
-            del metadata["languages"]  # Remove unnecessary metadata field
+            # Convert each element into a `Document` object with relevant metadata
+            for element in elements:
+                metadata = element.metadata.to_dict()
+                del metadata["languages"]  # Remove unnecessary metadata field
 
-            for key, value in metadata.items():
-                if isinstance(value, list):
-                    value = str(value)
-                metadata[key] = value
+                for key, value in metadata.items():
+                    if isinstance(value, list):
+                        value = str(value)
+                    metadata[key] = value
 
-            if remove_sword:
-                element.text = remove_stopwords(element.text)
+                if remove_sword:
+                    element.text = remove_stopwords(element.text)
 
-            documents.append(Document(page_content=element.text, metadata=metadata))
+                documents.append(Document(page_content=element.text, metadata=metadata))
 
-        # Filter and sanitize complex metadata
-        documents = filter_complex_metadata(documents=documents)
+            # Filter and sanitize complex metadata
+            documents = filter_complex_metadata(documents=documents)
 
         print("End Chunking process.")
         return documents
@@ -64,7 +70,8 @@ def get_chunks_unstructured(file_path, content_type, chunk_size, remove_sword):
         raise
 
 
-def SplitUnstructured(file_path: str, content_type: str, remove_sword: bool = False, max_chunk_size: int = 500) -> (
+def UnstructuredLoadAndSplit(file_path: str, content_type: str, remove_sword: bool = False,
+                             max_chunk_size: int = 500, splitter=None) -> (
         List)[Document]:
     """
     Split an unstructured document into chunks.
@@ -78,4 +85,4 @@ def SplitUnstructured(file_path: str, content_type: str, remove_sword: bool = Fa
     Returns:
     - List[Document]: A list of `Document` objects, each containing a portion of the original content with relevant metadata.
     """
-    return get_chunks_unstructured(file_path, content_type, max_chunk_size, remove_sword)
+    return get_chunks_unstructured(file_path, content_type, max_chunk_size, remove_sword, splitter)

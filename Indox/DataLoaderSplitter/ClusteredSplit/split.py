@@ -1,6 +1,6 @@
-from Indox.splitter.spltiWithClustering.EmbedClusterSummarize import recursive_embed_cluster_summarize
-from Indox.splitter.spltiWithClustering.utils import get_all_texts, split_text, create_document
-from Indox.splitter.utils.clean import remove_stopwords_chunk
+from Indox.DataLoaderSplitter.ClusteredSplit.EmbedClusterSummarize import recursive_embed_cluster_summarize
+from Indox.DataLoaderSplitter.ClusteredSplit.utils import get_all_texts, split_text, create_document
+from Indox.DataLoaderSplitter.utils.clean import remove_stopwords_chunk
 from typing import Optional, List, Tuple
 
 
@@ -63,14 +63,14 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
         raise e
 
 
-def SplitWithClustering(file_path: str,
-                        embeddings,
-                        re_chunk: bool = False,
-                        remove_sword: bool = False,
-                        chunk_size: Optional[int] = 100,
-                        overlap: Optional[int] = 0,
-                        threshold: float = 0.1,
-                        dim: int = 10, ):
+def ClusteredSplit(file_path: str,
+                   embeddings,
+                   re_chunk: bool = False,
+                   remove_sword: bool = False,
+                   chunk_size: Optional[int] = 100,
+                   overlap: Optional[int] = 0,
+                   threshold: float = 0.1,
+                   dim: int = 10, ):
     all_chunks = get_chunks(docs=file_path,
                             chunk_size=chunk_size,
                             overlap=overlap,
