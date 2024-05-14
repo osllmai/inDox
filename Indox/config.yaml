@@ -22,10 +22,8 @@ prompts:
   summary_model:
     content: You are a helpful assistant. Give a detailed summary of the documentation
       provided
-splitter: semantic-text-splitter
 summary_model:
   max_tokens: 100
   min_len: 30
   model_name: gpt-3.5-turbo-0125
-tokenizer: openai
 vector_store: chroma

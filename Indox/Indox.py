@@ -19,16 +19,13 @@ class IndoxRetrievalAugmentation:
         self.output_tokens_all = 0
         self.db = None
         self.inputs = {}
-        self.unstructured = None
         self.config = None
         self.qa_model = None
         self.config = read_config()
 
-    def initialize(self):
+    def update_config(self):
         """
-        Initialize the configuration, embeddings, and QA model.
         Calls `update_config` to update the configuration, then loads
-        the embedding model and the QA model.
         """
         # Update the configuration
         update_config(self.config)
