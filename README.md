@@ -8,6 +8,7 @@ Before running this project, ensure that you have the following installed:
 - **Python 3.8+**: Required for running the Python backend.
 - **PostgreSQL**: Needed if you wish to store your data in a PostgreSQL database.
 - **OpenAI API Key**: Necessary if you are using the OpenAI embedding model.
+- **HuggingFace API Key**: Necessary if you are using the HuggingFace llms.
 
 Ensure your system also meets these requirements:
 - Access to environmental variables for handling sensitive information like API keys.
