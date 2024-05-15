@@ -2,7 +2,7 @@ import importlib
 from Indox.utils import convert_latex_to_md
 
 
-def import_unstructured_partition(file_path, content_type):
+def import_unstructured_partition(content_type):
     # Import appropriate partition function from the `unstructured` library
     module_name = f"unstructured.partition.{content_type}"
     module = importlib.import_module(module_name)
@@ -43,9 +43,9 @@ def create_documents_unstructured(file_path):
                 file_path = convert_latex_to_md(latex_path=file_path)
             content_type = file_path.lower().split(".")[-1]
             if content_type == "txt":
-                prt = import_unstructured_partition(file_path=file_path, content_type="text")
+                prt = import_unstructured_partition(content_type="text")
             else:
-                prt = import_unstructured_partition(file_path=file_path, content_type=content_type)
+                prt = import_unstructured_partition(content_type=content_type)
             elements = prt(filename=file_path)
         return elements
     except AttributeError as ae:
