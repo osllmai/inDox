@@ -1,27 +1,21 @@
-from typing import Set
-from typing import List, Optional, Dict, Any, Union
+from typing import Dict, Any
+
 import pandas as pd
-import torch
-from transformers import BertTokenizer, BertForSequenceClassification, GPT2LMHeadModel, GPT2Tokenizer
-from nltk import word_tokenize
-from nltk.translate.bleu_score import sentence_bleu
-from sentence_transformers import SentenceTransformer, util
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.metrics import jaccard_score
-from sklearn.metrics.pairwise import cosine_similarity
-from bert_score import BERTScorer
-from collections import defaultdict
-from sentence_transformers import CrossEncoder
-from transformers import pipeline
 import textstat
+import torch
+from bert_score import BERTScorer
+from sentence_transformers import CrossEncoder
+from transformers import BertTokenizer, BertForSequenceClassification, GPT2LMHeadModel, GPT2Tokenizer
+from transformers import pipeline
 
 cfg = {"bert_toxic_tokenizer": "unitary/toxic-bert",
        "bert_toxic_model": "unitary/toxic-bert",
-       "semantic_similarity": "bert-base-nli-mean-tokens",
+       "semantic_similarity": "sentence-transformers/bert-base-nli-mean-tokens",
        "bert_score_model": "bert-base-uncased",
        "reliability": 'vectara/hallucination_evaluation_model',
-       "fairness": "wu981526092/Sentence-Level-Stereotype-Detector"}
+       "fairness": "wu981526092/Sentence-Level-Stereotype-Detector",
+
+       }
 
 ALL_DIMANSIONS = ["BertScore", "Toxicity", "Similarity", "Reliability", "Fairness"]
 
@@ -89,78 +83,6 @@ class Toxicity:
         return scores
 
 
-class Similarity:
-    def __init__(self, cfg, inputs=None):
-        self.semantic_model = SentenceTransformer(cfg["semantic_similarity"])
-        self.vectorizer = TfidfVectorizer()
-        self.mlb = MultiLabelBinarizer()
-
-    def __call__(self, inputs):
-        self.reference = inputs["context"]
-        self.candidate = inputs["answer"]
-
-        bleu = self.bleu_score()
-        jaccard = self.jaccard_similarity()
-        cosine = self.cosine_similarity()
-        semantic = self.semantic_similarity()
-        # semantic = None
-        scores = {"Blue": bleu,
-                  "Jaccard Similarity": jaccard,
-                  "Cosine Similarity": cosine,
-                  "Semantic": semantic}
-        return scores
-
-    def bleu_score(self) -> float:
-        """
-        Calculate the BLEU score between candidate and reference texts.
-        Returns:
-        float: The BLEU score.
-        """
-
-        reference = [word_tokenize(self.reference)]
-        candidate = word_tokenize(self.candidate)
-
-        return sentence_bleu(reference, candidate)
-
-    def jaccard_similarity(self) -> float:
-        """
-        Calculate the Jaccard similarity between candidate and reference texts.
-        Returns:
-        float: The Jaccard similarity score.
-        """
-        reference_tokens = set(word_tokenize(self.reference))
-        model_output_tokens = set(word_tokenize(self.candidate))
-
-        binary_reference = self.mlb.fit_transform([reference_tokens])
-        binary_model_output = self.mlb.transform([model_output_tokens])
-
-        return jaccard_score(
-            binary_reference[0], binary_model_output[0], average="binary"
-        )
-
-    def cosine_similarity(self) -> float:
-        """
-        Calculate the cosine similarity between the TF-IDF vectors of the candidate and reference texts.
-        Returns:
-        float: The cosine similarity score.
-        """
-        vectors = self.vectorizer.fit_transform([self.candidate, self.reference])
-        return cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
-
-    def semantic_similarity(self) -> float:
-        """
-        Calculate the semantic similarity between candidate and reference texts using BERT embeddings.
-
-        Returns:
-        float: The semantic similarity score.
-        """
-
-        embeddings = self.semantic_model.encode(
-            [self.candidate, self.reference], convert_to_tensor=True
-        )
-        return util.pytorch_cos_sim(embeddings[0], embeddings[1])[0][0].item()
-
-
 class Reliability:
     """
     This class is designed to evaluate hallucination scores for multiple
@@ -218,19 +140,19 @@ class Fairness:
 
     """
 
-    def __init__(self, cfg):
+    def __init__(self):
         self.model = pipeline("text-classification",
-                              model=cfg['fairness'],
-                              tokenizer=cfg['fairness'])
+                              model="wu981526092/Sentence-Level-Stereotype-Detector",
+                              tokenizer="wu981526092/Sentence-Level-Stereotype-Detector")
 
     def __call__(self, inputs):
         query = inputs['answer']
         if not isinstance(query, list):
             query = [query]
         result = self.model(query)
-        score = result['stereotype_gender']
+        # print(result)
+        score = result[0]['score']
         return {"Fairness": score}
-
 
 class Readibility:
     def __init__(self, cfg=None):
