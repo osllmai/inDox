@@ -1,3 +1,5 @@
+import tiktoken
+
 from .utils import update_config
 from typing import List, Optional, Any
 from .vectorstore import get_vector_store
@@ -18,11 +20,10 @@ class IndoxRetrievalAugmentation:
         self.embedding_tokens = 0
         self.output_tokens_all = 0
         self.db = None
-        self.inputs = {}
         self.config = None
         self.qa_model = None
         self.config = read_config()
-
+        self.test = None
     def update_config(self):
         """
         Calls `update_config` to update the configuration, then loads
@@ -125,14 +126,16 @@ class IndoxRetrievalAugmentation:
         try:
             context, scores = self.db.retrieve(query, top_k=top_k)
             if not document_relevancy_filter:
+                # TODO: Add cost of embedding and qa_model
+                # response = qa_model.answer_question(context=context, question=query)
+                # self.output_tokens += response.usage.completion_tokens
+                # self.input_tokens += response.usage.prompt_tokens
                 answer = qa_model.answer_question(context=context, question=query)
-                self.inputs = {"answer": answer, "query": query, "context": context}
             else:
                 graph = RAGGraph()
                 graph_out = graph.run({'question': query, 'documents': context, 'scores': scores})
                 answer = qa_model.answer_question(context=graph_out['documents'], question=graph_out['question'])
                 context, scores = graph_out['documents'], graph_out['scores']
-
             retrieve_context = (context, scores)
             return answer, retrieve_context
 
