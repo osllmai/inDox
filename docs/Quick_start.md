@@ -88,7 +88,7 @@ from Indox.DataLoaderSplitter import UnstructuredLoadAndSplit
 ```
 
 ``` python
-docs_unstructured = SplitUnstructured(file_path=file_path,content_type="text")
+docs_unstructured = UnstructuredLoadAndSplit(file_path=file_path)
 ```
 
     Starting processing...
