@@ -1,1 +1,1 @@
-from .splitter import semantic_text_splitter
+from .semantic_text_splitter import semantic_text_splitter
