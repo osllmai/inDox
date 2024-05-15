@@ -7,6 +7,7 @@ from bert_score import BERTScorer
 from sentence_transformers import CrossEncoder
 from transformers import BertTokenizer, BertForSequenceClassification, GPT2LMHeadModel, GPT2Tokenizer
 from transformers import pipeline
+from .similarity import Similarity
 
 cfg = {"bert_toxic_tokenizer": "unitary/toxic-bert",
        "bert_toxic_model": "unitary/toxic-bert",
@@ -140,10 +141,10 @@ class Fairness:
 
     """
 
-    def __init__(self):
+    def __init__(self, cfg):
         self.model = pipeline("text-classification",
-                              model="wu981526092/Sentence-Level-Stereotype-Detector",
-                              tokenizer="wu981526092/Sentence-Level-Stereotype-Detector")
+                              model=cfg['fairness'],
+                              tokenizer=cfg['fairness'])
 
     def __call__(self, inputs):
         query = inputs['answer']
