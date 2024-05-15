@@ -110,11 +110,18 @@ class Reliability:
         - results score in float between 0 and 1  .
         """
         answer, context = inputs['answer'], inputs['context']
-        sentence_pairs = list(zip([context], [answer]))
-        results = self.model.predict(sentence_pairs)
-        score = [{'hallucination_score': round(score, 2)} for score in results]
+        if not isinstance(context, list):
+            context = [context]
+        relaiabilties = []
+        for c in context:
+            sentence_pairs = list(zip([c], [answer]))
+            results = self.model.predict(sentence_pairs)
+            results = [round(score, 2) for score in results]
+            relaiabilties.append(results[0])
+        score = sum(relaiabilties) / len(relaiabilties)
+        score = {'hallucination_score': round(score, 2)}
 
-        return score[0]
+        return score
 
 
 class Fairness:
