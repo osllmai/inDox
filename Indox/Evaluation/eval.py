@@ -1,3 +1,5 @@
+from typing import Set
+from typing import List, Optional, Dict, Any, Union
 import pandas as pd
 import torch
 from transformers import BertTokenizer, BertForSequenceClassification, GPT2LMHeadModel, GPT2Tokenizer
@@ -21,8 +23,9 @@ cfg = {"bert_toxic_tokenizer": "unitary/toxic-bert",
        "reliability": 'vectara/hallucination_evaluation_model',
        "fairness": "wu981526092/Sentence-Level-Stereotype-Detector"}
 
+ALL_DIMANSIONS = ["BertScore", "Toxicity", "Similarity", "Reliability", "Fairness"]
 
-ALL_DIMANSIONS = {"BertScore", "Toxicity", "Similarity", "Reliability", "Fairness"}
+
 class Evaluation:
     def __init__(self, dimensions=None, config=cfg):
         if dimensions is None:
@@ -31,22 +34,21 @@ class Evaluation:
         self.config = config
         if not isinstance(dimensions, list):
             dimensions = [dimensions]
-        if not set(dimensions) <= ALL_DIMANSIONS:
-            raise RuntimeError('''Please choose correct metrics from ["BertScore","Toxicity","Similarity"]''')
+
         self.metrics = [eval(dim)(self.config) for dim in dimensions]
         self.result = pd.DataFrame()
 
-    def __call__(self, inputs=None):
+    def __call__(self, inputs=None) -> Dict[str, Any]:
         scores = {}
         [scores.update(score(inputs)) for score in self.metrics]
         return scores
 
-    def update(self, inputs):
+    def update(self, inputs: Any) -> pd.DataFrame:
         result = self.__call__(inputs)
-        self.result.append(result, ignore_index=True)
+        self.result = pd.concat([self.result, pd.DataFrame([result])], ignore_index=True)
         return self.result
 
-    def reset(self):
+    def reset(self) -> None:
         self.result = pd.DataFrame()
 
 
