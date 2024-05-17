@@ -18,6 +18,8 @@ class Similarity:
     def __call__(self, inputs):
         self.references = inputs["context"]  # Now it's a list of contexts
         self.candidate = inputs["answer"]
+        if not isinstance(self.references, list):
+            self.references = [self.references]
 
         bleu = self.bleu_score()
         jaccard = self.jaccard_similarity()
