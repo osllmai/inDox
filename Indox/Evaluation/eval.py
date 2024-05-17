@@ -18,7 +18,7 @@ cfg = {"bert_toxic_tokenizer": "unitary/toxic-bert",
 
        }
 
-ALL_DIMANSIONS = ["BertScore", "Toxicity", "Similarity", "Reliability", "Fairness"]
+ALL_DIMANSIONS = ["BertScore", "Toxicity", "Similarity", "Reliability", "Fairness" , "Readibility"]
 
 
 class Evaluation:
@@ -186,8 +186,8 @@ class Readibility:
 
     def __call__(self, inputs):
         answer = inputs["answer"]
-        if not isinstance(answer, list):
-            answer = [answer]
+        if isinstance(answer, list):
+            answer = answer[0]
         results = {
             "Perplexity": self.calculate_perplexity(answer),
             "ARI": self.calculate_ari(answer),
