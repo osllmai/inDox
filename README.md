@@ -46,12 +46,13 @@ pip install -r requirements.txt
 
 ### Environment Variables
 
-Set your `OPENAI_API_KEY` in your environment variables for secure access.
+Set your `OPENAI_API_KEY` or `HF_API_KEY` in your environment variables for secure access.
 
 ### Database Setup
 
-Ensure your PostgreSQL database is up and running, and accessible from your application. (if you are going to use
-pgvector as your vectorstore)
+Ensure your PostgreSQL database is up and running, and accessible from your application. This is necessary if you plan to use pgvector as your vector store.
+
+Alternatively, you can use Chroma or Faiss as your vector store. Make sure to specify your choice and the necessary configurations in the config.yaml file.
 
 ## Usage
 
@@ -60,9 +61,26 @@ pgvector as your vectorstore)
 1. **Define the File Path**: Specify the path to your text or PDF file.
 2. **Load Embedding Models**: Initialize your embedding model from OpenAI's selection of pre-trained models.
 
+# Quick Start 
+
+## Import Indox Package
+
+Import the necessary classes from the Indox package.
+
+``` python
+from Indox import IndoxRetrievalAugmentation
+```
+
+### Initialize Indox
+
+Create an instance of IndoxRetrievalAugmentation.
+
+``` python
+Indox = IndoxRetrievalAugmentation()
+```
 ## Initial Configuration
 
-- **Configuration File**: Ensure you locate and modify the `IRA.config` YAML file according to your needs before
+- **Configuration File**: Ensure you locate and modify the `Indox.config` YAML file according to your needs before
   starting the application.
 
 ## Dynamic Configuration Changes
@@ -71,8 +89,8 @@ For changes that need to be applied after the initial setup or during runtime:
 
 - **Modifying Configurations**: Use the following Python snippet to update your settings dynamically:
   ```python
-  IRA.config["your_setting_that_need_to_change"] = "new_setting"
-  IRA.update_config()
+  Indox.config["your_setting_that_need_to_change"] = "new_setting"
+  Indox.update_config()
 
 ## Configuration Details
 
@@ -112,4 +130,81 @@ Additionally, for those interested in exploring other vector database options, y
 *Faiss**. These provide alternative approaches to vector storage and retrieval that may better suit specific use cases
 or performance requirements.
 
+### Importing QA and Embedding Models
+
+``` python
+from Indox.QaModels import OpenAiQA
+```
+
+``` python
+from Indox.Embeddings import OpenAiEmbedding
+```
+
+
+``` python
+openai_qa = OpenAiQA(api_key=OPENAI_API_KEY,model="gpt-3.5-turbo-0125")
+openai_embeddings = OpenAiEmbedding(model="text-embedding-3-small",openai_api_key=OPENAI_API_KEY)
+```
+
+## Modifying Configuration Settings
+
+To change a configuration setting, you can directly modify the
+`Indox.config` dictionary. Here is an example of how you can update a
+configuration setting:
+
+``` python
+# Example of modifying a configuration setting
+Indox.config["old_config"] = "new_config"
+
+# Applying the updated configuration
+Indox.update_config()
+```
+
+``` python
+file_path = "sample.txt"
+```
+
+We take advantage of the `unstructured` library to load
+documents and split them into chunks by title. This method helps in
+organizing thme document into manageable sections for further
+processing.
+
+``` python
+from Indox.DataLoaderSplitter import UnstructuredLoadAndSplit
+```
+
+``` python
+docs_unstructured = UnstructuredLoadAndSplit(file_path=file_path)
+```
+
+    Starting processing...
+    End Chunking process.
+
+Storing document chunks in a vector store is crucial for enabling
+efficient retrieval and search operations. By converting text data into
+vector representations and storing them in a vector store, you can
+perform rapid similarity searches and other vector-based operations.
+
+``` python
+Indox.connect_to_vectorstore(collection_name="sample",embeddings=openai_embeddings)
+Indox.store_in_vectorstore(chunks=docs_unstructured)
+```
+
+## Quering
+
+``` python
+query = "your query!!??"
+```
+
+``` python
+response_openai = Indox.answer_question(query=query,qa_model=openai_qa)
+```
+
+``` python
+answer = response_openai[0]
+```
+
+``` python
+context, score = response_openai[1]
+```
 
