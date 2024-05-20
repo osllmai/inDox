@@ -1,9 +1,8 @@
 import requests
-import os
 
 
 class MistralQA:
-    def __init__(self, model="mistralai/Mistral-7B-Instruct-v0.2", api_key=os.getenv("HF_API_KEY")):
+    def __init__(self, api_key, model):
         """
         Initializes the Mistral 7B Instruct model via the Hugging Face Inference API.
 

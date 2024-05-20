@@ -2,8 +2,9 @@ from tenacity import retry, stop_after_attempt, wait_random_exponential
 from openai import OpenAI
 import os
 
+
 class OpenAiQA:
-    def __init__(self, model="gpt-3.5-turbo-0125",api_key=os.environ["OPENAI_API_KEY"]):
+    def __init__(self, api_key, model):
         """
         Initializes the GPT-3 model with the specified model version.
 

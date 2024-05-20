@@ -56,7 +56,7 @@ class DspyCotQA(Module):
         client (OpenAI): The OpenAI client.
     """
 
-    def __init__(self, model="gpt-3.5-turbo-0125", api_key=os.environ["OPENAI_API_KEY"]):
+    def __init__(self, model, api_key):
         super().__init__()
         self.model = model
         self.client = OpenAI(model=self.model, api_key=api_key)
