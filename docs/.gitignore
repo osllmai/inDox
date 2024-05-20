@@ -1,4 +1,4 @@
 /.quarto/
-.site
+site
 _quarto.yml
 docs.qmd
