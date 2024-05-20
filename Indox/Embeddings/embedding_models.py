@@ -1,7 +1,7 @@
 import os
 
 
-def OpenAiEmbedding(model="text-embedding-3-small", openai_api_key=os.environ["OPENAI_API_KEY"]):
+def OpenAiEmbedding(model, openai_api_key):
     from langchain_openai import OpenAIEmbeddings
     embeddings = OpenAIEmbeddings(model=model, openai_api_key=openai_api_key)
     return embeddings
