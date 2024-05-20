@@ -160,9 +160,6 @@ Indox.config["old_config"] = "new_config"
 Indox.update_config()
 ```
 
-``` python
-file_path = "sample.txt"
-```
 
 We take advantage of the `unstructured` library to load
 documents and split them into chunks by title. This method helps in
