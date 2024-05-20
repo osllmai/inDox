@@ -1,0 +1,52 @@
+[
+  {
+    "objectID": "evaluation.html",
+    "href": "evaluation.html",
+    "title": "Evaluation Metrics",
+    "section": "",
+    "text": "Introduction\nThis notebook demonstrates how InDox uses various evaluation metrics to assess the quality of generated outputs. The available metrics are:\nYou can select the metrics you want to use and then provide the context and answer text for evaluation.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Evaluation Metrics</span>"
+    ]
+  },
+  {
+    "objectID": "evaluation.html#introduction",
+    "href": "evaluation.html#introduction",
+    "title": "Evaluation Metrics",
+    "section": "",
+    "text": "BertScore: Evaluates the similarity between the generated text and reference text using BERT embeddings.\nToxicity: Measures the level of toxicity in the generated text.\nSimilarity: Assesses the similarity between different pieces of text.\nReliability: Evaluates the factual accuracy and trustworthiness of the content.\nFairness: Analyzes the text for potential biases and ensures equitable representation.\nReadability: Assesses how easy the text is to read and understand.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Evaluation Metrics</span>"
+    ]
+  },
+  {
+    "objectID": "evaluation.html#implementation",
+    "href": "evaluation.html#implementation",
+    "title": "Evaluation Metrics",
+    "section": "Implementation",
+    "text": "Implementation\nFirst, we need to import the Evaluation library to build our evaluator function:\n\n\nCode\nfrom Indox.Evaluation import Evaluation",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Evaluation Metrics</span>"
+    ]
+  },
+  {
+    "objectID": "evaluation.html#quick-start",
+    "href": "evaluation.html#quick-start",
+    "title": "Evaluation Metrics",
+    "section": "Quick Start",
+    "text": "Quick Start\ninitiate your evaluator with the default config :\n\n\nCode\nevaluator = Evaluation()\n\n\n\n\n\n\n\n\nNote\n\n\n\nYou can choose a list of your disired metrics from \"BertScore\", \"Toxicity\", \"Similarity\", \"Reliability\", \"Fairness\" , \"Readibility\"\n\n\n\n\n\n\n\n\nTip\n\n\n\nif you want to change models with your custom models you can define a config in dict and customize your InDox evaluator\ncfg = {\"bert_toxic_tokenizer\": \"unitary/toxic-bert\",\n       \"bert_toxic_model\": \"unitary/toxic-bert\",\n       \"semantic_similarity\": \"sentence-transformers/bert-base-nli-mean-tokens\",\n       \"bert_score_model\": \"bert-base-uncased\",\n       \"reliability\": 'vectara/hallucination_evaluation_model',\n       \"fairness\": \"wu981526092/Sentence-Level-Stereotype-Detector\",\n\n       }\n\n\n\n\n\n\n\n\nCaution\n\n\n\n\n\nit’s important to say InDox uses open source models and all models are scratched from HuggingFace\n\n\n\nAfter initiate your evalutor check it with sample question answer response , each inputs should be have question, answer, context in a dict format , for example :\n\n\nCode\nsample = {\n    'question' : \"What is your Question?\",\n    'answer' : \"It's your responsed answer from InDox\",\n    'context' : \"this can be a list of context or a single context.\"\n}\n\n\nthen use evaluator to calculate metrics, evaluator is callable function which in __call__ function calculates metrics. InDox evaluator returns metrics as dict file :\n\n\nCode\nevaluator(sample)\n\n\n{\n\"Precision\": 0.46,\n\"Recall\": 0.75,\n\"F1-score\": 0.68,\n\"Toxicity\": 0.01,\n\"BLEU\": 0.01,\n\"Jaccard Similarity\": 0.55,\n\"Cosine Similarity\": 0.68,\n\"Semantic\": 0.79,\n\"hallucination_score\" : 0.11, \n\"Perplexity\": 11,\n\"ARI\": 0.5,\n\"Flesch-Kincaid Grade Level\": 0.91\n}",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Evaluation Metrics</span>"
+    ]
+  },
+  {
+    "objectID": "evaluation.html#evaluation-updater",
+    "href": "evaluation.html#evaluation-updater",
+    "title": "Evaluation Metrics",
+    "section": "Evaluation Updater",
+    "text": "Evaluation Updater\nThe inDox evaluator provides an update function to store evaluation metrics in a data frame. To stack your results, use the update function as shown below:\n\n\nCode\nresults = evaluator.update(inputs)\n\n\nThe output will be stored in the results data frame, which might look like this:\n\n\nCode\nresults\n\n\n\n\n\n\n\n\n\n\n0\n\n\n\n\nPrecision\n0.46\n\n\nRecall\n0.75\n\n\nF1-score\n0.68\n\n\nToxicity\n0.01\n\n\nBLEU\n0.01\n\n\nJaccard Similarity\n0.55\n\n\nCosine Similarity\n0.68\n\n\nSemantic\n0.79\n\n\nhallucination_score\n0.11\n\n\nPerplexity\n11.00\n\n\nARI\n0.50\n\n\nFlesch-Kincaid Grade Level\n0.91\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nif you want to clean results use reset method to clean it.\n\n\n\nMetric Explanations\n\nPrecision: Measures the accuracy of positive predictions. It’s the ratio of true positive results to the total predicted positives.\nRecall: Measures the ability to find all relevant instances. It’s the ratio of true positive results to all actual positives.\nF1-score: The harmonic mean of precision and recall. It balances the two metrics, providing a single measure of a model’s performance.\nToxicity: Quantifies the level of harmful or abusive content in the text.\nBLEU (Bilingual Evaluation Understudy): A metric for evaluating the quality of machine-translated text against one or more reference translations.\nJaccard Similarity: Measures the similarity between two sets by dividing the size of the intersection by the size of the union of the sets.\nCosine Similarity: Measures the cosine of the angle between two vectors in a multi-dimensional space. It’s used to determine the similarity between two text samples.\nSemantic Similarity: Evaluates the degree to which two pieces of text carry the same meaning.\nHallucination Score: Indicates the extent to which a model generates information that is not present in the source data.\nPerplexity: Measures how well a probability model predicts a sample. Lower perplexity indicates a better predictive model.\nARI (Automated Readability Index): An index that assesses the readability of a text based on sentence length and word complexity.\nFlesch-Kincaid Grade Level: An index that indicates the US school grade level required to understand the text.\n\n\n\nCustom Evaluator Example Usage\nBelow code provide an example usage of inDox evaluation with custom config :\n\n\nCode\nfrom Indox.Evaluation import Evaluation\n\ncfg = {\n       \"bert_score_model\": \"bert-base-uncased\",\n       }\n\ndimanstions = [\"BertScore\"]\n\nevaluator = Evaluation(cfg = cfg , dimanstions = dimanstions)\n\n\ninputs1 = {\n    'question': 'What is the capital of France?',\n    'answer': 'The capital of France is Paris.',\n    'context': 'France is a country in Western Europe. Paris is its capital.'\n}\n\ninputs2 = {\n    'question': 'What is the largest planet in our solar system?',\n    'answer': 'The largest planet in our solar system is Jupiter.',\n    'context': 'Our solar system consists of eight planets. Jupiter is the largest among them.'\n}\nresults = evaluator.update(inputs1)\nresults = evaluator.update(inputs2)\n\n\nDisplay the results:\n\n\nCode\nprint(results)\n\n\nExpected Output\n\nThe results data frame will contain evaluation metrics for each input:\n\n\nCode\n&gt;&gt;&gt;\n\n\n\n\n\n\n\n\n\n\n0\n1\n\n\n\n\nPrecision\n0.46\n0.86\n\n\nRecall\n0.75\n0.35\n\n\nF1-score\n0.68\n0.88",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Evaluation Metrics</span>"
+    ]
+  }
+]

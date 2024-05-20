@@ -1,4 +1,4 @@
-# Indox Retrieval Augmentation Documentation
+# Quick Start
 
 
 ## Overview
@@ -54,13 +54,12 @@ openai_qa = OpenAiQA(api_key=OPENAI_API_KEY,model="gpt-3.5-turbo-0125")
 openai_embeddings = OpenAiEmbedding(model="text-embedding-3-small",openai_api_key=OPENAI_API_KEY)
 ```
 
-### Modifying Configuration Settings
+## Modifying Configuration Settings
 
 In this section, we will learn how to change configuration settings
 dynamically. This is useful when you need to update certain parameters
 without restarting your application.
 
-#### Modifying Configuration
 
 To change a configuration setting, you can directly modify the
 `Indox.config` dictionary. Here is an example of how you can update a
@@ -112,7 +111,7 @@ Indox.store_in_vectorstore(chunks=docs_unstructured)
 
     <Indox.vectorstore.ChromaVectorStore at 0x28cf9369af0>
 
-### Quering
+## Quering
 
 ``` python
 query = "how cinderella reach her happy ending?"
