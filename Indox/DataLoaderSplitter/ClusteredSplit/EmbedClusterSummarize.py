@@ -161,7 +161,7 @@ def embed_cluster_summarize_texts(
     # Summarize the texts in each cluster (placeholder for actual summarization logic)
     for cluster in all_clusters:
         cluster_texts = expanded_df[expanded_df["cluster"] == cluster]["text"].tolist()
-        print(f"Cluster {cluster}: {cluster_texts}")
+        # print(f"Cluster {cluster}: {cluster_texts}")
     # Summarize the texts in each cluster
     summaries = []
     for cluster in all_clusters:
