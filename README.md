@@ -1,4 +1,12 @@
-# inDox: Advanced Search and Retrieval Augmentation Generative
+<div style="position: relative; width: 100%; text-align: center;">
+<h1>
+inDox: Advanced Search and Retrieval Augmentation Generative
+</h1>
+
+</div>
+<div style="position: relative; width: 100%; text-align: center;">
+    <img src="docs/lite-logo 1.png" alt="Logo" style="width: 80%; opacity: 0.7;"/>
+</div>
 
 **Indox Retrieval Augmentation** is an innovative application designed to streamline information extraction from a wide
 range of document types, including text files, PDF, HTML, Markdown, and LaTeX. Whether structured or unstructured, Indox
