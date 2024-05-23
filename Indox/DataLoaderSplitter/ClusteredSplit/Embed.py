@@ -36,16 +36,25 @@ def embed_cluster_texts(texts: List[str], embeddings, dim, threshold) -> pd.Data
     Returns:
     - pandas.DataFrame: A DataFrame containing the original texts, their embeddings, and the assigned cluster labels.
     """
-    text_embeddings_np = embed(
-        texts, embeddings
-    )  # Generate embeddings using the provided embeddings object
-    cluster_labels = perform_clustering(
-        text_embeddings_np,
-        dim=dim,
-        threshold=threshold,
-    )  # Perform clustering on the embeddings
+    # text_embeddings_np = embed(
+    #     texts, embeddings
+    # )  # Generate embeddings using the provided embeddings object
+    # cluster_labels = perform_clustering(
+    #     text_embeddings_np,
+    #     dim=dim,
+    #     threshold=threshold,
+    # )  # Perform clustering on the embeddings
+    # df = pd.DataFrame()  # Initialize a DataFrame to store the results
+    # df["text"] = texts  # Store original texts
+    # df["embd"] = list(text_embeddings_np)  # Store embeddings as a list in the DataFrame
+    # df["cluster"] = cluster_labels  # Store cluster labels
+    # return df
+    text_embeddings_np = embed(texts, embeddings)  # Generate embeddings using the provided embeddings object
+    cluster_labels = perform_clustering(text_embeddings_np, dim=dim,
+                                        threshold=threshold)  # Perform clustering on the embeddings
     df = pd.DataFrame()  # Initialize a DataFrame to store the results
     df["text"] = texts  # Store original texts
     df["embd"] = list(text_embeddings_np)  # Store embeddings as a list in the DataFrame
     df["cluster"] = cluster_labels  # Store cluster labels
     return df
+
