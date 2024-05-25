@@ -21,7 +21,7 @@ With a focus on adaptability and user-centric design, Indox aims to deliver futu
 features planned for upcoming releases. Join us in exploring how Indox can revolutionize your document processing
 workflow, bringing clarity and organization to your data retrieval needs.
 
-## Prerequisites
+## Dependency Requirements
 
 Before running this project, ensure that you have the following installed:
 
