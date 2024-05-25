@@ -1,4 +1,12 @@
-# inDox: Advanced Search and Retrieval Augmentation Generative
+<div style="position: relative; width: 100%; text-align: center;">
+<h1>
+inDox: Advanced Search and Retrieval Augmentation Generative
+</h1>
+
+</div>
+<div style="position: relative; width: 100%; text-align: center;">
+    <img src="docs/lite-logo 1.png" alt="Logo" style="width: 80%; opacity: 0.7;"/>
+</div>
 
 **Indox Retrieval Augmentation** is an innovative application designed to streamline information extraction from a wide
 range of document types, including text files, PDF, HTML, Markdown, and LaTeX. Whether structured or unstructured, Indox
@@ -13,7 +21,7 @@ With a focus on adaptability and user-centric design, Indox aims to deliver futu
 features planned for upcoming releases. Join us in exploring how Indox can revolutionize your document processing
 workflow, bringing clarity and organization to your data retrieval needs.
 
-## Prerequisites
+## Dependency Requirements
 
 Before running this project, ensure that you have the following installed:
 
@@ -28,6 +36,28 @@ Ensure your system also meets these requirements:
 - Suitable hardware capable of supporting intensive computational tasks.
 
 ## Installation
+
+
+## Getting Started
+
+The following command will install the latest stable inDox
+
+```
+pip install Indox
+```
+
+To install the latest development version, you may run
+
+```
+pip install git+https://github.com/osllmai/inDox@main
+```
+
+To configure the CLI, run
+
+```
+indox configure
+```
+
 
 Clone the repository and navigate to the directory:
 

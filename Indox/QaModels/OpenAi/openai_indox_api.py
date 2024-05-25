@@ -1,14 +1,12 @@
 import requests
 
 
-class OpenAiQaIndoxApi:
+class IndoxApiOpenAiQa:
     def __init__(self, api_key):
         self.api_key = api_key
 
     def _attempt_answer_question(self, context, question):
         """
-        Generates an answer to the given question using the Mistral model via the Inference API.
-
         Args:
             context (str): The text to base the answer on.
             question (str): The question to be answered.
@@ -49,7 +47,7 @@ class OpenAiQaIndoxApi:
         if response.status_code == 200:
             # If the response is a list, extract the first item
             answer_data = response.json()
-            generated_text = answer_data.get("total_token_length", "")
+            generated_text = answer_data.get("text_message", "")
             return generated_text
         else:
             raise Exception(f"Error From Indox API: {response.status_code}, {response.text}")
