@@ -37,6 +37,28 @@ Ensure your system also meets these requirements:
 
 ## Installation
 
+
+## Getting Started
+
+The following command will install the latest stable inDox
+
+```
+pip install Indox
+```
+
+To install the latest development version, you may run
+
+```
+pip install git+https://github.com/osllmai/inDox@main
+```
+
+To configure the CLI, run
+
+```
+indox configure
+```
+
+
 Clone the repository and navigate to the directory:
 
 ```bash
