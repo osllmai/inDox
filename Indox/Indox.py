@@ -21,9 +21,8 @@ class IndoxRetrievalAugmentation:
         self.output_tokens_all = 0
         self.db = None
         self.config = None
-        self.qa_model = None
+        # self.qa_model = None
         self.config = read_config()
-        self.test = None
         self.qa_history = []
 
     def update_config(self):
@@ -99,7 +98,7 @@ class IndoxRetrievalAugmentation:
             print(f"Unexpected error while storing in the vector store: {e}")
             return None
 
-    def answer_question(self, qa_model, query: str, top_k: int = 5, document_relevancy_filter: bool = False):
+    def answer_question(self, qa_model, query: str, db=None, top_k: int = 5, document_relevancy_filter: bool = False):
         """
         Answer a query using the QA model, finding the most relevant document chunks in the database.
 
@@ -108,7 +107,7 @@ class IndoxRetrievalAugmentation:
         - top_k (int): The number of top results to retrieve from the vector store.
         - document_relevancy_filter (bool, optional): If `True`, apply additional filtering using a RAG graph for
           document relevancy. Default is `False`.
-
+        -db : vector database
         Returns:
         - Tuple[str, Tuple[List[str], List[float]]]: A tuple containing the answer and the retrieved context:
             - `answer` (str): The answer provided by the QA model.
@@ -119,14 +118,19 @@ class IndoxRetrievalAugmentation:
         - ValueError: If the input query is empty.
         - Exception: Any other unexpected errors that occur while retrieving documents or generating the answer.
         """
+        vector_database = None
         if not query:
             raise ValueError("Query string cannot be empty.")
-
-        if self.db is None:
+        if db:
+            vector_database = db
+        elif self.db:
+            vector_database = self.db
+        if self.db and db is None:
             raise RuntimeError("Vector store database is not initialized.")
 
         try:
-            context, scores = self.db.retrieve(query, top_k=top_k)
+            context, scores = vector_database.retrieve(query, top_k=top_k)
+
             if not document_relevancy_filter:
                 # TODO: Add cost of embedding and qa_model
                 # response = qa_model.answer_question(context=context, question=query)
@@ -191,19 +195,19 @@ class IndoxRetrievalAugmentation:
     #
     #     If no output tokens were used, only the embedding token information is displayed.
     #     """
-        # if self.output_tokens_all > 0:
-        #     print(
-        #         f"""
-        #         Overview of All Tokens Used:
-        #         Input tokens sent to GPT-3.5 Turbo (Model ID: 0125) for summarizing: {self.input_tokens_all}
-        #         Output tokens received from GPT-3.5 Turbo (Model ID: 0125): {self.output_tokens_all}
-        #         Tokens used in the embedding section that were sent to the database: {self.embedding_tokens}
-        #         """
-        #     )
-        # else:
-        #     print(
-        #         f"""
-        #         Overview of All Tokens Used:
-        #         Tokens used in the embedding section that were sent to the database: {self.embedding_tokens}
-        #         """
-        #     )
+    # if self.output_tokens_all > 0:
+    #     print(
+    #         f"""
+    #         Overview of All Tokens Used:
+    #         Input tokens sent to GPT-3.5 Turbo (Model ID: 0125) for summarizing: {self.input_tokens_all}
+    #         Output tokens received from GPT-3.5 Turbo (Model ID: 0125): {self.output_tokens_all}
+    #         Tokens used in the embedding section that were sent to the database: {self.embedding_tokens}
+    #         """
+    #     )
+    # else:
+    #     print(
+    #         f"""
+    #         Overview of All Tokens Used:
+    #         Tokens used in the embedding section that were sent to the database: {self.embedding_tokens}
+    #         """
+    #     )

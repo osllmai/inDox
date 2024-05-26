@@ -9,7 +9,7 @@ class OpenAiQA:
         Initializes the GPT-3 model with the specified model version.
 
         Args:
-            model (str, optional): The GPT-3 model version to use for generating summaries. Defaults to "text-davinci-003".
+            model (str, optional): The GPT-3 model.
         """
         self.model = model
         self.client = OpenAI(api_key=api_key)

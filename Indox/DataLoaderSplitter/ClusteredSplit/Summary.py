@@ -37,9 +37,8 @@ def summarize(context):
                 max_tokens=config["summary_model"]["max_tokens"],
                 model="gpt-3.5-turbo-0125",
             )
-            input_tokens = response.usage.prompt_tokens
-            output_tokens = response.usage.total_tokens - response.usage.prompt_tokens
-            return response.choices[0].message.content.replace("\n", " "), input_tokens, output_tokens
+
+            return response.choices[0].message.content.replace("\n", " ")
         else:
             hf_model = SummarizationModelHuggingFace(
                 config["summary_model"]["model_name"],

@@ -133,8 +133,7 @@ def embed_cluster_summarize_texts(
       2. The second DataFrame (`df_summary`) contains summaries for each cluster, the specified level of detail,
          and the cluster identifiers.
     """
-    input_tokens_all = 0
-    output_tokens_all = 0
+
     # Embed and cluster the texts, resulting in a DataFrame with 'text', 'embd', and 'cluster' columns
     df_clusters = embed_cluster_texts(texts, embeddings, dim, threshold)
 
@@ -166,12 +165,11 @@ def embed_cluster_summarize_texts(
     summaries = []
     for cluster in all_clusters:
         cluster_texts = expanded_df[expanded_df["cluster"] == cluster]["text"].tolist()
-        summary, input_tokens, output_tokens = summarize(
+        summary= summarize(
             cluster_texts
         )
         summaries.append(summary)
-        input_tokens_all += input_tokens
-        output_tokens_all += output_tokens
+
     # Create a DataFrame to store summaries with their corresponding cluster and level
     df_summary = pd.DataFrame(
         {
@@ -184,7 +182,7 @@ def embed_cluster_summarize_texts(
     if re_chunk:
         df_summary = rechunk(df_summary=df_summary, max_chunk=max_chunk)
 
-    return df_clusters, df_summary, input_tokens_all, output_tokens_all
+    return df_clusters, df_summary
 
 
 def recursive_embed_cluster_summarize(texts: List[str], embeddings, dim: int, threshold: float, max_chunk: int = 100,
@@ -214,11 +212,7 @@ def recursive_embed_cluster_summarize(texts: List[str], embeddings, dim: int, th
     results = {}
 
     # Perform embedding, clustering, and summarization for the current level
-    df_clusters, df_summary, input_tokens, output_tokens = \
-        embed_cluster_summarize_texts(texts, embeddings, dim, threshold, level, re_chunk=re_chunk, max_chunk=max_chunk)
-
-    input_tokens_all = input_tokens
-    output_tokens_all = output_tokens
+    df_clusters, df_summary =  embed_cluster_summarize_texts(texts, embeddings, dim, threshold, level, re_chunk=re_chunk, max_chunk=max_chunk)
 
     # Store the results of the current level
     results[level] = (df_clusters, df_summary)
@@ -227,11 +221,10 @@ def recursive_embed_cluster_summarize(texts: List[str], embeddings, dim: int, th
     unique_clusters = df_summary["cluster"].nunique()
     if level < n_levels and unique_clusters > 1:
         new_texts = df_summary["summaries"].tolist()
-        next_level_results, input_tokens, output_tokens = recursive_embed_cluster_summarize(
+        next_level_results = recursive_embed_cluster_summarize(
             new_texts, embeddings, dim, threshold, max_chunk, level + 1, n_levels, re_chunk, remove_sword
         )
-        input_tokens_all += input_tokens
-        output_tokens_all += output_tokens
+
         results.update(next_level_results)
 
-    return results, input_tokens_all, output_tokens_all
+    return results

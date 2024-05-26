@@ -11,11 +11,13 @@ def OpenAiEmbedding(model, openai_api_key):
     return embeddings
 
 
-def HuggingFaceEmbedding(model_name="multi-qa-mpnet-base-cos-v1"):
+def HuggingFaceEmbedding(model):
     from langchain_community.embeddings import HuggingFaceEmbeddings
-    embeddings = HuggingFaceEmbeddings(model_name=model_name)
+    embeddings = HuggingFaceEmbeddings(model_name=model)
     return embeddings
 
+
+# multi-qa-mpnet-base-cos-v1
 
 class IndoxOpenAIEmbedding:
     def __init__(self, api_key: str, model: str):

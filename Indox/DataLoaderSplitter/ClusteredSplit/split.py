@@ -22,8 +22,7 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
     - Tuple or List:
       - If `do_clustering` is `True`, returns a tuple containing:
         - `all_chunks` (List[str]): A list of all document chunks (leaf and extra).
-        - `input_tokens_all` (int): The total number of input tokens used.
-        - `output_tokens_all` (int): The total number of output tokens received.
+
       - Otherwise, returns a list of leaf chunks without further clustering.
 
     Raises:
@@ -47,14 +46,13 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
         if remove_sword:
             leaf_chunks = remove_stopwords_chunk(leaf_chunks)
 
-        results, input_tokens_all, output_tokens_all = recursive_embed_cluster_summarize(
+        results = recursive_embed_cluster_summarize(
             texts=leaf_chunks, embeddings=embeddings, dim=dim, threshold=threshold, level=1, n_levels=3,
             re_chunk=re_chunk, max_chunk=int(chunk_size / 2), remove_sword=remove_sword
         )
         all_chunks = get_all_texts(results=results, texts=leaf_chunks)
 
         print("End Chunking & Clustering process.")
-        # return all_chunks, input_tokens_all, output_tokens_all
         return all_chunks
 
 
