@@ -21,7 +21,7 @@ With a focus on adaptability and user-centric design, Indox aims to deliver futu
 features planned for upcoming releases. Join us in exploring how Indox can revolutionize your document processing
 workflow, bringing clarity and organization to your data retrieval needs.
 
-## Prerequisites
+## Dependency Requirements
 
 Before running this project, ensure that you have the following installed:
 
@@ -36,6 +36,28 @@ Ensure your system also meets these requirements:
 - Suitable hardware capable of supporting intensive computational tasks.
 
 ## Installation
+
+
+## Getting Started
+
+The following command will install the latest stable inDox
+
+```
+pip install Indox
+```
+
+To install the latest development version, you may run
+
+```
+pip install git+https://github.com/osllmai/inDox@main
+```
+
+To configure the CLI, run
+
+```
+indox configure
+```
+
 
 Clone the repository and navigate to the directory:
 
