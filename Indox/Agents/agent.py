@@ -3,9 +3,8 @@ import re
 
 from pydantic import BaseModel
 from typing import List, Dict, Tuple
-from Indox.QaModels.Mistral import MistralAgent
+
 from Indox.Agents.base import ToolInterface
-from Indox.Agents.tools.repl import PythonREPLTool
 
 FINAL_ANSWER_TOKEN = "Final Answer:"
 OBSERVATION_TOKEN = "Observation:"
@@ -32,13 +31,15 @@ Thought: {previous_responses}
 """
 
 
-class Agent(BaseModel):
-    llm: MistralAgent
-    tools: List[ToolInterface]
-    prompt_template: str = PROMPT_TEMPLATE
-    max_loops: int = 15
-    # The stop pattern is used, so the LLM does not hallucinate until the end
-    stop_pattern: List[str] = [f'\n{OBSERVATION_TOKEN}', f'\n\t{OBSERVATION_TOKEN}']
+class Agent:
+    def __init__(self, llm, tools, prompt_template=PROMPT_TEMPLATE, max_loops=15,
+                 stop_pattern=[f'\n{OBSERVATION_TOKEN}', f'\n\t{OBSERVATION_TOKEN}']):
+        self.llm = llm
+        self.tools = tools
+        self.prompt_template = prompt_template
+        self.max_loops = max_loops
+        # The stop pattern is used, so the LLM does not hallucinate until the end
+        self.stop_pattern = stop_pattern
 
     @property
     def tool_description(self) -> str:
@@ -56,11 +57,11 @@ class Agent(BaseModel):
         previous_responses = []
         num_loops = 0
         prompt = self.prompt_template.format(
-                today = datetime.date.today(),
-                tool_description=self.tool_description,
-                tool_names=self.tool_names,
-                question=question,
-                previous_responses='{previous_responses}'
+            today=datetime.date.today(),
+            tool_description=self.tool_description,
+            tool_names=self.tool_names,
+            question=question,
+            previous_responses='{previous_responses}'
         )
         print(prompt.format(previous_responses=''))
         while num_loops < self.max_loops:
@@ -77,7 +78,7 @@ class Agent(BaseModel):
             previous_responses.append(generated)
 
     def decide_next_action(self, prompt: str) -> str:
-        generated = self.llm.generate(prompt)[1]
+        generated = self.llm.generate(prompt)
         tool, tool_input = self._parse(generated)
         return generated, tool, tool_input
 
@@ -95,12 +96,16 @@ class Agent(BaseModel):
 
 if __name__ == '__main__':
     import os
+    from dotenv import load_dotenv
+    from Indox.QaModels import IndoxApiOpenAiQaAgent
+    from Indox.Agents.tools.repl import PythonREPLTool
+    from Indox.Agents.tools.search import SerpAPITool
 
-    # HF_API_KEY = os.getenv('HF_API_KEY')
-    HF_API_KEY = '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'
-    model_name = "mistralai/Mistral-7B-Instruct-v0.2"
-    print(f"HF_API_KEY = {HF_API_KEY}")
-    agent = Agent(llm=MistralAgent(api_key=HF_API_KEY, model=model_name), tools=[PythonREPLTool()])
-    result = agent.run("What is 12 * 9 - 34 in Python?")
+    print(load_dotenv())
+
+    INDOX_OPENAI_API_KEY = os.getenv("INDOX_OPENAI_API_KEY")
+    agent = Agent(llm=IndoxApiOpenAiQaAgent(api_key=INDOX_OPENAI_API_KEY), tools=[PythonREPLTool(), SerpAPITool()])
+    result = agent.run("what is the result of 10 * 7 and then subtrack from 9 and then multiply answer to 100, "
+                       "also give me the result of 7 * 8")
 
     print(f"Final answer is {result}")

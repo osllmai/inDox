@@ -50,6 +50,6 @@ class PythonREPLTool(ToolInterface):
 
 if __name__ == '__main__':
     repl_tool = PythonREPLTool()
-    result = repl_tool.use('print(5 * 7)')
-    assert result == "35\n"
+    result = repl_tool.use('print(9 * 7)')
+    assert result == "63\n"
     print(result)

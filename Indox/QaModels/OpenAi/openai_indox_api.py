@@ -1,11 +1,11 @@
 import requests
 
 
-class IndoxApiOpenAiQa:
+class IndoxApiOpenAiQaAgent:
     def __init__(self, api_key):
         self.api_key = api_key
 
-    def _attempt_answer_question(self, context, question):
+    def _attempt_answer_question(self, prompt):
         """
         Args:
             context (str): The text to base the answer on.
@@ -30,7 +30,7 @@ class IndoxApiOpenAiQa:
                     "role": "system"
                 },
                 {
-                    "content": f"Context: {context}\nQuestion: {question}\nAnswer:",
+                    "content": f"{prompt}",
                     "role": "user"
                 }
             ],
@@ -52,7 +52,7 @@ class IndoxApiOpenAiQa:
         else:
             raise Exception(f"Error From Indox API: {response.status_code}, {response.text}")
 
-    def answer_question(self, context, question):
+    def generate(self, prompt):
         """
         Answer a question based on the given context using the Mistral 7B Instruct model.
 
@@ -64,7 +64,7 @@ class IndoxApiOpenAiQa:
             str: The generated answer.
         """
         try:
-            return self._attempt_answer_question(context, question)
+            return self._attempt_answer_question(prompt)
         except Exception as e:
             print(e)
             return str(e)

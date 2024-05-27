@@ -61,7 +61,8 @@ class MistralAgent(BaseModel):
         response = requests.post(
             f"https://api-inference.huggingface.co/models/{self.model}",
             headers=headers,
-            json={"inputs": f"Context: \nQuestion: {prompt}\n Answer:"}
+            # json={"inputs": f"Context: \nQuestion: {prompt}\n Answer:"}
+            json={"inputs":prompt}
         )
         if response.status_code == 200:
             answer_data = response.json()
