@@ -4,6 +4,7 @@ from Indox import IndoxRetrievalAugmentation
 from streamlit_extras.customize_running import center_running
 from dotenv import load_dotenv
 
+
 Indox = IndoxRetrievalAugmentation()
 
 # Set up the page configuration
