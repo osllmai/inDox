@@ -11,7 +11,6 @@ numpy==1.26.4
 pandas==2.2.2
 PyPDF2==3.0.1
 PyYAML==6.0.1
-PyYAML==6.0.1
 Requests==2.31.0
 scikit_learn==1.4.2
 sentence_transformers==2.2.2
