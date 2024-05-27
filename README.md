@@ -1,8 +1,13 @@
 
 <p align="center">
-<div style="position: relative; width: 100%; text-align: center;">
+
+
+<h3 align="center">
     <img src="docs/lite-logo 1.png" alt="Logo" style="width: 80%; opacity: 0.7;"/>
-</p>
+
+</h3>
+
+
 
 <div style="position: relative; width: 100%; text-align: center;">
 <h1>
