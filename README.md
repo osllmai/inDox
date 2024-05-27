@@ -1,20 +1,16 @@
 
+<p align="center">
+<div style="position: relative; width: 100%; text-align: center;">
+    <img src="docs/lite-logo 1.png" alt="Logo" style="width: 80%; opacity: 0.7;"/>
+</p>
+
 <div style="position: relative; width: 100%; text-align: center;">
 <h1>
 inDox 
 <p align="center">Advanced Search and Retrieval Augmentation Generative
 </p>
 
-
 </h1>
-
-</div>
-<p align="center">
-<div style="position: relative; width: 100%; text-align: center;">
-    <img src="docs/lite-logo 1.png" alt="Logo" style="width: 80%; opacity: 0.7;"/>
-</p>
-</div>
-
 
 [![License](https://img.shields.io/github/license/gretelai/gretel-python-client)](https://github.com/gretelai/gretel-python-client/blob/main/LICENSE)
 [![PyPI](https://badge.fury.io/py/gretel-client.svg)](https://badge.fury.io/py/gretel-client)
@@ -35,8 +31,6 @@ inDox
 <p align="center">
   <b>NEW:</b> <a href="https://docs.google.com/forms/d/1CQXJvxLUqLBSXnjqQmRpOyZqD6nrKubLz2WTcIJ37fU/prefill">Subscribe to our mailing list</a> for updates and news!
 </p>
-
-
 
 
 
