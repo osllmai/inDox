@@ -34,8 +34,9 @@ inDox
   <a href="https://github.com/osllmai/inDox/wiki">Official Website</a> &bull; <a href="https://osllm.ai">Documentation</a> &bull; <a href="https://discord.gg/pufX5Aua2g">Discord</a>
 </p>
 
+
 <p align="center">
-  <b>NEW:</b> <a href="https://docs.google.com/forms/d/1CQXJvxLUqLBSXnjqQmRpOyZqD6nrKubLz2WTcIJ37fU/prefill">Subscribe to our mailing list</a> for updates and news!
+  <a href="https://osllm.ai">Official Website</a> &bull; <a href="https://github.com/osllmai/inDox/wiki">Documentation</a> &bull; <a href="https://discord.gg/pufX5Aua2g">Discord</a>
 </p>
 
 
