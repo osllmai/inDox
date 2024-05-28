@@ -57,6 +57,7 @@ class IndoxRetrievalAugmentation:
                 raise RuntimeError('Failed to connect to the vector store database.')
 
             print("Connection established successfully.")
+            return self.db
         except ValueError as ve:
             raise ValueError(f"Invalid input: {ve}")
         except RuntimeError as re:

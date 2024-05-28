@@ -1,12 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Iterable
-from langchain_community.vectorstores.pgvector import PGVector
-from langchain_community.vectorstores.pgvector import DistanceStrategy as PGDistancesTRATEGY
-from langchain_community.vectorstores.chroma import Chroma
-from langchain_community.vectorstores.faiss import FAISS
 from langchain_community.vectorstores.utils import DistanceStrategy
-from langchain.docstore.in_memory import InMemoryDocstore
-import faiss
+from langchain_community.docstore.in_memory import InMemoryDocstore
 import logging
 from .utils import read_config, construct_postgres_connection_string
 from langchain_core.documents import Document
@@ -64,7 +58,10 @@ class PGVectorStore(VectorStoreBase):
             collection_name (str): The name of the collection in the database.
             embedding (Embedding): The embedding to be used.
         """
+        from langchain_community.vectorstores.pgvector import PGVector
+        from langchain_community.vectorstores.pgvector import DistanceStrategy as PGDistancesTRATEGY
         super().__init__()
+        self.conn_string = conn_string
         self.db = PGVector(embedding_function=embedding, collection_name=collection_name,
                            connection_string=conn_string, distance_strategy=PGDistancesTRATEGY.COSINE)
 
@@ -118,6 +115,7 @@ class ChromaVectorStore(VectorStoreBase):
             collection_name (str): The name of the collection in the database.
             embedding (Embedding): The embedding to be used.
         """
+        from langchain_community.vectorstores.chroma import Chroma
         super().__init__()
         self.db = Chroma(collection_name=collection_name, embedding_function=embedding)
 
@@ -154,6 +152,20 @@ class ChromaVectorStore(VectorStoreBase):
         scores = [d[1] for d in retrieved]
         return context, scores
 
+    def get_all_documents(self):
+        """
+        Retrieves all documents from the Chroma vector store.
+
+        Returns:
+            List[dict]: A list of all documents with their metadata.
+        """
+        try:
+            all_documents = self.db.get()
+            return all_documents
+        except Exception as e:
+            logging.error(f"Failed to retrieve documents: {e}")
+            raise RuntimeError(f"Can't retrieve documents from the vector store: {e}")
+
 
 class FAISSVectorStore(VectorStoreBase):
     """
@@ -170,6 +182,8 @@ class FAISSVectorStore(VectorStoreBase):
         Args:
             embedding (Embedding): The embedding to be used.
         """
+        from langchain_community.vectorstores.faiss import FAISS
+        import faiss
         super().__init__()
 
         embedding_dim = len(embedding.embed_query(""))
@@ -222,6 +236,20 @@ class FAISSVectorStore(VectorStoreBase):
         context = [d[0].page_content for d in retrieved]
         scores = [d[1] for d in retrieved]
         return context, scores
+
+    def get_all_documents(self):
+        """
+        Retrieves all documents from the Chroma vector store.
+
+        Returns:
+            List[dict]: A list of all documents with their metadata.
+        """
+        try:
+            all_documents = self.db.get()
+            return all_documents
+        except Exception as e:
+            logging.error(f"Failed to retrieve documents: {e}")
+            raise RuntimeError(f"Can't retrieve documents from the vector store: {e}")
 
 
 def get_vector_store(embeddings, collection_name: str):

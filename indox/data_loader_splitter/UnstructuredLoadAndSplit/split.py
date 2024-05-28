@@ -1,7 +1,7 @@
 from indox.data_loader_splitter.UnstructuredLoadAndSplit.loader import create_documents_unstructured
 from indox.data_loader_splitter.utils.clean import remove_stopwords
 from unstructured.chunking.title import chunk_by_title
-from langchain_community.vectorstores.utils import c
+from langchain_community.vectorstores.utils import filter_complex_metadata
 from typing import List, Tuple, Optional, Any, Dict
 from langchain_core.documents import Document
 
