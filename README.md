@@ -20,7 +20,7 @@ inDox
 [![License](https://img.shields.io/github/license/gretelai/gretel-python-client)](https://github.com/gretelai/gretel-python-client/blob/main/LICENSE)
 [![PyPI](https://badge.fury.io/py/gretel-client.svg)](https://badge.fury.io/py/gretel-client)
 [![Python](https://img.shields.io/pypi/pyversions/gretel-client.svg)](https://github.com/gretelai/gretel-python-client)
-[![Downloads](https://pepy.tech/badge/gretel-client)](https://pepy.tech/project/gretel-client)
+[![Downloads](https://static.pepy.tech/badge/indox)](https://pepy.tech/project/indox)
 
 [![Discord](https://img.shields.io/discord/1007817822614847500?label=Discord&logo=Discord&style=social)](https://gretel.ai/discord)
 [![GitHub stars](https://img.shields.io/github/stars/gretelai/gretel-python-client?style=social)](https://github.com/gretelai/gretel-python-client)
@@ -30,8 +30,9 @@ inDox
 
 
 <p align="center">
-  <a href="https://osllm.ai">Official Website</a> &bull; <a href="https://osllm.ai">Documentation</a> &bull; <a href="https://discord.gg/pufX5Aua2g">Discord</a>
+  <a href="https://osllm.ai">Official Website</a> &bull; <a href="https://github.com/osllmai/inDox/wiki">Documentation</a> &bull; <a href="https://discord.gg/pufX5Aua2g">Discord</a>
 </p>
+
 
 <p align="center">
   <b>NEW:</b> <a href="https://docs.google.com/forms/d/1CQXJvxLUqLBSXnjqQmRpOyZqD6nrKubLz2WTcIJ37fU/prefill">Subscribe to our mailing list</a> for updates and news!
