@@ -8,7 +8,6 @@
 </h3>
 
 
-
 <div style="position: relative; width: 100%; text-align: center;">
 <h1>
 inDox 
