@@ -1,5 +1,5 @@
 import importlib
-from Indox.utils import convert_latex_to_md
+from indox.utils import convert_latex_to_md
 
 
 def import_unstructured_partition(content_type):

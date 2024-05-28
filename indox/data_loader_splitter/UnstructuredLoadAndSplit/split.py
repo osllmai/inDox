@@ -1,5 +1,5 @@
-from Indox.DataLoaderSplitter.UnstructuredLoadAndSplit.loader import create_documents_unstructured
-from Indox.DataLoaderSplitter.utils.clean import remove_stopwords
+from indox.data_loader_splitter.UnstructuredLoadAndSplit.loader import create_documents_unstructured
+from indox.data_loader_splitter.utils.clean import remove_stopwords
 from unstructured.chunking.title import chunk_by_title
 from langchain_community.vectorstores.utils import filter_complex_metadata
 from typing import List, Tuple, Optional, Any, Dict
