@@ -27,10 +27,6 @@ inDox
 
 
 
-
-
-
-
 <p align="center">
   <a href="https://osllm.ai">Official Website</a> &bull; <a href="https://github.com/osllmai/inDox/wiki">Documentation</a> &bull; <a href="https://discord.gg/pufX5Aua2g">Discord</a>
 </p>
