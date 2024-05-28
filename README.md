@@ -29,8 +29,9 @@ inDox
 
 
 
+
 <p align="center">
-  <a href="https://osllm.ai">Official Website</a> &bull; <a href="  <a href="https://osllm.ai">Official Website</a> &bull; <a href="https://osllm.ai">Documentation</a> &bull; <a href="[https://discord.gg/pufX5Aua2g](https://github.com/osllmai/inDox/wiki)">Discord</a>">Documentation</a> &bull; <a href="https://discord.gg/pufX5Aua2g">Discord</a>
+  <a href="https://github.com/osllmai/inDox/wiki">Official Website</a> &bull; <a href="https://osllm.ai">Documentation</a> &bull; <a href="https://discord.gg/pufX5Aua2g">Discord</a>
 </p>
 
 <p align="center">
