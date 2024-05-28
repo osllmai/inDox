@@ -128,7 +128,7 @@ Alternatively, you can use Chroma or Faiss as your vector store. Make sure to sp
 Import the necessary classes from the Indox package.
 
 ``` python
-from Indox import IndoxRetrievalAugmentation
+from indox import IndoxRetrievalAugmentation
 ```
 
 ### Initialize Indox
@@ -193,11 +193,11 @@ or performance requirements.
 ### Importing QA and Embedding Models
 
 ``` python
-from Indox.QaModels import OpenAiQA
+from indox.qa_models import OpenAiQA
 ```
 
 ``` python
-from Indox.Embeddings import OpenAiEmbedding
+from indox.embeddings import OpenAiEmbedding
 ```
 
 
@@ -227,7 +227,7 @@ organizing thme document into manageable sections for further
 processing.
 
 ``` python
-from Indox.DataLoaderSplitter import UnstructuredLoadAndSplit
+from indox.data_loader_splitter import UnstructuredLoadAndSplit
 ```
 
 ``` python
