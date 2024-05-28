@@ -1,7 +1,6 @@
 import streamlit as st
 import os
-from Indox import IndoxRetrievalAugmentation
-from streamlit_extras.customize_running import center_running
+from indox import IndoxRetrievalAugmentation
 from dotenv import load_dotenv
 
 
@@ -125,7 +124,7 @@ if st.session_state.step == 2:
 
     next_button_disabled = not (embedding_model_set and qa_model_set)
 
-    if st.button("Next", disabled=next_button_disabled, on_click=center_running):
+    if st.button("Next", disabled=next_button_disabled):
 
         # Save configurations to session state
         if openai_embedding_checked:
