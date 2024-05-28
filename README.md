@@ -16,20 +16,19 @@ inDox
 
 </h1>
 
-[![License](https://img.shields.io/github/license/gretelai/gretel-python-client)](https://github.com/gretelai/gretel-python-client/blob/main/LICENSE)
-[![PyPI](https://badge.fury.io/py/gretel-client.svg)](https://badge.fury.io/py/gretel-client)
-[![Python](https://img.shields.io/pypi/pyversions/gretel-client.svg)](https://github.com/gretelai/gretel-python-client)
+[![License](https://img.shields.io/github/license/osllmai/inDox)](https://github.com/osllmai/inDox/blob/main/LICENSE)
+[![PyPI](https://badge.fury.io/py/Indox.svg)](https://pypi.org/project/Indox/0.1.4/)
+[![Python](https://img.shields.io/pypi/pyversions/Indox.svg)](https://pypi.org/project/Indox/0.1.4/)
 [![Downloads](https://static.pepy.tech/badge/indox)](https://pepy.tech/project/indox)
 
-[![Discord](https://img.shields.io/discord/1007817822614847500?label=Discord&logo=Discord&style=social)](https://gretel.ai/discord)
-[![GitHub stars](https://img.shields.io/github/stars/gretelai/gretel-python-client?style=social)](https://github.com/gretelai/gretel-python-client)
-
+[![Discord](https://img.shields.io/discord/1223867382460579961?label=Discord&logo=Discord&style=social)](https://discord.com/invite/ossllmai)
+[![GitHub stars](https://img.shields.io/github/stars/osllmai/inDox?style=social)](https://github.com/osllmai/inDox)
 
 
 
 
 <p align="center">
-  <a href="https://osllm.ai">Official Website</a> &bull; <a href="https://github.com/osllmai/inDox/wiki">Documentation</a> &bull; <a href="https://discord.gg/pufX5Aua2g">Discord</a>
+  <a href="https://osllm.ai">Official Website</a> &bull; <a href="https://github.com/osllmai/inDox/wiki">Documentation</a> &bull; <a href="https://discord.gg/qrCc56ZR">Discord</a>
 </p>
 
 
