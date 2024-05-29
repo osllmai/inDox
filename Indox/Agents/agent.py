@@ -105,7 +105,6 @@ if __name__ == '__main__':
 
     INDOX_OPENAI_API_KEY = os.getenv("INDOX_OPENAI_API_KEY")
     agent = Agent(llm=IndoxApiOpenAiQaAgent(api_key=INDOX_OPENAI_API_KEY), tools=[PythonREPLTool(), SerpAPITool()])
-    result = agent.run("what is the result of 10 * 7 and then subtrack from 9 and then multiply answer to 100, "
-                       "also give me the result of 7 * 8")
+    result = agent.run("world cup 2026")
 
     print(f"Final answer is {result}")
