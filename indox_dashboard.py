@@ -105,29 +105,19 @@ if st.session_state.step == 1:
         st.session_state.use_existing_database = True
         # Existing database section
         st.write("### Choose Database Type")
-        db_type = st.selectbox("Database Type", ["Chroma", "Faiss", "Postgres"])
+        db_type = st.selectbox("Database Type", ["Chroma", "Faiss", "Postgres(pgvector)"])
         st.session_state.db_type = db_type
-
+        if db_type == "Postgres(pgvector)":
+            Indox.config["vector_store"] = "pgvector"
+            Indox.update_config()
+        else:
+            Indox.config["vector_store"] = db_type.lower()
+            Indox.update_config()
         st.write("### Enter Database Address")
         db_address = st.text_input("Database Address")
+        st.session_state.db_address = db_address
 
-        if db_address:
-            # Simple validation for database address (this can be more complex based on actual requirements)
-            if db_type == "Postgres":
-                import re
-
-                pattern = r'^postgresql:\/\/[^:]+:[^@]+@[^:]+:[0-9]+\/[^\/]+$'
-                if re.match(pattern, db_address):
-                    st.session_state.db_address = db_address
-                    next_button_disabled = False
-                else:
-                    st.error("Invalid Postgres database address format.")
-                    next_button_disabled = True
-            else:
-                st.session_state.db_address = db_address
-                next_button_disabled = False
-        else:
-            next_button_disabled = True
+        next_button_disabled = False
 
     if st.button("Next", disabled=next_button_disabled):
         if not st.session_state.use_existing_database:
@@ -146,6 +136,8 @@ if st.session_state.step == 2:
     if st.button("Next"):
         try:
             if db_type == "Postgres(pgvector)":
+                Indox.config["vector_store"] = "pgvector"
+                Indox.update_config()
                 st.session_state.step = 3
             else:
                 Indox.config["vector_store"] = db_type.lower()
@@ -441,6 +433,7 @@ if st.session_state.step == 7 and st.session_state.vector_store_initialized:
 
     with tab3:
         st.header("All Data in the Database")
+        print(db_type)
         if db_type.lower() == "postgres(pgvector)":
             query = "SELECT * FROM public.langchain_pg_embedding"
             data = fetch_data(query, db.conn_string)

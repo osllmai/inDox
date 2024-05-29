@@ -122,11 +122,11 @@ class IndoxRetrievalAugmentation:
         vector_database = None
         if not query:
             raise ValueError("Query string cannot be empty.")
-        if db:
+        if db is not None:
             vector_database = db
-        elif self.db:
+        elif self.db and db is None:
             vector_database = self.db
-        if self.db and db is None:
+        elif self.db and db is None:
             raise RuntimeError("Vector store database is not initialized.")
 
         try:
