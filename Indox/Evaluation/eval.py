@@ -4,11 +4,12 @@ import pandas as pd
 import textstat
 import torch
 from bert_score import BERTScorer
+from pandas import DataFrame
 from sentence_transformers import CrossEncoder
 from transformers import BertTokenizer, BertForSequenceClassification, GPT2LMHeadModel, GPT2Tokenizer
 from transformers import pipeline
 from .similarity import Similarity
-
+import numpy as np
 cfg = {"bert_toxic_tokenizer": "unitary/toxic-bert",
        "bert_toxic_model": "unitary/toxic-bert",
        "semantic_similarity": "sentence-transformers/bert-base-nli-mean-tokens",
@@ -19,6 +20,12 @@ cfg = {"bert_toxic_tokenizer": "unitary/toxic-bert",
        }
 
 ALL_DIMANSIONS = ["BertScore", "Toxicity", "Similarity", "Reliability", "Fairness" , "Readibility"]
+
+
+def to_float(x):
+    if isinstance(x, np.ndarray):
+        return x.item()  # Convert numpy array to a single float
+    return float(x)  # Convert other types to float
 
 
 class Evaluation:
@@ -33,14 +40,16 @@ class Evaluation:
         self.metrics = [eval(dim)(self.config) for dim in dimensions]
         self.result = pd.DataFrame()
 
-    def __call__(self, inputs=None) -> Dict[str, Any]:
+    def __call__(self, inputs=None) -> DataFrame:
         scores = {}
         [scores.update(score(inputs)) for score in self.metrics]
+        scores = pd.DataFrame(scores)
+        scores = scores.applymap(to_float).T
         return scores
 
     def update(self, inputs: Any) -> pd.DataFrame:
         result = self.__call__(inputs)
-        self.result = pd.concat([self.result, pd.DataFrame([result])], ignore_index=True)
+        self.result = pd.concat([self.result, result], ignore_index=True)
         return self.result
 
     def reset(self) -> None:

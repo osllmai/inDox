@@ -1,11 +1,11 @@
-import tiktoken
-
 from .utils import update_config
 from typing import List, Optional, Any
 from .vectorstore import get_vector_store
 from .utils import read_config
 from .Graph import RAGGraph
 import warnings
+
+from .visualization import visualize_contexts_
 
 warnings.filterwarnings("ignore")
 
@@ -24,6 +24,8 @@ class IndoxRetrievalAugmentation:
         self.qa_model = None
         self.config = read_config()
         self.test = None
+        self.qa_history = []
+
     def update_config(self):
         """
         Calls `update_config` to update the configuration, then loads
@@ -31,7 +33,7 @@ class IndoxRetrievalAugmentation:
         # Update the configuration
         update_config(self.config)
 
-    def connect_to_vectorstore(self, embeddings,collection_name: str):
+    def connect_to_vectorstore(self, embeddings, collection_name: str):
         """
         Establish a connection to the vector store database using configuration parameters.
 
@@ -97,7 +99,7 @@ class IndoxRetrievalAugmentation:
             print(f"Unexpected error while storing in the vector store: {e}")
             return None
 
-    def answer_question(self,qa_model, query: str, top_k: int = 5, document_relevancy_filter: bool = False):
+    def answer_question(self, qa_model, query: str, top_k: int = 5, document_relevancy_filter: bool = False):
         """
         Answer a query using the QA model, finding the most relevant document chunks in the database.
 
@@ -137,6 +139,8 @@ class IndoxRetrievalAugmentation:
                 answer = qa_model.answer_question(context=graph_out['documents'], question=graph_out['question'])
                 context, scores = graph_out['documents'], graph_out['scores']
             retrieve_context = (context, scores)
+            new_entry = {'query': query, 'answer': answer, 'context': context, 'scores': scores}
+            self.qa_history.append(new_entry)
             return answer, retrieve_context
 
         except ValueError as ve:
@@ -148,6 +152,7 @@ class IndoxRetrievalAugmentation:
             print(f"Unexpected error while answering the question: {e}")
             return "", []
 
+    # TODO add visualization for evaluation
     # def evaluate(self):
     #     """
     #     Evaluate the performance of the system based on the inputs provided from previous queries.
@@ -164,31 +169,41 @@ class IndoxRetrievalAugmentation:
     #     else:
     #         raise RuntimeError("No inputs available for evaluation. Please make a query first.")
 
-    def get_tokens_info(self):
+    def visualize_context(self):
         """
-        Print an overview of the number of tokens used for different operations.
-
-        Displays the following token counts:
-        - `input_tokens_all`: Number of input tokens sent to GPT-3.5 Turbo for summarization.
-        - `output_tokens_all`: Number of output tokens received from GPT-3.5 Turbo.
-        - `embedding_tokens`: Number of tokens used in the embedding process and sent to the database.
-
-        If no output tokens were used, only the embedding token information is displayed.
+        Visualize the context of the last query made by the user.
         """
-        if self.output_tokens_all > 0:
-            print(
-                f"""
-                Overview of All Tokens Used:
-                Input tokens sent to GPT-3.5 Turbo (Model ID: 0125) for summarizing: {self.input_tokens_all}
-                Output tokens received from GPT-3.5 Turbo (Model ID: 0125): {self.output_tokens_all}
-                Tokens used in the embedding section that were sent to the database: {self.embedding_tokens}
-                """
-            )
-        else:
-            print(
-                f"""
-                Overview of All Tokens Used:
-                Tokens used in the embedding section that were sent to the database: {self.embedding_tokens}
-                """
-            )
+        if not self.qa_history:
+            print("No entries to visualize.")
+            return
 
+        last_entry = self.qa_history[-1]
+        return visualize_contexts_(last_entry['query'], last_entry['context'], last_entry['scores'])
+
+    # def get_tokens_info(self):
+    #     """
+    #     Print an overview of the number of tokens used for different operations.
+    #
+    #     Displays the following token counts:
+    #     - `input_tokens_all`: Number of input tokens sent to GPT-3.5 Turbo for summarization.
+    #     - `output_tokens_all`: Number of output tokens received from GPT-3.5 Turbo.
+    #     - `embedding_tokens`: Number of tokens used in the embedding process and sent to the database.
+    #
+    #     If no output tokens were used, only the embedding token information is displayed.
+    #     """
+        # if self.output_tokens_all > 0:
+        #     print(
+        #         f"""
+        #         Overview of All Tokens Used:
+        #         Input tokens sent to GPT-3.5 Turbo (Model ID: 0125) for summarizing: {self.input_tokens_all}
+        #         Output tokens received from GPT-3.5 Turbo (Model ID: 0125): {self.output_tokens_all}
+        #         Tokens used in the embedding section that were sent to the database: {self.embedding_tokens}
+        #         """
+        #     )
+        # else:
+        #     print(
+        #         f"""
+        #         Overview of All Tokens Used:
+        #         Tokens used in the embedding section that were sent to the database: {self.embedding_tokens}
+        #         """
+        #     )
