@@ -1,29 +1,3 @@
 postgres:
-  conn_string: postgresql+psycopg2://postgres:xxx@localhost:port/db_name
-prompts:
-  document_relevancy_prompt: 'You are a grader assessing relevance of a retrieved
-    document to a user question. If the document contains keywords related to the
-    user question, grade it as relevant. It does not need to be a stringent test.
-    The goal is to filter out erroneous retrievals.
-
-    Give a binary score ''yes'' or ''no'' score to indicate whether the document is
-    relevant to the question.
-
-    Provide the binary score as a JSON with a single key ''score'' and no preamble
-    or explanation.
-
-    Here is the retrieved document:
-
-    {document}
-
-    Here is the user question:
-
-    {question}'
-  summary_model:
-    content: You are a helpful assistant. Give a detailed summary of the documentation
-      provided
-summary_model:
-  max_tokens: 100
-  min_len: 30
-  model_name: gpt-3.5-turbo-0125
+  conn_string: postgresql+psycopg2://postgres:admin@localhost:5432/demo
 vector_store: chroma

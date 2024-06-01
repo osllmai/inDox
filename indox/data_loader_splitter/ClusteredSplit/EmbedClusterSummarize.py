@@ -111,7 +111,9 @@ import numpy as np
 #
 #     return results, input_tokens_all, output_tokens_all
 def embed_cluster_summarize_texts(
-        texts: List[str], embeddings, dim: int, threshold: float, level: int, re_chunk: bool = False,
+        texts: List[str], embeddings, dim: int, threshold: float, level: int,
+        use_openai_summary: bool, max_len_summary: int, min_len_summary: int,
+        re_chunk: bool = False,
         max_chunk: int = 100):
     """
     Embeds, clusters, and summarizes a list of texts. This function first generates embeddings for the texts,
@@ -158,15 +160,14 @@ def embed_cluster_summarize_texts(
     print(f"--Generated {len(all_clusters)} clusters--")
 
     # Summarize the texts in each cluster (placeholder for actual summarization logic)
-    for cluster in all_clusters:
-        cluster_texts = expanded_df[expanded_df["cluster"] == cluster]["text"].tolist()
-        # print(f"Cluster {cluster}: {cluster_texts}")
+    # for cluster in all_clusters:
+    #     cluster_texts = expanded_df[expanded_df["cluster"] == cluster]["text"].tolist()
     # Summarize the texts in each cluster
     summaries = []
     for cluster in all_clusters:
         cluster_texts = expanded_df[expanded_df["cluster"] == cluster]["text"].tolist()
-        summary= summarize(
-            cluster_texts
+        summary = summarize(
+            cluster_texts, use_openai=use_openai_summary, max_len=max_len_summary, min_len=min_len_summary
         )
         summaries.append(summary)
 
@@ -185,9 +186,12 @@ def embed_cluster_summarize_texts(
     return df_clusters, df_summary
 
 
-def recursive_embed_cluster_summarize(texts: List[str], embeddings, dim: int, threshold: float, max_chunk: int = 100,
+def recursive_embed_cluster_summarize(texts: List[str], embeddings, dim: int, threshold: float,
+                                      use_openai_summary: bool, max_len_summary: int, min_len_summary: int,
+                                      max_chunk: int = 100,
                                       level: int = 1, n_levels: int = 3,
-                                      re_chunk: bool = False, remove_sword: bool = False):
+                                      re_chunk: bool = False, remove_sword: bool = False,
+                                      ):
     """
     Recursively embeds, clusters, and summarizes texts up to a specified level or until
     the number of unique clusters becomes 1, storing the results at each level using a specified embeddings object.
@@ -212,7 +216,12 @@ def recursive_embed_cluster_summarize(texts: List[str], embeddings, dim: int, th
     results = {}
 
     # Perform embedding, clustering, and summarization for the current level
-    df_clusters, df_summary =  embed_cluster_summarize_texts(texts, embeddings, dim, threshold, level, re_chunk=re_chunk, max_chunk=max_chunk)
+    df_clusters, df_summary = embed_cluster_summarize_texts(texts, embeddings, dim, threshold, level,
+                                                            use_openai_summary=use_openai_summary,
+                                                            max_len_summary=max_len_summary,
+                                                            min_len_summary=min_len_summary,
+                                                            re_chunk=re_chunk,
+                                                            max_chunk=max_chunk)
 
     # Store the results of the current level
     results[level] = (df_clusters, df_summary)

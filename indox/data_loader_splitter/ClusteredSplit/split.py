@@ -5,7 +5,7 @@ from typing import Optional, List, Tuple
 
 
 def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
-               re_chunk, remove_sword):
+               re_chunk, remove_sword, cluster_prompt, use_openai_summary, max_len_summary, min_len_summary):
     """
     Extract chunks from the provided documents using an embedding function. Optionally, recursively cluster
     and summarize the chunks.
@@ -36,7 +36,11 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
         print("Starting processing...")
 
         # Create initial document chunks
-        texts = create_document(docs)
+        if cluster_prompt:
+            texts = docs
+        else:
+            texts = create_document(docs)
+
         leaf_chunks = split_text(texts, max_tokens=chunk_size, overlap=overlap)
 
         for i in range(len(leaf_chunks)):
@@ -48,7 +52,8 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
 
         results = recursive_embed_cluster_summarize(
             texts=leaf_chunks, embeddings=embeddings, dim=dim, threshold=threshold, level=1, n_levels=3,
-            re_chunk=re_chunk, max_chunk=int(chunk_size / 2), remove_sword=remove_sword
+            re_chunk=re_chunk, max_chunk=int(chunk_size / 2), remove_sword=remove_sword,
+            use_openai_summary=use_openai_summary, max_len_summary=max_len_summary, min_len_summary=min_len_summary
         )
         all_chunks = get_all_texts(results=results, texts=leaf_chunks)
 
@@ -61,26 +66,53 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
         raise e
 
 
-def ClusteredSplit(file_path: str,
-                   embeddings,
-                   re_chunk: bool = False,
-                   remove_sword: bool = False,
-                   chunk_size: Optional[int] = 100,
-                   overlap: Optional[int] = 0,
-                   threshold: float = 0.1,
-                   dim: int = 10, ):
-    all_chunks = get_chunks(docs=file_path,
-                            chunk_size=chunk_size,
-                            overlap=overlap,
-                            re_chunk=re_chunk,
-                            remove_sword=remove_sword,
-                            embeddings=embeddings,
-                            threshold=threshold,
-                            dim=dim)
-    # encoding = tiktoken.get_encoding(encoding)
-    # embedding_tokens = 0
-    # for chunk in all_chunks:
-    #     token_count = len(encoding.encode(chunk))
-    #     embedding_tokens = embedding_tokens + token_count
-    # return all_chunks, input_tokens_all, output_tokens_all
-    return all_chunks
+# def ClusteredSplit(file_path: str,
+#                    embeddings,
+#                    re_chunk: bool = False,
+#                    remove_sword: bool = False,
+#                    chunk_size: Optional[int] = 100,
+#                    overlap: Optional[int] = 0,
+#                    threshold: float = 0.1,
+#                    dim: int = 10):
+#     all_chunks = get_chunks(docs=file_path,
+#                             chunk_size=chunk_size,
+#                             overlap=overlap,
+#                             re_chunk=re_chunk,
+#                             remove_sword=remove_sword,
+#                             embeddings=embeddings,
+#                             threshold=threshold,
+#                             dim=dim,
+#                             cluster_prompt=cluster_prompt)
+#
+#     return all_chunks
+
+class ClusteredSplit:
+    def __init__(self, file_path: str, embeddings, re_chunk: bool = False, remove_sword: bool = False,
+                 chunk_size: Optional[int] = 100, overlap: Optional[int] = 0, threshold: float = 0.1, dim: int = 10,
+                 use_openai_summary=False, max_len_summary=100, min_len_summary=30):
+        self.file_path = file_path
+        self.embeddings = embeddings
+        self.re_chunk = re_chunk
+        self.remove_sword = remove_sword
+        self.chunk_size = chunk_size
+        self.overlap = overlap
+        self.threshold = threshold
+        self.dim = dim
+        self.cluster_prompt = False
+        self.use_openai_summary = use_openai_summary
+        self.max_len_summary = max_len_summary
+        self.min_len_summary = min_len_summary
+    def get_all_docs(self):
+        return get_chunks(docs=self.file_path,
+                          chunk_size=self.chunk_size,
+                          overlap=self.overlap,
+                          re_chunk=self.re_chunk,
+                          remove_sword=self.remove_sword,
+                          embeddings=self.embeddings,
+                          threshold=self.threshold,
+                          dim=self.dim,
+                          cluster_prompt=self.cluster_prompt,
+                          use_openai_summary=self.use_openai_summary,
+                          max_len_summary=self.max_len_summary,
+                          min_len_summary=self.min_len_summary
+                          )

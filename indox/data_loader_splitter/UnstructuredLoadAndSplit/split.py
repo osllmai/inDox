@@ -69,18 +69,27 @@ def get_chunks_unstructured(file_path, chunk_size, remove_sword, splitter):
         raise
 
 
-def UnstructuredLoadAndSplit(file_path: str, remove_sword: bool = False,
-                             max_chunk_size: int = 500, splitter=None) -> (
-        List)[Document]:
-    """
-    Split an unstructured document into chunks.
+class UnstructuredLoadAndSplit:
+    def __init__(self, file_path: str, remove_sword: bool = False, max_chunk_size: int = 500, splitter=None):
+        """
+        Initialize the UnstructuredLoadAndSplit class.
 
-    Parameters:
-    - file_path (str): The path to the file containing unstructured data.
-    - max_chunk_size (int): The maximum size (in characters) for each chunk.
-    - remove_sword (bool): Whether to remove stopwords from the text.
+        Parameters:
+        - file_path (str): The path to the file containing unstructured data.
+        - max_chunk_size (int): The maximum size (in characters) for each chunk.
+        - remove_sword (bool): Whether to remove stopwords from the text.
+        - splitter: The splitter to use for splitting the document.
+        """
+        self.file_path = file_path
+        self.remove_sword = remove_sword
+        self.max_chunk_size = max_chunk_size
+        self.splitter = splitter
 
-    Returns:
-    - List[Document]: A list of `Document` objects, each containing a portion of the original content with relevant metadata.
-    """
-    return get_chunks_unstructured(file_path, max_chunk_size, remove_sword, splitter)
+    def get_all_docs(self) -> List['Document']:
+        """
+        Split an unstructured document into chunks.
+
+        Returns:
+        - List[Document]: A list of `Document` objects, each containing a portion of the original content with relevant metadata.
+        """
+        return get_chunks_unstructured(self.file_path, self.max_chunk_size, self.remove_sword, self.splitter)

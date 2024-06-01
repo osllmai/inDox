@@ -3,30 +3,49 @@ from langchain_community.chat_models import ChatOpenAI
 from langgraph.graph import END, StateGraph
 from langchain_core.output_parsers import JsonOutputParser
 from typing import List, TypedDict
-from .utils import read_config
+from ..utils import read_config
+
+relevancy_prompt = """You are a grader assessing relevance of a retrieved
+    document to a user question. If the document contains keywords related to the
+    user question, grade it as relevant. It does not need to be a stringent test.
+    The goal is to filter out erroneous retrievals.
+
+    Give a binary score ''yes'' or ''no'' score to indicate whether the document is
+    relevant to the question.
+
+    Provide the binary score as a JSON with a single key ''score'' and no preamble
+    or explanation.
+
+    Here is the retrieved document:
+
+    {document}
+
+    Here is the user question: 
+
+    {question}
+    """
 
 
 class GraphState(TypedDict):
     """
     Represents the state of the graph.
     """
-    question : str
-    generation : str
-    relevance : str
+    question: str
+    generation: str
+    relevance: str
     scores: List[float]
-    documents : List[str]
+    documents: List[str]
+
 
 class RAGGraph:
 
     def __init__(self, model_name='gpt-3.5-turbo-0125'):
         config = read_config()
         llm = ChatOpenAI(model=model_name, temperature=0)
-        document_relevancy_prompt = PromptTemplate(template=config['prompts']['document_relevancy_prompt'],
-                                                    input_variables=["question", "document"])
+        document_relevancy_prompt = PromptTemplate(template=relevancy_prompt,
+                                                   input_variables=["question", "document"])
         self.retrieval_grader = document_relevancy_prompt | llm | JsonOutputParser()
 
-        
-    
     def grade_documents(self, state):
         """
         Determines whether the retrieved documents are relevant to the question
@@ -56,7 +75,7 @@ class RAGGraph:
                 print("---GRADE: DOCUMENT NOT RELEVANT---")
                 continue
         return {"documents": filtered_docs, "question": question, 'scores': filtered_scores}
-        
+
     def run(self, inputs):
         workflow = StateGraph(GraphState)
 
@@ -66,9 +85,6 @@ class RAGGraph:
 
         app = workflow.compile()
 
-        output= app.invoke(inputs)
+        output = app.invoke(inputs)
 
         return output
-
-
-

@@ -1,8 +1,7 @@
 from .utils import update_config
 from typing import List, Optional, Any
-from .vectorstore import get_vector_store
-from .utils import read_config
-from .Graph import RAGGraph
+# from .vectorstore import get_vector_store
+# from .utils import read_config
 import warnings
 
 from .visualization import visualize_contexts_
@@ -16,23 +15,10 @@ class IndoxRetrievalAugmentation:
         Initialize the IndoxRetrievalAugmentation class
 
              """
-        self.input_tokens_all = 0
-        self.embedding_tokens = 0
-        self.output_tokens_all = 0
         self.db = None
-        self.config = None
-        # self.qa_model = None
-        self.config = read_config()
         self.qa_history = []
 
-    def update_config(self):
-        """
-        Calls `update_config` to update the configuration, then loads
-        """
-        # Update the configuration
-        update_config(self.config)
-
-    def connect_to_vectorstore(self, embeddings, collection_name: str):
+    def connect_to_vectorstore(self, vectorstore_database):
         """
         Establish a connection to the vector store database using configuration parameters.
 
@@ -47,11 +33,10 @@ class IndoxRetrievalAugmentation:
         Returns:
         - None: Prints a message if the connection is successful.
         """
-        if not collection_name:
-            raise ValueError("Collection name cannot be empty.")
+
 
         try:
-            self.db = get_vector_store(collection_name=collection_name, embeddings=embeddings)
+            self.db = vectorstore_database
 
             if self.db is None:
                 raise RuntimeError('Failed to connect to the vector store database.')
@@ -65,7 +50,7 @@ class IndoxRetrievalAugmentation:
         except Exception as e:
             raise RuntimeError(f"Failed to connect to the database due to an unexpected error: {e}")
 
-    def store_in_vectorstore(self, chunks: List[str]) -> Any:
+    def store_in_vectorstore(self, docs: List[str]) -> Any:
         """
         Store text chunks into a vector store database.
 
@@ -80,12 +65,12 @@ class IndoxRetrievalAugmentation:
         - Exception: Any other error that occurs while storing the chunks.
         """
 
-        if not chunks or not isinstance(chunks, list):
+        if not docs or not isinstance(docs, list):
             raise ValueError("The `all_chunks` parameter must be a non-empty list.")
 
         try:
             if self.db is not None:
-                self.db.add_document(chunks)
+                self.db.add_document(docs)
             else:
                 raise RuntimeError("The vector store database is not initialized.")
 
@@ -99,7 +84,8 @@ class IndoxRetrievalAugmentation:
             print(f"Unexpected error while storing in the vector store: {e}")
             return None
 
-    def answer_question(self, qa_model, query: str, db=None, top_k: int = 5, document_relevancy_filter: bool = False):
+    def answer_question(self, qa_model, query: str, db=None, top_k: int = 5, document_relevancy_filter: bool = False,
+                        cluster_prompt=False):
         """
         Answer a query using the QA model, finding the most relevant document chunks in the database.
 
@@ -131,6 +117,9 @@ class IndoxRetrievalAugmentation:
 
         try:
             context, scores = vector_database.retrieve(query, top_k=top_k)
+            if cluster_prompt:
+                from .prompt_augmentation import generate_clustered_prompts
+                context = generate_clustered_prompts(context, embeddings=vector_database.embeddings)
 
             if not document_relevancy_filter:
                 # TODO: Add cost of embedding and qa_model
@@ -139,6 +128,7 @@ class IndoxRetrievalAugmentation:
                 # self.input_tokens += response.usage.prompt_tokens
                 answer = qa_model.answer_question(context=context, question=query)
             else:
+                from .prompt_augmentation import RAGGraph
                 graph = RAGGraph()
                 graph_out = graph.run({'question': query, 'documents': context, 'scores': scores})
                 answer = qa_model.answer_question(context=graph_out['documents'], question=graph_out['question'])
