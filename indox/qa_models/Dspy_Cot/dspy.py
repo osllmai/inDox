@@ -1,6 +1,9 @@
+import logging
 from dspy import Signature, Module, ChainOfThought, Prediction, InputField, OutputField, OpenAI, settings
 import os
 
+logging.basicConfig(filename='indox.log', level=logging.INFO,
+                    format='%(asctime)s %(levelname)s:%(message)s')
 
 class GenerateAnswer(Signature):
     """
@@ -28,6 +31,7 @@ class RAG(Module):
 
     def __init__(self, model, client):
         super().__init__()
+        logging.info("Initializing RAG with model: %s", model)
         self.generate_answer = ChainOfThought(GenerateAnswer)
         self.model = model
         self.client = client
@@ -43,8 +47,14 @@ class RAG(Module):
         Returns:
             Prediction: The prediction containing the context, question, and answer.
         """
-        response = self.generate_answer(context=context, question=question, model=self.model, client=self.client)
-        return Prediction(context=context, question=question, answer=response.answer)
+        try:
+            logging.info("Generating answer for question: %s", question)
+            response = self.generate_answer(context=context, question=question, model=self.model, client=self.client)
+            logging.info("Answer generated successfully")
+            return Prediction(context=context, question=question, answer=response.answer)
+        except Exception as e:
+            logging.error("Error in RAG forward method: %s", e)
+            raise
 
 
 class DspyCotQA(Module):
@@ -58,9 +68,15 @@ class DspyCotQA(Module):
 
     def __init__(self, model, api_key):
         super().__init__()
-        self.model = model
-        self.client = OpenAI(model=self.model, api_key=api_key)
-        settings.configure(lm=self.client)
+        try:
+            logging.info("Initializing DspyCotQA with model: %s", model)
+            self.model = model
+            self.client = OpenAI(model=self.model, api_key=api_key)
+            settings.configure(lm=self.client)
+            logging.info("DspyCotQA initialized successfully")
+        except Exception as e:
+            logging.error("Error initializing DspyCotQA: %s", e)
+            raise
 
     def answer_question(self, context, question):
         """
@@ -73,6 +89,12 @@ class DspyCotQA(Module):
         Returns:
             str: The answer to the question.
         """
-        rag = RAG(model=self.model, client=self.client)
-        prediction = rag.forward(context, question)
-        return prediction.answer
+        try:
+            logging.info("Answering question: %s", question)
+            rag = RAG(model=self.model, client=self.client)
+            prediction = rag.forward(context, question)
+            logging.info("Question answered successfully")
+            return prediction.answer
+        except Exception as e:
+            logging.error("Error in DspyCotQA answer_question method: %s", e)
+            return str(e)

@@ -1,7 +1,11 @@
+import logging
 from indox.data_loader_splitter.ClusteredSplit.EmbedClusterSummarize import recursive_embed_cluster_summarize
 from indox.data_loader_splitter.ClusteredSplit.utils import get_all_texts, split_text, create_document
 from indox.data_loader_splitter.utils.clean import remove_stopwords_chunk
 from typing import Optional, List, Tuple
+
+logging.basicConfig(filename='indox.log', level=logging.INFO,
+                    format='%(asctime)s %(levelname)s:%(message)s')
 
 
 def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
@@ -33,7 +37,7 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
       specified settings. The output varies depending on whether clustering is enabled or not.
     """
     try:
-        print("Starting processing...")
+        logging.info("Starting processing for documents")
 
         # Create initial document chunks
         if cluster_prompt:
@@ -57,62 +61,69 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
         )
         all_chunks = get_all_texts(results=results, texts=leaf_chunks)
 
-        print("End Chunking & Clustering process.")
+        logging.info("Completed chunking & clustering process")
         return all_chunks
 
-
     except Exception as e:
-        print(f"Failed at step with error: {e}")
+        logging.error("Failed at step with error: %s", e)
         raise e
 
-
-# def ClusteredSplit(file_path: str,
-#                    embeddings,
-#                    re_chunk: bool = False,
-#                    remove_sword: bool = False,
-#                    chunk_size: Optional[int] = 100,
-#                    overlap: Optional[int] = 0,
-#                    threshold: float = 0.1,
-#                    dim: int = 10):
-#     all_chunks = get_chunks(docs=file_path,
-#                             chunk_size=chunk_size,
-#                             overlap=overlap,
-#                             re_chunk=re_chunk,
-#                             remove_sword=remove_sword,
-#                             embeddings=embeddings,
-#                             threshold=threshold,
-#                             dim=dim,
-#                             cluster_prompt=cluster_prompt)
-#
-#     return all_chunks
 
 class ClusteredSplit:
     def __init__(self, file_path: str, embeddings, re_chunk: bool = False, remove_sword: bool = False,
                  chunk_size: Optional[int] = 100, overlap: Optional[int] = 0, threshold: float = 0.1, dim: int = 10,
                  use_openai_summary=False, max_len_summary=100, min_len_summary=30):
-        self.file_path = file_path
-        self.embeddings = embeddings
-        self.re_chunk = re_chunk
-        self.remove_sword = remove_sword
-        self.chunk_size = chunk_size
-        self.overlap = overlap
-        self.threshold = threshold
-        self.dim = dim
-        self.cluster_prompt = False
-        self.use_openai_summary = use_openai_summary
-        self.max_len_summary = max_len_summary
-        self.min_len_summary = min_len_summary
-    def get_all_docs(self):
-        return get_chunks(docs=self.file_path,
-                          chunk_size=self.chunk_size,
-                          overlap=self.overlap,
-                          re_chunk=self.re_chunk,
-                          remove_sword=self.remove_sword,
-                          embeddings=self.embeddings,
-                          threshold=self.threshold,
-                          dim=self.dim,
-                          cluster_prompt=self.cluster_prompt,
-                          use_openai_summary=self.use_openai_summary,
-                          max_len_summary=self.max_len_summary,
-                          min_len_summary=self.min_len_summary
-                          )
+        """
+        Initialize the ClusteredSplit class.
+
+        Parameters:
+        - file_path (str): The path to the file containing unstructured data.
+        - max_chunk_size (int): The maximum size (in characters) for each chunk.
+        - remove_sword (bool): Whether to remove stopwords from the text.
+        - splitter: The splitter to use for splitting the document.
+        """
+        try:
+            logging.info("Initializing ClusteredSplit")
+            self.file_path = file_path
+            self.embeddings = embeddings
+            self.re_chunk = re_chunk
+            self.remove_sword = remove_sword
+            self.chunk_size = chunk_size
+            self.overlap = overlap
+            self.threshold = threshold
+            self.dim = dim
+            self.cluster_prompt = False
+            self.use_openai_summary = use_openai_summary
+            self.max_len_summary = max_len_summary
+            self.min_len_summary = min_len_summary
+            logging.info("ClusteredSplit initialized successfully")
+        except Exception as e:
+            logging.error("Error initializing ClusteredSplit: %s", e)
+            raise
+
+    def load_and_chunk(self):
+        """
+        Split an unstructured document into chunks.
+
+        Returns:
+        - List[Document]: A list of `Document` objects, each containing a portion of the original content with relevant metadata.
+        """
+        try:
+            logging.info("Getting all documents")
+            docs = get_chunks(docs=self.file_path,
+                              chunk_size=self.chunk_size,
+                              overlap=self.overlap,
+                              re_chunk=self.re_chunk,
+                              remove_sword=self.remove_sword,
+                              embeddings=self.embeddings,
+                              threshold=self.threshold,
+                              dim=self.dim,
+                              cluster_prompt=self.cluster_prompt,
+                              use_openai_summary=self.use_openai_summary,
+                              max_len_summary=self.max_len_summary,
+                              min_len_summary=self.min_len_summary)
+            logging.info("Successfully obtained all documents")
+            return docs
+        except Exception as e:
+            logging.error("Error in get_all_docs: %s", e)
+            raise

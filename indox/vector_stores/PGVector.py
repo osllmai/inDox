@@ -1,11 +1,8 @@
 import logging
-from langchain_community.vectorstores.pgvector import PGVector
 from langchain_core.documents import Document
-from langchain_community.vectorstores.pgvector import DistanceStrategy as PGDistancesTRATEGY
 
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
-)
+logging.basicConfig(filename='indox.log', level=logging.INFO,
+                    format='%(asctime)s %(levelname)s:%(message)s')
 
 
 class PGVectorStore:
@@ -29,6 +26,8 @@ class PGVectorStore:
             collection_name (str): The name of the collection in the database.
             embedding (Embedding): The embedding to be used.
         """
+        from langchain_community.vectorstores.pgvector import PGVector
+        from langchain_community.vectorstores.pgvector import DistanceStrategy as PGDistancesTRATEGY
         self.embeddings = embedding
         self.host = host
         self.port = port

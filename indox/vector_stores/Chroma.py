@@ -1,9 +1,8 @@
 from langchain_core.documents import Document
 import logging
 
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
-)
+logging.basicConfig(filename='indox.log', level=logging.INFO,
+                    format='%(asctime)s %(levelname)s:%(message)s')
 
 
 

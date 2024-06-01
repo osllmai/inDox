@@ -1,9 +1,13 @@
 from typing import List, Optional, Any
 import warnings
-
+import logging
 from .visualization import visualize_contexts_
 
 warnings.filterwarnings("ignore")
+
+# Set up logging
+logging.basicConfig(filename='indox.log', level=logging.INFO,
+                    format='%(asctime)s %(levelname)s:%(message)s')
 
 
 class IndoxRetrievalAugmentation:
@@ -14,6 +18,7 @@ class IndoxRetrievalAugmentation:
              """
         self.db = None
         self.qa_history = []
+        logging.info("IndoxRetrievalAugmentation initialized")
 
     def connect_to_vectorstore(self, vectorstore_database):
         """
@@ -30,21 +35,23 @@ class IndoxRetrievalAugmentation:
         Returns:
         - None: Prints a message if the connection is successful.
         """
-
-
         try:
+            logging.info("Attempting to connect to the vector store database")
             self.db = vectorstore_database
 
             if self.db is None:
                 raise RuntimeError('Failed to connect to the vector store database.')
 
-            print("Connection established successfully.")
+            logging.info("Connection to the vector store database established successfully")
             return self.db
         except ValueError as ve:
+            logging.error(f"Invalid input: {ve}")
             raise ValueError(f"Invalid input: {ve}")
         except RuntimeError as re:
+            logging.error(f"Runtime error: {re}")
             raise RuntimeError(f"Runtime error: {re}")
         except Exception as e:
+            logging.error(f"Failed to connect to the database due to an unexpected error: {e}")
             raise RuntimeError(f"Failed to connect to the database due to an unexpected error: {e}")
 
     def store_in_vectorstore(self, docs: List[str]) -> Any:
@@ -61,28 +68,31 @@ class IndoxRetrievalAugmentation:
         - RuntimeError: If the vector store database is not initialized.
         - Exception: Any other error that occurs while storing the chunks.
         """
-
         if not docs or not isinstance(docs, list):
-            raise ValueError("The `all_chunks` parameter must be a non-empty list.")
+            logging.error("The `docs` parameter must be a non-empty list.")
+            raise ValueError("The `docs` parameter must be a non-empty list.")
 
         try:
+            logging.info("Storing documents in the vector store")
             if self.db is not None:
                 self.db.add_document(docs)
             else:
                 raise RuntimeError("The vector store database is not initialized.")
 
+            logging.info("Documents stored successfully")
             return self.db
         except ValueError as ve:
+            logging.error(f"Invalid input data: {ve}")
             raise ValueError(f"Invalid input data: {ve}")
         except RuntimeError as re:
-            print(f"Runtime error while storing in the vector store: {re}")
+            logging.error(f"Runtime error while storing in the vector store: {re}")
             return None
         except Exception as e:
-            print(f"Unexpected error while storing in the vector store: {e}")
+            logging.error(f"Unexpected error while storing in the vector store: {e}")
             return None
 
     def answer_question(self, qa_model, query: str, db=None, top_k: int = 5, document_relevancy_filter: bool = False,
-                        cluster_prompt=False):
+                        generate_clustered_prompts: bool = False):
         """
         Answer a query using the QA model, finding the most relevant document chunks in the database.
 
@@ -91,7 +101,8 @@ class IndoxRetrievalAugmentation:
         - top_k (int): The number of top results to retrieve from the vector store.
         - document_relevancy_filter (bool, optional): If `True`, apply additional filtering using a RAG graph for
           document relevancy. Default is `False`.
-        -db : vector database
+        - db: vector database
+
         Returns:
         - Tuple[str, Tuple[List[str], List[float]]]: A tuple containing the answer and the retrieved context:
             - `answer` (str): The answer provided by the QA model.
@@ -102,6 +113,9 @@ class IndoxRetrievalAugmentation:
         - ValueError: If the input query is empty.
         - Exception: Any other unexpected errors that occur while retrieving documents or generating the answer.
         """
+        if not query:
+            logging.error("Query string cannot be empty.")
+            raise ValueError("Query string cannot be empty.")
         vector_database = None
         if not query:
             raise ValueError("Query string cannot be empty.")
@@ -110,38 +124,41 @@ class IndoxRetrievalAugmentation:
         elif self.db and db is None:
             vector_database = self.db
         elif self.db and db is None:
+            logging.error("Vector store database is not initialized.")
             raise RuntimeError("Vector store database is not initialized.")
 
         try:
+            logging.info("Retrieving context and scores from the vector database")
             context, scores = vector_database.retrieve(query, top_k=top_k)
-            if cluster_prompt:
+            if generate_clustered_prompts:
                 from .prompt_augmentation import generate_clustered_prompts
                 context = generate_clustered_prompts(context, embeddings=vector_database.embeddings)
 
             if not document_relevancy_filter:
-                # TODO: Add cost of embedding and qa_model
-                # response = qa_model.answer_question(context=context, question=query)
-                # self.output_tokens += response.usage.completion_tokens
-                # self.input_tokens += response.usage.prompt_tokens
+                logging.info("Generating answer without document relevancy filter")
                 answer = qa_model.answer_question(context=context, question=query)
             else:
+                logging.info("Generating answer with document relevancy filter")
                 from .prompt_augmentation import RAGGraph
                 graph = RAGGraph()
                 graph_out = graph.run({'question': query, 'documents': context, 'scores': scores})
                 answer = qa_model.answer_question(context=graph_out['documents'], question=graph_out['question'])
                 context, scores = graph_out['documents'], graph_out['scores']
+
             retrieve_context = (context, scores)
             new_entry = {'query': query, 'answer': answer, 'context': context, 'scores': scores}
             self.qa_history.append(new_entry)
+            logging.info("Query answered successfully")
             return answer, retrieve_context
 
         except ValueError as ve:
+            logging.error(f"Invalid input data: {ve}")
             raise ValueError(f"Invalid input data: {ve}")
         except RuntimeError as re:
-            print(f"Runtime error while retrieving or answering the query: {re}")
+            logging.error(f"Runtime error while retrieving or answering the query: {re}")
             return "", []
         except Exception as e:
-            print(f"Unexpected error while answering the question: {e}")
+            logging.error(f"Unexpected error while answering the question: {e}")
             return "", []
 
     # TODO add visualization for evaluation

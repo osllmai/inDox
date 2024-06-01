@@ -1,14 +1,8 @@
-from langchain_core.documents import Document
-from langchain_community.vectorstores.utils import DistanceStrategy
-from langchain_community.docstore.in_memory import InMemoryDocstore
-from langchain_community.vectorstores.faiss import FAISS
-import faiss
 import logging
+from langchain_core.documents import Document
 
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
-)
-
+logging.basicConfig(filename='indox.log', level=logging.INFO,
+                    format='%(asctime)s %(levelname)s:%(message)s')
 
 
 class FAISSVectorStore:
@@ -19,14 +13,17 @@ class FAISSVectorStore:
         db (FAISS): The FAISS vector store.
     """
 
-    def __init__(self, embedding) -> None:
+    def __init__(self, embedding):
         """
         Initializes the FAISSVectorStore.
 
         Args:
             embedding (Embedding): The embedding to be used.
         """
-
+        from langchain_community.vectorstores.utils import DistanceStrategy
+        from langchain_community.docstore.in_memory import InMemoryDocstore
+        from langchain_community.vectorstores.faiss import FAISS
+        import faiss
         self.embeddings = embedding
         embedding_dim = len(embedding.embed_query(""))
 
