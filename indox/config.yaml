@@ -1,3 +1,0 @@
-postgres:
-  conn_string: postgresql+psycopg2://postgres:admin@localhost:5432/demo
-vector_store: chroma

@@ -1,11 +1,11 @@
-from langchain_core.documents import Document
 import logging
+from langchain_community.vectorstores.pgvector import PGVector
+from langchain_core.documents import Document
+from langchain_community.vectorstores.pgvector import DistanceStrategy as PGDistancesTRATEGY
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
 )
-
-
 
 
 class PGVectorStore:
@@ -16,21 +16,40 @@ class PGVectorStore:
         db (PGVector): The PostgreSQL vector store.
     """
 
-    def __init__(self, conn_string, collection_name, embedding):
+    def __init__(self, host, port, dbname, user, password, collection_name, embedding):
         """
         Initializes the PGVectorStore.
 
         Args:
-            conn_string (str): The connection string to the PostgreSQL database.
+            host (str): The host of the PostgreSQL database.
+            port (int): The port of the PostgreSQL database.
+            dbname (str): The name of the database.
+            user (str): The user for the PostgreSQL database.
+            password (str): The password for the PostgreSQL database.
             collection_name (str): The name of the collection in the database.
             embedding (Embedding): The embedding to be used.
         """
-        from langchain_community.vectorstores.pgvector import PGVector
-        from langchain_community.vectorstores.pgvector import DistanceStrategy as PGDistancesTRATEGY
         self.embeddings = embedding
-        self.conn_string = conn_string
-        self.db = PGVector(embedding_function=embedding, collection_name=collection_name,
-                           connection_string=conn_string, distance_strategy=PGDistancesTRATEGY.COSINE)
+        self.host = host
+        self.port = port
+        self.dbname = dbname
+        self.user = user
+        self.password = password
+        self.db = PGVector(
+            embedding_function=embedding,
+            collection_name=collection_name,
+            connection_string=self._build_conn_string(),
+            distance_strategy=PGDistancesTRATEGY.COSINE
+        )
+
+    def _build_conn_string(self):
+        """
+        Builds the connection string from the provided components.
+
+        Returns:
+            str: The connection string.
+        """
+        return f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.dbname}"
 
     def add_document(self, docs):
         """
@@ -42,7 +61,7 @@ class PGVectorStore:
         try:
             if isinstance(docs[0], Document):
                 self.db.add_documents(documents=docs)
-            elif not isinstance(docs[0], Document):
+            else:
                 self.db.add_texts(texts=docs)
             logging.info("Document added successfully to the vector store.")
         except Exception as e:
