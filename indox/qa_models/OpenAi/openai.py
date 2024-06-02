@@ -5,6 +5,8 @@ import os
 
 logging.basicConfig(filename='indox.log', level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
+
+
 class OpenAiQA:
     def __init__(self, api_key, model):
         """
