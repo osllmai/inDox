@@ -1,6 +1,6 @@
 import logging
 from langchain.prompts import PromptTemplate
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langgraph.graph import END, StateGraph
 from langchain_core.output_parsers import JsonOutputParser
 from typing import List, TypedDict
