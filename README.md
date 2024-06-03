@@ -222,3 +222,8 @@ answer = response_openai[0]
 context, score = response_openai[1]
 ```
 
+### Run With Streamlit Dashboard
+
+```shell
+streamlit run .\indox_dashboard.py
+```
