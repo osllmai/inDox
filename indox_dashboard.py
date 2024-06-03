@@ -5,8 +5,8 @@ import streamlit as st
 import os
 from indox import IndoxRetrievalAugmentation
 from dotenv import load_dotenv
-
-
+import time
+from datetime import datetime
 def get_database_connection(con_string):
     result = urlparse(con_string)
 
@@ -34,7 +34,16 @@ def fetch_data(query, con_string):
     return df
 
 
-Indox = IndoxRetrievalAugmentation()
+# def read_log_file(file_path):
+#     with open(file_path, 'r') as file:
+#         return file.read()
+
+def display_logs_from_file(log_area, log_file_path):
+    while True:
+        with open(log_file_path, 'r') as file:
+            log_data = file.read()
+        log_area.markdown(f"```\n{log_data}\n```")  # Display logs using markdown
+        time.sleep(1)  # Simulate processing time and update interval
 
 # Set up the page configuration
 st.set_page_config(
@@ -107,15 +116,20 @@ if st.session_state.step == 1:
         st.write("### Choose Database Type")
         db_type = st.selectbox("Database Type", ["Chroma", "Faiss", "Postgres(pgvector)"])
         st.session_state.db_type = db_type
-        if db_type == "Postgres(pgvector)":
-            Indox.config["vector_store"] = "pgvector"
-            Indox.update_config()
-        else:
-            Indox.config["vector_store"] = db_type.lower()
-            Indox.update_config()
+
         st.write("### Enter Database Address")
-        db_address = st.text_input("Database Address")
-        st.session_state.db_address = db_address
+        if db_type == "Postgres(pgvector)":
+
+            st.session_state.host = st.text_input("Host")
+            st.session_state.port = st.text_input("Port")
+            st.session_state.dbname = st.text_input("Database Name")
+            st.session_state.user = st.text_input("User")
+            st.session_state.password = st.text_input("Password")
+            connection_string = f"postgresql+psycopg2://{st.session_state.user}:{st.session_state.password}@{st.session_state.host}:{st.session_state.port}/{st.session_state.dbname}"
+            st.session_state.connection_string = connection_string
+        else:
+            db_address = st.text_input("Database Address")
+            st.session_state.connection_string = db_address
 
         next_button_disabled = False
 
@@ -136,12 +150,12 @@ if st.session_state.step == 2:
     if st.button("Next"):
         try:
             if db_type == "Postgres(pgvector)":
-                Indox.config["vector_store"] = "pgvector"
-                Indox.update_config()
+                # Indox.config["vector_store"] = "pgvector"
+                # Indox.update_config()
                 st.session_state.step = 3
             else:
-                Indox.config["vector_store"] = db_type.lower()
-                Indox.update_config()
+                # Indox.config["vector_store"] = db_type.lower()
+                # Indox.update_config()
                 st.session_state.step = 4
             st.rerun()
         except Exception as e:
@@ -154,15 +168,18 @@ if st.session_state.step == 2:
 # Step 3: Enter Connection String for Postgres
 if st.session_state.step == 3:
     st.write("## Enter Postgres Connection String")
-    conn_string = st.text_input("Connection String",
-                                placeholder="postgresql+psycopg2://postgres:xxx@localhost:port/db_name")
-
+    # connection_string = st.text_input("Connection String",
+    #                             placeholder="postgresql+psycopg2://postgres:xxx@localhost:port/db_name")
+    st.session_state.host = st.text_input("Host")
+    st.session_state.port = st.text_input("Port")
+    st.session_state.dbname = st.text_input("Database Name")
+    st.session_state.user = st.text_input("User")
+    st.session_state.password = st.text_input("Password")
+    connection_string = f"postgresql+psycopg2://{st.session_state.user}:{st.session_state.password}@{st.session_state.host}:{st.session_state.port}/{st.session_state.dbname}"
     if st.button("Next"):
-        if conn_string:
-            st.session_state.conn_string = conn_string
-            Indox.config["vector_store"] = "pgvector"
-            Indox.config["postgres"]["conn_string"] = conn_string
-            Indox.update_config()
+        if connection_string:
+            st.session_state.connection_string = connection_string
+
             st.session_state.step = 4
             st.rerun()
 
@@ -299,8 +316,11 @@ if st.session_state.step == 5:
             overlap = st.number_input("Overlap", min_value=0, max_value=chunk_size - 1, value=0)
             threshold = st.slider("Threshold", min_value=0.0, max_value=1.0, value=0.1)
             dim = st.number_input("Dimension", min_value=1, max_value=100, value=10)
+            use_openai_summary = st.checkbox("Use OpenAI Summary", value=False)
+            max_len_summary = st.number_input("Max Length of Summary", min_value=1, max_value=500, value=100)
+            min_len_summary = st.number_input("Min Length of Summary", min_value=1, max_value=100, value=30)
 
-            config_set = all([collection_name, chunk_size, threshold, dim])
+            config_set = all([collection_name, chunk_size, threshold, dim, max_len_summary, min_len_summary])
         elif splitter_method == 'Option 2: Load and Splitting with Unstructured Library (accept different types)':
             remove_sword = st.checkbox("Remove Stop Words", value=False)
             max_chunk_size = st.number_input("Max Chunk Size", min_value=1, max_value=10000, value=500)
@@ -311,7 +331,6 @@ if st.session_state.step == 5:
 
         if st.button("Confirm", disabled=confirm_button_disabled):
             # Save splitter configurations to session state
-            # st.session_state.doc_relevancy_filter = doc_relevancy_filter
             st.session_state.splitter_method = splitter_method
             st.session_state.collection_name = collection_name
             st.session_state.re_chunk = re_chunk if splitter_method == 'Option 1: Load and cluster (TXT and PDF Only)' else None
@@ -320,11 +339,15 @@ if st.session_state.step == 5:
             st.session_state.overlap = overlap if splitter_method == 'Option 1: Load and cluster (TXT and PDF Only)' else None
             st.session_state.threshold = threshold if splitter_method == 'Option 1: Load and cluster (TXT and PDF Only)' else None
             st.session_state.dim = dim if splitter_method == 'Option 1: Load and cluster (TXT and PDF Only)' else None
+            st.session_state.use_openai_summary = use_openai_summary if splitter_method == 'Option 1: Load and cluster (TXT and PDF Only)' else None
+            st.session_state.max_len_summary = max_len_summary if splitter_method == 'Option 1: Load and cluster (TXT and PDF Only)' else None
+            st.session_state.min_len_summary = min_len_summary if splitter_method == 'Option 1: Load and cluster (TXT and PDF Only)' else None
             st.session_state.max_chunk_size = max_chunk_size if splitter_method == 'Option 2: Load and Splitting with Unstructured Library (accept different types)' else None
+
             if splitter_method == 'Option 1: Load and cluster (TXT and PDF Only)':
                 from indox.data_loader_splitter import ClusteredSplit
 
-                data = ClusteredSplit(
+                loader_splitter = ClusteredSplit(
                     temp_file_path,
                     embeddings=embedding_model,
                     re_chunk=st.session_state.re_chunk,
@@ -332,17 +355,21 @@ if st.session_state.step == 5:
                     chunk_size=st.session_state.chunk_size,
                     overlap=st.session_state.overlap,
                     threshold=st.session_state.threshold,
-                    dim=st.session_state.dim
+                    dim=st.session_state.dim,
+                    use_openai_summary=st.session_state.use_openai_summary,
+                    max_len_summary=st.session_state.max_len_summary,
+                    min_len_summary=st.session_state.min_len_summary
                 )
+                data = loader_splitter.load_and_chunk()
             elif splitter_method == 'Option 2: Load and Splitting with Unstructured Library (accept different types)':
                 from indox.data_loader_splitter import UnstructuredLoadAndSplit
 
-                data = UnstructuredLoadAndSplit(
+                loader_splitter = UnstructuredLoadAndSplit(
                     temp_file_path,
                     remove_sword=st.session_state.remove_sword,
                     max_chunk_size=st.session_state.max_chunk_size
                 )
-
+                data = loader_splitter.load_and_chunk()
             # Save the data and move to the next step
             st.session_state.data = data
             st.session_state.step = 6
@@ -352,40 +379,79 @@ if st.session_state.step == 5:
             st.rerun()
     else:
         collection_name = st.text_input("Enter Collection Name")
+
         if st.button("Confirm"):
             st.session_state.collection_name = collection_name
             st.session_state.step = 6
             st.rerun()
+Indox = IndoxRetrievalAugmentation()
 
 if st.session_state.step == 6:
+
     if not st.session_state.use_existing_database:
         # Connect to vector store and store data
         data = st.session_state.data
         embedding_model = st.session_state.embedding_model
         collection_name = st.session_state.collection_name
 
-        Indox.connect_to_vectorstore(embeddings=embedding_model, collection_name=collection_name)
-        db = Indox.store_in_vectorstore(data)
+        if st.session_state.db_type == "Postgres(pgvector)":
+            from indox.vector_stores import PGVectorStore
+
+            db = PGVectorStore(host=st.session_state.host,
+                               password=st.session_state.password,
+                               user=st.session_state.user,
+                               port=st.session_state.port,
+                               dbname=st.session_state.dbname,
+                               embedding=st.session_state.embedding_model,
+                               collection_name=st.session_state.collection_name)
+        elif st.session_state.db_type == "Chroma":
+            from indox.vector_stores import ChromaVectorStore
+
+            db = ChromaVectorStore(collection_name=collection_name, embedding=embedding_model)
+        elif st.session_state.db_type == "Faiss":
+            from indox.vector_stores import FAISSVectorStore
+
+            db = FAISSVectorStore(embedding=embedding_model)
+
+        Indox.connect_to_vectorstore(vectorstore_database=db)
+        database = Indox.store_in_vectorstore(data)
 
         st.session_state.vector_store_initialized = True
-        st.session_state.db = db
+        st.session_state.database = database
     else:
         collection_name = st.session_state.collection_name
         embedding_model = st.session_state.embedding_model
+        if st.session_state.db_type == "Postgres(pgvector)":
+            from indox.vector_stores import PGVectorStore
 
-        db = Indox.connect_to_vectorstore(embeddings=embedding_model, collection_name=collection_name)
+            db = PGVectorStore(host=st.session_state.host,
+                               password=st.session_state.password,
+                               user=st.session_state.user,
+                               port=st.session_state.port,
+                               dbname=st.session_state.dbname,
+                               embedding=st.session_state.embedding_model,
+                               collection_name=st.session_state.collection_name)
+        elif st.session_state.db_type == "Chroma":
+            from indox.vector_stores import ChromaVectorStore
+
+            db = ChromaVectorStore(collection_name=collection_name, embedding=embedding_model)
+        elif st.session_state.db_type == "Faiss":
+            from indox.vector_stores import FAISSVectorStore
+
+            db = FAISSVectorStore(embedding=embedding_model)
+        database = Indox.connect_to_vectorstore(vectorstore_database=db)
         st.session_state.vector_store_initialized = True
-        st.session_state.db = db
+        st.session_state.database = database
 
     # Once the data is processed, move to the next step
     st.session_state.step = 7
     st.rerun()
 
 if st.session_state.step == 7 and st.session_state.vector_store_initialized:
-    db = st.session_state.db
+    database = st.session_state.database
     db_type = st.session_state.db_type
 
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Chat", "History", "Database", "Eval", "Config"])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Chat", "History", "Database", "Eval", "Prompt Augmentation", "Logs"])
 
     if 'qa_history' not in st.session_state:
         st.session_state.qa_history = []
@@ -408,8 +474,9 @@ if st.session_state.step == 7 and st.session_state.vector_store_initialized:
             with st.chat_message("user"):
                 st.markdown(prompt)
             with st.chat_message("assistant"):
-                response = Indox.answer_question(db=db, qa_model=st.session_state.qa_model, query=prompt,
-                                                 document_relevancy_filter=st.session_state.doc_relevancy_filter)
+                response = Indox.answer_question(db=database, qa_model=st.session_state.qa_model, query=prompt,
+                                                 document_relevancy_filter=st.session_state.doc_relevancy_filter,
+                                                 generate_clustered_prompts=st.session_state.clustered_prompt)
                 response_content = response[0]
                 response_context = response[1][0] if response[1] else "No context available"
                 st.write(response_content)
@@ -417,11 +484,11 @@ if st.session_state.step == 7 and st.session_state.vector_store_initialized:
                 st.session_state.last_context = response_context
                 st.session_state.qa_history.append((prompt, response_content))
                 st.session_state.messages.append({"role": "assistant", "content": response_content})
-        if st.session_state.vector_store_initialized:
-            with st.sidebar:
-                st.sidebar.title("Sources")
-                if st.session_state.get("last_context"):
-                    st.sidebar.write(st.session_state["last_context"])
+    if st.session_state.vector_store_initialized:
+        with st.sidebar:
+            st.sidebar.title("Sources")
+            if st.session_state.get("last_context"):
+                st.sidebar.write(st.session_state["last_context"])
 
     with tab2:
         if 'qa_history' in st.session_state and st.session_state.qa_history:
@@ -432,23 +499,44 @@ if st.session_state.step == 7 and st.session_state.vector_store_initialized:
             st.write("No chat history available.")
 
     with tab3:
-        st.header("All Data in the Database")
-        print(db_type)
         if db_type.lower() == "postgres(pgvector)":
             query = "SELECT * FROM public.langchain_pg_embedding"
-            data = fetch_data(query, db.conn_string)
+            data = fetch_data(query, database.conn_string)
             st.dataframe(data)
             # st.bar_chart(data['document'])
         elif db_type.lower() == "chroma":
-            docs = db.get_all_documents()
+            docs = database.get_all_documents()
             df = pd.DataFrame(docs)
             st.dataframe(df)
         else:
-            print("Doesn't support Faiss yet!")
+            st.write("Doesn't support Faiss yet!")
     with tab4:
         st.write("Evaluation tab coming soon.")
     with tab5:
         doc_relevancy_filter = st.checkbox("Apply Document Relevancy Filter")
         st.session_state.doc_relevancy_filter = doc_relevancy_filter
+        clustered_prompt = st.checkbox("Generate Clustered Prompt")
+        st.session_state.clustered_prompt = clustered_prompt
+    with tab6:
+        if 'show_logs' not in st.session_state:
+            st.session_state.show_logs = False
+
+            # Button to toggle log visibility
+        if st.button('Show logs' if not st.session_state.show_logs else 'Hide logs'):
+            st.session_state.show_logs = not st.session_state.show_logs
+
+            # Display logs if the state is set to show
+        if st.session_state.show_logs:
+            log_area = st.empty()  # Placeholder for text_area update
+
+            while st.session_state.show_logs:
+                with open("indox.log", 'r') as file:
+                    log_data = file.read()
+                log_area.markdown(f"```\n{log_data}\n```")  # Display logs using markdown
+                time.sleep(1)  # Simulate processing time and update interval
+                st.experimental_rerun()
+        else:
+            st.write("Logs are hidden. Click 'Show logs' to display them.")
+
 if st.session_state.step > 7:
     st.write("Something went wrong. Please reset and try again.")

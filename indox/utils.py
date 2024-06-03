@@ -86,3 +86,7 @@ def convert_latex_to_md(latex_path):
 
 def update_config(config):
     return reconfig(config)
+
+def clear_log_file(file_path):
+    with open(file_path, 'w') as file:
+        pass

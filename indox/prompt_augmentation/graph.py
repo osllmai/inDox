@@ -91,7 +91,7 @@ class RAGGraph:
 
     def run(self, inputs):
         try:
-            logging.info("Running RAGGraph with inputs: %s", inputs)
+            logging.info("Running RAGGraph")
             workflow = StateGraph(GraphState)
 
             workflow.add_node("grade_document", self.grade_documents)
@@ -102,7 +102,7 @@ class RAGGraph:
 
             output = app.invoke(inputs)
 
-            logging.info("RAGGraph run completed with output: %s", output)
+            logging.info("RAGGraph run completed")
             return output
         except Exception as e:
             logging.error("Error running RAGGraph: %s", e)
