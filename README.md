@@ -82,12 +82,6 @@ To install the latest development version, you may run
 pip install git+https://github.com/osllmai/inDox@main
 ```
 
-To configure the CLI, run
-
-```
-indox configure
-```
-
 
 Clone the repository and navigate to the directory:
 
@@ -138,34 +132,6 @@ Create an instance of IndoxRetrievalAugmentation.
 ``` python
 Indox = IndoxRetrievalAugmentation()
 ```
-## Initial Configuration
-
-- **Configuration File**: Ensure you locate and modify the `Indox.config` YAML file according to your needs before
-  starting the application.
-
-## Dynamic Configuration Changes
-
-For changes that need to be applied after the initial setup or during runtime:
-
-- **Modifying Configurations**: Use the following Python snippet to update your settings dynamically:
-  ```python
-  Indox.config["your_setting_that_need_to_change"] = "new_setting"
-  Indox.update_config()
-
-## Configuration Details
-
-Here's a breakdown of the config dictionary and its properties:
-
-### PostgreSQL
-
-- `conn_string`: Your PostgreSQL database credentials.
-
-### Summary Model
-
-- `max_tokens`: Maximum token count the summary model can generate.
-- `min_len`: Minimum token count the summary model generates.
-- `model_name`: Default is `gpt-3.5-turbo-0125`, but it can be replaced with any Hugging Face model supporting the
-  summarization pipeline.
 
 ### PostgreSQL Setup with pgvector
 
@@ -206,19 +172,7 @@ openai_qa = OpenAiQA(api_key=OPENAI_API_KEY,model="gpt-3.5-turbo-0125")
 openai_embeddings = OpenAiEmbedding(model="text-embedding-3-small",openai_api_key=OPENAI_API_KEY)
 ```
 
-## Modifying Configuration Settings
 
-To change a configuration setting, you can directly modify the
-`Indox.config` dictionary. Here is an example of how you can update a
-configuration setting:
-
-``` python
-# Example of modifying a configuration setting
-Indox.config["old_config"] = "new_config"
-
-# Applying the updated configuration
-Indox.update_config()
-```
 
 
 We take advantage of the `unstructured` library to load
@@ -231,7 +185,8 @@ from indox.data_loader_splitter import UnstructuredLoadAndSplit
 ```
 
 ``` python
-docs_unstructured = UnstructuredLoadAndSplit(file_path=file_path)
+loader_splitter = UnstructuredLoadAndSplit(file_path=file_path,max_chunk_size=400)
+docs_unstructured = loader_splitter.load_and_chunk()
 ```
 
     Starting processing...
@@ -243,8 +198,10 @@ vector representations and storing them in a vector store, you can
 perform rapid similarity searches and other vector-based operations.
 
 ``` python
-Indox.connect_to_vectorstore(collection_name="sample",embeddings=openai_embeddings)
-Indox.store_in_vectorstore(chunks=docs_unstructured)
+from indox.vector_stores import ChromaVectorStore
+db = ChromaVectorStore(embedding=openai_embeddings,collection_name="sample") 
+Indox.connect_to_vectorstore(db)
+Indox.store_in_vectorstore(docs=docs_unstructured)
 ```
 
 ## Quering
