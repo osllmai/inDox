@@ -258,7 +258,7 @@ if st.session_state.step == 4:
         if openai_embedding_checked:
             from indox.embeddings import OpenAiEmbedding
 
-            embedding_model = OpenAiEmbedding(openai_api_key=OPENAI_API_KEY, model=openai_embedding_model)
+            embedding_model = OpenAiEmbedding(api_key=OPENAI_API_KEY, model=openai_embedding_model)
         elif hf_embedding_checked:
             from indox.embeddings import HuggingFaceEmbedding
 

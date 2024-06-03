@@ -5,9 +5,9 @@ import logging
 logging.basicConfig(filename='indox.log', level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
 
-def OpenAiEmbedding(model, openai_api_key):
+def OpenAiEmbedding(model, api_key):
     from langchain_openai import OpenAIEmbeddings
-    embeddings = OpenAIEmbeddings(model=model, openai_api_key=openai_api_key)
+    embeddings = OpenAIEmbeddings(model=model, api_key=api_key)
     logging.info(f'Initialized OpenAI embeddings with model: {model}')
     return embeddings
 

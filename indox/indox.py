@@ -18,8 +18,8 @@ class IndoxRetrievalAugmentation:
              """
         self.db = None
         self.qa_history = []
-        clear_log_file("../indox.log")
-        # logging.info("IndoxRetrievalAugmentation initialized")
+        # clear_log_file("../indox.log")
+        logging.info("IndoxRetrievalAugmentation initialized")
 
 
     def connect_to_vectorstore(self, vectorstore_database):

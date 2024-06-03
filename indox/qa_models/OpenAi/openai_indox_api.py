@@ -63,6 +63,7 @@ class IndoxApiOpenAiQa:
         Returns:
             str: The generated answer.
         """
+
         try:
             return self._attempt_answer_question(context, question)
         except Exception as e:
