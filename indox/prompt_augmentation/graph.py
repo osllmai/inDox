@@ -42,10 +42,10 @@ class GraphState(TypedDict):
 
 class RAGGraph:
 
-    def __init__(self, model_name='gpt-3.5-turbo-0125'):
+    def __init__(self,llm_model):
         try:
             logging.info("Initializing RAGGraph with model: %s", model_name)
-            llm = ChatOpenAI(model=model_name, temperature=0)
+            llm = llm_model
             document_relevancy_prompt = PromptTemplate(template=relevancy_prompt,
                                                        input_variables=["question", "document"])
             self.retrieval_grader = document_relevancy_prompt | llm | JsonOutputParser()
