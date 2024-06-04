@@ -121,46 +121,68 @@ class OpenAiQA:
             logging.error("Error generating summary: %s", e)
             return str(e)
 
-    def answer_with_agent(self, context, question, tool_description, tool_names):
+    def grade_docs(self, context, question):
         """
         Answers a question using an agent-based approach with access to tools.
 
         Args:
             context (str): The context in which the question is asked.
             question (str): The question to answer.
-            tool_description (str): Description of the available tools.
-            tool_names (str): The names of the available tools.
-
-        Returns:
-            str: The generated answer.
         """
+        filtered_docs = []
         try:
-            logging.info("Answering question with agent: %s", question)
             system_prompt = f"""
-            Answer the following questions and obey the following commands as best you can.
-
-            You have access to the following tools:
-
-            {tool_description}
-
-            You will receive a message from the human, then you should start a loop and do one of two things
-
-            Option 1: You use a tool to answer the question.
-            For this, you should use the following format:
-            Thought: you should always think about what to do
-            Action: the action to take, should be one of [{tool_names}]
-            Action Input: "the input to the action, to be sent to the tool"
-
-            After this, the human will respond with an observation, and you will continue.
-
-            Option 2: You respond to the human.
-            For this, you should use the following format:
-            Action: Response To Human
-            Action Input: "your response to the human, summarizing what you did and what you learned"
-
-            Begin!
+           You are a grader assessing relevance of a retrieved
+            document to a user question. If the document contains keywords related to the
+            user question, grade it as relevant. It does not need to be a stringent test.
+            The goal is to filter out erroneous retrievals.
+        
+            Give a binary score ''yes'' or ''no'' score to indicate whether the document is
+            relevant to the question.
+        
+            Provide the score with no preamble or explanation.
             """
-            prompt = f"{system_prompt}\nContext: {context}\nQuestion: {question}\n"
+            for i in range(len(context)):
+                prompt = f"""
+                    Here is the retrieved document:
+                    {context}
+                    Here is the user question: 
+                    {question}"""
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": prompt},
+                    ],
+                    temperature=0,
+                    max_tokens=150,
+                )
+                grade = response.choices[0].message.content.strip()
+                if grade.lower() == "yes":
+                    print("Relevant doc")
+                    filtered_docs.append(context[i])
+                elif grade.lower() == "no":
+                    print("Not Relevant doc")
+            return filtered_docs
+        except Exception as e:
+            logging.error("Error generating agent answer: %s", e)
+            return str(e)
+
+    def check_hallucination(self, context, answer):
+        try:
+            system_prompt = """
+                You are a grader assessing whether an answer is grounded in / supported by a set of facts.
+                Give a binary score 'yes' or 'no' score to indicate whether the answer is grounded / supported by a set
+                 of facts. Provide score with no preamble or explanation.
+                """
+            prompt = f"""
+                Here are the facts:
+                \n -------- \n
+                {context}
+                \n -------- \n
+                Here is the answer : {answer}
+                """
+
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
@@ -170,9 +192,9 @@ class OpenAiQA:
                 temperature=0,
                 max_tokens=150,
             )
-            agent_answer = response.choices[0].message.content.strip()
+            hallucination_answer = response.choices[0].message.content.strip()
             logging.info("Agent answer generated successfully")
-            return agent_answer
+            return hallucination_answer
         except Exception as e:
             logging.error("Error generating agent answer: %s", e)
             return str(e)

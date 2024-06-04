@@ -1,8 +1,9 @@
 from typing import List, Any, Tuple
 import warnings
 import logging
-from .visualization import visualize_contexts_
-from .utils import clear_log_file
+
+# from .visualization import visualize_contexts_
+# from .utils import clear_log_file
 
 warnings.filterwarnings("ignore")
 
@@ -149,15 +150,17 @@ class IndoxRetrievalAugmentation:
                     answer = self.qa_model.answer_question(context=context, question=query)
                 else:
                     logging.info("Generating answer with document relevancy filter")
-                    from .prompt_augmentation import RAGGraph
-                    graph = RAGGraph(self.qa_model)
-                    graph_out = graph.run({'question': query, 'documents': context, 'scores': scores})
-                    answer = self.qa_model.answer_question(context=graph_out['documents'],
-                                                           question=graph_out['question'])
-                    context, scores = graph_out['documents'], graph_out['scores']
+                    # from .prompt_augmentation import RAGGraph
+                    # graph = RAGGraph(self.qa_model)
+                    # graph_out = graph.run({'question': query, 'documents': context, 'scores': scores})
+                    # answer = self.qa_model.answer_question(context=graph_out['documents'],
+                    #                                        question=graph_out['question'])
+                    # context, scores = graph_out['documents'], graph_out['scores']
+                    context = self.qa_model.grade_docs(context=context, question=query)
+                    answer = self.qa_model.answer_question(context=context, query=query)
 
-                retrieve_context = (context, scores)
-                new_entry = {'query': query, 'answer': answer, 'context': context, 'scores': scores}
+                retrieve_context = context
+                new_entry = {'query': query, 'answer': answer, 'context': context}
                 self.qa_history.append(new_entry)
                 self.context = retrieve_context
                 logging.info("Query answered successfully")
@@ -166,10 +169,9 @@ class IndoxRetrievalAugmentation:
                 logging.error(f"Error while answering query: {e}")
                 raise
 
-    class Agent:
-        def __init__(self, llm, vector_database, tools: list, top_k: int = 5):
+    class AgenticRag:
+        def __init__(self, llm, vector_database, top_k: int = 5):
             self.llm = llm
-            self.tools = tools
             self.top_k = top_k
             self.vector_database = vector_database
             self.qa_history = []
@@ -183,19 +185,28 @@ class IndoxRetrievalAugmentation:
                 logging.error("Query string cannot be empty.")
                 raise ValueError("Query string cannot be empty.")
             context, scores = self.vector_database.retrieve(query, top_k=self.top_k)
-            from .prompt_augmentation import RAGGraph
-            graph = RAGGraph(self.qa_model)
-            graph_out = graph.run({'question': query, 'documents': context, 'scores': scores})
-            answer = self.llm.answer_question(context=graph_out['documents'],
-                                              question=graph_out['question'])
-            context, scores = graph_out['documents'], graph_out['scores']
-            if len(context < 1):
-                #TODO Add agent functionality here
-                # use llm.answer_with_agent
+
+            grade_context = self.llm.grade_docs(context=context, question=query)
+            # Any relevant doc? if yes -> next step(check for hallucination) , if no -> web search
+            if len(grade_context) < 1:  # it means not relevant doc
+                # go for web search
+                logging.info("No Relevant document found, Start web search")
+                # TODO add web search functionality here
                 pass
+            else:  # have relevant doc
+                # check for hallucinating , if yes -> generate again , if no -> answer question
+                answer = self.llm.answer_question(context=grade_context, question=query)
+                hallucination_check = self.llm.check_hallucination(context=grade_context, answer=answer)
+                if hallucination_check.lower() == "yes":
+                    logging.info("Hallucination detected, Regenerate the answer...")
+                    # go for regenerate
+                    answer = self.llm.answer_question(context=context,
+                                                      question=query)
+                    return answer
+                else:  # it means there is no hallucination
+                    logging.info("Not Hallucinate")
+                    return answer
 
-
-            
     # TODO add visualization for evaluation
     # def evaluate(self):
     #     """
