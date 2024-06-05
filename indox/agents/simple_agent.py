@@ -2,7 +2,7 @@ import re
 from typing import List, Dict, Tuple
 
 from base import ToolInterface
-from indox.llms import IndoxApiOpenAiQa
+from indox.llms import IndoxApiOpenAiQa,IndoxApiOpenAiQaAgent
 
 System_prompt = """
 Answer the following questions and obey the following commands as best you can.
@@ -74,8 +74,7 @@ class IndoxAgent:
         while self.max_loops is None or loop_count < self.max_loops:
             loop_count += 1
 
-            response_text = self.llm.answer_with_agent(question=self.messages, context=None, tool_names=None,
-                                                       tool_description=None)
+            response_text = self.llm._send_request(self.messages)
 
             print(response_text)
 
@@ -106,6 +105,76 @@ class IndoxAgent:
                 print(f"**Assistant:** {content}\n")
 
 
+class IndoxChatAgent:
+    def __init__(self, sys_prompt=System_prompt, tools=None, max_loops=None):
+        self.tools = tools
+        self.max_loops = max_loops
+        self.sys_prompt = sys_prompt.format(
+            tool_description=self.tool_description,
+            tool_names=self.tool_names,
+        )
+        self.messages = [
+            {"role": "system", "content": self.sys_prompt}
+        ]
+        self.end_agent_process = False
+    @staticmethod
+    def extract_action_and_input(text):
+        regex = r"Action: [\[]?(.*?)[\]]?[\n]*Action Input:[\s]*(.*)"
+        match = re.search(regex, text, re.DOTALL)
+        if not match:
+            raise ValueError(f"Output of LLM is not parsable for next tool use: `{text}`")
+        tool = match.group(1).strip()
+        tool_input = match.group(2)
+        # print(tool_input)
+        # breakpoint()
+        return tool, tool_input.strip(" ").strip('"')
+
+    @property
+    def tool_description(self) -> str:
+        return "\n".join([f"{tool.name}: {tool.description}" for tool in self.tools])
+
+    @property
+    def tool_names(self) -> str:
+        return ",".join([tool.name for tool in self.tools])
+
+    @property
+    def tool_by_names(self) -> Dict[str, ToolInterface]:
+        return {tool.name: tool for tool in self.tools}
+
+    def get_prompt(self, prompt):
+        self.messages.append({"role": "user", "content": prompt})
+        return self.messages.append()
+
+    def run(self, response_text):
+
+        action, action_input = self.extract_action_and_input(response_text)
+        if action in self.tool_names:
+            observation = self.tool_by_names[action].use(action_input)
+            self.messages.extend([
+                {"role": "assistant", "content": response_text},
+                {"role": "user", "content": f"Observation: \"{observation}\""},
+            ])
+            self.print_messages_markdown()
+        elif action == "Response To Human":
+            self.messages.append({"role": "assistant", "content": response_text})
+            self.print_messages_markdown()
+            # print(f"Response: {action_input}")
+            self.end_agent_process = True
+            return action_input
+
+    def print_messages_markdown(self):
+        print("\n--- Chat Stream ---\n")
+        for message in self.messages:
+            role = message['role']
+            content = message['content']
+            if role == "system":
+                print(f"**System:**\n```\n{content}\n```\n")
+            elif role == "user":
+                print(f"**User:** {content}\n")
+            elif role == "assistant":
+                print(f"**Assistant:** {content}\n")
+
+
 if __name__ == "__main__":
     import os
     from dotenv import load_dotenv
@@ -115,6 +184,6 @@ if __name__ == "__main__":
 
     print(load_dotenv())
     INDOX_OPENAI_API_KEY = os.getenv("INDOX_OPENAI_API_KEY")
-    llm = IndoxApiOpenAiQa(api_key=INDOX_OPENAI_API_KEY)
+    llm = IndoxApiOpenAiQaAgent(api_key=INDOX_OPENAI_API_KEY)
     agent = IndoxAgent(llm=llm, tools=[PythonREPLTool(), WikipediaTool(), SerpAPITool()])
     agent.run('how cinderella end her happy wedding? and who has written this her book?')
