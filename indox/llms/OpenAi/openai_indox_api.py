@@ -149,10 +149,13 @@ class IndoxApiOpenAiQaAgent:
         from indox.agents.tools.search import SerpAPITool
         from indox.agents.tools.wiki import WikipediaTool
         if tools is None:
-            tools = [SerpAPITool(), WikipediaTool()]
+            tools = [WikipediaTool()]
 
         self.agent = IndoxChatAgent(tools=tools)
         self._agent_initiated = True
+
+        print(self.agent.sys_prompt)
+        print("===Agent has been initialized===")
 
     def answer_question(self, prompt, agent=False):
         """
@@ -170,15 +173,15 @@ class IndoxApiOpenAiQaAgent:
         try:
             if not self._agent_initiated:
                 self._initialize_agent()
+            message = self.agent.get_prompt(prompt)
             while True:
-                message = self.agent.get_prompt(prompt)
                 response = self._send_request(message)
-                prompt = self.agent.run(response)
+                message = self.agent.run(response)
 
                 if self.agent.end_agent_process:
                     break
 
-            return self._send_request(prompt)
+            return message
         except Exception as e:
             print(e)
             return str(e)
