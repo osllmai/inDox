@@ -24,16 +24,7 @@ class IndoxApiOpenAiQa:
         data = {
             "frequency_penalty": 0,
             "max_tokens": 150,
-            "messages": [
-                {
-                    "content": "you are a helpful assistant.",
-                    "role": "system"
-                },
-                {
-                    "content": prompt,
-                    "role": "user"
-                }
-            ],
+            "messages": prompt,
             "model": "gpt-3.5-turbo-0125",
             "presence_penalty": 0,
             "stream": True,
@@ -94,7 +85,17 @@ class IndoxApiOpenAiQa:
             str: The generated summary.
         """
         try:
-            prompt = "You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n" + documentation
+            prompt = [
+                {
+                    "content": "you are a helpful assistant.",
+                    "role": "system"
+                },
+                {
+                    "content": "You are a helpful assistant. Give a detailed summary of the documentation "
+                               "provided.\n\nDocumentation:\n" + documentation,
+                    "role": "user"
+                }
+            ]
             return self._send_request(prompt)
         except Exception as e:
             print(e)
@@ -114,31 +115,41 @@ class IndoxApiOpenAiQa:
             str: The generated answer.
         """
         try:
-            system_prompt = f"""
-            Answer the following questions and obey the following commands as best you can.
-
-            You have access to the following tools:
-
-            {tool_description}
-
-            You will receive a message from the human, then you should start a loop and do one of two things
-
-            Option 1: You use a tool to answer the question.
-            For this, you should use the following format:
-            Thought: you should always think about what to do
-            Action: the action to take, should be one of [{tool_names}]
-            Action Input: "the input to the action, to be sent to the tool"
-
-            After this, the human will respond with an observation, and you will continue.
-
-            Option 2: You respond to the human.
-            For this, you should use the following format:
-            Action: Response To Human
-            Action Input: "your response to the human, summarizing what you did and what you learned"
-
-            Begin!
-            """
-            prompt = f"{system_prompt}\nContext: {context}\nQuestion: {question}\n"
+            # system_prompt = f"""
+            # Answer the following questions and obey the following commands as best you can.
+            #
+            # You have access to the following tools:
+            #
+            # {tool_description}
+            #
+            # You will receive a message from the human, then you should start a loop and do one of two things
+            #
+            # Option 1: You use a tool to answer the question.
+            # For this, you should use the following format:
+            # Thought: you should always think about what to do
+            # Action: the action to take, should be one of [{tool_names}]
+            # Action Input: "the input to the action, to be sent to the tool"
+            #
+            # After this, the human will respond with an observation, and you will continue.
+            #
+            # Option 2: You respond to the human.
+            # For this, you should use the following format:
+            # Action: Response To Human
+            # Action Input: "your response to the human, summarizing what you did and what you learned"
+            #
+            # Begin!
+            # """
+            # prompt = [
+            #     {
+            #         "content": system_prompt,
+            #         "role": "system"
+            #     },
+            #     {
+            #         "content": f"Context: {context}\nQuestion: {question}\n",
+            #         "role": "user"
+            #     }
+            # ]
+            prompt = question
             return self._send_request(prompt)
         except Exception as e:
             print(e)
