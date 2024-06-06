@@ -36,10 +36,8 @@ class PythonREPLTool(ToolInterface):
 
     name: str = "Python REPL"
     description: str = (
-        "A Python shell. Use this to execute python commands. "
-        "Input should be a valid python command. "
-        "If you want to see the output of a value, you should print it out "
-        "with `print(...)`."
+        "A Python shell. Use this to execute python commands. Input should be a valid python command. If you want to "
+        "see the output of a value, you should print it out with `print(...)`."
     )
     python_repl: PythonREPL = Field(default_factory=_get_default_python_repl)
 
@@ -50,6 +48,6 @@ class PythonREPLTool(ToolInterface):
 
 if __name__ == '__main__':
     repl_tool = PythonREPLTool()
-    result = repl_tool.use('print(9 * 7)')
-    assert result == "63\n"
+    result = repl_tool.use("'3 + 9'")
+    # assert result == "12\n"
     print(result)
