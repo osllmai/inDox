@@ -63,7 +63,6 @@ class IndoxOpenAIEmbedding:
                 if data and isinstance(data, list) and 'embedding' in data[0]:
                     embedding = data[0]['embedding']
                     embeddings.append(embedding)
-                    logging.info(f'Successfully fetched embedding for text: {text}')
                 else:
                     logging.error('Embedding not found in the response.')
                     raise ValueError("Embedding not found in the response.")

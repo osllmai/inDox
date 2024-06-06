@@ -145,7 +145,7 @@ class OpenAiQA:
             for i in range(len(context)):
                 prompt = f"""
                     Here is the retrieved document:
-                    {context}
+                    {context[i]}
                     Here is the user question: 
                     {question}"""
                 response = self.client.chat.completions.create(

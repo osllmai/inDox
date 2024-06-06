@@ -34,7 +34,7 @@ class MistralQA:
             "Authorization": f"Bearer {self.api_key}"
         }
         payload = {
-            "inputs": prompt
+            "inputs": prompt,
         }
 
         try:
