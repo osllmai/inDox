@@ -9,6 +9,7 @@ from langchain_core.documents import Document
 logging.basicConfig(filename='indox.log', level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
 
+
 def get_chunks_unstructured(file_path, chunk_size, remove_sword, splitter):
     """
     Extract chunks from an unstructured document file using an unstructured data processing library.
@@ -73,6 +74,7 @@ def get_chunks_unstructured(file_path, chunk_size, remove_sword, splitter):
     except Exception as e:
         logging.error("Failed at step with error: %s", e)
         raise
+
 
 class UnstructuredLoadAndSplit:
     def __init__(self, file_path: str, remove_sword: bool = False, max_chunk_size: int = 500, splitter=None):

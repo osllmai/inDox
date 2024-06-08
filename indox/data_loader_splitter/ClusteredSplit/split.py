@@ -72,15 +72,22 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
 class ClusteredSplit:
     def __init__(self, file_path: str, embeddings, re_chunk: bool = False, remove_sword: bool = False,
                  chunk_size: Optional[int] = 100, overlap: Optional[int] = 0, threshold: float = 0.1, dim: int = 10,
-                 use_openai_summary=False, max_len_summary=100, min_len_summary=30):
+                 use_openai_summary: bool = False, max_len_summary: int = 100, min_len_summary: int = 30):
         """
         Initialize the ClusteredSplit class.
 
         Parameters:
         - file_path (str): The path to the file containing unstructured data.
-        - max_chunk_size (int): The maximum size (in characters) for each chunk.
-        - remove_sword (bool): Whether to remove stopwords from the text.
-        - splitter: The splitter to use for splitting the document.
+        - embeddings: The embeddings to be used for processing the chunks.
+        - re_chunk (bool, optional): Whether to re-chunk the document after initial chunking. Default is False.
+        - remove_sword (bool, optional): Whether to remove stopwords from the text. Default is False.
+        - chunk_size (int, optional): The maximum size (in characters) for each chunk. Default is 100.
+        - overlap (int, optional): The number of characters to overlap between chunks. Default is 0.
+        - threshold (float, optional): The similarity threshold for clustering. Default is 0.1.
+        - dim (int, optional): The dimensionality of the embeddings. Default is 10.
+        - use_openai_summary (bool, optional): Whether to use OpenAI summary for summarizing the chunks. Default is False.
+        - max_len_summary (int, optional): The maximum length of the summary. Default is 100.
+        - min_len_summary (int, optional): The minimum length of the summary. Default is 30.
         """
         try:
             logging.info("Initializing ClusteredSplit")
@@ -125,5 +132,6 @@ class ClusteredSplit:
             logging.info("Successfully obtained all documents")
             return docs
         except Exception as e:
-            logging.error("Error in get_all_docs: %s", e)
+            logging.error("Error in load_and_chunk: %s", e)
             raise
+

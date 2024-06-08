@@ -125,7 +125,7 @@ class OpenAISummaryModel(SummaryModel):
             model=self.model_name,
         )
 
-        return response.choices[0].message.content.replace("\n", " "), 0, None
+        return response.choices[0].message.content.strip()
 
 
 # Hugging Face summary model class
