@@ -44,6 +44,7 @@ class IndoxApiOpenAiQa:
             "temperature": 0.3,
             "top_p": 1
         }
+        print(len(history))
         if history is not None and len(history) > 2:
             assert isinstance(history, list)
             data['messages'] = history + data['messages']
