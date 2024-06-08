@@ -41,24 +41,25 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 Initialize Indox and QA models:
 
 ```python
-from Indox import IndoxRetrievalAugmentation
+from indox import IndoxRetrievalAugmentation
 Indox = IndoxRetrievalAugmentation()
 
-from Indox.QaModels import OpenAiQA
+from Indox.llms import OpenAiQA
 openai_qa = OpenAiQA(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo-0125")
 ```
 
 Perform the unstructured load and split on the file:
 
 ```python
-from Indox.DataLoaderSplitter import UnstructuredLoadAndSplit
-from Indox.Splitter import semantic_text_splitter
+from indox.data_loader_splitter import UnstructuredLoadAndSplit
+from Indox.splitter import semantic_text_splitter
 
 file_path = "path/to/your/file.pdf"  # Specify the file path
-docs = UnstructuredLoadAndSplit(file_path=file_path,
+loader_splitter = UnstructuredLoadAndSplit(file_path=file_path,
                                 remove_sword=False,
                                 max_chunk_size=500,
                                 splitter=semantic_text_splitter)
+docs = loader_splitter.load_and_chunk()
 ```
 
 ## Example Code
@@ -73,18 +74,19 @@ from dotenv import load_dotenv
 load_dotenv()
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 
-from Indox import IndoxRetrievalAugmentation
+from indox import IndoxRetrievalAugmentation
 Indox = IndoxRetrievalAugmentation()
 
-from Indox.QaModels import OpenAiQA
+from Indox.llms import OpenAiQA
 openai_qa = OpenAiQA(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo-0125")
 
-from Indox.DataLoaderSplitter import UnstructuredLoadAndSplit
-from Indox.Splitter import semantic_text_splitter
+from indox.data_loader_splitter import UnstructuredLoadAndSplit
+from indox.splitter import semantic_text_splitter
 
 file_path = "path/to/your/file.pdf"  # Specify the file path
-docs = UnstructuredLoadAndSplit(file_path=file_path,
+loader_splitter = UnstructuredLoadAndSplit(file_path=file_path,
                                 remove_sword=False,
                                 max_chunk_size=500,
                                 splitter=semantic_text_splitter)
+docs = loader_splitter.load_and_chunk()
 ```

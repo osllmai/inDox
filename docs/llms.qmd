@@ -15,7 +15,7 @@ necessary Indox module and creating an instance of
 `IndoxRetrievalAugmentation`:
 
 ``` python
-from Indox import IndoxRetrievalAugmentation
+from indox import IndoxRetrievalAugmentation
 Indox = IndoxRetrievalAugmentation()
 ```
 
@@ -37,9 +37,11 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 1.  Import Indox modules and set the OpenAI QA model:
 
 ``` python
-from Indox.QaModels import OpenAiQA
+from indox.llms import OpenAiQA
 
 openai_qa = OpenAiQA(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo-0125")
+retriever = indox.QuestionAnswer(vector_database=db,llm=openai_qa,top_k=5)
+retriever.invoke(query)
 ```
 
 ## Using Mistral QA Model from Hugging Face
@@ -60,9 +62,11 @@ HF_API_KEY = os.getenv('HF_API_KEY')
 1.  Import Indox modules and set the Mistral QA model:
 
 ``` python
-from Indox.QaModels import MistralQA
+from indox.llms import MistralQA
 
 mistral_qa = MistralQA(api_key=HF_API_KEY, model="mistralai/Mistral-7B-Instruct-v0.2")
+retriever = indox.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5)
+retriever.invoke(query)
 ```
 
 Note: Users can choose other models from Hugging Face as well, but we
@@ -89,9 +93,11 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
     Thought:
 
 ``` python
-from Indox.QaModels import DspyCotQA
+from indox.llms import DspyCotQA
 
 dspy_qa = DspyCotQA(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo")
+retriever = indox.QuestionAnswer(vector_database=db,llm=dspy_qa,top_k=5)
+retriever.invoke(query)
 ```
 
 ### Future Plans

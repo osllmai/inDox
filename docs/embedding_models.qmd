@@ -26,8 +26,8 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 1.  Import Indox modules and set the OpenAI embedding model:
 
 ``` python
-from Indox import IndoxRetrievalAugmentation
-from Indox.Embeddings import OpenAiEmbedding
+from indox import IndoxRetrievalAugmentation
+from indox.embeddings import OpenAiEmbedding
 
 Indox = IndoxRetrievalAugmentation()
 openai_embeddings = OpenAiEmbedding(model="text-embedding-3-small", openai_api_key=OPENAI_API_KEY)
@@ -40,7 +40,7 @@ To use the Hugging Face embedding model, follow these steps:
 1.  Import Indox modules and set the Hugging Face embedding model:
 
 ``` python
-from Indox.Embeddings import HuggingFaceEmbedding
+from indox.embeddings import HuggingFaceEmbedding
 
 hugging_face_embedding = HuggingFaceEmbedding(model_name="multi-qa-mpnet-base-cos-v1")
 ```
