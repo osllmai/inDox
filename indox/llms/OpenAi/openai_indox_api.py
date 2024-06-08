@@ -17,7 +17,7 @@ class IndoxApiOpenAiQa:
         self.api_key = api_key
         self.prompt_template = prompt_template or "Context: {context}\nQuestion: {question}\nAnswer:"
 
-    def _send_request(self, system_prompt, user_prompt):
+    def _send_request(self, system_prompt, user_prompt, role: str = "system", history: list = None):
         url = 'http://5.78.55.161/api/chat_completion/generate/'
         headers = {
             'accept': '*/*',
@@ -31,7 +31,7 @@ class IndoxApiOpenAiQa:
             "messages": [
                 {
                     "content": system_prompt,
-                    "role": "system"
+                    "role": role
                 },
                 {
                     "content": user_prompt,
@@ -44,9 +44,11 @@ class IndoxApiOpenAiQa:
             "temperature": 0.3,
             "top_p": 1
         }
+        if history is not None and len(history) > 2:
+            assert isinstance(history, list)
+            data['messages'] = history + data['messages']
 
         response = requests.post(url, headers=headers, json=data)
-
         if response.status_code == 200:
             answer_data = response.json()
             generated_text = answer_data.get("text_message", "")
@@ -165,6 +167,14 @@ class IndoxApiOpenAiQa:
             Here is the answer: {answer}
             """
             response = self._send_request(system_prompt, user_prompt)
+            return response
+        except Exception as e:
+            logging.error("Error generating agent answer: %s", e)
+            return str(e)
+
+    def assistant(self, system_prompt, user_prompt, role, history):
+        try:
+            response = self._send_request(system_prompt=system_prompt, user_prompt=user_prompt, role=role, history=history)
             return response
         except Exception as e:
             logging.error("Error generating agent answer: %s", e)

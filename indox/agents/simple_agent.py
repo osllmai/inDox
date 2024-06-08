@@ -2,7 +2,7 @@ import re
 from typing import List, Dict, Tuple
 
 from indox.agents.base import ToolInterface
-from indox.llms import IndoxApiOpenAiQa, IndoxApiOpenAiQaAgent
+from indox.llms.OpenAi.openai_indox_api import IndoxApiOpenAiQa
 
 System_prompt = """
 Answer the following questions and obey the following commands as best you can.
@@ -70,19 +70,20 @@ class IndoxAgent:
     def run(self, prompt):
         self.messages.append({"role": "user", "content": prompt})
         loop_count = 0
-
+        history = []
         while self.max_loops is None or loop_count < self.max_loops:
             loop_count += 1
-
-            response_text = self.llm._send_request(self.messages)
-
-            # print(response_text)
+            response_text = self.llm.assistant(system_prompt=self.messages[-2]['content'],
+                                               user_prompt=self.messages[-1]['content'],
+                                               role=self.messages[-2]['role'], history=history)
 
             action, action_input = self.extract_action_and_input(response_text)
             if action in self.tool_names:
                 print(f"Action: {action}\nAction Input : {action_input}")
                 observation = self.tool_by_names[action].use(action_input)
                 print(f"Observation: {observation}\n")
+                history = self.messages
+
                 self.messages.extend([
                     {"role": "assistant", "content": response_text},
                     {"role": "user", "content": f"Observation: \"{observation}\""},
@@ -93,6 +94,7 @@ class IndoxAgent:
                 # self.print_messages_markdown()
                 print(f"Response: {action_input}")
                 break
+
 
     def print_messages_markdown(self):
         print("\n--- Chat Stream ---\n")
@@ -183,24 +185,26 @@ class IndoxChatAgent:
                 print(f"**Assistant:** {content}\n")
 
 
+if __name__ == "__main__":
+    import os
+    from dotenv import load_dotenv
+    from indox.agents.tools.repl import PythonREPLTool
+    from indox.agents.tools.search import SerpAPITool
+    from indox.agents.tools.wiki import WikipediaTool
+
+    print(load_dotenv())
+    INDOX_OPENAI_API_KEY = os.getenv("INDOX_OPENAI_API_KEY")
+    llm = IndoxApiOpenAiQa(api_key=INDOX_OPENAI_API_KEY)
+    agent = IndoxAgent(llm=llm, tools=[WikipediaTool()])
+    agent.run('answer 2 question 1. who was cinderella book writer? and tell me where is Isfahan?')
+    # res = SerpAPITool().use("cinderella  book")
+    # print(res)
 # if __name__ == "__main__":
 #     import os
 #     from dotenv import load_dotenv
-#     from indox.agents.tools.repl import PythonREPLTool
-#     from indox.agents.tools.search import SerpAPITool
-#     from indox.agents.tools.wiki import WikipediaTool
 #
 #     print(load_dotenv())
 #     INDOX_OPENAI_API_KEY = os.getenv("INDOX_OPENAI_API_KEY")
 #     llm = IndoxApiOpenAiQaAgent(api_key=INDOX_OPENAI_API_KEY)
-#     agent = IndoxAgent(llm=llm, tools=[PythonREPLTool(), WikipediaTool(), SerpAPITool()])
-#     agent.run('how cinderella end her happy wedding? and who has written this her book?')
-if __name__ == "__main__":
-    import os
-    from dotenv import load_dotenv
-
-    print(load_dotenv())
-    INDOX_OPENAI_API_KEY = os.getenv("INDOX_OPENAI_API_KEY")
-    llm = IndoxApiOpenAiQaAgent(api_key=INDOX_OPENAI_API_KEY)
-
-    llm.answer_question('how cinderella end her happy wedding? and who has written this her book?')
+#
+#     llm.answer_question('how cinderella end her happy wedding? and who has written this her book?')

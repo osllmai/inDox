@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from Indox.Agents.base import ToolInterface
+from indox.agents.base import ToolInterface
 
 ENDPOINT = "https://hn.algolia.com/api/v1/search_by_date"
 

@@ -11,7 +11,6 @@ class WikipediaTool(ToolInterface):
 
     def use(self, input_text: str) -> str:
         search = wikipedia.search(input_text)
-
         if len(search) > 0:
             return wikipedia.summary(search[0])
         else:
@@ -20,5 +19,5 @@ class WikipediaTool(ToolInterface):
 
 # Example usage
 if __name__ == "__main__":
-    tool = WikipediaTool('en')
-    print(tool.use("bu`in Miandasht"))
+    tool = WikipediaTool()
+    print(tool.use("cinderella story book"))

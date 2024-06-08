@@ -192,7 +192,7 @@ class IndoxRetrievalAugmentation:
                 # go for web search
                 logging.info("No Relevant document found, Start web search")
                 # TODO add web search functionality here
-                pass
+
             else:  # have relevant doc
                 # check for hallucinating , if yes -> generate again , if no -> answer question
                 answer = self.llm.answer_question(context=grade_context, question=query)

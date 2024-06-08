@@ -83,5 +83,5 @@ class SerpAPITool(ToolInterface):
 
 if __name__ == '__main__':
     s = SerpAPITool()
-    res = s.use("Who is the pope in 2023?")
+    res = s.use("cinderella story book")
     print(res)
