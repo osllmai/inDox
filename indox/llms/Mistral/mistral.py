@@ -1,5 +1,7 @@
 import logging
 import requests
+from mistralai.client import MistralClient
+from mistralai.models.chat_completion import ChatMessage
 
 logging.basicConfig(filename='indox.log', level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
@@ -19,6 +21,7 @@ class MistralQA:
             logging.info("Initializing MistralQA with model: %s", model)
             self.model = model
             self.api_key = api_key
+            self.client =MistralClient(api_key=api_key)
             self.prompt_template = prompt_template or "Context: {context}\nQuestion: {question}\nAnswer:"
             if not self.api_key:
                 raise ValueError("A valid Hugging Face API key is required.")
@@ -117,6 +120,45 @@ class MistralQA:
             logging.error("Error in get_summary: %s", e)
             return str(e)
 
+    def grade_docs(self, context, question):
+        """
+        Answers a question using an agent-based approach with access to tools.
+
+        Args:
+            context (str): The context in which the question is asked.
+            question (str): The question to answer.
+        """
+        filtered_docs = []
+        try:
+            system_prompt = f"""
+              You are a grader assessing relevance of a retrieved
+               document to a user question. If the document contains keywords related to the
+               user question, grade it as relevant. It does not need to be a stringent test.
+               The goal is to filter out erroneous retrievals.
+
+               Give a binary score ''yes'' or ''no'' score to indicate whether the document is
+               relevant to the question.
+
+               Provide the score with no preamble or explanation.
+               """
+            for i in range(len(context)):
+                prompt = f"""
+                       Here is the retrieved document:
+                       {context}
+                       Here is the user question: 
+                       {question}"""
+                response = self._send_request(prompt)
+                print(response.json)
+                grade = response.strip()
+                if grade.lower() == "yes":
+                    print("Relevant doc")
+                    filtered_docs.append(context[i])
+                elif grade.lower() == "no":
+                    print("Not Relevant doc")
+            return filtered_docs
+        except Exception as e:
+            logging.error("Error generating agent answer: %s", e)
+            return str(e)
     def grade_docs(self, context, question):
         """
         Answers a question using an agent-based approach with access to tools.

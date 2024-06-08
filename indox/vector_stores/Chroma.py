@@ -25,7 +25,7 @@ class ChromaVectorStore:
         """
         from langchain_community.vectorstores.chroma import Chroma
         self.embeddings = embedding
-        self.db = Chroma(collection_name=collection_name, embedding_function=self.embeddings)
+        self.db = Chroma(collection_name=collection_name, embedding_function=embedding)
 
     def add_document(self, docs):
         """
