@@ -24,7 +24,7 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
 
     Returns:
     - Tuple or List:
-      - If `do_clustering` is `True`, returns a tuple containing:
+      - If `re_chunk` is `True`, returns a tuple containing:
         - `all_chunks` (List[str]): A list of all document chunks (leaf and extra).
 
       - Otherwise, returns a list of leaf chunks without further clustering.
