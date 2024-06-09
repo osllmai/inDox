@@ -1,0 +1,48 @@
+project:
+  type: book
+  output-dir: site
+
+book:
+  title: "Indox"
+  search: true
+
+  page-footer:
+    left: |
+      Indox Retrieval Augmentation
+
+  repo-url: https://github.com/
+  repo-actions: [edit]
+  downloads: [pdf, epub]
+  cover-image: logo.png
+  favicon: logo.png
+  repo-branch: main
+
+  chapters:
+    - index.qmd
+
+    - quick_start.qmd
+
+    - part: "Data Loader And Splitter"
+      chapters:
+        - data_loader_and_splitter/clustered_split.qmd
+        - data_loader_and_splitter/unstructured_load_and_split.qmd
+
+    - embedding_models.qmd
+    - llms.qmd
+    - vector_store.qmd
+    - evaluation.ipynb
+    - agenticRag.qmd
+
+    - part: "Examples"
+      chapters:
+        - examples/clusterSplit.ipynb
+        - examples/mistral.ipynb
+        - examples/unstructuredSplit.ipynb
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+    code-link: true
+    code-fold: true
+    number-sections: false

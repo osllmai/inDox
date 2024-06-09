@@ -1,0 +1,90 @@
+---
+title: Cluster Split
+jupyter: python3
+---
+
+
+
+```{python}
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+```
+
+## Initial Setup
+
+The following imports are essential for setting up the Indox application. These imports include the main Indox retrieval augmentation module, question-answering models, embeddings, and data loader splitter.
+
+```{python}
+from indox import IndoxRetrievalAugmentation
+from indox.llms import OpenAiQA
+from indox.embeddings import OpenAiEmbedding
+from indox.data_loader_splitter import ClusteredSplit
+```
+
+In this step, we initialize the Indox Retrieval Augmentation, the QA model, and the embedding model. Note that the models used for QA and embedding can vary depending on the specific requirements.
+
+```{python}
+Indox = IndoxRetrievalAugmentation()
+qa_model = OpenAiQA(api_key=OPENAI_API_KEY,model="gpt-3.5-turbo-0125")
+embed = OpenAiEmbedding(api_key=OPENAI_API_KEY,model="text-embedding-3-small")
+```
+
+```{python}
+file_path = "sample.txt"
+```
+
+## Data Loader Setup
+
+We set up the data loader using the `ClusteredSplit` class. This step involves loading documents, configuring embeddings, and setting options for processing the text.
+
+```{python}
+loader_splitter = ClusteredSplit(file_path=file_path,embeddings=embed,remove_sword=False,re_chunk=False,chunk_size=300,use_openai_summary=True)
+```
+
+```{python}
+docs = loader_splitter.load_and_chunk()
+```
+
+```{python}
+docs
+```
+
+## Vector Store Connection and Document Storage
+
+In this step, we connect the Indox application to the vector store and store the processed documents.
+
+```{python}
+from indox.vector_stores import ChromaVectorStore
+db = ChromaVectorStore(collection_name="sample",embedding=embed)
+```
+
+```{python}
+Indox.connect_to_vectorstore(db)
+```
+
+```{python}
+Indox.store_in_vectorstore(docs)
+```
+
+## Querying and Interpreting the Response
+
+In this step, we query the Indox application with a specific question and use the QA model to get the response. The response is a tuple where the first element is the answer and the second element contains the retrieved context with their cosine scores.
+response[0] contains the answer
+response[1] contains the retrieved context with their cosine scores
+
+```{python}
+retriever = Indox.QuestionAnswer(vector_database=db,llm=qa_model,top_k=5)
+```
+
+```{python}
+retriever.invoke(query="How cinderella reach happy ending?")
+```
+
+```{python}
+retriever.context
+```
+
+
