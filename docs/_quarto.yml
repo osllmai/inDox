@@ -32,12 +32,12 @@ book:
     - vector_store.qmd
     - evaluation.ipynb
     - agenticRag.qmd
-
     - part: "Examples"
       chapters:
-        - examples/clusterSplit.ipynb
-        - examples/mistral.ipynb
-        - examples/unstructuredSplit.ipynb
+        - examples_3/clusterSplit.qmd
+        - examples_3/unstructuredSplit.qmd
+        - examples_3/mistral.qmd
+
 format:
   html:
     theme: cosmo
