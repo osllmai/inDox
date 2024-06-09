@@ -1,4 +1,4 @@
-# Question Answer Models
+# LLMs
 
 
 Indox supports three different types of question-answer (QA) models.

@@ -1,4 +1,4 @@
-# Vector Store Integration in Indox
+# Vector Stores
 
 
 ## Overview
