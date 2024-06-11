@@ -1,1 +1,1 @@
-from .dspy import DspyCotQA
+from .dspy import DspyCot

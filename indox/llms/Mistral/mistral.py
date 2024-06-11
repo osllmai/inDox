@@ -5,7 +5,7 @@ logging.basicConfig(filename='indox.log', level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
 
 
-class MistralQA:
+class Mistral:
     def __init__(self, api_key, model="mistralai/Mistral-7B-Instruct-v0.2", prompt_template=None):
         """
         Initializes the Mistral 7B Instruct model via the Hugging Face Inference API.

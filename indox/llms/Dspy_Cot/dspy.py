@@ -57,7 +57,7 @@ class RAG(Module):
             raise
 
 
-class DspyCotQA(Module):
+class DspyCot(Module):
     """
     Module class for DspyCotQA.
 

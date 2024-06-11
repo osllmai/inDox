@@ -7,7 +7,7 @@ logging.basicConfig(filename='indox.log', level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
 
 
-class OpenAiQA:
+class OpenAi:
     def __init__(self, api_key, model, prompt_template=None):
         """
         Initializes the GPT-3 model with the specified model version and an optional prompt template.

@@ -1,1 +1,1 @@
-from .mistral import MistralQA
+from .mistral import Mistral

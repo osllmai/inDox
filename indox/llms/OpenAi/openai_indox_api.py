@@ -5,7 +5,7 @@ logging.basicConfig(filename='indox.log', level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
 
 
-class IndoxApiOpenAiQa:
+class IndoxApiOpenAi:
     def __init__(self, api_key, prompt_template=None):
         """
         Initializes the IndoxApiOpenAiQa with the specified API key and an optional prompt template.
