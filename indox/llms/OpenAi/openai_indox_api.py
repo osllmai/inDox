@@ -17,7 +17,7 @@ class IndoxApiOpenAi:
         self.api_key = api_key
         self.prompt_template = prompt_template or "Context: {context}\nQuestion: {question}\nAnswer:"
 
-    def _send_request(self, system_prompt, user_prompt, role: str = "system", history: list = None):
+    def _send_request(self, system_prompt, user_prompt):
         url = 'http://5.78.55.161/api/chat_completion/generate/'
         headers = {
             'accept': '*/*',
@@ -31,7 +31,7 @@ class IndoxApiOpenAi:
             "messages": [
                 {
                     "content": system_prompt,
-                    "role": role
+                    "role": "system"
                 },
                 {
                     "content": user_prompt,
@@ -44,9 +44,6 @@ class IndoxApiOpenAi:
             "temperature": 0.3,
             "top_p": 1
         }
-        if history is not None and len(history) > 2:
-            assert isinstance(history, list)
-            data['messages'] = history + data['messages']
 
         response = requests.post(url, headers=headers, json=data)
         if response.status_code == 200:
@@ -55,6 +52,47 @@ class IndoxApiOpenAi:
             return generated_text
         else:
             raise Exception(f"Error From Indox API: {response.status_code}, {response.text}")
+
+
+    # def _send_request(self, system_prompt, user_prompt, role: str = "system", history: list = None):
+    #     url = 'http://5.78.55.161/api/chat_completion/generate/'
+    #     headers = {
+    #         'accept': '*/*',
+    #         "Authorization": f"Bearer {self.api_key}",
+    #         'Content-Type': 'application/json',
+    #     }
+    #
+    #     data = {
+    #         "frequency_penalty": 0,
+    #         "max_tokens": 150,
+    #         "messages": [
+    #             {
+    #                 "content": system_prompt,
+    #                 "role": role
+    #             },
+    #             {
+    #                 "content": user_prompt,
+    #                 "role": "user"
+    #             }
+    #         ],
+    #         "model": "gpt-3.5-turbo-0125",
+    #         "presence_penalty": 0,
+    #         "stream": True,
+    #         "temperature": 0.3,
+    #         "top_p": 1
+    #     }
+    #     if history is not None and len(history) > 2:
+    #         assert isinstance(history, list)
+    #         data['messages'] = history + data['messages']
+    #
+    #     response = requests.post(url, headers=headers, json=data)
+    #     if response.status_code == 200:
+    #         answer_data = response.json()
+    #         generated_text = answer_data.get("text_message", "")
+    #         return generated_text
+    #     else:
+    #         raise Exception(f"Error From Indox API: {response.status_code}, {response.text}")
+
 
     def _attempt_answer_question(self, context, question):
         """
