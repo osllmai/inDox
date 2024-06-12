@@ -95,7 +95,6 @@ class IndoxAgent:
                 print(f"Response: {action_input}")
                 break
 
-
     def print_messages_markdown(self):
         print("\n--- Chat Stream ---\n")
         for message in self.messages:
