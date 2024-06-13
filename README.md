@@ -2,10 +2,10 @@
 <p align="center">
 
 
-<h3 align="center">
-    <img src="docs/lite-logo 1.png" alt="Logo" style="width: 80%; opacity: 0.7;"/>
-
-</h3>
+<a href="https://github.com/osllmai/inDox">
+    <img src="https://readme-typing-svg.demolab.com?font=Georgia&size=16&duration=2000&pause=100&multiline=true&width=500&height=100&lines=InDox;Advanced+Search+and+Retrieval+Augmentation+Generative+%7C+Open+Source;Copy+right+©️+OSLLAM.ai" alt="Typing SVG" />
+</a>
+<br/>
 
 
 <div style="position: relative; width: 100%; text-align: center;">
