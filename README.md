@@ -2,20 +2,15 @@
 <p align="center">
 
 
-<a href="https://github.com/osllmai/inDox">
-    <img src="https://readme-typing-svg.demolab.com?font=Georgia&size=16&duration=2000&pause=100&multiline=true&width=500&height=100&lines=InDox;Advanced+Search+and+Retrieval+Augmentation+Generative+%7C+Open+Source;Copy+right+©️+OSLLAM.ai" alt="Typing SVG" />
-</a>
-<br/>
-
-
 <div style="position: relative; width: 100%; text-align: center;">
     <h1>inDox</h1>
     <p>Advanced Search and Retrieval Augmentation Generative</p>
     <a href="https://github.com/osllmai/inDox">
-        <img src="https://readme-typing-svg.demolab.com?font=Georgia&size=18&duration=2000&pause=100&multiline=true&width=500&height=100&lines=InDox;Advanced+Search+and+Retrieval+Augmentation+Generative+%7C+Open+Source;Copy+right+©️+OSLLAM.ai" alt="Typing SVG" style="margin-top: 20px;"/>
+        <img src="https://readme-typing-svg.demolab.com?font=Georgia&size=16&duration=3000&pause=500&multiline=true&width=700&height=100&lines=InDox;Advanced+Search+and+Retrieval+Augmentation+Generative+%7C+Open+Source;Copy+right+©️+OSLLAM.ai" alt="Typing SVG" style="margin-top: 20px;"/>
     </a>
 </div>
 <br/>
+
 
 [![License](https://img.shields.io/github/license/osllmai/inDox)](https://github.com/osllmai/inDox/blob/main/LICENSE)
 [![PyPI](https://badge.fury.io/py/Indox.svg)](https://pypi.org/project/Indox/0.1.5/)
