@@ -8,7 +8,7 @@
         <img src="https://readme-typing-svg.demolab.com?font=Georgia&size=16&duration=3000&pause=500&multiline=true&width=700&height=100&lines=InDox;Advanced+Search+and+Retrieval+Augmentation+Generative+%7C+Open+Source;Copy+right+©️+OSLLAM.ai" alt="Typing SVG" style="margin-top: 20px;"/>
     </a>
 </div>
-<br/>
+
 
 
 [![License](https://img.shields.io/github/license/osllmai/inDox)](https://github.com/osllmai/inDox/blob/main/LICENSE)
