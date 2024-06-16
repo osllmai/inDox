@@ -5,6 +5,7 @@ import logging
 logging.basicConfig(filename='indox.log', level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
 
+
 def OpenAiEmbedding(model, api_key):
     from langchain_openai import OpenAIEmbeddings
     embeddings = OpenAIEmbeddings(model=model, api_key=api_key)
@@ -19,7 +20,17 @@ def HuggingFaceEmbedding(model):
     return embeddings
 
 
-class IndoxOpenAIEmbedding:
+def MistralEmbedding(api_key):
+    from langchain_mistralai import MistralAIEmbeddings
+    embeddings = MistralAIEmbeddings(
+        model="mistral-embed",
+        api_key=api_key
+    )
+    logging.info(f'Initialized Mistral embeddings')
+    return embeddings
+
+
+class IndoxApiEmbedding:
     def __init__(self, api_key: str, model: str):
         self.api_key = api_key
         self.model = model

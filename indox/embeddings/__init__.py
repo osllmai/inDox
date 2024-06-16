@@ -1,1 +1,1 @@
-from .embedding_models import OpenAiEmbedding, HuggingFaceEmbedding,IndoxOpenAIEmbedding
+from .embedding_models import OpenAiEmbedding, HuggingFaceEmbedding, IndoxApiEmbedding, MistralEmbedding

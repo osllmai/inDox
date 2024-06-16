@@ -5,7 +5,7 @@ logging.basicConfig(filename='indox.log', level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
 
 
-class IndoxApiOpenAi:
+class IndoxApi:
     def __init__(self, api_key, prompt_template=None):
         """
         Initializes the IndoxApiOpenAiQa with the specified API key and an optional prompt template.
@@ -122,7 +122,7 @@ class IndoxApiOpenAi:
             str: The generated answer.
         """
         try:
-            prompt_template = prompt_template or self.prompt_template
+            # prompt_template = prompt_template or self.prompt_template
             return self._attempt_answer_question(context, question)
         except Exception as e:
             print(e)
