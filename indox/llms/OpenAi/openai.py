@@ -8,20 +8,19 @@ logging.basicConfig(filename='indox.log', level=logging.INFO,
 
 
 class OpenAi:
-    def __init__(self, api_key, model, prompt_template=None):
+    def __init__(self, api_key, model):
         """
         Initializes the GPT-3 model with the specified model version and an optional prompt template.
 
         Args:
             api_key (str): The API key for OpenAI.
             model (str): The GPT-3 model version.
-            prompt_template (str, optional): The template for the prompt. Defaults to None.
         """
+
         try:
             logging.info("Initializing OpenAiQA with model: %s", model)
             self.model = model
             self.client = OpenAI(api_key=api_key)
-            self.prompt_template = prompt_template or "Given Context: {context} Give the best full answer amongst the option to question {question}"
             logging.info("OpenAiQA initialized successfully")
         except Exception as e:
             logging.error("Error initializing OpenAiQA: %s", e)
@@ -42,9 +41,11 @@ class OpenAi:
         Returns:
             str: The generated summary.
         """
+        prompt = "Given Context: {context} Give the best full answer amongst the option to question {question}"
+
         try:
             logging.info("Attempting to generate an answer for the question: %s", question)
-            prompt = self.prompt_template.format(context=context, question=question)
+            prompt = prompt.format(context=context, question=question)
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
@@ -64,7 +65,7 @@ class OpenAi:
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-    def answer_question(self, context, question, max_tokens=150, stop_sequence=None, prompt_template=None):
+    def answer_question(self, context, question, max_tokens=150, stop_sequence=None):
         """
         Public method to generate an answer to a question based on the given context.
 
@@ -80,7 +81,7 @@ class OpenAi:
         """
         try:
             logging.info("Answering question: %s", question)
-            prompt_template = prompt_template or self.prompt_template
+            # prompt_template = self.prompt_template
             return self._attempt_answer_question(
                 context,
                 question,
