@@ -1,4 +1,4 @@
-# Best Practices for Using Github
+# Branch Naming and Pull Request Guidelines for the Team
 
 ### Note 1: Branch Naming
 
