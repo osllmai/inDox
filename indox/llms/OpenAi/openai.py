@@ -133,14 +133,11 @@ class OpenAi:
         filtered_docs = []
         try:
             system_prompt = f"""
-           You are a grader assessing relevance of a retrieved
-            document to a user question. If the document contains keywords related to the
-            user question, grade it as relevant. It does not need to be a stringent test.
-            The goal is to filter out erroneous retrievals.
-        
-            Give a binary score ''yes'' or ''no'' score to indicate whether the document is
-            relevant to the question.
-        
+           You are a grader assessing the relevance of a retrieved document to a user question.
+            If the document contains any keywords or evidence related to the user question, even if minimal, 
+            grade it as relevant. The goal is to filter out only completely erroneous retrievals.
+            Give a binary "yes" or "no" score to indicate whether the document is relevant to the question.
+
             Provide the score with no preamble or explanation.
             """
             for i in range(len(context)):

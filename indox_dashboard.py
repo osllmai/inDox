@@ -7,6 +7,8 @@ from indox import IndoxRetrievalAugmentation
 from dotenv import load_dotenv
 import time
 from datetime import datetime
+
+
 def get_database_connection(con_string):
     result = urlparse(con_string)
 
@@ -44,6 +46,7 @@ def display_logs_from_file(log_area, log_file_path):
             log_data = file.read()
         log_area.markdown(f"```\n{log_data}\n```")  # Display logs using markdown
         time.sleep(1)  # Simulate processing time and update interval
+
 
 # Set up the page configuration
 st.set_page_config(
@@ -198,7 +201,7 @@ if st.session_state.step == 4:
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     HF_API_KEY = os.getenv("HF_API_KEY")
     INDOX_API_KEY = os.getenv("INDOX_API_KEY")
-
+    MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
     # Embedding model and QA model selection
     st.write("## Choose Your Embedding Model")
 
@@ -206,6 +209,8 @@ if st.session_state.step == 4:
     openai_embedding_checked = st.checkbox("OpenAI Embedding Model")
     if openai_embedding_checked:
         openai_embedding_model = st.text_input("Enter OpenAI Embedding Model")
+
+    mistral_embedding_checked = st.checkbox("Mistral Embedding Model")
 
     hf_embedding_checked = st.checkbox("Hugging Face Embedding Model")
     if hf_embedding_checked:
@@ -215,11 +220,11 @@ if st.session_state.step == 4:
     if indox_embedding_checked:
         indox_embedding_model_name = st.text_input("Enter Indox API Embedding Model Name")
 
-    if openai_embedding_checked + hf_embedding_checked + indox_embedding_checked > 1:
+    if openai_embedding_checked + hf_embedding_checked + indox_embedding_checked + mistral_embedding_checked > 1:
         st.error("Please select only one embedding model.")
         st.stop()
 
-    st.write("## Choose Your QA Model")
+    st.write("## Choose Your LLM")
 
     # QA model selection
     openai_qa_checked = st.checkbox("OpenAI Model")
@@ -242,7 +247,8 @@ if st.session_state.step == 4:
     embedding_model_set = (
             (openai_embedding_checked and openai_embedding_model) or
             (hf_embedding_checked and hf_embedding_model) or
-            (indox_embedding_checked and indox_embedding_model_name)
+            (indox_embedding_checked and indox_embedding_model_name) or
+            mistral_embedding_checked
     )
 
     qa_model_set = (
@@ -257,29 +263,31 @@ if st.session_state.step == 4:
         # Save configurations to session state
         if openai_embedding_checked:
             from indox.embeddings import OpenAiEmbedding
-
             embedding_model = OpenAiEmbedding(api_key=OPENAI_API_KEY, model=openai_embedding_model)
+
         elif hf_embedding_checked:
             from indox.embeddings import HuggingFaceEmbedding
-
             embedding_model = HuggingFaceEmbedding(model=hf_embedding_model)
-        elif indox_embedding_checked:
-            from indox.embeddings import IndoxOpenAIEmbedding
 
-            embedding_model = IndoxOpenAIEmbedding(model=indox_embedding_model_name, api_key=INDOX_API_KEY)
+        elif mistral_embedding_checked:
+            from indox.embeddings import MistralEmbedding
+            embedding_model = MistralEmbedding(api_key=MISTRAL_API_KEY)
+
+        elif indox_embedding_checked:
+            from indox.embeddings import IndoxApiEmbedding
+            embedding_model = IndoxApiEmbedding(model=indox_embedding_model_name, api_key=INDOX_API_KEY)
 
         if openai_qa_checked:
-            from indox.qa_models import OpenAiQA
+            from indox.llms import OpenAi
+            qa_model = OpenAi(api_key=OPENAI_API_KEY, model=openai_qa_model)
 
-            qa_model = OpenAiQA(api_key=OPENAI_API_KEY, model=openai_qa_model)
         elif mistral_qa_checked:
-            from indox.qa_models import MistralQA
+            from indox.llms import Mistral
+            qa_model = Mistral(api_key=HF_API_KEY, model=mistral_qa_model)
 
-            qa_model = MistralQA(api_key=HF_API_KEY, model=mistral_qa_model)
         elif indox_qa_checked:
-            from indox.qa_models import IndoxApiOpenAiQa
-
-            qa_model = IndoxApiOpenAiQa(api_key=INDOX_API_KEY)
+            from indox.llms import IndoxApi
+            qa_model = IndoxApi(api_key=INDOX_API_KEY)
 
         st.session_state.embedding_model = embedding_model
         st.session_state.qa_model = qa_model
@@ -451,7 +459,7 @@ if st.session_state.step == 7 and st.session_state.vector_store_initialized:
     database = st.session_state.database
     db_type = st.session_state.db_type
 
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Chat", "History", "Database", "Eval", "Prompt Augmentation", "Logs"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Chat", "History", "Database", "Eval"])
 
     if 'qa_history' not in st.session_state:
         st.session_state.qa_history = []
@@ -466,7 +474,6 @@ if st.session_state.step == 7 and st.session_state.vector_store_initialized:
                 st.markdown(message["content"])
 
     if prompt := st.chat_input("What is up?"):
-
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
         # Display user message in chat message container
@@ -474,11 +481,9 @@ if st.session_state.step == 7 and st.session_state.vector_store_initialized:
             with st.chat_message("user"):
                 st.markdown(prompt)
             with st.chat_message("assistant"):
-                response = Indox.answer_question(db=database, qa_model=st.session_state.qa_model, query=prompt,
-                                                 document_relevancy_filter=st.session_state.doc_relevancy_filter,
-                                                 generate_clustered_prompts=st.session_state.clustered_prompt)
-                response_content = response[0]
-                response_context = response[1][0] if response[1] else "No context available"
+                retriever = Indox.QuestionAnswer(vector_database=database, llm=st.session_state.qa_model, top_k=5)
+                response_content = retriever.invoke(query=prompt)
+                response_context = retriever.context
                 st.write(response_content)
                 # Save the context to session state for sidebar
                 st.session_state.last_context = response_context
@@ -512,31 +517,31 @@ if st.session_state.step == 7 and st.session_state.vector_store_initialized:
             st.write("Doesn't support Faiss yet!")
     with tab4:
         st.write("Evaluation tab coming soon.")
-    with tab5:
-        doc_relevancy_filter = st.checkbox("Apply Document Relevancy Filter")
-        st.session_state.doc_relevancy_filter = doc_relevancy_filter
-        clustered_prompt = st.checkbox("Generate Clustered Prompt")
-        st.session_state.clustered_prompt = clustered_prompt
-    with tab6:
-        if 'show_logs' not in st.session_state:
-            st.session_state.show_logs = False
+    # with tab5:
+    #     doc_relevancy_filter = st.checkbox("Apply Document Relevancy Filter")
+    #     st.session_state.doc_relevancy_filter = doc_relevancy_filter
+    #     clustered_prompt = st.checkbox("Generate Clustered Prompt")
+    #     st.session_state.clustered_prompt = clustered_prompt
+    # with tab6:
+    #     if 'show_logs' not in st.session_state:
+    #         st.session_state.show_logs = False
+    #
+    #         # Button to toggle log visibility
+    #     if st.button('Show logs' if not st.session_state.show_logs else 'Hide logs'):
+    #         st.session_state.show_logs = not st.session_state.show_logs
 
-            # Button to toggle log visibility
-        if st.button('Show logs' if not st.session_state.show_logs else 'Hide logs'):
-            st.session_state.show_logs = not st.session_state.show_logs
-
-            # Display logs if the state is set to show
-        if st.session_state.show_logs:
-            log_area = st.empty()  # Placeholder for text_area update
-
-            while st.session_state.show_logs:
-                with open("indox.log", 'r') as file:
-                    log_data = file.read()
-                log_area.markdown(f"```\n{log_data}\n```")  # Display logs using markdown
-                time.sleep(1)  # Simulate processing time and update interval
-                st.experimental_rerun()
-        else:
-            st.write("Logs are hidden. Click 'Show logs' to display them.")
+        #     # Display logs if the state is set to show
+        # if st.session_state.show_logs:
+        #     log_area = st.empty()  # Placeholder for text_area update
+        #
+        #     while st.session_state.show_logs:
+        #         with open("indox.log", 'r') as file:
+        #             log_data = file.read()
+        #         log_area.markdown(f"```\n{log_data}\n```")  # Display logs using markdown
+        #         time.sleep(1)  # Simulate processing time and update interval
+        #         st.experimental_rerun()
+        # else:
+        #     st.write("Logs are hidden. Click 'Show logs' to display them.")
 
 if st.session_state.step > 7:
     st.write("Something went wrong. Please reset and try again.")
