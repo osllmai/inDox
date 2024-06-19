@@ -1,4 +1,3 @@
-
 <p align="center">
 
 
@@ -11,7 +10,7 @@
 
 
 <p align="center">
-  <img src="https://github.com/osllmai/inDox/blob/main/docs/lite-logo%201.png" alt="inDox Lite Logo">
+  <img src="docs/lite-logo 1.png" alt="inDox Lite Logo">
 </p>
 </br>
 
