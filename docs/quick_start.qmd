@@ -9,10 +9,17 @@ selection, document splitting, and storing in a vector store.
 
 ## Setup
 
+### Install the Required Packages
+
+```python
+!pip install indox
+!pip install openai
+!pip install chromadb
+```
+
 ### Load Environment Variables
 
-To start, you need to load your API keys from the environment. You can
-use either OpenAI or Hugging Face API keys.
+To start, you need to load your API keys from the environment.
 
 ``` python
 import os
@@ -31,10 +38,10 @@ Import the necessary classes from the Indox package.
 from indox import IndoxRetrievalAugmentation
 ```
 
-### Importing QA and Embedding Models
+### Importing LLM and Embedding Models
 
 ``` python
-from indox.llms import OpenAiQA
+from indox.llms import OpenAi
 ```
 
 ``` python

@@ -12,6 +12,11 @@ models are:
 
 To use the OpenAI embedding model, follow these steps:
 
+First install the OpenAI Python package:
+```python
+pip install openai
+```
+
 1.  Import necessary libraries and load environment variables:
 
 ``` python
@@ -33,16 +38,32 @@ Indox = IndoxRetrievalAugmentation()
 openai_embeddings = OpenAiEmbedding(model="text-embedding-3-small", openai_api_key=OPENAI_API_KEY)
 ```
 
-## Using Hugging Face Embedding Model
+## Using Mistral Embedding Model
 
-To use the Hugging Face embedding model, follow these steps:
+To use the Mistral embedding model, follow these steps:
 
-1.  Import Indox modules and set the Hugging Face embedding model:
+First install the Mistral Python package:
+```python
+pip install mistralai
+```
+
+1.  Load environment variables:
 
 ``` python
-from indox.embeddings import HuggingFaceEmbedding
+import os
+from dotenv import load_dotenv
 
-hugging_face_embedding = HuggingFaceEmbedding(model_name="multi-qa-mpnet-base-cos-v1")
+load_dotenv()
+
+MISTRAL_API_KEY = os.environ['MISTRAL_API_KEY']
+```
+
+2.  Import Indox modules and set the Mistral embedding model:
+
+``` python
+from indox.embeddings import MistralEmbedding
+
+mistral_embedding = MistralEmbedding(api_key=MISTRAL_API_KEY)
 ```
 
 ### Future Plans
