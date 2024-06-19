@@ -4,7 +4,7 @@ from indox.data_loader_splitter.ClusteredSplit.utils import get_all_texts, split
 from indox.data_loader_splitter.utils.clean import remove_stopwords_chunk
 from typing import Optional, List, Tuple
 
-logging.basicConfig(filename='indox.log', level=logging.INFO,
+logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
 
 
