@@ -5,7 +5,7 @@ Indox supports three different types of question-answer (QA) models.
 These models are:
 
 1.  **OpenAI QA Model**
-2.  **Mistral QA Model from Hugging Face**
+2.  **Mistral QA Model**
 3.  **OpenAI QA Model with Chain of Thought from the dspy Framework**
 
 ## Initial Setup
@@ -19,9 +19,13 @@ from indox import IndoxRetrievalAugmentation
 Indox = IndoxRetrievalAugmentation()
 ```
 
-## Using OpenAI QA Model
+## Using OpenAI Model
 
 To use the OpenAI QA model, follow these steps:
+First install the OpenAI Python package:
+```python
+pip install openai
+```
 
 1.  Import necessary libraries and load environment variables:
 
@@ -34,19 +38,24 @@ load_dotenv()
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 ```
 
-1.  Import Indox modules and set the OpenAI QA model:
+1.  Import Indox modules and set the OpenAI model:
 
 ``` python
-from indox.llms import OpenAiQA
+from indox.llms import OpenAi
 
-openai_qa = OpenAiQA(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo-0125")
+openai_qa = OpenAi(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo-0125")
 retriever = indox.QuestionAnswer(vector_database=db,llm=openai_qa,top_k=5)
 retriever.invoke(query)
 ```
 
-## Using Mistral QA Model from Hugging Face
+## Using Mistral Model
 
-To use the Mistral QA model from Hugging Face, follow these steps:
+First install the Hugging Face Python package:
+```python
+pip install mistralai
+```
+
+To use the Mistral model, follow these steps:
 
 1.  Import necessary libraries and load environment variables:
 
@@ -56,49 +65,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-HF_API_KEY = os.getenv('HF_API_KEY')
+MISTRAL_API_KEY = os.getenv('MISTRAL_API_KEY')
 ```
 
-1.  Import Indox modules and set the Mistral QA model:
+1.  Import Indox modules and set the Mistral model:
 
 ``` python
-from indox.llms import MistralQA
+from indox.llms import Mistral
 
-mistral_qa = MistralQA(api_key=HF_API_KEY, model="mistralai/Mistral-7B-Instruct-v0.2")
+mistral_qa = Mistral(api_key=MISTRAL_API_KEY, model="mistralai/Mistral-7B-Instruct-v0.2")
 retriever = indox.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5)
 retriever.invoke(query)
 ```
 
-Note: Users can choose other models from Hugging Face as well, but we
-recommend the free Mistral model, which only requires a Hugging Face
-access token.
-
-## Using OpenAI QA Model with Chain of Thought from the dspy Framework
-
-To use the OpenAI QA model with Chain of Thought from the dspy
-framework, follow these steps:
-
-1.  Import necessary libraries and load environment variables:
-
-``` python
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
-```
-
-1.  Import Indox modules and set the OpenAI QA model with Chain of
-    Thought:
-
-``` python
-from indox.llms import DspyCotQA
-
-dspy_qa = DspyCotQA(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo")
-retriever = indox.QuestionAnswer(vector_database=db,llm=dspy_qa,top_k=5)
-retriever.invoke(query)
-```
 
 ### Future Plans
 

@@ -12,6 +12,11 @@ and using each supported vector store.
 
 ## Postgres Using PgVector
 
+First you should install pgvector and set the database address.
+```python
+pip install pgvector
+pip install psycopg2
+```
 To use pgvector as the vector store, users need to install pgvector and
 set the database address.
 
@@ -54,6 +59,10 @@ Indox.store_in_vectorstore(docs=docs)
 To use chroma as the vector store, users need to install Chroma and
 set the collection_name of database and embedding model.
 
+```python
+pip install chromadb
+```
+
 ### Hyperparameters
 - collection_name (str): The name of the collection in the database.
 - embedding (Embedding): The embedding to be used.
@@ -87,6 +96,11 @@ Indox.store_in_vectorstore(docs=docs)
 
 To use Faiss as the vector store, users need to install faiss and
 set the embedding model.
+
+```python
+pip install faiss-cpu
+```
+
 
 ### Hyperparameters
 - embedding (Embedding): The embedding to be used.
