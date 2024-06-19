@@ -1,11 +1,11 @@
 # Table of contents
 
 * [Quick\_Start](README.md)
-* [Chroma](chroma.md)
 * [Cluster\_Split](cluster\_split.md)
 * [Cluster\_Split\_Example](cluster\_split\_example.md)
 * [Clustered\_Prompt](clustered\_prompt.md)
 * [Embedding\_Models](embedding\_models.md)
+* [Chroma](chroma.md)
 * [Evaluation](evaluation.md)
 * [Indox Retrieval Augmentation](indox-retrieval-augmentation.md)
 * [Mistral\_as\_Question\_Answering](mistral\_as\_question\_answering.md)
