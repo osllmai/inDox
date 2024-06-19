@@ -1,6 +1,5 @@
 import logging
 from tenacity import retry, stop_after_attempt, wait_random_exponential
-from openai import OpenAI
 import os
 
 logging.basicConfig(filename='indox.log', level=logging.INFO,
@@ -16,6 +15,7 @@ class OpenAi:
             api_key (str): The API key for OpenAI.
             model (str): The GPT-3 model version.
         """
+        from openai import OpenAI
 
         try:
             logging.info("Initializing OpenAiQA with model: %s", model)

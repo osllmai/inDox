@@ -1,10 +1,9 @@
 import logging
 from tenacity import retry, stop_after_attempt, wait_random_exponential
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
+
 import os
 
-logging.basicConfig(filename='indox.log', level=logging.INFO,
+logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
 
 
@@ -17,6 +16,7 @@ class Mistral:
             api_key (str): The API key for Mistral AI.
             model (str): The Mistral AI model version.
         """
+        from mistralai.client import MistralClient
         try:
             logging.info("Initializing MistralAI with model: %s", model)
             self.model = model
@@ -36,6 +36,8 @@ class Mistral:
         Returns:
             str: The generated response.
         """
+        from mistralai.models.chat_completion import ChatMessage
+
         try:
             messages = [
                 ChatMessage(role="user", content=user_message)
