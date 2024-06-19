@@ -2,7 +2,7 @@
 
 ### Overview
 
-This documentation provides a detailed explanation of how to use the `IndoxRetrievalAugmentation` package for QA model and embedding selection, document splitting, and storing in a vector store.
+This documentation provides a detailed explanation of how to use the `IndoxRetrievalAugmentation` package for QA model and embedding selection, document splitting, and storing in a vector store...
 
 ### Setup
 
