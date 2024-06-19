@@ -1,3 +1,16 @@
 # Table of contents
 
-* [Page](README.md)
+* [Quick\_Start](README.md)
+* [Chroma](chroma.md)
+* [Cluster\_Split](cluster\_split.md)
+* [Cluster\_Split\_Example](cluster\_split\_example.md)
+* [Clustered\_Prompt](clustered\_prompt.md)
+* [Embedding\_Models](embedding\_models.md)
+* [Evaluation](evaluation.md)
+* [Indox Retrieval Augmentation](indox-retrieval-augmentation.md)
+* [Mistral\_as\_Question\_Answering](mistral\_as\_question\_answering.md)
+* [Prompt\_Augmentation](prompt\_augmentation.md)
+* [Question\_Answer\_Models](question\_answer\_models.md)
+* [Unstructure\_Load\_And\_Split](unstructure\_load\_and\_split.md)
+* [Vector Store Integration in Indox](vector-store-integration-in-indox.md)
+* [Vector Store Integration in Indox](vector-store-integration-in-indox-1.md)
