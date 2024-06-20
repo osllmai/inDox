@@ -228,17 +228,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./examples_3/clusterSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Load And Split With Clustering</span></a>
+  <a href="./examples/clusterSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Load And Split With Clustering</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./examples_3/unstructuredSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Unstructured Load And Split</span></a>
+  <a href="./examples/unstructuredSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Unstructured Load And Split</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./examples_3/mistral.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mistral As Question Answer Model</span></a>
+  <a href="./examples/mistral.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mistral As Question Answer Model</span></a>
   </div>
 </li>
       </ul>
@@ -254,9 +254,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul class="collapse">
   <li><a href="#initial-setup" id="toc-initial-setup" class="nav-link active" data-scroll-target="#initial-setup">Initial Setup</a></li>
-  <li><a href="#using-openai-qa-model" id="toc-using-openai-qa-model" class="nav-link" data-scroll-target="#using-openai-qa-model">Using OpenAI QA Model</a></li>
-  <li><a href="#using-mistral-qa-model-from-hugging-face" id="toc-using-mistral-qa-model-from-hugging-face" class="nav-link" data-scroll-target="#using-mistral-qa-model-from-hugging-face">Using Mistral QA Model from Hugging Face</a></li>
-  <li><a href="#using-openai-qa-model-with-chain-of-thought-from-the-dspy-framework" id="toc-using-openai-qa-model-with-chain-of-thought-from-the-dspy-framework" class="nav-link" data-scroll-target="#using-openai-qa-model-with-chain-of-thought-from-the-dspy-framework">Using OpenAI QA Model with Chain of Thought from the dspy Framework</a></li>
+  <li><a href="#using-openai-model" id="toc-using-openai-model" class="nav-link" data-scroll-target="#using-openai-model">Using OpenAI Model</a></li>
+  <li><a href="#using-mistral-model" id="toc-using-mistral-model" class="nav-link" data-scroll-target="#using-mistral-model">Using Mistral Model</a></li>
   </ul>
 <div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/edit/main/llms.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
@@ -285,7 +284,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Indox supports three different types of question-answer (QA) models. These models are:</p>
 <ol type="1">
 <li><strong>OpenAI QA Model</strong></li>
-<li><strong>Mistral QA Model from Hugging Face</strong></li>
+<li><strong>Mistral QA Model</strong></li>
 <li><strong>OpenAI QA Model with Chain of Thought from the dspy Framework</strong></li>
 </ol>
 <section id="initial-setup" class="level2">
@@ -294,52 +293,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox <span class="im">import</span> IndoxRetrievalAugmentation</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>Indox <span class="op">=</span> IndoxRetrievalAugmentation()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="using-openai-qa-model" class="level2">
-<h2 class="anchored" data-anchor-id="using-openai-qa-model">Using OpenAI QA Model</h2>
-<p>To use the OpenAI QA model, follow these steps:</p>
+<section id="using-openai-model" class="level2">
+<h2 class="anchored" data-anchor-id="using-openai-model">Using OpenAI Model</h2>
+<p>To use the OpenAI QA model, follow these steps: First install the OpenAI Python package:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pip install openai</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ol type="1">
 <li>Import necessary libraries and load environment variables:</li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>OPENAI_API_KEY <span class="op">=</span> os.environ[<span class="st">'OPENAI_API_KEY'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>OPENAI_API_KEY <span class="op">=</span> os.environ[<span class="st">'OPENAI_API_KEY'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ol type="1">
-<li>Import Indox modules and set the OpenAI QA model:</li>
+<li>Import Indox modules and set the OpenAI model:</li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.llms <span class="im">import</span> OpenAiQA</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>openai_qa <span class="op">=</span> OpenAiQA(api_key<span class="op">=</span>OPENAI_API_KEY, model<span class="op">=</span><span class="st">"gpt-3.5-turbo-0125"</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>retriever <span class="op">=</span> indox.QuestionAnswer(vector_database<span class="op">=</span>db,llm<span class="op">=</span>openai_qa,top_k<span class="op">=</span><span class="dv">5</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>retriever.invoke(query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.llms <span class="im">import</span> OpenAi</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>openai_qa <span class="op">=</span> OpenAi(api_key<span class="op">=</span>OPENAI_API_KEY, model<span class="op">=</span><span class="st">"gpt-3.5-turbo-0125"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>retriever <span class="op">=</span> indox.QuestionAnswer(vector_database<span class="op">=</span>db,llm<span class="op">=</span>openai_qa,top_k<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>retriever.invoke(query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="using-mistral-qa-model-from-hugging-face" class="level2">
-<h2 class="anchored" data-anchor-id="using-mistral-qa-model-from-hugging-face">Using Mistral QA Model from Hugging Face</h2>
-<p>To use the Mistral QA model from Hugging Face, follow these steps:</p>
-<ol type="1">
-<li>Import necessary libraries and load environment variables:</li>
-</ol>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>HF_API_KEY <span class="op">=</span> os.getenv(<span class="st">'HF_API_KEY'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ol type="1">
-<li>Import Indox modules and set the Mistral QA model:</li>
-</ol>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.llms <span class="im">import</span> MistralQA</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>mistral_qa <span class="op">=</span> MistralQA(api_key<span class="op">=</span>HF_API_KEY, model<span class="op">=</span><span class="st">"mistralai/Mistral-7B-Instruct-v0.2"</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>retriever <span class="op">=</span> indox.QuestionAnswer(vector_database<span class="op">=</span>db,llm<span class="op">=</span>mistral_qa,top_k<span class="op">=</span><span class="dv">5</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>retriever.invoke(query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Note: Users can choose other models from Hugging Face as well, but we recommend the free Mistral model, which only requires a Hugging Face access token.</p>
-</section>
-<section id="using-openai-qa-model-with-chain-of-thought-from-the-dspy-framework" class="level2">
-<h2 class="anchored" data-anchor-id="using-openai-qa-model-with-chain-of-thought-from-the-dspy-framework">Using OpenAI QA Model with Chain of Thought from the dspy Framework</h2>
-<p>To use the OpenAI QA model with Chain of Thought from the dspy framework, follow these steps:</p>
+<section id="using-mistral-model" class="level2">
+<h2 class="anchored" data-anchor-id="using-mistral-model">Using Mistral Model</h2>
+<p>First install the Hugging Face Python package:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pip install mistralai</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To use the Mistral model, follow these steps:</p>
 <ol type="1">
 <li>Import necessary libraries and load environment variables:</li>
 </ol>
@@ -348,14 +328,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>OPENAI_API_KEY <span class="op">=</span> os.environ[<span class="st">'OPENAI_API_KEY'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>MISTRAL_API_KEY <span class="op">=</span> os.getenv(<span class="st">'MISTRAL_API_KEY'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ol type="1">
-<li>Import Indox modules and set the OpenAI QA model with Chain of Thought:</li>
+<li>Import Indox modules and set the Mistral model:</li>
 </ol>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.llms <span class="im">import</span> DspyCotQA</span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.llms <span class="im">import</span> Mistral</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>dspy_qa <span class="op">=</span> DspyCotQA(api_key<span class="op">=</span>OPENAI_API_KEY, model<span class="op">=</span><span class="st">"gpt-3.5-turbo"</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>retriever <span class="op">=</span> indox.QuestionAnswer(vector_database<span class="op">=</span>db,llm<span class="op">=</span>dspy_qa,top_k<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>mistral_qa <span class="op">=</span> Mistral(api_key<span class="op">=</span>MISTRAL_API_KEY, model<span class="op">=</span><span class="st">"mistralai/Mistral-7B-Instruct-v0.2"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>retriever <span class="op">=</span> indox.QuestionAnswer(vector_database<span class="op">=</span>db,llm<span class="op">=</span>mistral_qa,top_k<span class="op">=</span><span class="dv">5</span>)</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>retriever.invoke(query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <section id="future-plans" class="level3">
 <h3 class="anchored" data-anchor-id="future-plans">Future Plans</h3>
