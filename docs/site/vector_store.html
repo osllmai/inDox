@@ -228,17 +228,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./examples_3/clusterSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Load And Split With Clustering</span></a>
+  <a href="./examples/clusterSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Load And Split With Clustering</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./examples_3/unstructuredSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Unstructured Load And Split</span></a>
+  <a href="./examples/unstructuredSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Unstructured Load And Split</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./examples_3/mistral.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mistral As Question Answer Model</span></a>
+  <a href="./examples/mistral.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mistral As Question Answer Model</span></a>
   </div>
 </li>
       </ul>
@@ -291,6 +291,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="postgres-using-pgvector" class="level2">
 <h2 class="anchored" data-anchor-id="postgres-using-pgvector">Postgres Using PgVector</h2>
+<p>First you should install pgvector and set the database address.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pip install pgvector</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pip install psycopg2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>To use pgvector as the vector store, users need to install pgvector and set the database address.</p>
 <section id="hyperparameters" class="level3">
 <h3 class="anchored" data-anchor-id="hyperparameters">Hyperparameters</h3>
@@ -307,20 +310,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="installation" class="level3">
 <h3 class="anchored" data-anchor-id="installation">Installation</h3>
 <p>For instructions on installing pgvector, refer to the pgvector installation guide.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.vector_stores <span class="im">import</span> PGVectorStore</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> PGVectorStore(host<span class="op">=</span><span class="st">"host"</span>,port<span class="op">=</span>port,dbname<span class="op">=</span><span class="st">"dbname"</span>,user<span class="op">=</span><span class="st">"username"</span>,password<span class="op">=</span><span class="st">"password"</span>,collection_name<span class="op">=</span><span class="st">"sample"</span>,embedding<span class="op">=</span>embed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.vector_stores <span class="im">import</span> PGVectorStore</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> PGVectorStore(host<span class="op">=</span><span class="st">"host"</span>,port<span class="op">=</span>port,dbname<span class="op">=</span><span class="st">"dbname"</span>,user<span class="op">=</span><span class="st">"username"</span>,password<span class="op">=</span><span class="st">"password"</span>,collection_name<span class="op">=</span><span class="st">"sample"</span>,embedding<span class="op">=</span>embed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="usage" class="level2">
 <h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <p>Connect to the vector store:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Indox.connect_to_vectorstore(db)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Indox.connect_to_vectorstore(db)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Store documents in the vector store:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Indox.store_in_vectorstore(docs<span class="op">=</span>docs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>Indox.store_in_vectorstore(docs<span class="op">=</span>docs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="chroma" class="level2">
 <h2 class="anchored" data-anchor-id="chroma">Chroma</h2>
 <p>To use chroma as the vector store, users need to install Chroma and set the collection_name of database and embedding model.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pip install chromadb</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <section id="hyperparameters-1" class="level3">
 <h3 class="anchored" data-anchor-id="hyperparameters-1">Hyperparameters</h3>
 <ul>
@@ -331,20 +335,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="installation-1" class="level3">
 <h3 class="anchored" data-anchor-id="installation-1">Installation</h3>
 <p>For instructions on installing chroma, refer to the chroma installation guide.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.vector_stores <span class="im">import</span> ChromaVectorStore</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> ChromaVectorStore(collection_name<span class="op">=</span><span class="st">"name"</span>,embedding<span class="op">=</span>embed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.vector_stores <span class="im">import</span> ChromaVectorStore</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> ChromaVectorStore(collection_name<span class="op">=</span><span class="st">"name"</span>,embedding<span class="op">=</span>embed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="usage-1" class="level2">
 <h2 class="anchored" data-anchor-id="usage-1">Usage</h2>
 <p>Connect to the vector store:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Indox.connect_to_vectorstore(db)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>Indox.connect_to_vectorstore(db)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Store documents in the vector store:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Indox.store_in_vectorstore(docs<span class="op">=</span>docs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Indox.store_in_vectorstore(docs<span class="op">=</span>docs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="faiss" class="level2">
 <h2 class="anchored" data-anchor-id="faiss">Faiss</h2>
 <p>To use Faiss as the vector store, users need to install faiss and set the embedding model.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pip install faiss<span class="op">-</span>cpu</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <section id="hyperparameters-2" class="level3">
 <h3 class="anchored" data-anchor-id="hyperparameters-2">Hyperparameters</h3>
 <ul>
@@ -354,16 +359,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="installation-2" class="level3">
 <h3 class="anchored" data-anchor-id="installation-2">Installation</h3>
 <p>For instructions on installing faiss, refer to the FAISS installation guide.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.vector_stores <span class="im">import</span> FAISSVectorStore</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> FAISSVectorStore(embedding<span class="op">=</span>embed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.vector_stores <span class="im">import</span> FAISSVectorStore</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> FAISSVectorStore(embedding<span class="op">=</span>embed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="usage-2" class="level2">
 <h2 class="anchored" data-anchor-id="usage-2">Usage</h2>
 <p>Connect to the vector store:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Indox.connect_to_vectorstore(db)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>Indox.connect_to_vectorstore(db)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Store documents in the vector store:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Indox.store_in_vectorstore(docs<span class="op">=</span>docs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>Indox.store_in_vectorstore(docs<span class="op">=</span>docs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
 </section>

@@ -36,3 +36,6 @@ agent = Indox.AgenticRag(llm=llm, vector_database=db, top_k=5)
 # Run the agent with a query
 answer = agent.run(query)
 ```
+<p align="center">
+  <img src="docs/AgenticRag.png" alt="inDox AgenticRag">
+</p>

@@ -1,8 +1,7 @@
 import logging
-from dspy import Signature, Module, ChainOfThought, Prediction, InputField, OutputField, OpenAI, settings
-import os
+from dspy import Signature, Module, Prediction,  OpenAI, settings
 
-logging.basicConfig(filename='indox.log', level=logging.INFO,
+logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
 
 class GenerateAnswer(Signature):
@@ -14,6 +13,7 @@ class GenerateAnswer(Signature):
         question (InputField): The question to be answered.
         answer (OutputField): The generated answer.
     """
+    from dspy import  InputField, OutputField
     context = InputField(desc="Helpful information for answering the question.")
     question = InputField()
     answer = OutputField(desc="A detailed answer that is supported by the context. ONLY OUTPUT THE ANSWER!!")
@@ -28,9 +28,9 @@ class RAG(Module):
         model (str): The model to be used.
         client (OpenAI): The OpenAI client.
     """
-
     def __init__(self, model, client):
         super().__init__()
+        from dspy import ChainOfThought
         logging.info("Initializing RAG with model: %s", model)
         self.generate_answer = ChainOfThought(GenerateAnswer)
         self.model = model

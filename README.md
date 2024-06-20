@@ -1,4 +1,3 @@
-
 <p align="center">
 
 
@@ -11,7 +10,7 @@
 
 
 <p align="center">
-  <img src="https://github.com/osllmai/inDox/blob/main/docs/lite-logo%201.png" alt="inDox Lite Logo">
+  <img src="docs/lite-logo 1.png" alt="inDox Lite Logo">
 </p>
 </br>
 
@@ -99,16 +98,21 @@ pip install -r requirements.txt
 ### Preparing Your Data
 
 1. **Define the File Path**: Specify the path to your text or PDF file.
-2. **Load Embedding Models**: Initialize your embedding model from OpenAI's selection of pre-trained models.
+2. **Load LLM And Embedding Models**: Initialize your embedding model from Indox's selection of pre-trained models.
 
 # Quick Start
 
-## Setup
+### Install the Required Packages
+
+```bash
+pip install indox
+pip install openai
+pip install chromadb
+```
 
 ### Load Environment Variables
 
-To start, you need to load your API keys from the environment. You can
-use either OpenAI or Hugging Face API keys.
+To start, you need to load your API keys from the environment.
 
 ``` python
 import os
@@ -127,10 +131,10 @@ Import the necessary classes from the Indox package.
 from indox import IndoxRetrievalAugmentation
 ```
 
-### Importing QA and Embedding Models
+### Importing LLM and Embedding Models
 
 ``` python
-from indox.llms import OpenAiQA
+from indox.llms import OpenAi
 ```
 
 ``` python
@@ -209,11 +213,10 @@ retriever.invoke(query)
 
 ``` python
 retriever.context
+
 ```
     ["from the hazel-bush. Cinderella thanked him, went to her mother's\n\ngrave and planted the branch on it, and wept so much that the tears\n\nfell down on it and watered it. And it grew and became a handsome\n\ntree. Thrice a day cinderella went and sat beneath it, and wept and\n\nprayed, and a little white bird always came on the tree, and if\n\ncinderella expressed a wish, the bird threw down to her what she\n\nhad wished for.\n\nIt happened, however, that the king gave orders for a festival",
      'worked till she was weary she had no bed to go to, but had to sleep\n\nby the hearth in the cinders. And as on that account she always\n\nlooked dusty and dirty, they called her cinderella.\n\nIt happened that the father was once going to the fair, and he\n\nasked his two step-daughters what he should bring back for them.\n\nBeautiful dresses, said one, pearls and jewels, said the second.\n\nAnd you, cinderella, said he, what will you have. Father',
      'face he recognized the beautiful maiden who had danced with\n\nhim and cried, that is the true bride. The step-mother and\n\nthe two sisters were horrified and became pale with rage, he,\n\nhowever, took cinderella on his horse and rode away with her. As\n\nthey passed by the hazel-tree, the two white doves cried -\n\nturn and peep, turn and peep,\n\nno blood is in the shoe,\n\nthe shoe is not too small for her,\n\nthe true bride rides with you,\n\nand when they had cried that, the two came flying down and',
      "to send her up to him, but the mother answered, oh, no, she is\n\nmuch too dirty, she cannot show herself. But he absolutely\n\ninsisted on it, and cinderella had to be called. She first\n\nwashed her hands and face clean, and then went and bowed down\n\nbefore the king's son, who gave her the golden shoe. Then she\n\nseated herself on a stool, drew her foot out of the heavy\n\nwooden shoe, and put it into the slipper, which fitted like a\n\nglove. And when she rose up and the king's son looked at her",
      'slippers embroidered with silk and silver. She put on the dress\n\nwith all speed, and went to the wedding. Her step-sisters and the\n\nstep-mother however did not know her, and thought she must be a\n\nforeign princess, for she looked so beautiful in the golden dress.\n\nThey never once thought of cinderella, and believed that she was\n\nsitting at home in the dirt, picking lentils out of the ashes. The\n\nprince approached her, took her by the hand and danced with her.']
-
-```

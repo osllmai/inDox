@@ -34,9 +34,9 @@ book:
     - agenticRag.qmd
     - part: "Examples"
       chapters:
-        - examples_3/clusterSplit.qmd
-        - examples_3/unstructuredSplit.qmd
-        - examples_3/mistral.qmd
+        - examples/clusterSplit.qmd
+        - examples/unstructuredSplit.qmd
+        - examples/mistral.qmd
 
 format:
   html:
