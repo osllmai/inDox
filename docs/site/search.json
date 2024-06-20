@@ -34,7 +34,7 @@
     "href": "quick_start.html#setup",
     "title": "Quick Start",
     "section": "Setup",
-    "text": "Setup\n\nLoad Environment Variables\nTo start, you need to load your API keys from the environment. You can use either OpenAI or Hugging Face API keys.\nimport os\nfrom dotenv import load_dotenv\n\nload_dotenv()\n\nOPENAI_API_KEY = os.environ['OPENAI_API_KEY']",
+    "text": "Setup\n\nInstall the Required Packages\n!pip install indox\n!pip install openai\n!pip install chromadb\n\n\nLoad Environment Variables\nTo start, you need to load your API keys from the environment.\nimport os\nfrom dotenv import load_dotenv\n\nload_dotenv()\n\nOPENAI_API_KEY = os.environ['OPENAI_API_KEY']",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Quick Start</span>"
     ]
@@ -44,7 +44,7 @@
     "href": "quick_start.html#import-indox-package",
     "title": "Quick Start",
     "section": "Import Indox Package",
-    "text": "Import Indox Package\nImport the necessary classes from the Indox package.\nfrom indox import IndoxRetrievalAugmentation\n\nImporting QA and Embedding Models\nfrom indox.llms import OpenAiQA\nfrom indox.embeddings import OpenAiEmbedding\n\n\nInitialize Indox\nCreate an instance of IndoxRetrievalAugmentation.\nIndox = IndoxRetrievalAugmentation()\nopenai_qa = OpenAiQA(api_key=OPENAI_API_KEY,model=\"gpt-3.5-turbo-0125\")\nopenai_embeddings = OpenAiEmbedding(model=\"text-embedding-3-small\",openai_api_key=OPENAI_API_KEY)\nfile_path = \"sample.txt\"\nIn this section, we take advantage of the unstructured library to load documents and split them into chunks by title. This method helps in organizing the document into manageable sections for further processing.\nfrom indox.data_loader_splitter import UnstructuredLoadAndSplit\nloader_splitter = UnstructuredLoadAndSplit(file_path=file_path)\ndocs = loader_splitter.load_and_chunk()\nStarting processing...\nEnd Chunking process.\nStoring document chunks in a vector store is crucial for enabling efficient retrieval and search operations. By converting text data into vector representations and storing them in a vector store, you can perform rapid similarity searches and other vector-based operations.\nfrom indox.vector_stores import ChromaVectorStore\ndb = ChromaVectorStore(collection_name=\"sample\",embedding=embed_openai)\nIndox.connect_to_vectorstore(db)\nIndox.store_in_vectorstore(docs)\n2024-05-14 15:33:04,916 - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.\n2024-05-14 15:33:12,587 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings \"HTTP/1.1 200 OK\"\n2024-05-14 15:33:13,574 - INFO - Document added successfully to the vector store.\n\nConnection established successfully.\n\n&lt;Indox.vectorstore.ChromaVectorStore at 0x28cf9369af0&gt;",
+    "text": "Import Indox Package\nImport the necessary classes from the Indox package.\nfrom indox import IndoxRetrievalAugmentation\n\nImporting LLM and Embedding Models\nfrom indox.llms import OpenAi\nfrom indox.embeddings import OpenAiEmbedding\n\n\nInitialize Indox\nCreate an instance of IndoxRetrievalAugmentation.\nIndox = IndoxRetrievalAugmentation()\nopenai_qa = OpenAiQA(api_key=OPENAI_API_KEY,model=\"gpt-3.5-turbo-0125\")\nopenai_embeddings = OpenAiEmbedding(model=\"text-embedding-3-small\",openai_api_key=OPENAI_API_KEY)\nfile_path = \"sample.txt\"\nIn this section, we take advantage of the unstructured library to load documents and split them into chunks by title. This method helps in organizing the document into manageable sections for further processing.\nfrom indox.data_loader_splitter import UnstructuredLoadAndSplit\nloader_splitter = UnstructuredLoadAndSplit(file_path=file_path)\ndocs = loader_splitter.load_and_chunk()\nStarting processing...\nEnd Chunking process.\nStoring document chunks in a vector store is crucial for enabling efficient retrieval and search operations. By converting text data into vector representations and storing them in a vector store, you can perform rapid similarity searches and other vector-based operations.\nfrom indox.vector_stores import ChromaVectorStore\ndb = ChromaVectorStore(collection_name=\"sample\",embedding=embed_openai)\nIndox.connect_to_vectorstore(db)\nIndox.store_in_vectorstore(docs)\n2024-05-14 15:33:04,916 - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.\n2024-05-14 15:33:12,587 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings \"HTTP/1.1 200 OK\"\n2024-05-14 15:33:13,574 - INFO - Document added successfully to the vector store.\n\nConnection established successfully.\n\n&lt;Indox.vectorstore.ChromaVectorStore at 0x28cf9369af0&gt;",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Quick Start</span>"
     ]
@@ -130,7 +130,7 @@
     "href": "embedding_models.html",
     "title": "Embedding Models",
     "section": "",
-    "text": "Using OpenAI Embedding Model\nTo use the OpenAI embedding model, follow these steps:",
+    "text": "Using OpenAI Embedding Model\nTo use the OpenAI embedding model, follow these steps:\nFirst install the OpenAI Python package:",
     "crumbs": [
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Embedding Models</span>"
     ]
@@ -140,17 +140,17 @@
     "href": "embedding_models.html#using-openai-embedding-model",
     "title": "Embedding Models",
     "section": "",
-    "text": "Import necessary libraries and load environment variables:\n\nimport os\nfrom dotenv import load_dotenv\n\nload_dotenv()\n\nOPENAI_API_KEY = os.environ['OPENAI_API_KEY']\n\nImport Indox modules and set the OpenAI embedding model:\n\nfrom indox import IndoxRetrievalAugmentation\nfrom indox.embeddings import OpenAiEmbedding\n\nIndox = IndoxRetrievalAugmentation()\nopenai_embeddings = OpenAiEmbedding(model=\"text-embedding-3-small\", openai_api_key=OPENAI_API_KEY)",
+    "text": "pip install openai\n\nImport necessary libraries and load environment variables:\n\nimport os\nfrom dotenv import load_dotenv\n\nload_dotenv()\n\nOPENAI_API_KEY = os.environ['OPENAI_API_KEY']\n\nImport Indox modules and set the OpenAI embedding model:\n\nfrom indox import IndoxRetrievalAugmentation\nfrom indox.embeddings import OpenAiEmbedding\n\nIndox = IndoxRetrievalAugmentation()\nopenai_embeddings = OpenAiEmbedding(model=\"text-embedding-3-small\", openai_api_key=OPENAI_API_KEY)",
     "crumbs": [
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Embedding Models</span>"
     ]
   },
   {
-    "objectID": "embedding_models.html#using-hugging-face-embedding-model",
-    "href": "embedding_models.html#using-hugging-face-embedding-model",
+    "objectID": "embedding_models.html#using-mistral-embedding-model",
+    "href": "embedding_models.html#using-mistral-embedding-model",
     "title": "Embedding Models",
-    "section": "Using Hugging Face Embedding Model",
-    "text": "Using Hugging Face Embedding Model\nTo use the Hugging Face embedding model, follow these steps:\n\nImport Indox modules and set the Hugging Face embedding model:\n\nfrom indox.embeddings import HuggingFaceEmbedding\n\nhugging_face_embedding = HuggingFaceEmbedding(model_name=\"multi-qa-mpnet-base-cos-v1\")\n\nFuture Plans\nWe are committed to continuously improving Indox and will be adding support for more embedding models in the future.",
+    "section": "Using Mistral Embedding Model",
+    "text": "Using Mistral Embedding Model\nTo use the Mistral embedding model, follow these steps:\nFirst install the Mistral Python package:\npip install mistralai\n\nLoad environment variables:\n\nimport os\nfrom dotenv import load_dotenv\n\nload_dotenv()\n\nMISTRAL_API_KEY = os.environ['MISTRAL_API_KEY']\n\nImport Indox modules and set the Mistral embedding model:\n\nfrom indox.embeddings import MistralEmbedding\n\nmistral_embedding = MistralEmbedding(api_key=MISTRAL_API_KEY)\n\nFuture Plans\nWe are committed to continuously improving Indox and will be adding support for more embedding models in the future.",
     "crumbs": [
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Embedding Models</span>"
     ]
@@ -176,31 +176,21 @@
     ]
   },
   {
-    "objectID": "llms.html#using-openai-qa-model",
-    "href": "llms.html#using-openai-qa-model",
+    "objectID": "llms.html#using-openai-model",
+    "href": "llms.html#using-openai-model",
     "title": "LLMs",
-    "section": "Using OpenAI QA Model",
-    "text": "Using OpenAI QA Model\nTo use the OpenAI QA model, follow these steps:\n\nImport necessary libraries and load environment variables:\n\nimport os\nfrom dotenv import load_dotenv\n\nload_dotenv()\n\nOPENAI_API_KEY = os.environ['OPENAI_API_KEY']\n\nImport Indox modules and set the OpenAI QA model:\n\nfrom indox.llms import OpenAiQA\n\nopenai_qa = OpenAiQA(api_key=OPENAI_API_KEY, model=\"gpt-3.5-turbo-0125\")\nretriever = indox.QuestionAnswer(vector_database=db,llm=openai_qa,top_k=5)\nretriever.invoke(query)",
+    "section": "Using OpenAI Model",
+    "text": "Using OpenAI Model\nTo use the OpenAI QA model, follow these steps: First install the OpenAI Python package:\npip install openai\n\nImport necessary libraries and load environment variables:\n\nimport os\nfrom dotenv import load_dotenv\n\nload_dotenv()\n\nOPENAI_API_KEY = os.environ['OPENAI_API_KEY']\n\nImport Indox modules and set the OpenAI model:\n\nfrom indox.llms import OpenAi\n\nopenai_qa = OpenAi(api_key=OPENAI_API_KEY, model=\"gpt-3.5-turbo-0125\")\nretriever = indox.QuestionAnswer(vector_database=db,llm=openai_qa,top_k=5)\nretriever.invoke(query)",
     "crumbs": [
       "<span class='chapter-number'>6</span>  <span class='chapter-title'>LLMs</span>"
     ]
   },
   {
-    "objectID": "llms.html#using-mistral-qa-model-from-hugging-face",
-    "href": "llms.html#using-mistral-qa-model-from-hugging-face",
+    "objectID": "llms.html#using-mistral-model",
+    "href": "llms.html#using-mistral-model",
     "title": "LLMs",
-    "section": "Using Mistral QA Model from Hugging Face",
-    "text": "Using Mistral QA Model from Hugging Face\nTo use the Mistral QA model from Hugging Face, follow these steps:\n\nImport necessary libraries and load environment variables:\n\nimport os\nfrom dotenv import load_dotenv\n\nload_dotenv()\n\nHF_API_KEY = os.getenv('HF_API_KEY')\n\nImport Indox modules and set the Mistral QA model:\n\nfrom indox.llms import MistralQA\n\nmistral_qa = MistralQA(api_key=HF_API_KEY, model=\"mistralai/Mistral-7B-Instruct-v0.2\")\nretriever = indox.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5)\nretriever.invoke(query)\nNote: Users can choose other models from Hugging Face as well, but we recommend the free Mistral model, which only requires a Hugging Face access token.",
-    "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>LLMs</span>"
-    ]
-  },
-  {
-    "objectID": "llms.html#using-openai-qa-model-with-chain-of-thought-from-the-dspy-framework",
-    "href": "llms.html#using-openai-qa-model-with-chain-of-thought-from-the-dspy-framework",
-    "title": "LLMs",
-    "section": "Using OpenAI QA Model with Chain of Thought from the dspy Framework",
-    "text": "Using OpenAI QA Model with Chain of Thought from the dspy Framework\nTo use the OpenAI QA model with Chain of Thought from the dspy framework, follow these steps:\n\nImport necessary libraries and load environment variables:\n\nimport os\nfrom dotenv import load_dotenv\n\nload_dotenv()\n\nOPENAI_API_KEY = os.environ['OPENAI_API_KEY']\n\nImport Indox modules and set the OpenAI QA model with Chain of Thought:\n\nfrom indox.llms import DspyCotQA\n\ndspy_qa = DspyCotQA(api_key=OPENAI_API_KEY, model=\"gpt-3.5-turbo\")\nretriever = indox.QuestionAnswer(vector_database=db,llm=dspy_qa,top_k=5)\nretriever.invoke(query)\n\nFuture Plans\nWe are committed to continuously improving Indox and will be adding support for more QA models in the future.",
+    "section": "Using Mistral Model",
+    "text": "Using Mistral Model\nFirst install the Hugging Face Python package:\npip install mistralai\nTo use the Mistral model, follow these steps:\n\nImport necessary libraries and load environment variables:\n\nimport os\nfrom dotenv import load_dotenv\n\nload_dotenv()\n\nMISTRAL_API_KEY = os.getenv('MISTRAL_API_KEY')\n\nImport Indox modules and set the Mistral model:\n\nfrom indox.llms import Mistral\n\nmistral_qa = Mistral(api_key=MISTRAL_API_KEY, model=\"mistralai/Mistral-7B-Instruct-v0.2\")\nretriever = indox.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5)\nretriever.invoke(query)\n\nFuture Plans\nWe are committed to continuously improving Indox and will be adding support for more QA models in the future.",
     "crumbs": [
       "<span class='chapter-number'>6</span>  <span class='chapter-title'>LLMs</span>"
     ]
@@ -220,7 +210,7 @@
     "href": "vector_store.html#postgres-using-pgvector",
     "title": "Vector Stores",
     "section": "Postgres Using PgVector",
-    "text": "Postgres Using PgVector\nTo use pgvector as the vector store, users need to install pgvector and set the database address.\n\nHyperparameters\n\nhost (str): The host of the PostgreSQL database.\nport (int): The port of the PostgreSQL database.\ndbname (str): The name of the database.\nuser (str): The user for the PostgreSQL database.\npassword (str): The password for the PostgreSQL database.\ncollection_name (str): The name of the collection in the database.\nembedding (Embedding): The embedding to be used.\n\n\n\nInstallation\nFor instructions on installing pgvector, refer to the pgvector installation guide.\nfrom indox.vector_stores import PGVectorStore\ndb = PGVectorStore(host=\"host\",port=port,dbname=\"dbname\",user=\"username\",password=\"password\",collection_name=\"sample\",embedding=embed)",
+    "text": "Postgres Using PgVector\nFirst you should install pgvector and set the database address.\npip install pgvector\npip install psycopg2\nTo use pgvector as the vector store, users need to install pgvector and set the database address.\n\nHyperparameters\n\nhost (str): The host of the PostgreSQL database.\nport (int): The port of the PostgreSQL database.\ndbname (str): The name of the database.\nuser (str): The user for the PostgreSQL database.\npassword (str): The password for the PostgreSQL database.\ncollection_name (str): The name of the collection in the database.\nembedding (Embedding): The embedding to be used.\n\n\n\nInstallation\nFor instructions on installing pgvector, refer to the pgvector installation guide.\nfrom indox.vector_stores import PGVectorStore\ndb = PGVectorStore(host=\"host\",port=port,dbname=\"dbname\",user=\"username\",password=\"password\",collection_name=\"sample\",embedding=embed)",
     "crumbs": [
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>Vector Stores</span>"
     ]
@@ -240,7 +230,7 @@
     "href": "vector_store.html#chroma",
     "title": "Vector Stores",
     "section": "Chroma",
-    "text": "Chroma\nTo use chroma as the vector store, users need to install Chroma and set the collection_name of database and embedding model.\n\nHyperparameters\n\ncollection_name (str): The name of the collection in the database.\nembedding (Embedding): The embedding to be used.\n\n\n\nInstallation\nFor instructions on installing chroma, refer to the chroma installation guide.\nfrom indox.vector_stores import ChromaVectorStore\ndb = ChromaVectorStore(collection_name=\"name\",embedding=embed)",
+    "text": "Chroma\nTo use chroma as the vector store, users need to install Chroma and set the collection_name of database and embedding model.\npip install chromadb\n\nHyperparameters\n\ncollection_name (str): The name of the collection in the database.\nembedding (Embedding): The embedding to be used.\n\n\n\nInstallation\nFor instructions on installing chroma, refer to the chroma installation guide.\nfrom indox.vector_stores import ChromaVectorStore\ndb = ChromaVectorStore(collection_name=\"name\",embedding=embed)",
     "crumbs": [
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>Vector Stores</span>"
     ]
@@ -260,7 +250,7 @@
     "href": "vector_store.html#faiss",
     "title": "Vector Stores",
     "section": "Faiss",
-    "text": "Faiss\nTo use Faiss as the vector store, users need to install faiss and set the embedding model.\n\nHyperparameters\n\nembedding (Embedding): The embedding to be used.\n\n\n\nInstallation\nFor instructions on installing faiss, refer to the FAISS installation guide.\nfrom indox.vector_stores import FAISSVectorStore\ndb = FAISSVectorStore(embedding=embed)",
+    "text": "Faiss\nTo use Faiss as the vector store, users need to install faiss and set the embedding model.\npip install faiss-cpu\n\nHyperparameters\n\nembedding (Embedding): The embedding to be used.\n\n\n\nInstallation\nFor instructions on installing faiss, refer to the FAISS installation guide.\nfrom indox.vector_stores import FAISSVectorStore\ndb = FAISSVectorStore(embedding=embed)",
     "crumbs": [
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>Vector Stores</span>"
     ]
@@ -366,8 +356,8 @@
     ]
   },
   {
-    "objectID": "examples_3/clusterSplit.html",
-    "href": "examples_3/clusterSplit.html",
+    "objectID": "examples/clusterSplit.html",
+    "href": "examples/clusterSplit.html",
     "title": "Load And Split With Clustering",
     "section": "",
     "text": "Initial Setup\nThe following imports are essential for setting up the Indox application. These imports include the main Indox retrieval augmentation module, question-answering models, embeddings, and data loader splitter.\nIn this step, we initialize the Indox Retrieval Augmentation, the QA model, and the embedding model. Note that the models used for QA and embedding can vary depending on the specific requirements.",
@@ -377,8 +367,8 @@
     ]
   },
   {
-    "objectID": "examples_3/clusterSplit.html#initial-setup",
-    "href": "examples_3/clusterSplit.html#initial-setup",
+    "objectID": "examples/clusterSplit.html#initial-setup",
+    "href": "examples/clusterSplit.html#initial-setup",
     "title": "Load And Split With Clustering",
     "section": "",
     "text": "from indox import IndoxRetrievalAugmentation\nfrom indox.llms import OpenAiQA\nfrom indox.embeddings import OpenAiEmbedding\nfrom indox.data_loader_splitter import ClusteredSplit\n\nIndox = IndoxRetrievalAugmentation()\nqa_model = OpenAiQA(api_key=OPENAI_API_KEY,model=\"gpt-3.5-turbo-0125\")\nembed = OpenAiEmbedding(api_key=OPENAI_API_KEY,model=\"text-embedding-3-small\")",
@@ -388,8 +378,8 @@
     ]
   },
   {
-    "objectID": "examples_3/clusterSplit.html#data-loader-setup",
-    "href": "examples_3/clusterSplit.html#data-loader-setup",
+    "objectID": "examples/clusterSplit.html#data-loader-setup",
+    "href": "examples/clusterSplit.html#data-loader-setup",
     "title": "Load And Split With Clustering",
     "section": "Data Loader Setup",
     "text": "Data Loader Setup\nWe set up the data loader using the ClusteredSplit class. This step involves loading documents, configuring embeddings, and setting options for processing the text.\nloader_splitter = ClusteredSplit(file_path=\"sample.txt\",embeddings=embed,remove_sword=False,re_chunk=False,chunk_size=300,use_openai_summary=True)\ndocs = loader_splitter.load_and_chunk()\n--Generated 1 clusters--",
@@ -399,8 +389,8 @@
     ]
   },
   {
-    "objectID": "examples_3/clusterSplit.html#vector-store-connection-and-document-storage",
-    "href": "examples_3/clusterSplit.html#vector-store-connection-and-document-storage",
+    "objectID": "examples/clusterSplit.html#vector-store-connection-and-document-storage",
+    "href": "examples/clusterSplit.html#vector-store-connection-and-document-storage",
     "title": "Load And Split With Clustering",
     "section": "Vector Store Connection and Document Storage",
     "text": "Vector Store Connection and Document Storage\nIn this step, we connect the Indox application to the vector store and store the processed documents.\nfrom indox.vector_stores import ChromaVectorStore\ndb = ChromaVectorStore(collection_name=\"sample\",embedding=embed)\nIndox.connect_to_vectorstore(db)\n&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x215d56a6c00&gt;\nIndox.store_in_vectorstore(docs)\n&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x215d56a6c00&gt;",
@@ -410,8 +400,8 @@
     ]
   },
   {
-    "objectID": "examples_3/clusterSplit.html#querying-and-interpreting-the-response",
-    "href": "examples_3/clusterSplit.html#querying-and-interpreting-the-response",
+    "objectID": "examples/clusterSplit.html#querying-and-interpreting-the-response",
+    "href": "examples/clusterSplit.html#querying-and-interpreting-the-response",
     "title": "Load And Split With Clustering",
     "section": "Querying and Interpreting the Response",
     "text": "Querying and Interpreting the Response\nIn this step, we query the Indox application with a specific question and use the QA model to get the response. The response is a tuple where the first element is the answer and the second element contains the retrieved context with their cosine scores. response[0] contains the answer response[1] contains the retrieved context with their cosine scores\nretriever = Indox.QuestionAnswer(vector_database=db,llm=qa_model,top_k=5)\nretriever.invoke(query=\"How cinderella reach happy ending?\")\n\"Cinderella reached her happy ending through her kindness, perseverance, and the magical assistance she received. Despite being mistreated by her stepmother and stepsisters, Cinderella remained kind and pure of heart. With the help of a little bird and her mother's grave, she was able to attend the royal ball where the prince fell in love with her. Even though she had to escape from the prince, he searched for her and eventually found her with the help of the golden slipper she left behind. The prince then declared that he would only marry the woman whose foot fit the golden slipper, leading to Cinderella's ultimate happy ending as she was the only one whose foot fit the slipper.\"\nretriever.context\n[\"They never once thought of cinderella, and believed that she was sitting at home in the dirt, picking lentils out of the ashes   The prince approached her, took her by the hand and danced with her He would dance with no other maiden, and never let loose of her hand, and if any one else came to invite her, he said, this is my partner She danced till it was evening, and then she wanted to go home But the king's son said, I will go with you and bear you company, for he wished to see to whom the beautiful maiden belonged She escaped from him, however, and sprang into the pigeon-house   The king's son waited until her father came, and then he told him that the unknown maiden had leapt into the pigeon-house   The old man thought, can it be cinderella   And they had to bring him an axe and a pickaxe that he might hew the pigeon-house to pieces, but no one was inside it   And when they got home cinderella lay in her dirty clothes among the ashes, and a dim little oil-lamp was burning on the mantle-piece, for cinderella had jumped quickly down from the back of the pigeon-house and had run to the little hazel-tree, and there she had taken off her beautiful clothes and laid them on the grave, and the bird had taken them away again, and then she had seated herself in the kitchen amongst the ashes in her grey gown\",\n \"The documentation provided describes the classic fairy tale of Cinderella. It tells the story of a young girl, Cinderella, who is mistreated by her stepmother and stepsisters after her mother's death. Despite their cruelty, Cinderella remains kind and pure of heart. Through magical assistance from a little bird and her mother's grave, Cinderella is able to attend the royal ball where the prince falls in love with her. When she escapes, the prince searches for her and finally finds her with the\",\n \"had jumped down on the other side of the tree, had taken the beautiful dress to the bird on the little hazel-tree, and put on her grey gown On the third day, when the parents and sisters had gone away, cinderella went once more to her mother's grave and said to the little tree -      shiver and quiver, my little tree,      silver and gold throw down over me And now the bird threw down to her a dress which was more splendid and magnificent than any she had yet had, and the slippers were golden   And when she went to the festival in the dress, no one knew how to speak for astonishment   The king's son danced with her only, and if any one invited her to dance, he said this is my partner When evening came, cinderella wished to leave, and the king's son was anxious to go with her, but she escaped from him so quickly that he could not follow her   The king's son, however, had employed a ruse, and had caused the whole staircase to be smeared with pitch, and there, when she ran down, had the maiden's left slipper remained stuck   The king's son picked it up, and it was small and dainty, and all golden   Next morning, he went with it to the father, and said to him, no one shall be my wife but she whose foot this golden slipper fits   Then were the two sisters glad,\",\n \"and emptied her peas and lentils into the ashes, so that she was forced to sit and pick them out again   In the evening when she had worked till she was weary she had no bed to go to, but had to sleep by the hearth in the cinders   And as on that account she always looked dusty and dirty, they called her cinderella It happened that the father was once going to the fair, and he asked his two step-daughters what he should bring back for them Beautiful dresses, said one, pearls and jewels, said the second And you, cinderella, said he, what will you have   Father break off for me the first branch which knocks against your hat on your way home   So he bought beautiful dresses, pearls and jewels for his two step-daughters, and on his way home, as he was riding through a green thicket, a hazel twig brushed against him and knocked off his hat   Then he broke off the branch and took it with him   When he reached home he gave his step-daughters the things which they had wished for, and to cinderella he gave the branch from the hazel-bush   Cinderella thanked him, went to her mother's grave and planted the branch on it, and wept so much that the tears fell down on it and watered it   And it grew and became a handsome tree  Thrice a day cinderella went and sat beneath it, and wept and\",\n \"prayed, and a little white bird always came on the tree, and if cinderella expressed a wish, the bird threw down to her what she had wished for It happened, however, that the king gave orders for a festival which was to last three days, and to which all the beautiful young girls in the country were invited, in order that his son might choose himself a bride   When the two step-sisters heard that they too were to appear among the number, they were delighted, called cinderella and said, comb our hair for us, brush our shoes and fasten our buckles, for we are going to the wedding at the king's palace Cinderella obeyed, but wept, because she too would have liked to go with them to the dance, and begged her step-mother to allow her to do so   You go, cinderella, said she, covered in dust and dirt as you are, and would go to the festival   You have no clothes and shoes, and yet would dance   As, however, cinderella went on asking, the step-mother said at last, I have emptied a dish of lentils into the ashes for you, if you have picked them out again in two hours, you shall go with us   The maiden went through the back-door into the garden, and called, you tame pigeons, you turtle-doves, and all you birds beneath the sky, come and help me to pick\"]",
@@ -421,8 +411,8 @@
     ]
   },
   {
-    "objectID": "examples_3/unstructuredSplit.html",
-    "href": "examples_3/unstructuredSplit.html",
+    "objectID": "examples/unstructuredSplit.html",
+    "href": "examples/unstructuredSplit.html",
     "title": "Unstructured Load And Split",
     "section": "",
     "text": "Initial Setup\nThe following imports are essential for setting up the Indox application. These imports include the main Indox retrieval augmentation module, question-answering models, embeddings, and data loader splitter.",
@@ -432,8 +422,8 @@
     ]
   },
   {
-    "objectID": "examples_3/unstructuredSplit.html#initial-setup",
-    "href": "examples_3/unstructuredSplit.html#initial-setup",
+    "objectID": "examples/unstructuredSplit.html#initial-setup",
+    "href": "examples/unstructuredSplit.html#initial-setup",
     "title": "Unstructured Load And Split",
     "section": "",
     "text": "from indox import IndoxRetrievalAugmentation\nindox = IndoxRetrievalAugmentation()\n\nGenerating response using OpenAI’s language models\nOpenAIQA class is used to handle question-answering task using OpenAI’s language models. This instance creates OpenAiEmbedding class to specifying embedding model. Here ChromaVectorStore handles the storage and retrieval of vector embeddings by specifying a collection name and sets up a vector store where text embeddings can be stored and queried.\nfrom indox.llms import OpenAiQA\nfrom indox.embeddings import OpenAiEmbedding\nopenai_qa = OpenAiQA(api_key=OPENAI_API_KEY, model=\"gpt-3.5-turbo-0125\")\nembed_openai = OpenAiEmbedding(api_key=OPENAI_API_KEY,model=\"text-embedding-3-small\")\n\nfrom indox.vector_stores import ChromaVectorStore\ndb = ChromaVectorStore(collection_name=\"sample\",embedding=embed_openai)\nindox.connect_to_vectorstore(vectorstore_database=db)\n&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x1d0407cb440&gt;\n\n\nload and preprocess data\nThis part of code demonstrates how to load and preprocess text data from a file, split it into chunks, and store these chunks in the vector store that was set up previously.\nfile_path = \"sample.txt\"\nfrom indox.data_loader_splitter import UnstructuredLoadAndSplit\nloader_splitter = UnstructuredLoadAndSplit(file_path=file_path,max_chunk_size=400)\ndocs = loader_splitter.load_and_chunk()\nindox.store_in_vectorstore(docs=docs)\n&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x1d0407cb440&gt;\n\n\nRetrieve relevant information and generate an answer\nThe main purpose of these lines is to perform a query on the vector store to retrieve the most relevant information (top_k=5) and generate an answer using the language model.\nquery = \"How Cinderella reach her happy ending?\"\nretriever = indox.QuestionAnswer(vector_database=db, llm=openai_qa, top_k=5)\ninvoke(query) method sends the query to the retriever, which searches the vector store for relevant text chunks and uses the language model to generate a response based on the retrieved information. Context property retrieves the context or the detailed information that the retriever used to generate the answer to the query. It provides insight into how the query was answered by showing the relevant text chunks and any additional information used.\nretriever.invoke(query)\nretriever.context\n[\"to appear among the number, they were delighted, called cinderella\\n\\nand said, comb our hair for us, brush our shoes and fasten our\\n\\nbuckles, for we are going to the wedding at the king's palace.\\n\\nCinderella obeyed, but wept, because she too would have liked to\\n\\ngo with them to the dance, and begged her step-mother to allow\\n\\nher to do so. You go, cinderella, said she, covered in dust and\",\n \"which they had wished for, and to cinderella he gave the branch\\n\\nfrom the hazel-bush. Cinderella thanked him, went to her mother's\\n\\ngrave and planted the branch on it, and wept so much that the tears\\n\\nfell down on it and watered it. And it grew and became a handsome\\n\\ntree. Thrice a day cinderella went and sat beneath it, and wept and\\n\\nprayed, and a little white bird always came on the tree, and if\",\n 'by the hearth in the cinders. And as on that account she always\\n\\nlooked dusty and dirty, they called her cinderella.\\n\\nIt happened that the father was once going to the fair, and he\\n\\nasked his two step-daughters what he should bring back for them.\\n\\nBeautiful dresses, said one, pearls and jewels, said the second.\\n\\nAnd you, cinderella, said he, what will you have. Father',\n \"Then the maiden was delighted, and believed that she might now go\\n\\nwith them to the wedding. But the step-mother said, all this will\\n\\nnot help. You cannot go with us, for you have no clothes and can\\n\\nnot dance. We should be ashamed of you. On this she turned her\\n\\nback on cinderella, and hurried away with her two proud daughters.\\n\\nAs no one was now at home, cinderella went to her mother's\",\n \"danced with her only, and if any one invited her to dance, he said\\n\\nthis is my partner.\\n\\nWhen evening came, cinderella wished to leave, and the king's\\n\\nson was anxious to go with her, but she escaped from him so quickly\\n\\nthat he could not follow her. The king's son, however, had\\n\\nemployed a ruse, and had caused the whole staircase to be smeared\"]\n\n\nWith AgenticRag\nAgenticRag stands for Agentic Retrieval-Augmented Generation. This concept combines retrieval-based methods and generation-based methods in natural language processing (NLP). The key idea is to enhance the generative capabilities of a language model by incorporating relevant information retrieved from a database or a vector store. AgenticRag is designed to provide more contextually rich and accurate responses by utilizing external knowledge sources. It retrieves relevant pieces of information (chunks) from a vector store based on a query and then uses a language model to generate a comprehensive response that incorporates this retrieved information.\nagent = indox.AgenticRag(llm=openai_qa,vector_database=db,top_k=5)\nagent.run(query)\nNot Relevant doc\nRelevant doc\nNot Relevant doc\nNot Relevant doc\nNot Relevant doc\n\n\n\n\n\n\"Cinderella reached her happy ending by receiving a branch from the hazel-bush from the prince, planting it on her mother's grave, and weeping and praying beneath it. The branch grew into a handsome tree, and a little white bird always came to the tree, bringing her comfort and assistance.\"",
@@ -443,8 +433,8 @@
     ]
   },
   {
-    "objectID": "examples_3/mistral.html",
-    "href": "examples_3/mistral.html",
+    "objectID": "examples/mistral.html",
+    "href": "examples/mistral.html",
     "title": "Mistral As Question Answer Model",
     "section": "",
     "text": "Introduction\nIn this notebook, we will demonstrate how to securely handle inDox as system for question answering system with open source models which are available on internet like Mistral. so firstly you should buil environment variables and API keys in Python using the dotenv library. Environment variables are a crucial part of configuring your applications, especially when dealing with sensitive information like API keys.\nLet’s start by importing the required libraries and loading our environment variables.",
@@ -454,8 +444,8 @@
     ]
   },
   {
-    "objectID": "examples_3/mistral.html#introduction",
-    "href": "examples_3/mistral.html#introduction",
+    "objectID": "examples/mistral.html#introduction",
+    "href": "examples/mistral.html#introduction",
     "title": "Mistral As Question Answer Model",
     "section": "",
     "text": "Note\n\n\n\nBecause we are using HuggingFace models you need to define your HUGGINGFACE_API_KEY in .env file. This allows us to keep our API keys and other sensitive information out of our codebase, enhancing security and maintainability.\n\n\n\nimport os\nfrom dotenv import load_dotenv\n\nload_dotenv()\nHUGGINGFACE_API_KEY = os.getenv('HUGGINGFACE_API_KEY')\n\nImport Essential Libraries\nThen, we import essential libraries for our Indox question answering system: - IndoxRetrievalAugmentation: Enhances the retrieval process for better QA performance. - MistralQA: A powerful QA model from Indox, built on top of the Hugging Face model. - HuggingFaceEmbedding: Utilizes Hugging Face embeddings for improved semantic understanding. - UnstructuredLoadAndSplit: A utility for loading and splitting unstructured data.\nfrom indox import IndoxRetrievalAugmentation\nfrom indox.llms import MistralQA\nfrom indox.embeddings import HuggingFaceEmbedding\nfrom indox.data_loader_splitter import UnstructuredLoadAndSplit\n\n\nBuilding the Indox System and Initializing Models\nNext, we will build our inDox system and initialize the Mistral question answering model along with the embedding model. This setup will allow us to leverage the advanced capabilities of Indox for our question answering tasks.\nindox = IndoxRetrievalAugmentation()\nmistral_qa = MistralQA(api_key=HUGGINGFACE_API_KEY,model=\"mistralai/Mistral-7B-Instruct-v0.2\")\nembed = HuggingFaceEmbedding(model=\"multi-qa-mpnet-base-cos-v1\")\n\n\nSetting Up Reference Directory and File Path\nTo demonstrate the capabilities of our Indox question answering system, we will use a sample directory. This directory will contain our reference data, which we will use for testing and evaluation.\nFirst, we specify the path to our sample file. In this case, we are using a file named sample.txt located in our working directory. This file will serve as our reference data for the subsequent steps.\nLet’s define the file path for our reference data.\nfile_path = \"sample.txt\"\n\n\nChunking Reference Data with UnstructuredLoadAndSplit\nTo effectively utilize our reference data, we need to process and chunk it into manageable parts. This ensures that our question answering system can efficiently handle and retrieve relevant information.\nWe use the UnstructuredLoadAndSplit utility for this task. This tool allows us to load the unstructured data from our specified file and split it into smaller chunks. This process enhances the performance of our retrieval and QA models by making the data more accessible and easier to process.\nIn this step, we define the file path for our reference data and use UnstructuredLoadAndSplit to chunk the data with a maximum chunk size of 400 characters.\nLet’s proceed with chunking our reference data.\nload_splitter = UnstructuredLoadAndSplit(file_path=file_path,max_chunk_size=400)\ndocs = load_splitter.load_and_chunk()\n\n\nConnecting Embedding Model to Indox\nWith our reference data chunked and ready, the next step is to connect our embedding model to the Indox system. This connection enables the system to leverage the embeddings for better semantic understanding and retrieval performance.\nWe use the connect_to_vectorstore method to link the HuggingFaceEmbedding model with our Indox system. By specifying the embeddings and a collection name, we ensure that our reference data is appropriately indexed and stored, facilitating efficient retrieval during the question-answering process.\nLet’s connect the embedding model to Indox.\nfrom indox.vector_stores import ChromaVectorStore\ndb = ChromaVectorStore(collection_name=\"sample\",embedding=embed)\nindox.connect_to_vectorstore(vectorstore_database=db)\n&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x146b850ddc0&gt;\n\n\nStoring Data in the Vector Store\nAfter connecting our embedding model to the Indox system, the next step is to store our chunked reference data in the vector store. This process ensures that our data is indexed and readily available for retrieval during the question-answering process.\nWe use the store_in_vectorstore method to store the processed data in the vector store. By doing this, we enhance the system’s ability to quickly access and retrieve relevant information based on the embeddings generated earlier.\nLet’s proceed with storing the data in the vector store.\nindox.store_in_vectorstore(docs)\n&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x146b850ddc0&gt;",
@@ -465,8 +455,8 @@
     ]
   },
   {
-    "objectID": "examples_3/mistral.html#query-from-rag-system-with-indox",
-    "href": "examples_3/mistral.html#query-from-rag-system-with-indox",
+    "objectID": "examples/mistral.html#query-from-rag-system-with-indox",
+    "href": "examples/mistral.html#query-from-rag-system-with-indox",
     "title": "Mistral As Question Answer Model",
     "section": "Query from RAG System with Indox",
     "text": "Query from RAG System with Indox\nWith our Retrieval-Augmented Generation (RAG) system built using Indox, we are now ready to test it with a sample question. This test will demonstrate how effectively our system can retrieve and generate accurate answers based on the reference data stored in the vector store.\nWe’ll use a sample query to test our system: - Query: “How did Cinderella reach her happy ending?”\nThis question will be processed by our Indox system to retrieve relevant information and generate an appropriate response.\nLet’s test our RAG system with the sample question\nquery = \"How cinderella reach her happy ending?\"\nNow that our Retrieval-Augmented Generation (RAG) system with Indox is fully set up, we can test it with a sample question. We’ll use the invoke submethod to get a response from the system.\nThe invoke method processes the query using the connected QA model and retrieves relevant information from the vector store. It returns a list where: - The first index contains the answer. - The second index contains the contexts and their respective scores.\nWe’ll pass this query to the invoke method and print the response.\nretriever = indox.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5)\nanswer = retriever.invoke(query=query)\ncontext = retriever.context\ncontext\n['by the hearth in the cinders. And as on that account she always\\n\\nlooked dusty and dirty, they called her cinderella.\\n\\nIt happened that the father was once going to the fair, and he\\n\\nasked his two step-daughters what he should bring back for them.\\n\\nBeautiful dresses, said one, pearls and jewels, said the second.\\n\\nAnd you, cinderella, said he, what will you have. Father',\n 'cinderella expressed a wish, the bird threw down to her what she\\n\\nhad wished for.\\n\\nIt happened, however, that the king gave orders for a festival\\n\\nwhich was to last three days, and to which all the beautiful young\\n\\ngirls in the country were invited, in order that his son might choose\\n\\nhimself a bride. When the two step-sisters heard that they too were',\n 'know where she was gone. He waited until her father came, and\\n\\nsaid to him, the unknown maiden has escaped from me, and I\\n\\nbelieve she has climbed up the pear-tree. The father thought,\\n\\ncan it be cinderella. And had an axe brought and cut the\\n\\ntree down, but no one was on it. And when they got into the\\n\\nkitchen, cinderella lay there among the ashes, as usual, for she',\n 'and had run to the little hazel-tree, and there she had taken off\\n\\nher beautiful clothes and laid them on the grave, and the bird had\\n\\ntaken them away again, and then she had seated herself in the\\n\\nkitchen amongst the ashes in her grey gown.\\n\\nNext day when the festival began afresh, and her parents and\\n\\nthe step-sisters had gone once more, cinderella went to the\\n\\nhazel-tree and said -',\n \"had jumped down on the other side of the tree, had taken the\\n\\nbeautiful dress to the bird on the little hazel-tree, and put on her\\n\\ngrey gown.\\n\\nOn the third day, when the parents and sisters had gone away,\\n\\ncinderella went once more to her mother's grave and said to the\"]",
@@ -476,8 +466,8 @@
     ]
   },
   {
-    "objectID": "examples_3/mistral.html#evaluation",
-    "href": "examples_3/mistral.html#evaluation",
+    "objectID": "examples/mistral.html#evaluation",
+    "href": "examples/mistral.html#evaluation",
     "title": "Mistral As Question Answer Model",
     "section": "Evaluation",
     "text": "Evaluation\nEvaluating the performance of your question-answering system is crucial to ensure the quality and reliability of the responses. In this section, we will use the Evaluation module from Indox to assess our system’s outputs.\nfrom indox.evaluation import Evaluation\nevaluator = Evaluation([\"BertScore\", \"Toxicity\"])\n\nPreparing Inputs for Evaluation\nNext, we need to format the inputs according to the Indox evaluator’s requirements. This involves creating a dictionary that includes the question, the generated answer, and the context from which the answer was derived.\ninputs = {\n    \"question\" : query,\n    \"answer\" : answer,\n    \"context\" : context\n}\nresult = evaluator(inputs)\nresult\n\n\n\n\n\n\n\n\n0\n\n\n\n\n\n\nPrecision\n\n\n0.524382\n\n\n\n\nRecall\n\n\n0.537209\n\n\n\n\nF1-score\n\n\n0.530718\n\n\n\n\nToxicity\n\n\n0.074495",
