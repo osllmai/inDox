@@ -179,7 +179,7 @@ def summarize(context: str, use_openai: bool, max_len: int, min_len: int):
     """
     # Parameters for the summarization models
     openai_model_name = "gpt-3.5-turbo-0125"
-    huggingface_model_name = "t5-base"
+    huggingface_model_name = "facebook/bart-large-cnn"
     max_len = max_len
     min_len = min_len
     prompt_content = "You are a helpful assistant. Give a detailed summary of the documentation provided"
@@ -190,7 +190,6 @@ def summarize(context: str, use_openai: bool, max_len: int, min_len: int):
                 model_name=openai_model_name,
                 max_len=max_len,
                 min_len=min_len,
-                prompt_content=prompt_content
             )
             return summary_model.summarize(context)
         else:
