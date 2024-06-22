@@ -1,7 +1,6 @@
 import logging
 from indox.data_loader_splitter.ClusteredSplit.EmbedClusterSummarize import recursive_embed_cluster_summarize
 from indox.data_loader_splitter.ClusteredSplit.cs_utils import get_all_texts, split_text, create_document
-from indox.data_loader_splitter.utils.clean import remove_stopwords_chunk
 from typing import Optional, List, Tuple
 
 logging.basicConfig(level=logging.INFO,
@@ -52,6 +51,7 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
 
         # Optionally remove stopwords from the chunks
         if remove_sword:
+            from indox.data_loader_splitter.utils.clean import remove_stopwords_chunk
             leaf_chunks = remove_stopwords_chunk(leaf_chunks)
 
         results = recursive_embed_cluster_summarize(

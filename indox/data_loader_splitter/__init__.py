@@ -1,2 +1,2 @@
-from .ClusteredSplit import ClusteredSplit
-from .UnstructuredLoadAndSplit import UnstructuredLoadAndSplit
+from .ClusteredSplit.split import ClusteredSplit
+from .UnstructuredLoadAndSplit.split import UnstructuredLoadAndSplit
