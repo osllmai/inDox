@@ -1,17 +1,16 @@
 from typing import List
 import pandas as pd
+import logging
+import numpy as np
 from .Embed import embed_cluster_texts
 from .Summary import summarize
 from indox.data_loader_splitter.ClusteredSplit.cs_utils import rechunk
 from indox.data_loader_splitter.utils.clean import remove_stopwords_chunk
-import numpy as np
 
 
 def embed_cluster_summarize_texts(
-        texts: List[str], embeddings, dim: int, threshold: float, level: int,
-        summary_model,
-        re_chunk: bool = False,
-        max_chunk: int = 100):
+        texts, embeddings, dim: int, threshold: float, level: int,
+        summary_model, re_chunk: bool = False, max_chunk: int = 100):
     """
     Embeds, clusters, and summarizes a list of texts. This function first generates embeddings for the texts,
     clusters them based on similarity, expands the cluster assignments for easier processing, and then summarizes
@@ -55,9 +54,6 @@ def embed_cluster_summarize_texts(
     summaries = []
     for cluster in all_clusters:
         cluster_texts = expanded_df[expanded_df["cluster"] == cluster]["text"].tolist()
-        # summary = summarize(
-        #     cluster_texts, use_openai=use_openai_summary, max_len=max_len_summary, min_len=min_len_summary
-        # )
         summary = summary_model.get_summary(cluster_texts)
         summaries.append(summary)
 
@@ -76,12 +72,10 @@ def embed_cluster_summarize_texts(
     return df_clusters, df_summary
 
 
-def recursive_embed_cluster_summarize(texts: List[str], embeddings, dim: int, threshold: float,
-                                      summary_model,
-                                      max_chunk: int = 100,
+def recursive_embed_cluster_summarize(texts, embeddings, dim: int, threshold: float,
+                                      summary_model, max_chunk: int = 100,
                                       level: int = 1, n_levels: int = 3,
-                                      re_chunk: bool = False, remove_sword: bool = False,
-                                      ):
+                                      re_chunk: bool = False, remove_sword: bool = False):
     """
     Recursively embeds, clusters, and summarizes texts up to a specified level or until
     the number of unique clusters becomes 1, storing the results at each level using a specified embeddings object.

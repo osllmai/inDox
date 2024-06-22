@@ -105,7 +105,7 @@ class OpenAi:
         """
         try:
             logging.info("Generating summary for documentation")
-            prompt = "You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n" + documentation
+            prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n {documentation}"
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[

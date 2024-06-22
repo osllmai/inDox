@@ -99,7 +99,7 @@ class IndoxApi:
         """
         try:
             system_prompt = "You are a helpful assistant."
-            user_prompt = "Give a detailed summary of the documentation provided.\n\nDocumentation:\n" + documentation
+            user_prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n {documentation}"
             return self._send_request(system_prompt, user_prompt)
         except Exception as e:
             print(e)
