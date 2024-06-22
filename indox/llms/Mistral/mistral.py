@@ -122,7 +122,7 @@ class Mistral:
         """
         try:
             logging.info("Generating summary for documentation")
-            prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n{documentation}"
+            prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided in maximum 100 token.\n\nDocumentation:\n{documentation}"
             return self.run_mistral(prompt)
         except Exception as e:
             logging.error("Error generating summary: %s", e)

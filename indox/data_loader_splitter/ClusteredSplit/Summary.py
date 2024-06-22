@@ -190,6 +190,7 @@ def summarize(context: str, use_openai: bool, max_len: int, min_len: int):
                 model_name=openai_model_name,
                 max_len=max_len,
                 min_len=min_len,
+                prompt_content=prompt_content
             )
             return summary_model.summarize(context)
         else:
