@@ -2,8 +2,7 @@ from typing import List, Any, Tuple
 import warnings
 import logging
 
-# from .visualization import visualize_contexts_
-# from .utils import clear_log_file
+
 
 warnings.filterwarnings("ignore")
 
@@ -71,54 +70,6 @@ class IndoxRetrievalAugmentation:
             logging.error(f"Unexpected error while storing in the vector store: {e}")
             return None
 
-    # def answer_question(self, qa_model, query: str, db=None, top_k: int = 5, document_relevancy_filter: bool = False,
-    #                     generate_clustered_prompts: bool = False) -> Tuple[str, Tuple[List[str], List[float]]]:
-    #     """
-    #     Answer a query using the QA model, finding the most relevant document chunks in the database.
-    #     """
-    #     if not query:
-    #         logging.error("Query string cannot be empty.")
-    #         raise ValueError("Query string cannot be empty.")
-    #
-    #     vector_database = db if db is not None else self.db
-    #
-    #     if vector_database is None:
-    #         logging.error("Vector store database is not initialized.")
-    #         raise RuntimeError("Vector store database is not initialized.")
-    #
-    #     try:
-    #         logging.info("Retrieving context and scores from the vector database")
-    #         context, scores = vector_database.retrieve(query, top_k=top_k)
-    #         if generate_clustered_prompts:
-    #             from .prompt_augmentation import generate_clustered_prompts
-    #             context = generate_clustered_prompts(context, embeddings=vector_database.embeddings)
-    #
-    #         if not document_relevancy_filter:
-    #             logging.info("Generating answer without document relevancy filter")
-    #             answer = qa_model.answer_question(context=context, question=query)
-    #         else:
-    #             logging.info("Generating answer with document relevancy filter")
-    #             from .prompt_augmentation import RAGGraph
-    #             graph = RAGGraph(qa_model)
-    #             graph_out = graph.run({'question': query, 'documents': context, 'scores': scores})
-    #             answer = qa_model.answer_question(context=graph_out['documents'], question=graph_out['question'])
-    #             context, scores = graph_out['documents'], graph_out['scores']
-    #
-    #         retrieve_context = (context, scores)
-    #         new_entry = {'query': query, 'answer': answer, 'context': context, 'scores': scores}
-    #         self.qa_history.append(new_entry)
-    #         logging.info("Query answered successfully")
-    #         return answer, retrieve_context
-    #
-    #     except ValueError as ve:
-    #         logging.error(f"Invalid input data: {ve}")
-    #         raise ValueError(f"Invalid input data: {ve}")
-    #     except RuntimeError as re:
-    #         logging.error(f"Runtime error while retrieving or answering the query: {re}")
-    #         raise RuntimeError(f"Runtime error while retrieving or answering the query: {re}")
-    #     except Exception as e:
-    #         logging.error(f"Unexpected error while answering the question: {e}")
-    #         raise RuntimeError(f"Unexpected error while answering the question: {e}")
 
     class QuestionAnswer:
         def __init__(self, llm, vector_database, top_k: int = 5, document_relevancy_filter: bool = False,
@@ -168,6 +119,7 @@ class IndoxRetrievalAugmentation:
             except Exception as e:
                 logging.error(f"Error while answering query: {e}")
                 raise
+
 
     class AgenticRag:
         def __init__(self, llm, vector_database, top_k: int = 5):
