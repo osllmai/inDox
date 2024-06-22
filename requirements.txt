@@ -1,15 +1,13 @@
 langchain==0.1.20
 langchain_community==0.0.38
 langchain_core==0.1.52
-langchain_openai==0.1.6
 langgraph==0.0.49
 latex2markdown==0.2.1
 nltk==3.8.1
 numpy==1.26.4
-pandas~=2.1.4
+pandas~=2.0.3
 PyPDF2==3.0.1
 Requests==2.31.0
-sentence_transformers==2.2.2
 setuptools==69.1.1
 tenacity==8.2.3
 tiktoken==0.6.0
