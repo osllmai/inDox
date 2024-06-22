@@ -13,7 +13,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name='Indox',
-    version='0.1.9',
+    version='0.1.10',
     license='MIT',
     packages=find_packages(),
     package_data={'Indox': ['config.yaml']},

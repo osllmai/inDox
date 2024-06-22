@@ -16,6 +16,8 @@ class IndoxRetrievalAugmentation:
         """
         Initialize the IndoxRetrievalAugmentation class
         """
+        from . import __version__
+        self.__version__ = __version__
         self.db = None
         self.qa_history = []
         logging.info("IndoxRetrievalAugmentation initialized")
