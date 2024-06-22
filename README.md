@@ -1,13 +1,10 @@
 <p align="center">
 
-
 <div style="position: relative; width: 100%; text-align: center;">
-    <h1>inDox</h1>
     <a href="https://github.com/osllmai/inDox">
         <img src="https://readme-typing-svg.demolab.com?font=Georgia&size=16&duration=3000&pause=500&multiline=true&width=700&height=100&lines=InDox;Advanced+Search+and+Retrieval+Augmentation+Generative+%7C+Open+Source;Copyright+©️+OSLLAM.ai" alt="Typing SVG" style="margin-top: 20px;"/>
     </a>
 </div>
-
 
 <p align="center">
   <img src="docs/lite-logo 1.png" alt="inDox Lite Logo">
@@ -22,19 +19,13 @@
 [![Discord](https://img.shields.io/discord/1223867382460579961?label=Discord&logo=Discord&style=social)](https://discord.com/invite/ossllmai)
 [![GitHub stars](https://img.shields.io/github/stars/osllmai/inDox?style=social)](https://github.com/osllmai/inDox)
 
-
-
-
 <p align="center">
   <a href="https://osllm.ai">Official Website</a> &bull; <a href="https://github.com/osllmai/inDox/wiki">Documentation</a> &bull; <a href="https://discord.gg/qrCc56ZR">Discord</a>
 </p>
 
-
 <p align="center">
   <b>NEW:</b> <a href="https://docs.google.com/forms/d/1CQXJvxLUqLBSXnjqQmRpOyZqD6nrKubLz2WTcIJ37fU/prefill">Subscribe to our mailing list</a> for updates and news!
 </p>
-
-
 
 **Indox Retrieval Augmentation** is an innovative application designed to streamline information extraction from a wide
 range of document types, including text files, PDF, HTML, Markdown, and LaTeX. Whether structured or unstructured, Indox
@@ -65,7 +56,6 @@ Ensure your system also meets these requirements:
 
 ## Installation
 
-
 ## Getting Started
 
 The following command will install the latest stable inDox
@@ -74,12 +64,17 @@ The following command will install the latest stable inDox
 pip install Indox
 ```
 
+Install using update command to get the latest version of the package
+
+```
+pip install --upgrade Indox
+```
+
 To install the latest development version, you may run
 
 ```
 pip install git+https://github.com/osllmai/inDox@main
 ```
-
 
 Clone the repository and navigate to the directory:
 
@@ -93,7 +88,6 @@ Install the required Python packages:
 ```bash
 pip install -r requirements.txt
 ```
-
 
 ### Preparing Your Data
 
@@ -114,7 +108,7 @@ pip install chromadb
 
 To start, you need to load your API keys from the environment.
 
-``` python
+```python
 import os
 from dotenv import load_dotenv
 
@@ -127,35 +121,47 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 
 Import the necessary classes from the Indox package.
 
-``` python
+```python
 from indox import IndoxRetrievalAugmentation
 ```
 
 ### Importing LLM and Embedding Models
 
-``` python
+```python
 from indox.llms import OpenAi
 ```
 
-``` python
+```python
 from indox.embeddings import OpenAiEmbedding
 ```
+
+## Main Notebooks
+
+| Notebook                                                                                                           | Category         | Description                                                   |
+| :----------------------------------------------------------------------------------------------------------------- | :--------------- | :------------------------------------------------------------ |
+| [clusterSplit.ipynb](https://github.com/osllmai/inDox/blob/main/Demo/clusterSplit.ipynb)                           | chat, embeddings | Basic quickstart with chat and embeddings with Mistral AI API |
+| [demo_1.ipynb](https://github.com/osllmai/inDox/blob/main/Demo/demo_1.ipynb)                                       | chat, embeddings | Basic quickstart with chat and embeddings with Mistral AI API |
+| [demo_2.ipynb](http://nbviewer.jupyter.org/github/osllmai/inDox/blob/main/Demo/demo_2.ipynb)                       | chat, embeddings | Basic quickstart with chat and embeddings with Mistral AI API |
+| [demo_3.ipynb](http://nbviewer.jupyter.org/github/osllmai/inDox/blob/main/Demo/demo_3.ipynb)                       | chat, embeddings | Basic quickstart with chat and embeddings with Mistral AI API |
+| [helper.ipynb](http://nbviewer.jupyter.org/github/osllmai/inDox/blob/main/Demo/helper.ipynb)                       | chat, embeddings | Basic quickstart with chat and embeddings with Mistral AI API |
+| [mistral.ipynb](http://nbviewer.jupyter.org/github/osllmai/inDox/blob/main/Demo/mistral.ipynb)                     | chat, embeddings | Basic quickstart with chat and embeddings with Mistral AI API |
+| [mistralQA.ipynb](http://nbviewer.jupyter.org/github/osllmai/inDox/blob/main/Demo/mistralQA.ipynb)                 | chat, embeddings | Basic quickstart with chat and embeddings with Mistral AI API |
+| [unstructuredSplit.ipynb](http://nbviewer.jupyter.org/github/osllmai/inDox/blob/main/Demo/unstructuredSplit.ipynb) | chat, embeddings | Basic quickstart with chat and embeddings with Mistral AI API |
 
 ### Initialize Indox
 
 Create an instance of IndoxRetrievalAugmentation.
 
-``` python
+```python
 Indox = IndoxRetrievalAugmentation()
 ```
 
-``` python
+```python
 openai_qa = OpenAiQA(api_key=OPENAI_API_KEY,model="gpt-3.5-turbo-0125")
 openai_embeddings = OpenAiEmbedding(model="text-embedding-3-small",openai_api_key=OPENAI_API_KEY)
 ```
 
-
-``` python
+```python
 file_path = "sample.txt"
 ```
 
@@ -164,11 +170,11 @@ documents and split them into chunks by title. This method helps in
 organizing the document into manageable sections for further
 processing.
 
-``` python
+```python
 from indox.data_loader_splitter import UnstructuredLoadAndSplit
 ```
 
-``` python
+```python
 loader_splitter = UnstructuredLoadAndSplit(file_path=file_path)
 docs = loader_splitter.load_and_chunk()
 ```
@@ -181,7 +187,7 @@ efficient retrieval and search operations. By converting text data into
 vector representations and storing them in a vector store, you can
 perform rapid similarity searches and other vector-based operations.
 
-``` python
+```python
 from indox.vector_stores import ChromaVectorStore
 db = ChromaVectorStore(collection_name="sample",embedding=embed_openai)
 Indox.connect_to_vectorstore(db)
@@ -198,11 +204,11 @@ Indox.store_in_vectorstore(docs)
 
 ## Quering
 
-``` python
+```python
 query = "how cinderella reach her happy ending?"
 ```
 
-``` python
+```python
 retriever = indox.QuestionAnswer(vector_database=db,llm=openai_qa,top_k=5)
 retriever.invoke(query)
 ```
@@ -211,10 +217,11 @@ retriever.invoke(query)
     2024-05-14 15:35:01,917 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
     'Cinderella reached her happy ending by enduring mistreatment from her step-family, finding solace and help from the hazel tree and the little white bird, attending the royal festival where the prince recognized her as the true bride, and ultimately fitting into the golden shoe that proved her identity. This led to her marrying the prince and living happily ever after.'
 
-``` python
+```python
 retriever.context
 
 ```
+
     ["from the hazel-bush. Cinderella thanked him, went to her mother's\n\ngrave and planted the branch on it, and wept so much that the tears\n\nfell down on it and watered it. And it grew and became a handsome\n\ntree. Thrice a day cinderella went and sat beneath it, and wept and\n\nprayed, and a little white bird always came on the tree, and if\n\ncinderella expressed a wish, the bird threw down to her what she\n\nhad wished for.\n\nIt happened, however, that the king gave orders for a festival",
      'worked till she was weary she had no bed to go to, but had to sleep\n\nby the hearth in the cinders. And as on that account she always\n\nlooked dusty and dirty, they called her cinderella.\n\nIt happened that the father was once going to the fair, and he\n\nasked his two step-daughters what he should bring back for them.\n\nBeautiful dresses, said one, pearls and jewels, said the second.\n\nAnd you, cinderella, said he, what will you have. Father',
      'face he recognized the beautiful maiden who had danced with\n\nhim and cried, that is the true bride. The step-mother and\n\nthe two sisters were horrified and became pale with rage, he,\n\nhowever, took cinderella on his horse and rode away with her. As\n\nthey passed by the hazel-tree, the two white doves cried -\n\nturn and peep, turn and peep,\n\nno blood is in the shoe,\n\nthe shoe is not too small for her,\n\nthe true bride rides with you,\n\nand when they had cried that, the two came flying down and',
