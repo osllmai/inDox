@@ -2,8 +2,8 @@ from typing import List
 import pandas as pd
 from .Embed import embed_cluster_texts
 from .Summary import summarize
-from .utils import rechunk
-from ..utils.clean import remove_stopwords_chunk
+from indox.data_loader_splitter.ClusteredSplit.cs_utils import rechunk
+from indox.data_loader_splitter.utils.clean import remove_stopwords_chunk
 import numpy as np
 
 

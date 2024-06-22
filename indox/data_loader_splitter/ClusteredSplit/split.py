@@ -1,6 +1,6 @@
 import logging
 from indox.data_loader_splitter.ClusteredSplit.EmbedClusterSummarize import recursive_embed_cluster_summarize
-from indox.data_loader_splitter.ClusteredSplit.utils import get_all_texts, split_text, create_document
+from indox.data_loader_splitter.ClusteredSplit.cs_utils import get_all_texts, split_text, create_document
 from indox.data_loader_splitter.utils.clean import remove_stopwords_chunk
 from typing import Optional, List, Tuple
 
