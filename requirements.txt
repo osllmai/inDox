@@ -1,6 +1,5 @@
 langchain==0.1.20
 langchain_community==0.0.38
-langchain_core==0.1.52
 langchain_mistralai
 langchain_openai
 langgraph==0.0.49

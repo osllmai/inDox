@@ -3,7 +3,7 @@ from indox.data_loader_splitter.UnstructuredLoadAndSplit.loader import create_do
 from unstructured.chunking.title import chunk_by_title
 from langchain_community.vectorstores.utils import filter_complex_metadata
 from typing import List, Tuple, Optional, Any, Dict
-from langchain_core.documents import Document
+from indox.core.document_object import Document
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
@@ -63,7 +63,8 @@ def get_chunks_unstructured(file_path, chunk_size, remove_sword, splitter):
                     from indox.data_loader_splitter.utils.clean import remove_stopwords
                     element.text = remove_stopwords(element.text)
 
-                documents.append(Document(page_content=element.text, metadata=metadata))
+                # documents.append(Document(page_content=element.text, metadata=**metadata))
+                documents.append(Document(page_content=element.text.replace("\n", ""), **metadata))
 
             # Filter and sanitize complex metadata
             documents = filter_complex_metadata(documents=documents)
