@@ -1,5 +1,6 @@
-from langchain_core.documents import Document
+# from langchain_core.documents import Document
 import logging
+from indox.core.document_object import Document
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
