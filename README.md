@@ -95,9 +95,9 @@ workflow, bringing clarity and organization to your data retrieval needs.
 
 
 ## Indox Workflow
-<img src="docs/inDox.png" alt="inDox work flow">
-
-## Installation
+<div style="text-align: center;">
+    <img src="docs/inDox.png" alt="inDox work flow" width="80%">
+</div>
 
 
 ## Getting Started
