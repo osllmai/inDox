@@ -49,19 +49,54 @@ With a focus on adaptability and user-centric design, Indox aims to deliver futu
 features planned for upcoming releases. Join us in exploring how Indox can revolutionize your document processing
 workflow, bringing clarity and organization to your data retrieval needs.
 
-## Dependency Requirements
+## Roadmap
+| 🤖 Model Support          | Implemented | Description                                           |
+|---------------------------|-------------|-------------------------------------------------------|
+| Ollama (e.g. Llama3)      | ❌           | Local Embedding and LLM Models powered by Ollama      |
+| HuggingFace               | ✅           | Local Embedding and LLM Models powered by HuggingFace |
+| Mistral  | ✅           | Embedding and LLM Models by Cohere                    |
+| Google (e.g. Gemini)      | ❌           | Embedding and Generation Models by Google             |
+| OpenAI (e.g. GPT4)        | ✅           | Embedding and Generation Models by OpenAI 
 
-Before running this project, ensure that you have the following installed:
+| Supported Model Via Indox Api | Implemented | Description                                    |
+|-------------------------------|-------------|------------------------------------------------|
+| OpenAi                        | ✅           | Embedding and LLm OpenAi Model From Indox Api  |
+| Mistral                       | ✅           | Embedding and LLm Mistral Model From Indox Api |
+| Anthropic                     | ❌           |     Embedding and LLm Anthropic Model From Indox Api |                                          |
 
-- **Python 3.8+**: Required for running the Python backend.
-- **PostgreSQL**: Needed if you wish to store your data in a PostgreSQL database.
-- **OpenAI API Key**: Necessary if you are using the OpenAI embedding model.
-- **HuggingFace API Key**: Necessary if you are using the HuggingFace llms.
+| 📁 Loader and Splitter  | Implemented | Description                                      |
+|--------------------------------| ----------- |--------------------------------------------------|
+| Simple PDF                     | ✅          | Import PDF                                       |
+| UnstructuredIO                 | ✅          | Import Data through Unstructured                 |
+|Clustered Load And Split|✅| Load pdf and texts. add a extra clustering layer |
 
-Ensure your system also meets these requirements:
+| ✨ RAG Features        | Implemented | Description                                                           |
+|-----------------------|-------------|-----------------------------------------------------------------------|
+| Hybrid Search         | ❌           | Semantic Search combined with Keyword Search                          |
+| Semantic Caching      | ✅           | Results saved and retrieved based on semantic meaning                 |
+| Clustered Prompt      | ✅           | Retrieve smaller chunks and do clustering and summarization           |
+| Agentic Rag           | ✅  | Generate more reliabale answer, rank context and web search if needed |
+| Advanced Querying     | ❌  | Task Delegation Based on LLM Evaluation                               |
+| Reranking             | ✅           | Rerank results based on context for improved results                  |
+| Customizable Metadata | ❌  | Free control over Metadata                                            |
 
-- Access to environmental variables for handling sensitive information like API keys.
-- Suitable hardware capable of supporting intensive computational tasks.
+| 🆒 Cool Bonus         | Implemented | Description                                             |
+| --------------------- | ----------- |---------------------------------------------------------|
+| Docker Support        | ❌         | Indox is deployable via Docker                          |
+| Customizable Frontend | ❌          | Indox's frontend is fully-customizable via the frontend |
+
+
+## Examples
+| ☑️ Examples               | Run in Colab                                                                                                  | 
+|---------------------------|---------------------------------------------------------------------------------------------------------------|
+| Indox Api (OpenAi)        | [Open in Colab](https://colab.research.google.com/github/osllmai/inDox/blob/main/Demo/indox_api_openai.ipynb) |
+| OpenAi                    | [Open in Colab](https://colab.research.google.com/github/osllmai/inDox/blob/main/Demo/indox_api_openai.ipynb)                                                    |
+| Mistral                   | [Open in Colab](https://colab.research.google.com/github/osllmai/inDox/blob/main/Demo/indox_api_openai.ipynb)                                                                      |
+| HuggingFace | [Open in Colab](https://colab.research.google.com/github/osllmai/inDox/blob/main/Demo/indox_api_openai.ipynb)         |                                                       |
+
+
+## Indox Workflow
+<img src="docs/inDox.png" alt="inDox work flow">
 
 ## Installation
 

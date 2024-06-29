@@ -7,7 +7,7 @@ Pay attention to the type of task assigned to you. Is it a feature, a bug, or a 
 - If it's a bug: The branch name should start with the word "issue".
 - If it's a feature: The branch name should start with the word "feature".
 - If it's a refactor: The branch name should start with the word "refactor".
-
+- If it's for documentation : The branch name should start with the word "docs".
 ### Note 2: Creating a Pull Request
 
 For every branch you create, you need to make a pull request at the end of development. However, there are some rules:
