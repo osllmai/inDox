@@ -4,6 +4,7 @@ from dspy import Signature, Module, Prediction,  OpenAI, settings
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
 
+
 class GenerateAnswer(Signature):
     """
     Signature class for generating an answer.
