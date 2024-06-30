@@ -1,90 +1,79 @@
 import logging
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 
+# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s:%(message)s')
 
 
-class OpenAi:
-    def __init__(self, api_key, model):
+class GoogleAi:
+    def __init__(self, api_key, model="gemini-1.5-flash-latest"):
         """
-        Initializes the GPT-3 model with the specified model version and an optional prompt template.
+        Initializes with the specified model version and an optional prompt template.
 
         Args:
-            api_key (str): The API key for OpenAI.
-            model (str): The GPT-3 model version.
+            api_key (str): The API key for Google Ai.
+            model (str): The Gemini model version.
         """
-        from openai import OpenAI
-
+        import google.generativeai as genai
         try:
-            logging.info("Initializing OpenAi with model: %s", model)
-            self.model = model
-            self.client = OpenAI(api_key=api_key)
-            logging.info("OpenAi initialized successfully")
+            logging.info("Initializing GoogleAi with model: %s", model)
+            genai.configure(api_key=api_key)
+            self.model = genai.GenerativeModel(model)
+            logging.info("GoogleAi initialized successfully")
         except Exception as e:
-            logging.error("Error initializing OpenAi: %s", e)
+            logging.error("Error initializing GoogleAi: %s", e)
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-    def _generate_response(self, messages, max_tokens=250, temperature=0):
+    def _generate_response(self, prompt):
         """
-        Generates a response from the OpenAI model.
+        Generates a response using the model.
 
         Args:
-            messages (list): The list of messages to send to the model.
-            max_tokens (int, optional): The maximum number of tokens in the generated response. Defaults to 250.
-            temperature (float, optional): The sampling temperature. Defaults to 0.
+            prompt (str): The prompt to generate a response for.
 
         Returns:
-            str: The generated response.
+            str: The generated response text.
         """
         try:
             logging.info("Generating response")
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens,
-            )
-            result = response.choices[0].message.content.strip()
+            response = self.model.generate_content(contents=prompt)
             logging.info("Response generated successfully")
-            return result
+            return response.text.strip().replace("\n", "")
         except Exception as e:
             logging.error("Error generating response: %s", e)
             raise
 
-    def _format_prompt(self, context, question):
+    def _format_prompt(self, context, question, max_tokens):
         """
         Formats the prompt for generating a response.
 
         Args:
             context (str): The context for the prompt.
             question (str): The question for the prompt.
+            max_tokens (int): The maximum number of tokens.
 
         Returns:
             str: The formatted prompt.
         """
-        return f"Given Context: {context} Give the best full answer amongst the option to question {question}"
+        return f"Given Context: {context} Give the best full answer amongst the option to question {question} in maximum {max_tokens} tokens"
 
-    def answer_question(self, context, question, max_tokens=350):
+    def answer_question(self, context, question, max_tokens=200):
         """
         Public method to generate an answer to a question based on the given context.
 
         Args:
             context (str): The text to summarize.
             question (str): The question to answer.
-            max_tokens (int, optional): The maximum number of tokens in the generated summary. Defaults to 350.
+            max_tokens (int, optional): The maximum number of tokens in the generated answer. Defaults to 200.
 
         Returns:
             str: The generated answer.
         """
         try:
             logging.info("Answering question")
-            prompt = self._format_prompt(context, question)
-            messages = [
-                {"role": "system", "content": "You are Question Answering Portal"},
-                {"role": "user", "content": prompt},
-            ]
-            return self._generate_response(messages, max_tokens=max_tokens, temperature=0)
+            prompt = self._format_prompt(context, question, max_tokens)
+            return self._generate_response(prompt)
         except Exception as e:
             logging.error("Error in answer_question: %s", e)
             return str(e)
@@ -99,14 +88,10 @@ class OpenAi:
         Returns:
             str: The generated summary.
         """
+        prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n {documentation} in maximum 150 tokens"
         try:
             logging.info("Generating summary for documentation")
-            prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n{documentation}"
-            messages = [
-                {"role": "system", "content": "You are a helpful assistant"},
-                {"role": "user", "content": prompt},
-            ]
-            return self._generate_response(messages, max_tokens=150, temperature=0)
+            return self._generate_response(prompt)
         except Exception as e:
             logging.error("Error generating summary: %s", e)
             return str(e)
@@ -130,12 +115,8 @@ class OpenAi:
         """
         for doc in context:
             prompt = f"Here is the retrieved document:\n{doc}\nHere is the user question:\n{question}"
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt},
-            ]
             try:
-                grade = self._generate_response(messages, max_tokens=150, temperature=0).lower()
+                grade = self._generate_response(prompt).lower()
                 if grade == "yes":
                     logging.info("Relevant doc")
                     filtered_docs.append(doc)
@@ -162,13 +143,9 @@ class OpenAi:
             Provide the score with no preamble or explanation.
         """
         prompt = f"Here are the facts:\n{context}\nHere is the answer:\n{answer}"
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt},
-        ]
         try:
             logging.info("Checking hallucination for answer")
-            return self._generate_response(messages, max_tokens=150, temperature=0).lower()
+            return self._generate_response(prompt).lower()
         except Exception as e:
             logging.error("Error checking hallucination: %s", e)
             return str(e)
