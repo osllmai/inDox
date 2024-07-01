@@ -4,9 +4,11 @@
 Indox supports three different types of question-answer (QA) models.
 These models are:
 
-1.  **OpenAI QA Model**
-2.  **Mistral QA Model**
-3.  **OpenAI QA Model with Chain of Thought from the dspy Framework**
+1.  **OpenAI Model**
+2.  **Mistral Model**
+3.  **HuggingFace Models**
+3.  **GoogleAi Models**
+
 
 ## Initial Setup
 
@@ -78,6 +80,35 @@ retriever = indox.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5)
 retriever.invoke(query)
 ```
 
+## Using GoogleAi Model
+
+First install the Hugging Face Python package:
+```python
+pip install google-generativeai
+```
+
+To use the GoogleAi model, follow these steps:
+
+1.  Import necessary libraries and load environment variables:
+
+``` python
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+```
+
+1.  Import Indox modules and set the Mistral model:
+
+``` python
+from indox.llms import GoogleAi
+
+mistral_qa = GoogleAi(api_key=GOOGLE_API_KEY, model="gemini-1.5-flash-latest")
+retriever = indox.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5)
+retriever.invoke(query)
+```
 
 ### Future Plans
 
