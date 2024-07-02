@@ -1,8 +1,6 @@
-
-
 import logging
 from typing import Optional, List, Tuple
-from indox.core.document_object import Document
+from indox.core import Document
 from indox.data_loader_splitter.SimpleLoadAndSplit.loader import create_document
 
 import PyPDF2
