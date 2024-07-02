@@ -92,7 +92,7 @@ workflow, bringing clarity and organization to your data retrieval needs.
 | Indox Api (OpenAi)             | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/indox_api_openai.ipynb)     |
 | Mistral (Using Unstructured)   | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/mistral_unstructured.ipynb) |
 | OpenAi (Using Clustered Split) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/openai_clusterSplit.ipynb)  |
-| HuggingFace Models(Mistral)    | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/hf_mistral_SimpleReader.ipynb)   |
+| HuggingFace Models(Mistral)    | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/hf_mistral_SimpleReader.ipynb)   |
 
 
 ## Indox Workflow
