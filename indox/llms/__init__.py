@@ -4,3 +4,4 @@ from .OpenAi import OpenAi
 from .IndoxApi import IndoxApi
 from .HuggingFace import HuggingFaceModel
 from .GoogleAi import GoogleAi
+from .Ollama import Ollama

@@ -1,13 +1,12 @@
 # ClusteredSplit
 
-
 The `ClusteredSplit` function creates leaf chunks from the text and adds
 extra clustered chunks to these leaf chunks. The clustering continues
 until no new clusters are available, growing like a tree: starting from
 leaf chunks, then clustering between the last clustered chunks, and so
 on.
 
-``` python
+```python
 def __init__(self, file_path: str, embeddings, re_chunk: bool = False, remove_sword: bool = False,
              chunk_size: Optional[int] = 100, overlap: Optional[int] = 0, threshold: float = 0.1, dim: int = 10,
              use_openai_summary: bool = False, max_len_summary: int = 100, min_len_summary: int = 30)
@@ -33,7 +32,7 @@ To use the ClusteredSplit function, follow the steps below:
 
 Import necessary libraries and load environment variables:
 
-``` python
+```python
 import os
 from dotenv import load_dotenv
 
@@ -43,7 +42,7 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 
 Initialize Indox and QA models:
 
-``` python
+```python
 from indox import IndoxRetrievalAugmentation
 Indox = IndoxRetrievalAugmentation()
 
@@ -53,7 +52,7 @@ openai_qa = OpenAiQA(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo-0125")
 
 Perform the clustered split on the text file or PDF file:
 
-``` python
+```python
 from indox.data_loader_splitter import ClusteredSplit
 
 file_path = "path/to/your/file.txt"  # Specify the file path
@@ -66,12 +65,12 @@ docs = loader_splitter.load_and_chunk()
 Here’s a complete example of using the ClusteredSplit function in a
 Jupyter notebook:
 
-``` python
+```python
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
-OPENAI_API_KEY = os.environ['OPENAI_API_KEY'] 
+OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 
 from indox import IndoxRetrievalAugmentation
 Indox = IndoxRetrievalAugmentation()
