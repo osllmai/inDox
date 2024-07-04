@@ -3,7 +3,7 @@ from indox.data_loader_splitter.UnstructuredLoadAndSplit.loader import create_do
 from unstructured.chunking.title import chunk_by_title
 from langchain_community.vectorstores.utils import filter_complex_metadata
 from typing import List, Tuple, Optional, Any, Dict
-from indox.core.document_object import Document
+from indox.core import Document
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
