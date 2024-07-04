@@ -190,6 +190,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <a href="./data_loader_and_splitter/unstructured_load_and_split.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">UnstructuredLoadAndSplit</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_loader_and_splitter/simple_load_split.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">SimpleLoadAndSplit</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -256,8 +261,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#initial-setup" id="toc-initial-setup" class="nav-link active" data-scroll-target="#initial-setup">Initial Setup</a></li>
   <li><a href="#using-openai-model" id="toc-using-openai-model" class="nav-link" data-scroll-target="#using-openai-model">Using OpenAI Model</a></li>
   <li><a href="#using-mistral-model" id="toc-using-mistral-model" class="nav-link" data-scroll-target="#using-mistral-model">Using Mistral Model</a></li>
+  <li><a href="#using-googleai-model" id="toc-using-googleai-model" class="nav-link" data-scroll-target="#using-googleai-model">Using GoogleAi Model</a></li>
   </ul>
-<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/edit/main/llms.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/edit/main/llms.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -283,9 +289,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p>Indox supports three different types of question-answer (QA) models. These models are:</p>
 <ol type="1">
-<li><strong>OpenAI QA Model</strong></li>
-<li><strong>Mistral QA Model</strong></li>
-<li><strong>OpenAI QA Model with Chain of Thought from the dspy Framework</strong></li>
+<li><strong>OpenAI Model</strong></li>
+<li><strong>Mistral Model</strong></li>
+<li><strong>HuggingFace Models</strong></li>
+<li><strong>GoogleAi Models</strong></li>
 </ol>
 <section id="initial-setup" class="level2">
 <h2 class="anchored" data-anchor-id="initial-setup">Initial Setup</h2>
@@ -337,6 +344,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>mistral_qa <span class="op">=</span> Mistral(api_key<span class="op">=</span>MISTRAL_API_KEY, model<span class="op">=</span><span class="st">"mistralai/Mistral-7B-Instruct-v0.2"</span>)</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>retriever <span class="op">=</span> indox.QuestionAnswer(vector_database<span class="op">=</span>db,llm<span class="op">=</span>mistral_qa,top_k<span class="op">=</span><span class="dv">5</span>)</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>retriever.invoke(query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="using-googleai-model" class="level2">
+<h2 class="anchored" data-anchor-id="using-googleai-model">Using GoogleAi Model</h2>
+<p>First install the Hugging Face Python package:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pip install google<span class="op">-</span>generativeai</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To use the GoogleAi model, follow these steps:</p>
+<ol type="1">
+<li>Import necessary libraries and load environment variables:</li>
+</ol>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>GOOGLE_API_KEY <span class="op">=</span> os.getenv(<span class="st">'GOOGLE_API_KEY'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol type="1">
+<li>Import Indox modules and set the Mistral model:</li>
+</ol>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.llms <span class="im">import</span> GoogleAi</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>mistral_qa <span class="op">=</span> GoogleAi(api_key<span class="op">=</span>GOOGLE_API_KEY, model<span class="op">=</span><span class="st">"gemini-1.5-flash-latest"</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>retriever <span class="op">=</span> indox.QuestionAnswer(vector_database<span class="op">=</span>db,llm<span class="op">=</span>mistral_qa,top_k<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>retriever.invoke(query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <section id="future-plans" class="level3">
 <h3 class="anchored" data-anchor-id="future-plans">Future Plans</h3>
 <p>We are committed to continuously improving Indox and will be adding support for more QA models in the future.</p>
@@ -775,7 +805,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/edit/main/llms.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/edit/main/llms.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>

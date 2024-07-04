@@ -18,25 +18,26 @@ book:
   repo-branch: main
 
   chapters:
-    - index.qmd
+    - index.md
 
-    - quick_start.qmd
+    - quick_start.md
 
     - part: "Data Loader And Splitter"
       chapters:
-        - data_loader_and_splitter/clustered_split.qmd
-        - data_loader_and_splitter/unstructured_load_and_split.qmd
+        - data_loader_and_splitter/clustered_split.md
+        - data_loader_and_splitter/unstructured_load_and_split.md
+        - data_loader_and_splitter/simple_load_split.md
 
-    - embedding_models.qmd
-    - llms.qmd
-    - vector_store.qmd
+    - embedding_models.md
+    - llms.md
+    - vector_store.md
     - evaluation.ipynb
-    - agenticRag.qmd
+    - agenticRag.md
     - part: "Examples"
       chapters:
-        - examples/clusterSplit.qmd
-        - examples/unstructuredSplit.qmd
-        - examples/mistral.qmd
+        - examples/clusterSplit.md
+        - examples/unstructuredSplit.md
+        - examples/mistral.md
 
 format:
   html:

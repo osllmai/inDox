@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Indox - Unstructured Load And Split</title>
+<title>Indox - SimpleLoadAndSplit</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,8 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../examples/mistral.html" rel="next">
-<link href="../examples/clusterSplit.html" rel="prev">
+<link href="../embedding_models.html" rel="next">
+<link href="../data_loader_and_splitter/unstructured_load_and_split.html" rel="prev">
 <link href="../logo.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -116,7 +116,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../examples/clusterSplit.html">Examples</a></li><li class="breadcrumb-item"><a href="../examples/unstructuredSplit.html"><span class="chapter-title">Unstructured Load And Split</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../data_loader_and_splitter/clustered_split.html">Data Loader And Splitter</a></li><li class="breadcrumb-item"><a href="../data_loader_and_splitter/simple_load_split.html"><span class="chapter-title">SimpleLoadAndSplit</span></a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -192,7 +192,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../data_loader_and_splitter/simple_load_split.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">SimpleLoadAndSplit</span></a>
+  <a href="../data_loader_and_splitter/simple_load_split.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">SimpleLoadAndSplit</span></a>
   </div>
 </li>
       </ul>
@@ -238,7 +238,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../examples/unstructuredSplit.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Unstructured Load And Split</span></a>
+  <a href="../examples/unstructuredSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Unstructured Load And Split</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -258,16 +258,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#initial-setup" id="toc-initial-setup" class="nav-link active" data-scroll-target="#initial-setup">Initial Setup</a></li>
+  <li><a href="#usage" id="toc-usage" class="nav-link active" data-scroll-target="#usage">Usage</a></li>
+  <li><a href="#example-code" id="toc-example-code" class="nav-link" data-scroll-target="#example-code">Example Code</a></li>
   </ul>
-<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/edit/main/examples/unstructuredSplit.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/edit/main/data_loader_and_splitter/simple_load_split.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../examples/clusterSplit.html">Examples</a></li><li class="breadcrumb-item"><a href="../examples/unstructuredSplit.html"><span class="chapter-title">Unstructured Load And Split</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../data_loader_and_splitter/clustered_split.html">Data Loader And Splitter</a></li><li class="breadcrumb-item"><a href="../data_loader_and_splitter/simple_load_split.html"><span class="chapter-title">SimpleLoadAndSplit</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">Unstructured Load And Split</span></h1>
+<h1 class="title"><span class="chapter-title">SimpleLoadAndSplit</span></h1>
 </div>
 
 
@@ -284,73 +285,62 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>OPENAI_API_KEY <span class="op">=</span> os.getenv(<span class="st">"OPENAI_API_KEY"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<section id="initial-setup" class="level2">
-<h2 class="anchored" data-anchor-id="initial-setup">Initial Setup</h2>
-<p>The following imports are essential for setting up the Indox application. These imports include the main Indox retrieval augmentation module, question-answering models, embeddings, and data loader splitter.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox <span class="im">import</span> IndoxRetrievalAugmentation</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>indox <span class="op">=</span> IndoxRetrievalAugmentation()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<section id="generating-response-using-openais-language-models" class="level3">
-<h3 class="anchored" data-anchor-id="generating-response-using-openais-language-models">Generating response using OpenAI’s language models</h3>
-<p>OpenAIQA class is used to handle question-answering task using OpenAI’s language models. This instance creates OpenAiEmbedding class to specifying embedding model. Here ChromaVectorStore handles the storage and retrieval of vector embeddings by specifying a collection name and sets up a vector store where text embeddings can be stored and queried.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.llms <span class="im">import</span> OpenAiQA</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.embeddings <span class="im">import</span> OpenAiEmbedding</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>openai_qa <span class="op">=</span> OpenAiQA(api_key<span class="op">=</span>OPENAI_API_KEY, model<span class="op">=</span><span class="st">"gpt-3.5-turbo-0125"</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>embed_openai <span class="op">=</span> OpenAiEmbedding(api_key<span class="op">=</span>OPENAI_API_KEY,model<span class="op">=</span><span class="st">"text-embedding-3-small"</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.vector_stores <span class="im">import</span> ChromaVectorStore</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> ChromaVectorStore(collection_name<span class="op">=</span><span class="st">"sample"</span>,embedding<span class="op">=</span>embed_openai)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>indox.connect_to_vectorstore(vectorstore_database<span class="op">=</span>db)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x1d0407cb440&gt;</code></pre>
+<p>The <code>SimpleLoadAndSplit</code> function accept both PDF and text files and create chunks based on a semantic text splitter</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, file_path: <span class="bu">str</span>, remove_sword: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>             max_chunk_size: Optional[<span class="bu">int</span>] <span class="op">=</span> <span class="dv">500</span>, )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="hyperparameters" class="level3">
+<h3 class="anchored" data-anchor-id="hyperparameters">Hyperparameters</h3>
+<ul>
+<li>file_path (str): The path to the plain text file or PDF file to be processed.</li>
+<li>remove_sword (bool): If True, remove stopwords during the chunking process. Default is False.</li>
+<li>max_chunk_size (Optional[int]): The maximum size of each chunk in characters. Default is 500.</li>
+</ul>
 </section>
-<section id="load-and-preprocess-data" class="level3">
-<h3 class="anchored" data-anchor-id="load-and-preprocess-data">load and preprocess data</h3>
-<p>This part of code demonstrates how to load and preprocess text data from a file, split it into chunks, and store these chunks in the vector store that was set up previously.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> <span class="st">"sample.txt"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.data_loader_splitter <span class="im">import</span> UnstructuredLoadAndSplit</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>loader_splitter <span class="op">=</span> UnstructuredLoadAndSplit(file_path<span class="op">=</span>file_path,max_chunk_size<span class="op">=</span><span class="dv">400</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>docs <span class="op">=</span> loader_splitter.load_and_chunk()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>indox.store_in_vectorstore(docs<span class="op">=</span>docs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x1d0407cb440&gt;</code></pre>
+<section id="usage" class="level2">
+<h2 class="anchored" data-anchor-id="usage">Usage</h2>
+<p>To use the SimpleLoadAndSplit function, follow the steps below:</p>
+<p>Import necessary libraries and load environment variables:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>OPENAI_API_KEY <span class="op">=</span> os.environ[<span class="st">'OPENAI_API_KEY'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Initialize Indox and QA models:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox <span class="im">import</span> IndoxRetrievalAugmentation</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>Indox <span class="op">=</span> IndoxRetrievalAugmentation()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Indox.llms <span class="im">import</span> OpenAiQA</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>openai_qa <span class="op">=</span> OpenAiQA(api_key<span class="op">=</span>OPENAI_API_KEY, model<span class="op">=</span><span class="st">"gpt-3.5-turbo-0125"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Perform the clustered split on the text file or PDF file:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.data_loader_splitter <span class="im">import</span> SimpleLoadAndSplit</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> <span class="st">"path/to/your/file.txt"</span>  <span class="co"># Specify the file path</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>loader_splitter <span class="op">=</span> SimpleLoadAndSplit(file_path<span class="op">=</span>file_path)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>docs <span class="op">=</span> loader_splitter.load_and_chunk()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="retrieve-relevant-information-and-generate-an-answer" class="level3">
-<h3 class="anchored" data-anchor-id="retrieve-relevant-information-and-generate-an-answer">Retrieve relevant information and generate an answer</h3>
-<p>The main purpose of these lines is to perform a query on the vector store to retrieve the most relevant information (top_k=5) and generate an answer using the language model.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"How Cinderella reach her happy ending?"</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>retriever <span class="op">=</span> indox.QuestionAnswer(vector_database<span class="op">=</span>db, llm<span class="op">=</span>openai_qa, top_k<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>invoke(query) method sends the query to the retriever, which searches the vector store for relevant text chunks and uses the language model to generate a response based on the retrieved information. Context property retrieves the context or the detailed information that the retriever used to generate the answer to the query. It provides insight into how the query was answered by showing the relevant text chunks and any additional information used.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>retriever.invoke(query)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>retriever.context</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>["to appear among the number, they were delighted, called cinderella\n\nand said, comb our hair for us, brush our shoes and fasten our\n\nbuckles, for we are going to the wedding at the king's palace.\n\nCinderella obeyed, but wept, because she too would have liked to\n\ngo with them to the dance, and begged her step-mother to allow\n\nher to do so. You go, cinderella, said she, covered in dust and",
- "which they had wished for, and to cinderella he gave the branch\n\nfrom the hazel-bush. Cinderella thanked him, went to her mother's\n\ngrave and planted the branch on it, and wept so much that the tears\n\nfell down on it and watered it. And it grew and became a handsome\n\ntree. Thrice a day cinderella went and sat beneath it, and wept and\n\nprayed, and a little white bird always came on the tree, and if",
- 'by the hearth in the cinders. And as on that account she always\n\nlooked dusty and dirty, they called her cinderella.\n\nIt happened that the father was once going to the fair, and he\n\nasked his two step-daughters what he should bring back for them.\n\nBeautiful dresses, said one, pearls and jewels, said the second.\n\nAnd you, cinderella, said he, what will you have. Father',
- "Then the maiden was delighted, and believed that she might now go\n\nwith them to the wedding. But the step-mother said, all this will\n\nnot help. You cannot go with us, for you have no clothes and can\n\nnot dance. We should be ashamed of you. On this she turned her\n\nback on cinderella, and hurried away with her two proud daughters.\n\nAs no one was now at home, cinderella went to her mother's",
- "danced with her only, and if any one invited her to dance, he said\n\nthis is my partner.\n\nWhen evening came, cinderella wished to leave, and the king's\n\nson was anxious to go with her, but she escaped from him so quickly\n\nthat he could not follow her. The king's son, however, had\n\nemployed a ruse, and had caused the whole staircase to be smeared"]</code></pre>
-</section>
-<section id="with-agenticrag" class="level3">
-<h3 class="anchored" data-anchor-id="with-agenticrag">With AgenticRag</h3>
-<p>AgenticRag stands for Agentic Retrieval-Augmented Generation. This concept combines retrieval-based methods and generation-based methods in natural language processing (NLP). The key idea is to enhance the generative capabilities of a language model by incorporating relevant information retrieved from a database or a vector store. AgenticRag is designed to provide more contextually rich and accurate responses by utilizing external knowledge sources. It retrieves relevant pieces of information (chunks) from a vector store based on a query and then uses a language model to generate a comprehensive response that incorporates this retrieved information.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>agent <span class="op">=</span> indox.AgenticRag(llm<span class="op">=</span>openai_qa,vector_database<span class="op">=</span>db,top_k<span class="op">=</span><span class="dv">5</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>agent.run(query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>Not Relevant doc
-Relevant doc
-Not Relevant doc
-Not Relevant doc
-Not Relevant doc
+<section id="example-code" class="level2">
+<h2 class="anchored" data-anchor-id="example-code">Example Code</h2>
+<p>Here’s a complete example of using the ClusteredSplit function in a Jupyter notebook:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>OPENAI_API_KEY <span class="op">=</span> os.environ[<span class="st">'OPENAI_API_KEY'</span>]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox <span class="im">import</span> IndoxRetrievalAugmentation</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>Indox <span class="op">=</span> IndoxRetrievalAugmentation()</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.llms <span class="im">import</span> OpenAiQA</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>openai_qa <span class="op">=</span> OpenAiQA(api_key<span class="op">=</span>OPENAI_API_KEY, model<span class="op">=</span><span class="st">"gpt-3.5-turbo-0125"</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.data_loader_splitter <span class="im">import</span> ClusteredSplit</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> <span class="st">"path/to/your/file.txt"</span>  <span class="co"># Specify the file path</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>loader_splitter <span class="op">=</span> ClusteredSplit(file_path<span class="op">=</span>file_path)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>docs <span class="op">=</span> loader_splitter.load_and_chunk()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This will process the specified file and return all chunks with the extra clustered layers, forming a hierarchical structure of text chunks.</p>
 
 
-
-
-
-"Cinderella reached her happy ending by receiving a branch from the hazel-bush from the prince, planting it on her mother's grave, and weeping and praying beneath it. The branch grew into a handsome tree, and a little white bird always came to the tree, bringing her comfort and assistance."</code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -765,13 +755,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../examples/clusterSplit.html" class="pagination-link" aria-label="Load And Split With Clustering">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Load And Split With Clustering</span></span>
+      <a href="../data_loader_and_splitter/unstructured_load_and_split.html" class="pagination-link" aria-label="UnstructuredLoadAndSplit">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">UnstructuredLoadAndSplit</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../examples/mistral.html" class="pagination-link" aria-label="Mistral As Question Answer Model">
-        <span class="nav-page-text"><span class="chapter-title">Mistral As Question Answer Model</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../embedding_models.html" class="pagination-link" aria-label="Embedding Models">
+        <span class="nav-page-text"><span class="chapter-title">Embedding Models</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -783,7 +773,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/edit/main/examples/unstructuredSplit.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/edit/main/data_loader_and_splitter/simple_load_split.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
