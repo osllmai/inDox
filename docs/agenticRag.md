@@ -1,3 +1,6 @@
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/openai_agenticrag.ipynb) 
+
 # AgenticRag
 
 ## Overview
@@ -37,5 +40,5 @@ agent = Indox.AgenticRag(llm=llm, vector_database=db, top_k=5)
 answer = agent.run(query)
 ```
 <p align="center">
-  <img src="docs/AgenticRag.png" alt="inDox AgenticRag">
+  <img src="AgenticRag.png" alt="inDox AgenticRag">
 </p>

@@ -233,17 +233,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./examples/clusterSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Load And Split With Clustering</span></a>
+  <a href="./examples/googleai.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Retrieval Augmentation Using GoogleAi</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./examples/unstructuredSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Unstructured Load And Split</span></a>
+  <a href="./examples/hf_mistral_SimpleReader.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">How to use Indox Retrieval Augmentation for PDF files</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./examples/mistral.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mistral As Question Answer Model</span></a>
+  <a href="./examples/mistral_unstructured.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mistral As Question Answer Model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples/openai_clusterSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Load And Split With Clustering</span></a>
   </div>
 </li>
       </ul>
@@ -259,7 +264,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul class="collapse">
   <li><a href="#using-openai-embedding-model" id="toc-using-openai-embedding-model" class="nav-link active" data-scroll-target="#using-openai-embedding-model">Using OpenAI Embedding Model</a></li>
+  <li><a href="#using-indoxapi-embedding-model" id="toc-using-indoxapi-embedding-model" class="nav-link" data-scroll-target="#using-indoxapi-embedding-model">Using IndoxApi Embedding Model</a></li>
   <li><a href="#using-mistral-embedding-model" id="toc-using-mistral-embedding-model" class="nav-link" data-scroll-target="#using-mistral-embedding-model">Using Mistral Embedding Model</a></li>
+  <li><a href="#using-huggingface-embedding-model" id="toc-using-huggingface-embedding-model" class="nav-link" data-scroll-target="#using-huggingface-embedding-model">Using HuggingFace Embedding Model</a></li>
   </ul>
 <div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/edit/main/embedding_models.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
@@ -289,6 +296,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li><strong>OpenAI Embedding Model</strong></li>
 <li><strong>Hugging Face Embedding Models</strong></li>
+<li><strong>IndoxApi Embedding Models</strong></li>
+<li><strong>Mistral Embedding Models</strong></li>
 </ol>
 <section id="using-openai-embedding-model" class="level2">
 <h2 class="anchored" data-anchor-id="using-openai-embedding-model">Using OpenAI Embedding Model</h2>
@@ -304,7 +313,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>OPENAI_API_KEY <span class="op">=</span> os.environ[<span class="st">'OPENAI_API_KEY'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ol type="1">
+<ol start="2" type="1">
 <li>Import Indox modules and set the OpenAI embedding model:</li>
 </ol>
 <div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox <span class="im">import</span> IndoxRetrievalAugmentation</span>
@@ -313,26 +322,65 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>Indox <span class="op">=</span> IndoxRetrievalAugmentation()</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>openai_embeddings <span class="op">=</span> OpenAiEmbedding(model<span class="op">=</span><span class="st">"text-embedding-3-small"</span>, openai_api_key<span class="op">=</span>OPENAI_API_KEY)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
+<section id="using-indoxapi-embedding-model" class="level2">
+<h2 class="anchored" data-anchor-id="using-indoxapi-embedding-model">Using IndoxApi Embedding Model</h2>
+<p>To use the IndoxApi embedding model, follow these steps:</p>
+<ol type="1">
+<li>Import necessary libraries and load environment variables:</li>
+</ol>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>INDOX_API_KEY <span class="op">=</span> os.environ[<span class="st">'INDOX_API_KEY'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol start="2" type="1">
+<li>Import Indox modules and set the OpenAI embedding model:</li>
+</ol>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox <span class="im">import</span> IndoxRetrievalAugmentation</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.embeddings <span class="im">import</span> IndoxApiEmbedding</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>Indox <span class="op">=</span> IndoxRetrievalAugmentation()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>embed_openai_indox <span class="op">=</span> IndoxApiEmbedding(api_key<span class="op">=</span>INDOX_API_KEY, model<span class="op">=</span><span class="st">"text-embedding-3-small"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
 <section id="using-mistral-embedding-model" class="level2">
 <h2 class="anchored" data-anchor-id="using-mistral-embedding-model">Using Mistral Embedding Model</h2>
 <p>To use the Mistral embedding model, follow these steps:</p>
 <p>First install the Mistral Python package:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pip install mistralai</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>pip install mistralai</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ol type="1">
 <li>Load environment variables:</li>
 </ol>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>MISTRAL_API_KEY <span class="op">=</span> os.environ[<span class="st">'MISTRAL_API_KEY'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>MISTRAL_API_KEY <span class="op">=</span> os.environ[<span class="st">'MISTRAL_API_KEY'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ol start="2" type="1">
 <li>Import Indox modules and set the Mistral embedding model:</li>
 </ol>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.embeddings <span class="im">import</span> MistralEmbedding</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>mistral_embedding <span class="op">=</span> MistralEmbedding(api_key<span class="op">=</span>MISTRAL_API_KEY)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.embeddings <span class="im">import</span> MistralEmbedding</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>mistral_embedding <span class="op">=</span> MistralEmbedding(api_key<span class="op">=</span>MISTRAL_API_KEY)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="using-huggingface-embedding-model" class="level2">
+<h2 class="anchored" data-anchor-id="using-huggingface-embedding-model">Using HuggingFace Embedding Model</h2>
+<p>To use the Mistral embedding model, follow these steps:</p>
+<ol type="1">
+<li>Load environment variables:</li>
+</ol>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>HUGGINGFACE_API_KEY <span class="op">=</span> os.getenv(<span class="st">'HUGGINGFACE_API_KEY'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol start="2" type="1">
+<li>Import Indox modules and set the Mistral embedding model:</li>
+</ol>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.embeddings <span class="im">import</span> HuggingFaceEmbedding</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>embed <span class="op">=</span> HuggingFaceEmbedding(model<span class="op">=</span><span class="st">"multi-qa-mpnet-base-cos-v1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <section id="future-plans" class="level3">
 <h3 class="anchored" data-anchor-id="future-plans">Future Plans</h3>
 <p>We are committed to continuously improving Indox and will be adding support for more embedding models in the future.</p>
