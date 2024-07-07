@@ -124,23 +124,25 @@ class IndoxRetrievalAugmentation:
 
 
     class AgenticRag:
-        def __init__(self, llm, vector_database, top_k: int = 5):
+        def __init__(self, llm, vector_database=None , top_k: int = 5):
             self.llm = llm
             self.top_k = top_k
             self.vector_database = vector_database
             self.qa_history = []
             self.context = []
-            if self.vector_database is None:
-                logging.error("Vector store database is not initialized.")
-                raise RuntimeError("Vector store database is not initialized.")
+            # if self.vector_database is None:
+            #     logging.error("Vector store database is not initialized.")
+            #     raise RuntimeError("Vector store database is not initialized.")
 
         def run(self, query):
+            grade_context = []
             if not query:
                 logging.error("Query string cannot be empty.")
                 raise ValueError("Query string cannot be empty.")
-            context, scores = self.vector_database.retrieve(query, top_k=self.top_k)
-
-            grade_context = self.llm.grade_docs(context=context, question=query)
+            else:
+                if self.vector_database is not None:
+                    context, scores = self.vector_database.retrieve(query, top_k=self.top_k)
+                    grade_context = self.llm.grade_docs(context=context, question=query)
             # Any relevant doc? if yes -> next step(check for hallucination) , if no -> web search
             if len(grade_context) < 1:  # it means not relevant doc
                 # go for web search
