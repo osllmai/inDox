@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.554">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Indox - How to use Indox Retrieval Augmentation for PDF files</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../examples/mistral_unstructured.html" rel="next">
+<link href="../examples/googleai.html" rel="prev">
+<link href="../logo.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../examples/googleai.html">Examples</a></li><li class="breadcrumb-item"><a href="../examples/hf_mistral_SimpleReader.html"><span class="chapter-title">How to use Indox Retrieval Augmentation for PDF files</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Indox</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Download" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download"><i class="bi bi-download"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Indox.pdf">
+              <i class="bi bi-bi-file-pdf pe-1"></i>
+            Download PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Indox.epub">
+              <i class="bi bi-bi-journal pe-1"></i>
+            Download ePub
+            </a>
+          </li>
+      </ul>
+    </div>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Indox Retrieval Augmentation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../quick_start.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Quick Start</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Data Loader And Splitter</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../data_loader_and_splitter/clustered_split.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ClusteredSplit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../data_loader_and_splitter/unstructured_load_and_split.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">UnstructuredLoadAndSplit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../data_loader_and_splitter/simple_load_split.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">SimpleLoadAndSplit</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../embedding_models.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Embedding Models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../llms.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">LLMs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../vector_store.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Vector Stores</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../evaluation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Evaluation Metrics</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../agenticRag.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">AgenticRag</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Examples</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../examples/googleai.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Retrieval Augmentation Using GoogleAi</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../examples/hf_mistral_SimpleReader.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">How to use Indox Retrieval Augmentation for PDF files</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../examples/mistral_unstructured.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mistral As Question Answer Model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../examples/openai_clusterSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Load And Split With Clustering</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#query-from-rag-system-with-indox" id="toc-query-from-rag-system-with-indox" class="nav-link active" data-scroll-target="#query-from-rag-system-with-indox">Query from RAG System with Indox</a></li>
+  <li><a href="#evaluation" id="toc-evaluation" class="nav-link" data-scroll-target="#evaluation">Evaluation</a></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/edit/main/examples/hf_mistral_SimpleReader.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../examples/googleai.html">Examples</a></li><li class="breadcrumb-item"><a href="../examples/hf_mistral_SimpleReader.html"><span class="chapter-title">How to use Indox Retrieval Augmentation for PDF files</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-title">How to use Indox Retrieval Augmentation for PDF files</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/hf_mistral_SimpleReader.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" class="img-fluid figure-img" alt="Open In Colab"></a></p>
+<figcaption>Open In Colab</figcaption>
+</figure>
+</div>
+<p>In this notebook, we will demonstrate how to handle <code>inDox</code> as system for question answering system with open source models which are available on internet like <code>Mistral</code>. so firstly you should buil environment variables and API keys in Python using the <code>dotenv</code> library.</p>
+<p><strong>Note</strong>: Because we are using <strong>HuggingFace</strong> models you need to define your <code>HUGGINGFACE_API_KEY</code> in <code>.env</code> file. This allows us to keep our API keys and other sensitive information out of our codebase, enhancing security and maintainability. :::</p>
+<p>::: {#4deb2abc71a048be .cell .code execution_count=“8” colab=“{"base_uri":"https://localhost:8080/"}” id=“4deb2abc71a048be” outputId=“7d64d807-ed35-4ea1-fe15-fe5479ca796d”}</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install indox</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install chromadb</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install semantic_text_splitter</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install sentence<span class="op">-</span>transformers</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="2d6948cfe8ce7b88" class="cell code" data-execution_count="2" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" data-outputid="e4e00368-40e9-46e3-b200-14b8bbc229f0">
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>wget https:<span class="op">//</span>raw.githubusercontent.com<span class="op">/</span>osllmai<span class="op">/</span>inDox<span class="op">/</span>master<span class="op">/</span>Demo<span class="op">/</span>sample.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output stream stdout">
+<pre><code>--2024-07-02 09:10:03--  https://raw.githubusercontent.com/osllmai/inDox/master/Demo/sample.txt
+Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.109.133, 185.199.108.133, 185.199.110.133, ...
+Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.109.133|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 14025 (14K) [text/plain]
+Saving to: ‘sample.txt’</code></pre>
+<p>sample.txt 0%[ ] 0 –.-KB/s<br>
+sample.txt 100%[===================&gt;] 13.70K –.-KB/s in 0s</p>
+<pre><code>2024-07-02 09:10:03 (72.4 MB/s) - ‘sample.txt’ saved [14025/14025]</code></pre>
+</div>
+</div>
+<div id="initial_id" class="cell code" data-execution_count="3" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:44:38.098709Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:44:38.086571Z&quot;}" data-collapsed="true">
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>HUGGINGFACE_API_KEY <span class="op">=</span> os.getenv(<span class="st">'HUGGINGFACE_API_KEY'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="d97666fa4a136fa4" class="cell markdown">
+<section id="import-essential-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="import-essential-libraries">Import Essential Libraries</h3>
+<p>Then, we import essential libraries for our <code>Indox</code> question answering system:</p>
+<ul>
+<li><code>IndoxRetrievalAugmentation</code>: Enhances the retrieval process for better QA performance.</li>
+<li><code>MistralQA</code>: A powerful QA model from Indox, built on top of the Hugging Face model.</li>
+<li><code>HuggingFaceEmbedding</code>: Utilizes Hugging Face embeddings for improved semantic understanding.</li>
+<li><code>SimpleLoadAndSplit</code>: A utility for loading and splitting PDF files.</li>
+</ul>
+</section>
+</div>
+<div id="71cea6a5876fa5fe" class="cell code" data-execution_count="6" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:44:47.832652Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:44:38.872557Z&quot;}">
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox <span class="im">import</span> IndoxRetrievalAugmentation</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.llms <span class="im">import</span> HuggingFaceModel</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.embeddings <span class="im">import</span> HuggingFaceEmbedding</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.data_loader_splitter.SimpleLoadAndSplit <span class="im">import</span> SimpleLoadAndSplit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="dfce2b023a435935" class="cell markdown">
+<section id="building-the-indox-system-and-initializing-models" class="level3">
+<h3 class="anchored" data-anchor-id="building-the-indox-system-and-initializing-models">Building the Indox System and Initializing Models</h3>
+<p>Next, we will build our <code>inDox</code> system and initialize the Mistral question answering model along with the embedding model. This setup will allow us to leverage the advanced capabilities of Indox for our question answering tasks.</p>
+</section>
+</div>
+<div id="be7f2eb137ea4f1b" class="cell code" data-execution_count="9" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:44:51.558601Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:44:47.833775Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:369,&quot;referenced_widgets&quot;:[&quot;f5a5036392c9462c903364eab1388cca&quot;,&quot;2c9c482359c74bba8d35bd5a99b0b272&quot;,&quot;fe107afe6cc74673afce75ad1fb61206&quot;,&quot;4aa9bf7557d547f6a39fa93b96a8233d&quot;,&quot;f3c97aebd0ce416f858a4abc8533bc1c&quot;,&quot;a688174866694716a3f833a05761509f&quot;,&quot;f2ef47b784a34c218cb5346d96183da6&quot;,&quot;e7a1b752ee564ed18dafb4928bbad940&quot;,&quot;a0ae506462fd4de9a831f3545cb4682e&quot;,&quot;f33f1beca1f54fdd99a3d1ea7d03a0f1&quot;,&quot;9b8f564b15da453ea811acde3f1b5eaa&quot;,&quot;010ed74be3944660a12891dc607ca1a8&quot;,&quot;6dbe57883b3a422abcc78cdc86faee0e&quot;,&quot;adb60c0a86384134a8b0e9d1fb93dae6&quot;,&quot;d759c9ae84284362ac1c197be51ef8fd&quot;,&quot;823759359e8041a298e51ddeb9e718f8&quot;,&quot;1f098f05988e4336b1e05c7bdf0530d7&quot;,&quot;070514ed43e44b16ad0e5851deacafed&quot;,&quot;b1237265df6b40f3837c4732cafee7fb&quot;,&quot;5297f72091294256bd5f19263873827e&quot;,&quot;3177fadb9d1a43bcba2c077f906b64ff&quot;,&quot;2c724a13f5c041e693bf57d5740b43b2&quot;,&quot;946464dc055e45f9bb9c1ead93247206&quot;,&quot;44e038a01938429da9a44133590f5bfd&quot;,&quot;8c83104d6ef24e5ca7a4838231ffece7&quot;,&quot;b8047170243e429bbe35fcddff4697ce&quot;,&quot;3136aac028444d09a16a3acdb05928b5&quot;,&quot;527bc850f45b42a2a9ae6993d50ecd79&quot;,&quot;7834cb453fd043f38b7e540bc70c90de&quot;,&quot;86c85a928644439a9e6ded6a1ad86ebf&quot;,&quot;ea89fbfff4e943eba0b769edabb9ffd8&quot;,&quot;4b2f7cbd45e14c068d77aad2341b672c&quot;,&quot;08cb878535274af8a7d771dbb71b58e7&quot;,&quot;4112edbd6b044b569660dd38ffa3f27a&quot;,&quot;0af588eacff84cbc997482f0878fa780&quot;,&quot;8b4a84a48fc84cfb82cdfb244c5b4f05&quot;,&quot;6cb894c218e5484ca128ff284f46aeec&quot;,&quot;2302727f502e4cf5a8884d2f8d423183&quot;,&quot;4c6896f5a2224f3090426ccfdf55f5ab&quot;,&quot;e68009bb33394e6198f1109bacae6d67&quot;,&quot;9ce868b2cc944e4b86eb97765acf7745&quot;,&quot;c340eac0ba674bc9bf3736115cf0d7d4&quot;,&quot;c1b7d9b59d184a37abb6e0c4f01f7469&quot;,&quot;3d32d7acbdbc4de0ac73d0fbcd014acd&quot;,&quot;c3dd1b712c324778a91a7c1750323ca2&quot;,&quot;a7c53cf410054ad580f12d7f96fb7586&quot;,&quot;e937971144b9448a80e76cc58224b174&quot;,&quot;e2ff74c989f642d1b3f2d4e3e9043bc2&quot;,&quot;a18a05fde8e146d5a2f8f66b9c5fe1d5&quot;,&quot;ba9140e635c44689a717e6f146b40aa9&quot;,&quot;072dac0b06a8452dbfcdfbc142beeab8&quot;,&quot;98335a7da2b545db8098e2ace1f3ac1b&quot;,&quot;3ce716123194429b9c444e2182d6093a&quot;,&quot;46923b21aab24aba9253cd88e09656b8&quot;,&quot;99ac55283f734f3cbc598e5b5ee228b7&quot;,&quot;b7b98fd3242748a3941ab86879edb1d4&quot;,&quot;a6306fd2f3564bdb88b25c4aee746bd3&quot;,&quot;38c6199398824a4c880ef2e02374942c&quot;,&quot;51198d2b64724ebda6b9ab58419b3cf9&quot;,&quot;1d5ee00b1f334307b665043b88ec78cf&quot;,&quot;33af708692764a40965ff40cc1679ae7&quot;,&quot;9f3ce45cbe9f4db78bc5bee85ef3fbde&quot;,&quot;fcd421736ea640d397175dab615d7131&quot;,&quot;d077450e52b04d9e9a58e34c66459fcb&quot;,&quot;ae47d975cc42451da6ad9f67051c0690&quot;,&quot;e8bd35bd61c64d3f8f4646a9f51cba4b&quot;,&quot;70ca761c554c49788f39ac022a1e0a0c&quot;,&quot;c2d1474fc76040b7a783baac323b72eb&quot;,&quot;260eda9b2c284046b3b13eec5fa3e681&quot;,&quot;15a1950ddec644a0b4dbaf6fbd2d2f2c&quot;,&quot;92592fda49944fd7a71e20cf988e0736&quot;,&quot;01cce2aa951a4efab6b1de0e7c434841&quot;,&quot;463a01c2f5d54f718bc7acb06322b410&quot;,&quot;53fb6a95bd11498d99da873bcbc351ec&quot;,&quot;b91a4d38baff4c7292eda4e41e306a8e&quot;,&quot;762b71dde71740d3b266b30ee9cf7d0c&quot;,&quot;77c48755a5584564b6d69ee6e59742f2&quot;,&quot;3c540818f4fb4c34a3e1bb92d623e356&quot;,&quot;b4d20af60de343c8bd7a559146f33288&quot;,&quot;62a96756539a4c9c8b37a3880cf60856&quot;,&quot;3ed60db66bfd4b7a9b6ea838bbf7cde0&quot;,&quot;b229d81476d04f5a9a8b208ee50932e9&quot;,&quot;9d7db8511d2043368f72994dcddca546&quot;,&quot;585fc10a270144899f32c66f61884c25&quot;,&quot;935e798098c74c0bb7b20a400c72a604&quot;,&quot;a97b422055da4cf0b801e214a9c1d615&quot;,&quot;115c6e6bc812404ead523830594419b0&quot;,&quot;30ef7de6651e4fb19792027e9c5560f4&quot;,&quot;2782e5da9ae14a2286373625261c9ddf&quot;,&quot;cdd792528ab6407b9cb3504114d0b990&quot;,&quot;1c64f40e0bfd4bcba077c0488f87d799&quot;,&quot;985a161dcc784e748f757f7e7b0f4b72&quot;,&quot;c309ce7dc72b4229bebe1c24932f2509&quot;,&quot;671ef87d01514bf19c85827e6a963c03&quot;,&quot;d125bf45f8054f0298ce128ac7c80f6f&quot;,&quot;f28e3776dda74ce5a99a4f44bcad7fc4&quot;,&quot;eb02f73ebda64b05aba04532c70fbfe2&quot;,&quot;11b857b5dfb647eb90b9b3bb75089819&quot;,&quot;fcb60e61fd8046f498aac8ff4bc6ed90&quot;,&quot;8ec1f824a2d6489ba28811b1ebc233db&quot;,&quot;c611f11954d94f2ea08bf3f5e251513b&quot;,&quot;aef9e06b527b4c09a39c92613bda68e2&quot;,&quot;4110c8d535dc4e5db696827274175581&quot;,&quot;458a16a9cb864cfeb67d4fd8caa15b7c&quot;,&quot;549c647ee0144ec1b99264eb7b6c5b5e&quot;,&quot;e410b6dde03e4c9582b14fcf86351eab&quot;,&quot;ea9de2ed992f45a58b3f9774d4a27fe5&quot;,&quot;5c87e1522e8043bab149034a0849118c&quot;,&quot;c2ab2050de7e4c6d95ce0209b7704853&quot;,&quot;1677b83b6f7941288ffea7e26f1839a1&quot;,&quot;5482f2e93f464564957f3260daed3bd2&quot;,&quot;1d97c86d31b34be7ac7590d28858a81f&quot;,&quot;ac4c0e5652de415f9887ff795bded3ac&quot;,&quot;e3f7757502a144158e9b3bb8f0f8cd4c&quot;,&quot;4fa1d4de5e794d38b2f1ef1362bc0056&quot;,&quot;35a7be45599b46a0aecb73ee79b6bef0&quot;,&quot;74f50b06501c4bcc8209b0541eaaad02&quot;,&quot;f04994abe48b44c8ae1d40b2000032b5&quot;,&quot;e6c0b3f713a2412db68aca62bee3124c&quot;,&quot;0a01dec7cd7042e3806fe5db88fe68ae&quot;,&quot;1b367c3e496948909341c2f15a9e146d&quot;]}" data-outputid="f774310a-e877-4983-b8f0-b3c97269f97f">
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>indox <span class="op">=</span> IndoxRetrievalAugmentation()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>mistral_qa <span class="op">=</span> HuggingFaceModel(api_key<span class="op">=</span>HUGGINGFACE_API_KEY,model<span class="op">=</span><span class="st">"mistralai/Mistral-7B-Instruct-v0.2"</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>embed <span class="op">=</span> HuggingFaceEmbedding(model<span class="op">=</span><span class="st">"multi-qa-mpnet-base-cos-v1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output display_data">
+<div class="sourceCode" id="cb8"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"model_id"</span><span class="fu">:</span><span class="st">"f5a5036392c9462c903364eab1388cca"</span><span class="fu">,</span><span class="dt">"version_major"</span><span class="fu">:</span><span class="dv">2</span><span class="fu">,</span><span class="dt">"version_minor"</span><span class="fu">:</span><span class="dv">0</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="output display_data">
+<div class="sourceCode" id="cb9"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"model_id"</span><span class="fu">:</span><span class="st">"010ed74be3944660a12891dc607ca1a8"</span><span class="fu">,</span><span class="dt">"version_major"</span><span class="fu">:</span><span class="dv">2</span><span class="fu">,</span><span class="dt">"version_minor"</span><span class="fu">:</span><span class="dv">0</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="output display_data">
+<div class="sourceCode" id="cb10"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"model_id"</span><span class="fu">:</span><span class="st">"946464dc055e45f9bb9c1ead93247206"</span><span class="fu">,</span><span class="dt">"version_major"</span><span class="fu">:</span><span class="dv">2</span><span class="fu">,</span><span class="dt">"version_minor"</span><span class="fu">:</span><span class="dv">0</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="output display_data">
+<div class="sourceCode" id="cb11"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"model_id"</span><span class="fu">:</span><span class="st">"4112edbd6b044b569660dd38ffa3f27a"</span><span class="fu">,</span><span class="dt">"version_major"</span><span class="fu">:</span><span class="dv">2</span><span class="fu">,</span><span class="dt">"version_minor"</span><span class="fu">:</span><span class="dv">0</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="output display_data">
+<div class="sourceCode" id="cb12"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"model_id"</span><span class="fu">:</span><span class="st">"c3dd1b712c324778a91a7c1750323ca2"</span><span class="fu">,</span><span class="dt">"version_major"</span><span class="fu">:</span><span class="dv">2</span><span class="fu">,</span><span class="dt">"version_minor"</span><span class="fu">:</span><span class="dv">0</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="output display_data">
+<div class="sourceCode" id="cb13"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"model_id"</span><span class="fu">:</span><span class="st">"b7b98fd3242748a3941ab86879edb1d4"</span><span class="fu">,</span><span class="dt">"version_major"</span><span class="fu">:</span><span class="dv">2</span><span class="fu">,</span><span class="dt">"version_minor"</span><span class="fu">:</span><span class="dv">0</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="output display_data">
+<div class="sourceCode" id="cb14"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"model_id"</span><span class="fu">:</span><span class="st">"70ca761c554c49788f39ac022a1e0a0c"</span><span class="fu">,</span><span class="dt">"version_major"</span><span class="fu">:</span><span class="dv">2</span><span class="fu">,</span><span class="dt">"version_minor"</span><span class="fu">:</span><span class="dv">0</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="output display_data">
+<div class="sourceCode" id="cb15"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"model_id"</span><span class="fu">:</span><span class="st">"3c540818f4fb4c34a3e1bb92d623e356"</span><span class="fu">,</span><span class="dt">"version_major"</span><span class="fu">:</span><span class="dv">2</span><span class="fu">,</span><span class="dt">"version_minor"</span><span class="fu">:</span><span class="dv">0</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="output display_data">
+<div class="sourceCode" id="cb16"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"model_id"</span><span class="fu">:</span><span class="st">"2782e5da9ae14a2286373625261c9ddf"</span><span class="fu">,</span><span class="dt">"version_major"</span><span class="fu">:</span><span class="dv">2</span><span class="fu">,</span><span class="dt">"version_minor"</span><span class="fu">:</span><span class="dv">0</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="output display_data">
+<div class="sourceCode" id="cb17"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"model_id"</span><span class="fu">:</span><span class="st">"8ec1f824a2d6489ba28811b1ebc233db"</span><span class="fu">,</span><span class="dt">"version_major"</span><span class="fu">:</span><span class="dv">2</span><span class="fu">,</span><span class="dt">"version_minor"</span><span class="fu">:</span><span class="dv">0</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="output display_data">
+<div class="sourceCode" id="cb18"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"model_id"</span><span class="fu">:</span><span class="st">"5482f2e93f464564957f3260daed3bd2"</span><span class="fu">,</span><span class="dt">"version_major"</span><span class="fu">:</span><span class="dv">2</span><span class="fu">,</span><span class="dt">"version_minor"</span><span class="fu">:</span><span class="dv">0</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="70a4fe8c3d39b341" class="cell markdown">
+<section id="setting-up-reference-directory-and-file-path" class="level3">
+<h3 class="anchored" data-anchor-id="setting-up-reference-directory-and-file-path">Setting Up Reference Directory and File Path</h3>
+<p>To demonstrate the capabilities of our Indox question answering system, we will use a sample directory. This directory will contain our reference data, which we will use for testing and evaluation.</p>
+<p>First, we specify the path to our sample file. In this case, we are using a file named <code>sample.txt</code> located in our working directory. This file will serve as our reference data for the subsequent steps.</p>
+<p>Let's define the file path for our reference data.</p>
+</section>
+</div>
+<div id="de47eb24481ec6f0" class="cell code">
+<div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>wget https:<span class="op">//</span>raw.githubusercontent.com<span class="op">/</span>osllmai<span class="op">/</span>inDox<span class="op">/</span>master<span class="op">/</span>Demo<span class="op">/</span>sample.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="7d72d5ab31985758" class="cell code" data-execution_count="10" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:44:51.563008Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:44:51.559605Z&quot;}">
+<div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> <span class="st">"sample.txt"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="5c474890b4eb337" class="cell markdown">
+<section id="chunking-reference-data-with-unstructuredloadandsplit" class="level3">
+<h3 class="anchored" data-anchor-id="chunking-reference-data-with-unstructuredloadandsplit">Chunking Reference Data with UnstructuredLoadAndSplit</h3>
+<p>To effectively utilize our reference data, we need to process and chunk it into manageable parts. This ensures that our question answering system can efficiently handle and retrieve relevant information.</p>
+<p>We use the <code>SimpleLoadAndSplit</code> utility for this task. This tool allows us to load the PDF files and split it into smaller chunks. This process enhances the performance of our retrieval and QA models by making the data more accessible and easier to process. We are using 'bert-base-uncased' model for splitting data.</p>
+<p>In this step, we define the file path for our reference data and use <code>SimpleLoadAndSplit</code> to chunk the data with a maximum chunk size of 200 characters. Also we can handle to remove stop words or not by initializing <code>remove-sword</code> parameter.</p>
+<p>Let's proceed with chunking our reference data.</p>
+</section>
+</div>
+<div id="f45144aba717b77d" class="cell code" data-execution_count="11" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:44:52.866553Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:44:51.564014Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:49,&quot;referenced_widgets&quot;:[&quot;35a00d66d49f49b491287c686dfd6d9c&quot;,&quot;0fb451900f6c49f3813a0708760d8db5&quot;,&quot;6108a37bb56d4406947badb9e972bf35&quot;,&quot;4198edcd7c654199b74deb5aa56ff2e6&quot;,&quot;6b9eb0e710a646f28db2dcac8ad61820&quot;,&quot;79f2fdb553be4edb9a9f3e82006f9355&quot;,&quot;54caa58d86a84fb6b292a0dc7c1a6164&quot;,&quot;237c618eeac047679c10714d37126997&quot;,&quot;1ccdfdb963fb49d8bfe522545d198d7f&quot;,&quot;889105b138bf413fb6658cf96e86ad38&quot;,&quot;39503b49c47f4d268cd3fca8a41a82f3&quot;]}" data-outputid="5f16b724-f1bf-4f25-d10d-315c87dcc18b">
+<div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>simpleLoadAndSplit <span class="op">=</span> SimpleLoadAndSplit(file_path<span class="op">=</span><span class="st">"sample.txt"</span>,remove_sword<span class="op">=</span><span class="va">False</span>,max_chunk_size<span class="op">=</span><span class="dv">200</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>docs <span class="op">=</span> simpleLoadAndSplit.load_and_chunk()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output display_data">
+<div class="sourceCode" id="cb22"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"model_id"</span><span class="fu">:</span><span class="st">"35a00d66d49f49b491287c686dfd6d9c"</span><span class="fu">,</span><span class="dt">"version_major"</span><span class="fu">:</span><span class="dv">2</span><span class="fu">,</span><span class="dt">"version_minor"</span><span class="fu">:</span><span class="dv">0</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="449dd09782582fa7" class="cell code" data-execution_count="12" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:44:52.872717Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:44:52.867559Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" data-outputid="e7b1e18b-9d3f-4464-c25f-c62e66db24d6">
+<div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>docs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="12">
+<pre><code>["The wife of a rich man fell sick, and as she felt that her end was drawing near, she called her only daughter to her bedside and said, dear child, be good and pious, and then the good God will always protect you, and I will look down on you from heaven and be near you.  Thereupon she closed her eyes and departed.  Every day the maiden went out to her mother's grave, and wept, and she remained pious and good.  When winter came the snow spread a white sheet over the grave, and by the time the spring sun had drawn it off again, the man had taken another wife. The woman had brought with her into the house two daughters, who were beautiful and fair of face, but vile and black of heart. Now began a bad time for the poor step-child.  Is the stupid goose to sit in the parlor with us, they said.  He who wants to eat bread",
+ 'must earn it.  Out with the kitchen-wench.  They took her pretty clothes away from her, put an old grey bedgown on her, and gave her wooden shoes.  Just look at the proud princess, how decked out she is, they cried, and laughed, and led her into the kitchen. There she had to do hard work from morning till night, get up before daybreak, carry water, light fires, cook and wash.  Besides this, the sisters did her every imaginable injury - they mocked her and emptied her peas and lentils into the ashes, so that she was forced to sit and pick them out again.  In the evening when she had worked till she was weary she had no bed to go to, but had to sleep by the hearth in the cinders.  And as on that account she always looked dusty and dirty, they called her cinderella. It happened that the father was once going to the fair, and he',
+ "asked his two step-daughters what he should bring back for them. Beautiful dresses, said one, pearls and jewels, said the second. And you, cinderella, said he, what will you have.  Father break off for me the first branch which knocks against your hat on your way home.  So he bought beautiful dresses, pearls and jewels for his two step-daughters, and on his way home, as he was riding through a green thicket, a hazel twig brushed against him and knocked off his hat.  Then he broke off the branch and took it with him.  When he reached home he gave his step-daughters the things which they had wished for, and to cinderella he gave the branch from the hazel-bush.  Cinderella thanked him, went to her mother's grave and planted the branch on it, and wept so much that the tears fell down on it and watered it.  And it grew and became a handsome",
+ "tree. Thrice a day cinderella went and sat beneath it, and wept and prayed, and a little white bird always came on the tree, and if cinderella expressed a wish, the bird threw down to her what she had wished for. It happened, however, that the king gave orders for a festival which was to last three days, and to which all the beautiful young girls in the country were invited, in order that his son might choose himself a bride.  When the two step-sisters heard that they too were to appear among the number, they were delighted, called cinderella and said, comb our hair for us, brush our shoes and fasten our buckles, for we are going to the wedding at the king's palace. Cinderella obeyed, but wept, because she too would have liked to go with them to the dance, and begged her step-mother to allow her to do so.  You go, cinderella, said she, covered in dust and",
+ 'dirt as you are, and would go to the festival.  You have no clothes and shoes, and yet would dance.  As, however, cinderella went on asking, the step-mother said at last, I have emptied a dish of lentils into the ashes for you, if you have picked them out again in two hours, you shall go with us.  The maiden went through the back-door into the garden, and called, you tame pigeons, you turtle-doves, and all you birds beneath the sky, come and help me to pick      the good into the pot,      the bad into the crop. Then two white pigeons came in by the kitchen window, and afterwards the turtle-doves, and at last all the birds beneath the sky, came whirring and crowding in, and alighted amongst the ashes. And the pigeons nodded with their heads and began pick, pick, pick, pick, and the rest began also pick, pick, pick, pick, and',
+ 'gathered all the good grains into the dish.  Hardly had one hour passed before they had finished, and all flew out again.  Then the girl took the dish to her step-mother, and was glad, and believed that now she would be allowed to go with them to the festival. But the step-mother said, no, cinderella, you have no clothes and you can not dance.  You would only be laughed at.  And as cinderella wept at this, the step-mother said, if you can pick two dishes of lentils out of the ashes for me in one hour, you shall go with us.  And she thought to herself, that she most certainly cannot do again.  When the step-mother had emptied the two dishes of lentils amongst the ashes, the maiden went through the back-door into the garden and cried, you tame pigeons, you turtle-doves, and all you birds beneath the sky, come and help me to pick      the good into the pot,',
+ "the bad into the crop. Then two white pigeons came in by the kitchen-window, and afterwards the turtle-doves, and at length all the birds beneath the sky, came whirring and crowding in, and alighted amongst the ashes.  And the doves nodded with their heads and began pick, pick, pick, pick, and the others began also pick, pick, pick, pick, and gathered all the good seeds into the dishes, and before half an hour was over they had already finished, and all flew out again. Then the maiden was delighted, and believed that she might now go with them to the wedding.  But the step-mother said, all this will not help.  You cannot go with us, for you have no clothes and can not dance.  We should be ashamed of you.  On this she turned her back on cinderella, and hurried away with her two proud daughters. As no one was now at home, cinderella went to her mother's",
+ 'grave beneath the hazel-tree, and cried -      shiver and quiver, little tree,      silver and gold throw down over me. Then the bird threw a gold and silver dress down to her, and slippers embroidered with silk and silver.  She put on the dress with all speed, and went to the wedding.  Her step-sisters and the step-mother however did not know her, and thought she must be a foreign princess, for she looked so beautiful in the golden dress. They never once thought of cinderella, and believed that she was sitting at home in the dirt, picking lentils out of the ashes.  The prince approached her, took her by the hand and danced with her. He would dance with no other maiden, and never let loose of her hand, and if any one else came to invite her, he said, this is my partner. She danced till it was evening, and then she wanted to go home.',
+ "But the king's son said, I will go with you and bear you company, for he wished to see to whom the beautiful maiden belonged. She escaped from him, however, and sprang into the pigeon-house.  The king's son waited until her father came, and then he told him that the unknown maiden had leapt into the pigeon-house.  The old man thought, can it be cinderella.  And they had to bring him an axe and a pickaxe that he might hew the pigeon-house to pieces, but no one was inside it.  And when they got home cinderella lay in her dirty clothes among the ashes, and a dim little oil-lamp was burning on the mantle-piece, for cinderella had jumped quickly down from the back of the pigeon-house and had run to the little hazel-tree, and there she had taken off her beautiful clothes and laid them on the grave, and the bird had",
+ "taken them away again, and then she had seated herself in the kitchen amongst the ashes in her grey gown. Next day when the festival began afresh, and her parents and the step-sisters had gone once more, cinderella went to the hazel-tree and said -      shiver and quiver, my little tree,      silver and gold throw down over me. Then the bird threw down a much more beautiful dress than on the preceding day. And when cinderella appeared at the wedding in this dress, every one was astonished at her beauty.  The king's son had waited until she came, and instantly took her by the hand and danced with no one but her.  When others came and invited her, he said, this is my partner.  When evening came she wished to leave, and the king's son followed her and wanted to see into which house she went.  But she sprang away from him, and into the garden behind the house.  Therein stood a beautiful tall tree on",
+ "which hung the most magnificent pears.  She clambered so nimbly between the branches like a squirrel that the king's son did not know where she was gone.  He waited until her father came, and said to him, the unknown maiden has escaped from me, and I believe she has climbed up the pear-tree.  The father thought, can it be cinderella.  And had an axe brought and cut the tree down, but no one was on it.  And when they got into the kitchen, cinderella lay there among the ashes, as usual, for she had jumped down on the other side of the tree, had taken the beautiful dress to the bird on the little hazel-tree, and put on her grey gown. On the third day, when the parents and sisters had gone away, cinderella went once more to her mother's grave and said to the little tree -      shiver and quiver, my little tree,      silver and gold throw down over me.",
+ "And now the bird threw down to her a dress which was more splendid and magnificent than any she had yet had, and the slippers were golden.  And when she went to the festival in the dress, no one knew how to speak for astonishment.  The king's son danced with her only, and if any one invited her to dance, he said this is my partner. When evening came, cinderella wished to leave, and the king's son was anxious to go with her, but she escaped from him so quickly that he could not follow her.  The king's son, however, had employed a ruse, and had caused the whole staircase to be smeared with pitch, and there, when she ran down, had the maiden's left slipper remained stuck.  The king's son picked it up, and it was small and dainty, and all golden.  Next morning, he went with it to",
+ "the father, and said to him, no one shall be my wife but she whose foot this golden slipper fits.  Then were the two sisters glad, for they had pretty feet.  The eldest went with the shoe into her room and wanted to try it on, and her mother stood by.  But she could not get her big toe into it, and the shoe was too small for her.  Then her mother gave her a knife and said, cut the toe off, when you are queen you will have no more need to go on foot.  The maiden cut the toe off, forced the foot into the shoe, swallowed the pain, and went out to the king's son.  Then he took her on his his horse as his bride and rode away with her.  They were obliged, however, to pass the grave, and there, on the hazel-tree, sat the two pigeons and cried -      turn and peep, turn and peep,      there's blood within the shoe,",
+ "the shoe it is too small for her,      the true bride waits for you. Then he looked at her foot and saw how the blood was trickling from it.  He turned his horse round and took the false bride home again, and said she was not the true one, and that the other sister was to put the shoe on.  Then this one went into her chamber and got her toes safely into the shoe, but her heel was too large.  So her mother gave her a knife and said,  cut a bit off your heel, when you are queen you will have no more need to go on foot.  The maiden cut a bit off her heel, forced her foot into the shoe, swallowed the pain, and went out to the king's son.  He took her on his horse as his bride, and rode away with her, but when they passed by the hazel-tree, the two pigeons sat on it and cried -      turn and peep, turn and peep,",
+ "there's blood within the shoe,      the shoe it is too small for her,      the true bride waits for you. He looked down at her foot and saw how the blood was running out of her shoe, and how it had stained her white stocking quite red.  Then he turned his horse and took the false bride home again.  This also is not the right one, said he, have you no other daughter.  No, said the man, there is still a little stunted kitchen-wench which my late wife left behind her, but she cannot possibly be the bride.  The king's son said he was to send her up to him, but the mother answered, oh, no, she is much too dirty, she cannot show herself.  But he absolutely insisted on it, and cinderella had to be called.  She first washed her hands and face clean, and then went and bowed down before the king's son, who gave her the golden shoe.  Then she",
+ "seated herself on a stool, drew her foot out of the heavy wooden shoe, and put it into the slipper, which fitted like a glove.  And when she rose up and the king's son looked at her face he recognized the beautiful maiden who had danced with him and cried, that is the true bride.  The step-mother and the two sisters were horrified and became pale with rage, he, however, took cinderella on his horse and rode away with her.  As they passed by the hazel-tree, the two white doves cried -      turn and peep, turn and peep,      no blood is in the shoe,      the shoe is not too small for her,      the true bride rides with you, and when they had cried that, the two came flying down and placed themselves on cinderella's shoulders, one on the right, the other on the left, and remained sitting there. When the wedding with the king's son was to be celebrated, the",
+ 'two false sisters came and wanted to get into favor with cinderella and share her good fortune.  When the betrothed couple went to church, the elder was at the right side and the younger at the left, and the pigeons pecked out one eye from each of them.  Afterwards as they came back the elder was at the left, and the younger at the right, and then the pigeons pecked out the other eye from each.  And thus, for their wickedness and falsehood, they were punished with blindness all their days.']</code></pre>
+</div>
+</div>
+<div id="28ba43c70a109fe4" class="cell markdown">
+<section id="connecting-embedding-model-to-indox" class="level3">
+<h3 class="anchored" data-anchor-id="connecting-embedding-model-to-indox">Connecting Embedding Model to Indox</h3>
+<p>With our reference data chunked and ready, the next step is to connect our embedding model to the Indox system. This connection enables the system to leverage the embeddings for better semantic understanding and retrieval performance.</p>
+<p>We use the <code>connect_to_vectorstore</code> method to link the <code>HuggingFaceEmbedding</code> model with our Indox system. By specifying the embeddings and a collection name, we ensure that our reference data is appropriately indexed and stored, facilitating efficient retrieval during the question-answering process.</p>
+<p>Let's connect the embedding model to Indox.</p>
+</section>
+</div>
+<div id="fb0c5eb8341d52d3" class="cell code" data-execution_count="13" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:44:53.236317Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:44:52.873727Z&quot;}">
+<div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.vector_stores <span class="im">import</span> ChromaVectorStore</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> ChromaVectorStore(collection_name<span class="op">=</span><span class="st">"sample"</span>,embedding<span class="op">=</span>embed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="bbd77c136e780844" class="cell code" data-execution_count="14" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:44:53.242353Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:44:53.237325Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" data-outputid="3dc71f1c-96a0-4c0f-cb44-611f2db058c0">
+<div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>indox.connect_to_vectorstore(vectorstore_database<span class="op">=</span>db)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="14">
+<pre><code>&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x7a1e30ccee90&gt;</code></pre>
+</div>
+</div>
+<div id="7a2de351e4cb5e24" class="cell markdown">
+<section id="storing-data-in-the-vector-store" class="level3">
+<h3 class="anchored" data-anchor-id="storing-data-in-the-vector-store">Storing Data in the Vector Store</h3>
+<p>After connecting our embedding model to the Indox system, the next step is to store our chunked reference data in the vector store. This process ensures that our data is indexed and readily available for retrieval during the question-answering process.</p>
+<p>We use the <code>store_in_vectorstore</code> method to store the processed data in the vector store. By doing this, we enhance the system's ability to quickly access and retrieve relevant information based on the embeddings generated earlier.</p>
+<p>Let's proceed with storing the data in the vector store.</p>
+</section>
+</div>
+<div id="8b53fee18caed89c" class="cell code" data-execution_count="15" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:45:07.044107Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:45:03.390792Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" data-outputid="ab39b1ac-03de-44e1-977b-b2157538f9a9">
+<div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>indox.store_in_vectorstore(docs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="15">
+<pre><code>&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x7a1e30ccee90&gt;</code></pre>
+</div>
+</div>
+<div id="a2ac994fc0fb7ca0" class="cell markdown">
+<section id="query-from-rag-system-with-indox" class="level2">
+<h2 class="anchored" data-anchor-id="query-from-rag-system-with-indox">Query from RAG System with Indox</h2>
+<p>With our Retrieval-Augmented Generation (RAG) system built using Indox, we are now ready to test it with a sample question. This test will demonstrate how effectively our system can retrieve and generate accurate answers based on the reference data stored in the vector store.</p>
+<p>We'll use a sample query to test our system:</p>
+<ul>
+<li><strong>Query</strong>: "How did Cinderella reach her happy ending?"</li>
+</ul>
+<p>This question will be processed by our Indox system to retrieve relevant information and generate an appropriate response.</p>
+<p>Let's test our RAG system with the sample question</p>
+</section>
+</div>
+<div id="6b9fcd8f902257ad" class="cell code" data-execution_count="16" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:45:08.545059Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:45:08.541085Z&quot;}">
+<div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"How cinderella reach her happy ending?"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="905f5aeb288a9ea3" class="cell markdown">
+<p>Now that our Retrieval-Augmented Generation (RAG) system with Indox is fully set up, we can test it with a sample question. We'll use the <code>invoke</code> submethod to get a response from the system.</p>
+<p>The <code>invoke</code> method processes the query using the connected QA model and retrieves relevant information from the vector store. It returns a list where:</p>
+<ul>
+<li>The first index contains the answer.</li>
+<li>The second index contains the contexts and their respective scores.</li>
+</ul>
+<p>We'll pass this query to the <code>invoke</code> method and print the response.</p>
+</div>
+<div id="5a87158e90e6cb32" class="cell code" data-execution_count="17" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:45:09.503644Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:45:09.500273Z&quot;}">
+<div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>retriever <span class="op">=</span> indox.QuestionAnswer(vector_database<span class="op">=</span>db,llm<span class="op">=</span>mistral_qa,top_k<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="6fe8b6eff074cee" class="cell code" data-execution_count="18" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:45:16.862965Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:45:10.367688Z&quot;}">
+<div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>answer <span class="op">=</span> retriever.invoke(query<span class="op">=</span>query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="8a5500901a37dcf4" class="cell code" data-execution_count="19" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:45:18.009646Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:45:18.005532Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:70}" data-outputid="db8b708c-4512-4350-d279-11d831804c8d">
+<div class="sourceCode" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>answer</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="19">
+<div class="sourceCode" id="cb34"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"type"</span><span class="fu">:</span><span class="st">"string"</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="4a0b652a31bba343" class="cell code" data-execution_count="20" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:45:30.087337Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:45:30.081831Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" data-outputid="8e7742d1-19f2-449a-e455-15259515e760">
+<div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> retriever.context</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>context</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="20">
+<pre><code>['must earn it.  Out with the kitchen-wench.  They took her pretty clothes away from her, put an old grey bedgown on her, and gave her wooden shoes.  Just look at the proud princess, how decked out she is, they cried, and laughed, and led her into the kitchen. There she had to do hard work from morning till night, get up before daybreak, carry water, light fires, cook and wash.  Besides this, the sisters did her every imaginable injury - they mocked her and emptied her peas and lentils into the ashes, so that she was forced to sit and pick them out again.  In the evening when she had worked till she was weary she had no bed to go to, but had to sleep by the hearth in the cinders.  And as on that account she always looked dusty and dirty, they called her cinderella. It happened that the father was once going to the fair, and he',
+ "And now the bird threw down to her a dress which was more splendid and magnificent than any she had yet had, and the slippers were golden.  And when she went to the festival in the dress, no one knew how to speak for astonishment.  The king's son danced with her only, and if any one invited her to dance, he said this is my partner. When evening came, cinderella wished to leave, and the king's son was anxious to go with her, but she escaped from him so quickly that he could not follow her.  The king's son, however, had employed a ruse, and had caused the whole staircase to be smeared with pitch, and there, when she ran down, had the maiden's left slipper remained stuck.  The king's son picked it up, and it was small and dainty, and all golden.  Next morning, he went with it to",
+ "there's blood within the shoe,      the shoe it is too small for her,      the true bride waits for you. He looked down at her foot and saw how the blood was running out of her shoe, and how it had stained her white stocking quite red.  Then he turned his horse and took the false bride home again.  This also is not the right one, said he, have you no other daughter.  No, said the man, there is still a little stunted kitchen-wench which my late wife left behind her, but she cannot possibly be the bride.  The king's son said he was to send her up to him, but the mother answered, oh, no, she is much too dirty, she cannot show herself.  But he absolutely insisted on it, and cinderella had to be called.  She first washed her hands and face clean, and then went and bowed down before the king's son, who gave her the golden shoe.  Then she",
+ "tree. Thrice a day cinderella went and sat beneath it, and wept and prayed, and a little white bird always came on the tree, and if cinderella expressed a wish, the bird threw down to her what she had wished for. It happened, however, that the king gave orders for a festival which was to last three days, and to which all the beautiful young girls in the country were invited, in order that his son might choose himself a bride.  When the two step-sisters heard that they too were to appear among the number, they were delighted, called cinderella and said, comb our hair for us, brush our shoes and fasten our buckles, for we are going to the wedding at the king's palace. Cinderella obeyed, but wept, because she too would have liked to go with them to the dance, and begged her step-mother to allow her to do so.  You go, cinderella, said she, covered in dust and",
+ 'grave beneath the hazel-tree, and cried -      shiver and quiver, little tree,      silver and gold throw down over me. Then the bird threw a gold and silver dress down to her, and slippers embroidered with silk and silver.  She put on the dress with all speed, and went to the wedding.  Her step-sisters and the step-mother however did not know her, and thought she must be a foreign princess, for she looked so beautiful in the golden dress. They never once thought of cinderella, and believed that she was sitting at home in the dirt, picking lentils out of the ashes.  The prince approached her, took her by the hand and danced with her. He would dance with no other maiden, and never let loose of her hand, and if any one else came to invite her, he said, this is my partner. She danced till it was evening, and then she wanted to go home.']</code></pre>
+</div>
+</div>
+<div id="ef42aa27b31243a" class="cell code" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:45:34.018349Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:45:34.014766Z&quot;}">
+<div class="sourceCode" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="f32928ee1157509f" class="cell markdown">
+<section id="evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="evaluation">Evaluation</h2>
+</section>
+</div>
+<div id="d6362d3145cb9f05" class="cell code" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:46:07.503919Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:46:05.038476Z&quot;}">
+<div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.evaluation <span class="im">import</span> Evaluation</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>evaluator <span class="op">=</span> Evaluation([<span class="st">"BertScore"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="717b701e7958a0c" class="cell code" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:46:14.343498Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:46:13.455591Z&quot;}">
+<div class="sourceCode" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>inputs <span class="op">=</span> {</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"question"</span> : query,</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"answer"</span> : answer,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"context"</span> : context</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> evaluator(inputs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="73f30dd1c899a55d" class="cell code" data-executetime="{&quot;end_time&quot;:&quot;2024-07-02T07:46:19.019465Z&quot;,&quot;start_time&quot;:&quot;2024-07-02T07:46:19.011378Z&quot;}" data-outputid="f1f3f407-5ada-45f8-9a30-60a1b3542554">
+<div class="sourceCode" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="18">
+<div>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">0</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Precision</td>
+<td>0.547425</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Recall</td>
+<td>0.482575</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">F1-score</td>
+<td>0.507377</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+<div id="6e2160b7c2e28cb1" class="cell code">
+<div class="sourceCode" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../examples/googleai.html" class="pagination-link" aria-label="Retrieval Augmentation Using GoogleAi">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Retrieval Augmentation Using GoogleAi</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../examples/mistral_unstructured.html" class="pagination-link" aria-label="Mistral As Question Answer Model">
+        <span class="nav-page-text"><span class="chapter-title">Mistral As Question Answer Model</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Indox Retrieval Augmentation</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/edit/main/examples/hf_mistral_SimpleReader.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

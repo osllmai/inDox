@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./examples/clusterSplit.html" rel="next">
+<link href="./examples/googleai.html" rel="next">
 <link href="./evaluation.html" rel="prev">
 <link href="./logo.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js"></script>
@@ -233,17 +233,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./examples/clusterSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Load And Split With Clustering</span></a>
+  <a href="./examples/googleai.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Retrieval Augmentation Using GoogleAi</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./examples/unstructuredSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Unstructured Load And Split</span></a>
+  <a href="./examples/hf_mistral_SimpleReader.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">How to use Indox Retrieval Augmentation for PDF files</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./examples/mistral.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mistral As Question Answer Model</span></a>
+  <a href="./examples/mistral_unstructured.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mistral As Question Answer Model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples/openai_clusterSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Load And Split With Clustering</span></a>
   </div>
 </li>
       </ul>
@@ -287,6 +292,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/openai_agenticrag.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" class="img-fluid figure-img" alt="Open In Colab"></a></p>
+<figcaption>Open In Colab</figcaption>
+</figure>
+</div>
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
 <p>The <code>AgenticRag</code> class is designed to handle the interaction between a Language Learning Model (LLM) and a vector database. It facilitates the process of retrieving relevant information from the vector database to answer questions posed to the LLM. This class maintains a history of question-answer interactions and context, ensuring efficient and accurate responses.</p>
@@ -323,7 +334,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the agent with a query</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>answer <span class="op">=</span> agent.run(query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p align="center">
-<img src="docs/AgenticRag.png" alt="inDox AgenticRag">
+<img src="AgenticRag.png" alt="inDox AgenticRag">
 </p>
 
 
@@ -746,8 +757,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./examples/clusterSplit.html" class="pagination-link" aria-label="Load And Split With Clustering">
-        <span class="nav-page-text"><span class="chapter-title">Load And Split With Clustering</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./examples/googleai.html" class="pagination-link" aria-label="Retrieval Augmentation Using GoogleAi">
+        <span class="nav-page-text"><span class="chapter-title">Retrieval Augmentation Using GoogleAi</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

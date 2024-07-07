@@ -35,9 +35,10 @@ book:
     - agenticRag.md
     - part: "Examples"
       chapters:
-        - examples/clusterSplit.md
-        - examples/unstructuredSplit.md
-        - examples/mistral.md
+        - examples/googleai.md
+        - examples/hf_mistral_SimpleReader.md
+        - examples/mistral_unstructured.md
+        - examples/openai_clusterSplit.md
 
 format:
   html:

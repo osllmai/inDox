@@ -64,7 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../examples/unstructuredSplit.html" rel="prev">
+<link href="../examples/openai_clusterSplit.html" rel="next">
+<link href="../examples/hf_mistral_SimpleReader.html" rel="prev">
 <link href="../logo.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -115,7 +116,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../examples/clusterSplit.html">Examples</a></li><li class="breadcrumb-item"><a href="../examples/mistral.html"><span class="chapter-title">Mistral As Question Answer Model</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../examples/googleai.html">Examples</a></li><li class="breadcrumb-item"><a href="../examples/mistral_unstructured.html"><span class="chapter-title">Mistral As Question Answer Model</span></a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -232,17 +233,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../examples/clusterSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Load And Split With Clustering</span></a>
+  <a href="../examples/googleai.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Retrieval Augmentation Using GoogleAi</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../examples/unstructuredSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Unstructured Load And Split</span></a>
+  <a href="../examples/hf_mistral_SimpleReader.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">How to use Indox Retrieval Augmentation for PDF files</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../examples/mistral.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Mistral As Question Answer Model</span></a>
+  <a href="../examples/mistral_unstructured.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Mistral As Question Answer Model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../examples/openai_clusterSplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Load And Split With Clustering</span></a>
   </div>
 </li>
       </ul>
@@ -261,12 +267,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#query-from-rag-system-with-indox" id="toc-query-from-rag-system-with-indox" class="nav-link" data-scroll-target="#query-from-rag-system-with-indox">Query from RAG System with Indox</a></li>
   <li><a href="#evaluation" id="toc-evaluation" class="nav-link" data-scroll-target="#evaluation">Evaluation</a></li>
   </ul>
-<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/edit/main/examples/mistral.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/edit/main/examples/mistral_unstructured.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../examples/clusterSplit.html">Examples</a></li><li class="breadcrumb-item"><a href="../examples/mistral.html"><span class="chapter-title">Mistral As Question Answer Model</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../examples/googleai.html">Examples</a></li><li class="breadcrumb-item"><a href="../examples/mistral_unstructured.html"><span class="chapter-title">Mistral As Question Answer Model</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title"><span class="chapter-title">Mistral As Question Answer Model</span></h1>
 </div>
@@ -285,166 +291,230 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/mistral_unstructured.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" class="img-fluid figure-img" alt="Open In Colab"></a></p>
+<figcaption>Open In Colab</figcaption>
+</figure>
+</div>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>In this notebook, we will demonstrate how to securely handle <code>inDox</code> as system for question answering system with open source models which are available on internet like <code>Mistral</code>. so firstly you should buil environment variables and API keys in Python using the <code>dotenv</code> library. Environment variables are a crucial part of configuring your applications, especially when dealing with sensitive information like API keys.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Because we are using <strong>HuggingFace</strong> models you need to define your <code>HUGGINGFACE_API_KEY</code> in <code>.env</code> file. This allows us to keep our API keys and other sensitive information out of our codebase, enhancing security and maintainability.</p>
-</div>
-</div>
-<p>Let’s start by importing the required libraries and loading our environment variables.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>HUGGINGFACE_API_KEY <span class="op">=</span> os.getenv(<span class="st">'HUGGINGFACE_API_KEY'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let's start by importing the required libraries and loading our environment variables.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install mistralai</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install indox</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install chromadb</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>MISTRAL_API_KEY <span class="op">=</span> os.getenv(<span class="st">'MISTRAL_API_KEY'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <section id="import-essential-libraries" class="level3">
 <h3 class="anchored" data-anchor-id="import-essential-libraries">Import Essential Libraries</h3>
-<p>Then, we import essential libraries for our <code>Indox</code> question answering system: - <code>IndoxRetrievalAugmentation</code>: Enhances the retrieval process for better QA performance. - <code>MistralQA</code>: A powerful QA model from Indox, built on top of the Hugging Face model. - <code>HuggingFaceEmbedding</code>: Utilizes Hugging Face embeddings for improved semantic understanding. - <code>UnstructuredLoadAndSplit</code>: A utility for loading and splitting unstructured data.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox <span class="im">import</span> IndoxRetrievalAugmentation</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.llms <span class="im">import</span> MistralQA</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.embeddings <span class="im">import</span> HuggingFaceEmbedding</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.data_loader_splitter <span class="im">import</span> UnstructuredLoadAndSplit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then, we import essential libraries for our <code>Indox</code> question answering system:</p>
+<ul>
+<li><code>IndoxRetrievalAugmentation</code>: Enhances the retrieval process for better QA performance.</li>
+<li><code>Mistral</code>: A powerful QA model from Indox, built on top of the semantic understanding.</li>
+<li><code>UnstructuredLoadAndSplit</code>: A utility for loading and splitting unstructured data.</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox <span class="im">import</span> IndoxRetrievalAugmentation</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>indox <span class="op">=</span> IndoxRetrievalAugmentation()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>:::</p>
 </section>
+<div id="449eb2a7ca2e5bce" class="cell markdown">
 <section id="building-the-indox-system-and-initializing-models" class="level3">
 <h3 class="anchored" data-anchor-id="building-the-indox-system-and-initializing-models">Building the Indox System and Initializing Models</h3>
 <p>Next, we will build our <code>inDox</code> system and initialize the Mistral question answering model along with the embedding model. This setup will allow us to leverage the advanced capabilities of Indox for our question answering tasks.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>indox <span class="op">=</span> IndoxRetrievalAugmentation()</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>mistral_qa <span class="op">=</span> MistralQA(api_key<span class="op">=</span>HUGGINGFACE_API_KEY,model<span class="op">=</span><span class="st">"mistralai/Mistral-7B-Instruct-v0.2"</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>embed <span class="op">=</span> HuggingFaceEmbedding(model<span class="op">=</span><span class="st">"multi-qa-mpnet-base-cos-v1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
+</div>
+<div id="ac5ff6002e2497b3" class="cell code" data-execution_count="4" data-executetime="{&quot;end_time&quot;:&quot;2024-06-26T08:40:56.456996Z&quot;,&quot;start_time&quot;:&quot;2024-06-26T08:40:51.790145Z&quot;}">
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.llms <span class="im">import</span> Mistral</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.embeddings <span class="im">import</span> MistralEmbedding</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>mistral_qa <span class="op">=</span> Mistral(api_key<span class="op">=</span>MISTRAL_API_KEY)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>embed_mistral <span class="op">=</span> MistralEmbedding(MISTRAL_API_KEY)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="fd23f48af26265ca" class="cell markdown">
 <section id="setting-up-reference-directory-and-file-path" class="level3">
 <h3 class="anchored" data-anchor-id="setting-up-reference-directory-and-file-path">Setting Up Reference Directory and File Path</h3>
 <p>To demonstrate the capabilities of our Indox question answering system, we will use a sample directory. This directory will contain our reference data, which we will use for testing and evaluation.</p>
 <p>First, we specify the path to our sample file. In this case, we are using a file named <code>sample.txt</code> located in our working directory. This file will serve as our reference data for the subsequent steps.</p>
-<p>Let’s define the file path for our reference data.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> <span class="st">"sample.txt"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let's define the file path for our reference data.</p>
 </section>
+</div>
+<div id="9706a7ba1cc8deff" class="cell code">
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>wget https:<span class="op">//</span>raw.githubusercontent.com<span class="op">/</span>osllmai<span class="op">/</span>inDox<span class="op">/</span>master<span class="op">/</span>Demo<span class="op">/</span>sample.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="b38c913b696a2642" class="cell code" data-execution_count="5" data-executetime="{&quot;end_time&quot;:&quot;2024-06-26T08:40:59.074020Z&quot;,&quot;start_time&quot;:&quot;2024-06-26T08:40:59.071498Z&quot;}">
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> <span class="st">"sample.txt"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="e88dd6c433fc600c" class="cell markdown">
 <section id="chunking-reference-data-with-unstructuredloadandsplit" class="level3">
 <h3 class="anchored" data-anchor-id="chunking-reference-data-with-unstructuredloadandsplit">Chunking Reference Data with UnstructuredLoadAndSplit</h3>
 <p>To effectively utilize our reference data, we need to process and chunk it into manageable parts. This ensures that our question answering system can efficiently handle and retrieve relevant information.</p>
 <p>We use the <code>UnstructuredLoadAndSplit</code> utility for this task. This tool allows us to load the unstructured data from our specified file and split it into smaller chunks. This process enhances the performance of our retrieval and QA models by making the data more accessible and easier to process.</p>
 <p>In this step, we define the file path for our reference data and use <code>UnstructuredLoadAndSplit</code> to chunk the data with a maximum chunk size of 400 characters.</p>
-<p>Let’s proceed with chunking our reference data.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>load_splitter <span class="op">=</span> UnstructuredLoadAndSplit(file_path<span class="op">=</span>file_path,max_chunk_size<span class="op">=</span><span class="dv">400</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>docs <span class="op">=</span> load_splitter.load_and_chunk()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let's proceed with chunking our reference data.</p>
 </section>
+</div>
+<div id="4dcc52c1d0416383" class="cell code" data-execution_count="6" data-executetime="{&quot;end_time&quot;:&quot;2024-06-26T08:41:58.334662Z&quot;,&quot;start_time&quot;:&quot;2024-06-26T08:41:58.008246Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" data-outputid="c43a25f4-7c29-470c-8f82-6cfbb83be6d1">
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.data_loader_splitter <span class="im">import</span> UnstructuredLoadAndSplit</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>load_splitter <span class="op">=</span> UnstructuredLoadAndSplit(file_path<span class="op">=</span>file_path,max_chunk_size<span class="op">=</span><span class="dv">400</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>docs <span class="op">=</span> load_splitter.load_and_chunk()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output stream stderr">
+<pre><code>[nltk_data] Downloading package punkt to /root/nltk_data...
+[nltk_data]   Unzipping tokenizers/punkt.zip.
+[nltk_data] Downloading package averaged_perceptron_tagger to
+[nltk_data]     /root/nltk_data...
+[nltk_data]   Unzipping taggers/averaged_perceptron_tagger.zip.</code></pre>
+</div>
+</div>
+<div id="72d312cf4791f60f" class="cell markdown">
 <section id="connecting-embedding-model-to-indox" class="level3">
 <h3 class="anchored" data-anchor-id="connecting-embedding-model-to-indox">Connecting Embedding Model to Indox</h3>
 <p>With our reference data chunked and ready, the next step is to connect our embedding model to the Indox system. This connection enables the system to leverage the embeddings for better semantic understanding and retrieval performance.</p>
-<p>We use the <code>connect_to_vectorstore</code> method to link the <code>HuggingFaceEmbedding</code> model with our Indox system. By specifying the embeddings and a collection name, we ensure that our reference data is appropriately indexed and stored, facilitating efficient retrieval during the question-answering process.</p>
-<p>Let’s connect the embedding model to Indox.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.vector_stores <span class="im">import</span> ChromaVectorStore</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> ChromaVectorStore(collection_name<span class="op">=</span><span class="st">"sample"</span>,embedding<span class="op">=</span>embed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>indox.connect_to_vectorstore(vectorstore_database<span class="op">=</span>db)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x146b850ddc0&gt;</code></pre>
+<p>We use the <code>connect_to_vectorstore</code> method to link the <code>embed_mistral</code> model with our Indox system. By specifying the embeddings and a collection name, we ensure that our reference data is appropriately indexed and stored, facilitating efficient retrieval during the question-answering process.</p>
+<p>Let's connect the embedding model to Indox.</p>
 </section>
+</div>
+<div id="ebc33cc4fb58a305" class="cell code" data-execution_count="7" data-executetime="{&quot;end_time&quot;:&quot;2024-06-26T08:42:03.601445Z&quot;,&quot;start_time&quot;:&quot;2024-06-26T08:42:03.594047Z&quot;}">
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.vector_stores <span class="im">import</span> ChromaVectorStore</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> ChromaVectorStore(collection_name<span class="op">=</span><span class="st">"sample"</span>,embedding<span class="op">=</span>embed_mistral)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="943f965096e65197" class="cell code" data-execution_count="8" data-executetime="{&quot;end_time&quot;:&quot;2024-06-26T08:42:05.061630Z&quot;,&quot;start_time&quot;:&quot;2024-06-26T08:42:05.055595Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" data-outputid="0704ed8d-ace4-4112-c9dc-dbef9eab48b0">
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>indox.connect_to_vectorstore(vectorstore_database<span class="op">=</span>db)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="8">
+<pre><code>&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x7fba6ca30280&gt;</code></pre>
+</div>
+</div>
+<div id="250da1a633bef038" class="cell markdown">
 <section id="storing-data-in-the-vector-store" class="level3">
 <h3 class="anchored" data-anchor-id="storing-data-in-the-vector-store">Storing Data in the Vector Store</h3>
 <p>After connecting our embedding model to the Indox system, the next step is to store our chunked reference data in the vector store. This process ensures that our data is indexed and readily available for retrieval during the question-answering process.</p>
-<p>We use the <code>store_in_vectorstore</code> method to store the processed data in the vector store. By doing this, we enhance the system’s ability to quickly access and retrieve relevant information based on the embeddings generated earlier.</p>
-<p>Let’s proceed with storing the data in the vector store.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>indox.store_in_vectorstore(docs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x146b850ddc0&gt;</code></pre>
+<p>We use the <code>store_in_vectorstore</code> method to store the processed data in the vector store. By doing this, we enhance the system's ability to quickly access and retrieve relevant information based on the embeddings generated earlier.</p>
+<p>Let's proceed with storing the data in the vector store.</p>
 </section>
+</div>
+<div id="83b2f51f1a359477" class="cell code" data-execution_count="9" data-executetime="{&quot;end_time&quot;:&quot;2024-06-26T08:42:15.228086Z&quot;,&quot;start_time&quot;:&quot;2024-06-26T08:42:07.249961Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" data-outputid="c2d4c310-d550-4e15-9776-24b7c23a7ee8">
+<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>indox.store_in_vectorstore(docs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="9">
+<pre><code>&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x7fba6ca30280&gt;</code></pre>
+</div>
+</div>
 </section>
+<div id="7766ed35249fef6e" class="cell markdown">
 <section id="query-from-rag-system-with-indox" class="level2">
 <h2 class="anchored" data-anchor-id="query-from-rag-system-with-indox">Query from RAG System with Indox</h2>
 <p>With our Retrieval-Augmented Generation (RAG) system built using Indox, we are now ready to test it with a sample question. This test will demonstrate how effectively our system can retrieve and generate accurate answers based on the reference data stored in the vector store.</p>
-<p>We’ll use a sample query to test our system: - <strong>Query</strong>: “How did Cinderella reach her happy ending?”</p>
+<p>We'll use a sample query to test our system:</p>
+<ul>
+<li><strong>Query</strong>: "How did Cinderella reach her happy ending?"</li>
+</ul>
 <p>This question will be processed by our Indox system to retrieve relevant information and generate an appropriate response.</p>
-<p>Let’s test our RAG system with the sample question</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"How cinderella reach her happy ending?"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Now that our Retrieval-Augmented Generation (RAG) system with Indox is fully set up, we can test it with a sample question. We’ll use the <code>invoke</code> submethod to get a response from the system.</p>
-<p>The <code>invoke</code> method processes the query using the connected QA model and retrieves relevant information from the vector store. It returns a list where: - The first index contains the answer. - The second index contains the contexts and their respective scores.</p>
-<p>We’ll pass this query to the <code>invoke</code> method and print the response.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>retriever <span class="op">=</span> indox.QuestionAnswer(vector_database<span class="op">=</span>db,llm<span class="op">=</span>mistral_qa,top_k<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>answer <span class="op">=</span> retriever.invoke(query<span class="op">=</span>query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> retriever.context</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>context</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>['by the hearth in the cinders. And as on that account she always\n\nlooked dusty and dirty, they called her cinderella.\n\nIt happened that the father was once going to the fair, and he\n\nasked his two step-daughters what he should bring back for them.\n\nBeautiful dresses, said one, pearls and jewels, said the second.\n\nAnd you, cinderella, said he, what will you have. Father',
- 'cinderella expressed a wish, the bird threw down to her what she\n\nhad wished for.\n\nIt happened, however, that the king gave orders for a festival\n\nwhich was to last three days, and to which all the beautiful young\n\ngirls in the country were invited, in order that his son might choose\n\nhimself a bride. When the two step-sisters heard that they too were',
- 'know where she was gone. He waited until her father came, and\n\nsaid to him, the unknown maiden has escaped from me, and I\n\nbelieve she has climbed up the pear-tree. The father thought,\n\ncan it be cinderella. And had an axe brought and cut the\n\ntree down, but no one was on it. And when they got into the\n\nkitchen, cinderella lay there among the ashes, as usual, for she',
- 'and had run to the little hazel-tree, and there she had taken off\n\nher beautiful clothes and laid them on the grave, and the bird had\n\ntaken them away again, and then she had seated herself in the\n\nkitchen amongst the ashes in her grey gown.\n\nNext day when the festival began afresh, and her parents and\n\nthe step-sisters had gone once more, cinderella went to the\n\nhazel-tree and said -',
- "had jumped down on the other side of the tree, had taken the\n\nbeautiful dress to the bird on the little hazel-tree, and put on her\n\ngrey gown.\n\nOn the third day, when the parents and sisters had gone away,\n\ncinderella went once more to her mother's grave and said to the"]</code></pre>
+<p>Let's test our RAG system with the sample question</p>
 </section>
+</div>
+<div id="c30a41f4d7293b39" class="cell code" data-execution_count="10" data-executetime="{&quot;end_time&quot;:&quot;2024-06-26T08:42:17.310350Z&quot;,&quot;start_time&quot;:&quot;2024-06-26T08:42:17.306685Z&quot;}">
+<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"How cinderella reach her happy ending?"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="58639a3d46eb327f" class="cell markdown">
+<p>Now that our Retrieval-Augmented Generation (RAG) system with Indox is fully set up, we can test it with a sample question. We'll use the <code>invoke</code> submethod to get a response from the system.</p>
+<p>The <code>invoke</code> method processes the query using the connected QA model and retrieves relevant information from the vector store. It returns a list where:</p>
+<ul>
+<li>The first index contains the answer.</li>
+<li>The second index contains the contexts and their respective scores.</li>
+</ul>
+<p>We'll pass this query to the <code>invoke</code> method and print the response.</p>
+</div>
+<div id="66ecb3768f04d326" class="cell code" data-execution_count="11" data-executetime="{&quot;end_time&quot;:&quot;2024-06-26T08:42:18.376680Z&quot;,&quot;start_time&quot;:&quot;2024-06-26T08:42:18.373295Z&quot;}">
+<div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>retriever <span class="op">=</span> indox.QuestionAnswer(vector_database<span class="op">=</span>db,llm<span class="op">=</span>mistral_qa,top_k<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="9adbffdb7d5427bd" class="cell code" data-execution_count="12" data-executetime="{&quot;end_time&quot;:&quot;2024-06-26T08:42:27.798069Z&quot;,&quot;start_time&quot;:&quot;2024-06-26T08:42:19.041579Z&quot;}">
+<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>answer <span class="op">=</span> retriever.invoke(query<span class="op">=</span>query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="f905f84906433aab" class="cell code" data-execution_count="13" data-executetime="{&quot;end_time&quot;:&quot;2024-06-26T08:42:32.700407Z&quot;,&quot;start_time&quot;:&quot;2024-06-26T08:42:32.696411Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:140}" data-outputid="da7808e4-2408-4ff6-b185-a97413f08713">
+<div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>answer</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="13">
+<div class="sourceCode" id="cb18"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"type"</span><span class="fu">:</span><span class="st">"string"</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="db289e0dae276aee" class="cell code" data-execution_count="14" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:23:16.751306Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:23:16.746109Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" data-outputid="cafedfc6-1137-48ae-c095-b0052f393dcf">
+<div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> retriever.context</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>context</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="14">
+<pre><code>['by the hearth in the cinders. And as on that account she always\n\nlooked dusty and dirty, they called her cinderella.\n\nIt happened that the father was once going to the fair, and he\n\nasked his two step-daughters what he should bring back for them.\n\nBeautiful dresses, said one, pearls and jewels, said the second.\n\nAnd you, cinderella, said he, what will you have. Father',
+ "to appear among the number, they were delighted, called cinderella\n\nand said, comb our hair for us, brush our shoes and fasten our\n\nbuckles, for we are going to the wedding at the king's palace.\n\nCinderella obeyed, but wept, because she too would have liked to\n\ngo with them to the dance, and begged her step-mother to allow\n\nher to do so. You go, cinderella, said she, covered in dust and",
+ "danced with her only, and if any one invited her to dance, he said\n\nthis is my partner.\n\nWhen evening came, cinderella wished to leave, and the king's\n\nson was anxious to go with her, but she escaped from him so quickly\n\nthat he could not follow her. The king's son, however, had\n\nemployed a ruse, and had caused the whole staircase to be smeared",
+ 'cinderella expressed a wish, the bird threw down to her what she\n\nhad wished for.\n\nIt happened, however, that the king gave orders for a festival\n\nwhich was to last three days, and to which all the beautiful young\n\ngirls in the country were invited, in order that his son might choose\n\nhimself a bride. When the two step-sisters heard that they too were',
+ "Then the maiden was delighted, and believed that she might now go\n\nwith them to the wedding. But the step-mother said, all this will\n\nnot help. You cannot go with us, for you have no clothes and can\n\nnot dance. We should be ashamed of you. On this she turned her\n\nback on cinderella, and hurried away with her two proud daughters.\n\nAs no one was now at home, cinderella went to her mother's"]</code></pre>
+</div>
+</div>
+<div id="ea002e2ab9469d7b" class="cell markdown">
 <section id="evaluation" class="level2">
 <h2 class="anchored" data-anchor-id="evaluation">Evaluation</h2>
-<p>Evaluating the performance of your question-answering system is crucial to ensure the quality and reliability of the responses. In this section, we will use the <code>Evaluation</code> module from Indox to assess our system’s outputs.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.evaluation <span class="im">import</span> Evaluation</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>evaluator <span class="op">=</span> Evaluation([<span class="st">"BertScore"</span>, <span class="st">"Toxicity"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Evaluating the performance of your question-answering system is crucial to ensure the quality and reliability of the responses. In this section, we will use the <code>Evaluation</code> module from Indox to assess our system's outputs.</p>
+</section>
+</div>
+<div id="48d4718f798523c8" class="cell code" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:23:21.759373Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:23:16.751306Z&quot;}">
+<div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.evaluation <span class="im">import</span> Evaluation</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>evaluator <span class="op">=</span> Evaluation([<span class="st">"BertScore"</span>, <span class="st">"Toxicity"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="dca587b000e0f3d5" class="cell markdown">
 <section id="preparing-inputs-for-evaluation" class="level3">
 <h3 class="anchored" data-anchor-id="preparing-inputs-for-evaluation">Preparing Inputs for Evaluation</h3>
-<p>Next, we need to format the inputs according to the Indox evaluator’s requirements. This involves creating a dictionary that includes the question, the generated answer, and the context from which the answer was derived.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>inputs <span class="op">=</span> {</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"question"</span> : query,</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"answer"</span> : answer,</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"context"</span> : context</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> evaluator(inputs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Next, we need to format the inputs according to the Indox evaluator's requirements. This involves creating a dictionary that includes the question, the generated answer, and the context from which the answer was derived.</p>
+</section>
+</div>
+<div id="26d130c534ed349f" class="cell code" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:23:22.516004Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:23:21.759373Z&quot;}">
+<div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>inputs <span class="op">=</span> {</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"question"</span> : query,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"answer"</span> : answer,</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"context"</span> : context</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> evaluator(inputs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="da14c97311ae1028" class="cell code" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:23:22.534495Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:23:22.516004Z&quot;}" data-outputid="e982f515-31c3-4b31-89c2-7351a34a67e2">
+<div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="15">
+<div>
 <div>
 
-<table class="dataframe table table-sm table-striped small">
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
-<tr>
-<th>
-</th>
-<th>
-0
-</th>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">0</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<th>
-Precision
-</th>
-<td>
-0.524382
-</td>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Precision</td>
+<td>0.524382</td>
 </tr>
-<tr>
-<th>
-Recall
-</th>
-<td>
-0.537209
-</td>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Recall</td>
+<td>0.537209</td>
 </tr>
-<tr>
-<th>
-F1-score
-</th>
-<td>
-0.530718
-</td>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">F1-score</td>
+<td>0.530718</td>
 </tr>
-<tr>
-<th>
-Toxicity
-</th>
-<td>
-0.074495
-</td>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Toxicity</td>
+<td>0.074495</td>
 </tr>
 </tbody>
 </table>
+
 </div>
-<div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div id="1c0e58d968847693" class="cell code">
+<div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
-</section>
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -858,11 +928,14 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../examples/unstructuredSplit.html" class="pagination-link" aria-label="Unstructured Load And Split">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Unstructured Load And Split</span></span>
+      <a href="../examples/hf_mistral_SimpleReader.html" class="pagination-link" aria-label="How to use Indox Retrieval Augmentation for PDF files">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">How to use Indox Retrieval Augmentation for PDF files</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../examples/openai_clusterSplit.html" class="pagination-link" aria-label="Load And Split With Clustering">
+        <span class="nav-page-text"><span class="chapter-title">Load And Split With Clustering</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
@@ -873,7 +946,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/edit/main/examples/mistral.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/edit/main/examples/mistral_unstructured.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>

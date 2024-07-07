@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.554">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Indox - Load And Split With Clustering</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../examples/mistral_unstructured.html" rel="prev">
+<link href="../logo.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../examples/googleai.html">Examples</a></li><li class="breadcrumb-item"><a href="../examples/openai_clusterSplit.html"><span class="chapter-title">Load And Split With Clustering</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Indox</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Download" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download"><i class="bi bi-download"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Indox.pdf">
+              <i class="bi bi-bi-file-pdf pe-1"></i>
+            Download PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="../Indox.epub">
+              <i class="bi bi-bi-journal pe-1"></i>
+            Download ePub
+            </a>
+          </li>
+      </ul>
+    </div>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Indox Retrieval Augmentation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../quick_start.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Quick Start</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Data Loader And Splitter</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../data_loader_and_splitter/clustered_split.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ClusteredSplit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../data_loader_and_splitter/unstructured_load_and_split.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">UnstructuredLoadAndSplit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../data_loader_and_splitter/simple_load_split.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">SimpleLoadAndSplit</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../embedding_models.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Embedding Models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../llms.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">LLMs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../vector_store.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Vector Stores</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../evaluation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Evaluation Metrics</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../agenticRag.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">AgenticRag</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Examples</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../examples/googleai.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Retrieval Augmentation Using GoogleAi</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../examples/hf_mistral_SimpleReader.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">How to use Indox Retrieval Augmentation for PDF files</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../examples/mistral_unstructured.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mistral As Question Answer Model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../examples/openai_clusterSplit.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Load And Split With Clustering</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#initial-setup" id="toc-initial-setup" class="nav-link active" data-scroll-target="#initial-setup">Initial Setup</a></li>
+  <li><a href="#data-loader-setup" id="toc-data-loader-setup" class="nav-link" data-scroll-target="#data-loader-setup">Data Loader Setup</a></li>
+  <li><a href="#vector-store-connection-and-document-storage" id="toc-vector-store-connection-and-document-storage" class="nav-link" data-scroll-target="#vector-store-connection-and-document-storage">Vector Store Connection and Document Storage</a></li>
+  <li><a href="#querying-and-interpreting-the-response" id="toc-querying-and-interpreting-the-response" class="nav-link" data-scroll-target="#querying-and-interpreting-the-response">Querying and Interpreting the Response</a></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/edit/main/examples/openai_clusterSplit.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../examples/googleai.html">Examples</a></li><li class="breadcrumb-item"><a href="../examples/openai_clusterSplit.html"><span class="chapter-title">Load And Split With Clustering</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-title">Load And Split With Clustering</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/openai_clusterSplit.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" class="img-fluid figure-img" alt="Open In Colab"></a></p>
+<figcaption>Open In Colab</figcaption>
+</figure>
+</div>
+<div id="lj_IWpNvkRbD" class="cell code" data-execution_count="1" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" data-outputid="01134cda-fefa-4c13-847c-d3592dd2547d">
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install indox</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install openai</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install chromadb</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output stream stdout">
+<pre><code>Collecting indox
+  Downloading Indox-0.1.11-py3-none-any.whl (74 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 74.8/74.8 kB 1.1 MB/s eta 0:00:00
+ indox)
+  Downloading langchain-0.2.6-py3-none-any.whl (975 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 975.5/975.5 kB 15.8 MB/s eta 0:00:00
+munity (from indox)
+  Downloading langchain_community-0.2.6-py3-none-any.whl (2.2 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 37.5 MB/s eta 0:00:00
+ indox)
+  Downloading langchain_core-0.2.10-py3-none-any.whl (332 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 332.8/332.8 kB 20.0 MB/s eta 0:00:00
+istralai (from indox)
+  Downloading langchain_mistralai-0.1.9-py3-none-any.whl (13 kB)
+Collecting langchain-openai (from indox)
+  Downloading langchain_openai-0.1.13-py3-none-any.whl (45 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.9/45.9 kB 3.0 MB/s eta 0:00:00
+ indox)
+  Downloading langgraph-0.1.4-py3-none-any.whl (88 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 88.9/88.9 kB 7.5 MB/s eta 0:00:00
+arkdown (from indox)
+  Downloading latex2markdown-0.2.1.tar.gz (161 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 161.7/161.7 kB 13.3 MB/s eta 0:00:00
+etadata (setup.py) ... ent already satisfied: nltk in /usr/local/lib/python3.10/dist-packages (from indox) (3.8.1)
+Requirement already satisfied: numpy in /usr/local/lib/python3.10/dist-packages (from indox) (1.25.2)
+Requirement already satisfied: pandas~=2.0.3 in /usr/local/lib/python3.10/dist-packages (from indox) (2.0.3)
+Collecting PyPDF2 (from indox)
+  Downloading pypdf2-3.0.1-py3-none-any.whl (232 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 232.6/232.6 kB 17.4 MB/s eta 0:00:00
+ent already satisfied: Requests in /usr/local/lib/python3.10/dist-packages (from indox) (2.31.0)
+Requirement already satisfied: setuptools in /usr/local/lib/python3.10/dist-packages (from indox) (67.7.2)
+Requirement already satisfied: tenacity in /usr/local/lib/python3.10/dist-packages (from indox) (8.4.1)
+Collecting tiktoken (from indox)
+  Downloading tiktoken-0.7.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.1 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 21.3 MB/s eta 0:00:00
+ent already satisfied: tokenizers in /usr/local/lib/python3.10/dist-packages (from indox) (0.19.1)
+Collecting umap-learn (from indox)
+  Downloading umap_learn-0.5.6-py3-none-any.whl (85 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 85.7/85.7 kB 7.8 MB/s eta 0:00:00
+ indox)
+  Downloading unstructured-0.14.9-py3-none-any.whl (2.1 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 39.9 MB/s eta 0:00:00
+ indox)
+  Downloading utils-1.0.2.tar.gz (13 kB)
+  Preparing metadata (setup.py) ...  indox)
+  Downloading python_dotenv-1.0.1-py3-none-any.whl (19 kB)
+Requirement already satisfied: python-dateutil&gt;=2.8.2 in /usr/local/lib/python3.10/dist-packages (from pandas~=2.0.3-&gt;indox) (2.8.2)
+Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas~=2.0.3-&gt;indox) (2023.4)
+Requirement already satisfied: tzdata&gt;=2022.1 in /usr/local/lib/python3.10/dist-packages (from pandas~=2.0.3-&gt;indox) (2024.1)
+Requirement already satisfied: PyYAML&gt;=5.3 in /usr/local/lib/python3.10/dist-packages (from langchain-&gt;indox) (6.0.1)
+Requirement already satisfied: SQLAlchemy&lt;3,&gt;=1.4 in /usr/local/lib/python3.10/dist-packages (from langchain-&gt;indox) (2.0.31)
+Requirement already satisfied: aiohttp&lt;4.0.0,&gt;=3.8.3 in /usr/local/lib/python3.10/dist-packages (from langchain-&gt;indox) (3.9.5)
+Requirement already satisfied: async-timeout&lt;5.0.0,&gt;=4.0.0 in /usr/local/lib/python3.10/dist-packages (from langchain-&gt;indox) (4.0.3)
+Collecting langchain-text-splitters&lt;0.3.0,&gt;=0.2.0 (from langchain-&gt;indox)
+  Downloading langchain_text_splitters-0.2.2-py3-none-any.whl (25 kB)
+Collecting langsmith&lt;0.2.0,&gt;=0.1.17 (from langchain-&gt;indox)
+  Downloading langsmith-0.1.82-py3-none-any.whl (127 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 127.4/127.4 kB 6.8 MB/s eta 0:00:00
+ent already satisfied: pydantic&lt;3,&gt;=1 in /usr/local/lib/python3.10/dist-packages (from langchain-&gt;indox) (2.7.4)
+Collecting jsonpatch&lt;2.0,&gt;=1.33 (from langchain-core-&gt;indox)
+  Downloading jsonpatch-1.33-py2.py3-none-any.whl (12 kB)
+Requirement already satisfied: packaging&lt;25,&gt;=23.2 in /usr/local/lib/python3.10/dist-packages (from langchain-core-&gt;indox) (24.1)
+Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /usr/local/lib/python3.10/dist-packages (from Requests-&gt;indox) (3.3.2)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /usr/local/lib/python3.10/dist-packages (from Requests-&gt;indox) (3.7)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1 in /usr/local/lib/python3.10/dist-packages (from Requests-&gt;indox) (2.0.7)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /usr/local/lib/python3.10/dist-packages (from Requests-&gt;indox) (2024.6.2)
+Collecting dataclasses-json&lt;0.7,&gt;=0.5.7 (from langchain-community-&gt;indox)
+  Downloading dataclasses_json-0.6.7-py3-none-any.whl (28 kB)
+Collecting httpx&lt;1,&gt;=0.25.2 (from langchain-mistralai-&gt;indox)
+  Downloading httpx-0.27.0-py3-none-any.whl (75 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 75.6/75.6 kB 7.3 MB/s eta 0:00:00
+ langchain-mistralai-&gt;indox)
+  Downloading httpx_sse-0.4.0-py3-none-any.whl (7.8 kB)
+Requirement already satisfied: huggingface-hub&lt;1.0,&gt;=0.16.4 in /usr/local/lib/python3.10/dist-packages (from tokenizers-&gt;indox) (0.23.4)
+Collecting openai&lt;2.0.0,&gt;=1.32.0 (from langchain-openai-&gt;indox)
+  Downloading openai-1.35.7-py3-none-any.whl (327 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 327.5/327.5 kB 27.2 MB/s eta 0:00:00
+ent already satisfied: regex&gt;=2022.1.18 in /usr/local/lib/python3.10/dist-packages (from tiktoken-&gt;indox) (2024.5.15)
+Requirement already satisfied: click in /usr/local/lib/python3.10/dist-packages (from nltk-&gt;indox) (8.1.7)
+Requirement already satisfied: joblib in /usr/local/lib/python3.10/dist-packages (from nltk-&gt;indox) (1.4.2)
+Requirement already satisfied: tqdm in /usr/local/lib/python3.10/dist-packages (from nltk-&gt;indox) (4.66.4)
+Requirement already satisfied: scipy&gt;=1.3.1 in /usr/local/lib/python3.10/dist-packages (from umap-learn-&gt;indox) (1.11.4)
+Requirement already satisfied: scikit-learn&gt;=0.22 in /usr/local/lib/python3.10/dist-packages (from umap-learn-&gt;indox) (1.2.2)
+Requirement already satisfied: numba&gt;=0.51.2 in /usr/local/lib/python3.10/dist-packages (from umap-learn-&gt;indox) (0.58.1)
+Collecting pynndescent&gt;=0.5 (from umap-learn-&gt;indox)
+  Downloading pynndescent-0.5.13-py3-none-any.whl (56 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 56.9/56.9 kB 2.5 MB/s eta 0:00:00
+ent already satisfied: chardet in /usr/local/lib/python3.10/dist-packages (from unstructured-&gt;indox) (5.2.0)
+Collecting filetype (from unstructured-&gt;indox)
+  Downloading filetype-1.2.0-py2.py3-none-any.whl (19 kB)
+Collecting python-magic (from unstructured-&gt;indox)
+  Downloading python_magic-0.4.27-py2.py3-none-any.whl (13 kB)
+Requirement already satisfied: lxml in /usr/local/lib/python3.10/dist-packages (from unstructured-&gt;indox) (4.9.4)
+Requirement already satisfied: tabulate in /usr/local/lib/python3.10/dist-packages (from unstructured-&gt;indox) (0.9.0)
+Requirement already satisfied: beautifulsoup4 in /usr/local/lib/python3.10/dist-packages (from unstructured-&gt;indox) (4.12.3)
+Collecting emoji (from unstructured-&gt;indox)
+  Downloading emoji-2.12.1-py3-none-any.whl (431 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 431.4/431.4 kB 31.8 MB/s eta 0:00:00
+ unstructured-&gt;indox)
+  Downloading python_iso639-2024.4.27-py3-none-any.whl (274 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 274.7/274.7 kB 24.3 MB/s eta 0:00:00
+ unstructured-&gt;indox)
+  Downloading langdetect-1.0.9.tar.gz (981 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 981.5/981.5 kB 50.6 MB/s eta 0:00:00
+etadata (setup.py) ...  unstructured-&gt;indox)
+  Downloading rapidfuzz-3.9.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.4 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.4/3.4 MB 29.4 MB/s eta 0:00:00
+ unstructured-&gt;indox)
+  Downloading backoff-2.2.1-py3-none-any.whl (15 kB)
+Requirement already satisfied: typing-extensions in /usr/local/lib/python3.10/dist-packages (from unstructured-&gt;indox) (4.12.2)
+Collecting unstructured-client (from unstructured-&gt;indox)
+  Downloading unstructured_client-0.23.8-py3-none-any.whl (40 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 41.0/41.0 kB 2.9 MB/s eta 0:00:00
+ent already satisfied: wrapt in /usr/local/lib/python3.10/dist-packages (from unstructured-&gt;indox) (1.14.1)
+Requirement already satisfied: aiosignal&gt;=1.1.2 in /usr/local/lib/python3.10/dist-packages (from aiohttp&lt;4.0.0,&gt;=3.8.3-&gt;langchain-&gt;indox) (1.3.1)
+Requirement already satisfied: attrs&gt;=17.3.0 in /usr/local/lib/python3.10/dist-packages (from aiohttp&lt;4.0.0,&gt;=3.8.3-&gt;langchain-&gt;indox) (23.2.0)
+Requirement already satisfied: frozenlist&gt;=1.1.1 in /usr/local/lib/python3.10/dist-packages (from aiohttp&lt;4.0.0,&gt;=3.8.3-&gt;langchain-&gt;indox) (1.4.1)
+Requirement already satisfied: multidict&lt;7.0,&gt;=4.5 in /usr/local/lib/python3.10/dist-packages (from aiohttp&lt;4.0.0,&gt;=3.8.3-&gt;langchain-&gt;indox) (6.0.5)
+Requirement already satisfied: yarl&lt;2.0,&gt;=1.0 in /usr/local/lib/python3.10/dist-packages (from aiohttp&lt;4.0.0,&gt;=3.8.3-&gt;langchain-&gt;indox) (1.9.4)
+Collecting marshmallow&lt;4.0.0,&gt;=3.18.0 (from dataclasses-json&lt;0.7,&gt;=0.5.7-&gt;langchain-community-&gt;indox)
+  Downloading marshmallow-3.21.3-py3-none-any.whl (49 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 49.2/49.2 kB 3.0 MB/s eta 0:00:00
+ dataclasses-json&lt;0.7,&gt;=0.5.7-&gt;langchain-community-&gt;indox)
+  Downloading typing_inspect-0.9.0-py3-none-any.whl (8.8 kB)
+Requirement already satisfied: anyio in /usr/local/lib/python3.10/dist-packages (from httpx&lt;1,&gt;=0.25.2-&gt;langchain-mistralai-&gt;indox) (3.7.1)
+Collecting httpcore==1.* (from httpx&lt;1,&gt;=0.25.2-&gt;langchain-mistralai-&gt;indox)
+  Downloading httpcore-1.0.5-py3-none-any.whl (77 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 77.9/77.9 kB 5.1 MB/s eta 0:00:00
+ent already satisfied: sniffio in /usr/local/lib/python3.10/dist-packages (from httpx&lt;1,&gt;=0.25.2-&gt;langchain-mistralai-&gt;indox) (1.3.1)
+Collecting h11&lt;0.15,&gt;=0.13 (from httpcore==1.*-&gt;httpx&lt;1,&gt;=0.25.2-&gt;langchain-mistralai-&gt;indox)
+  Downloading h11-0.14.0-py3-none-any.whl (58 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 58.3/58.3 kB 6.2 MB/s eta 0:00:00
+ent already satisfied: filelock in /usr/local/lib/python3.10/dist-packages (from huggingface-hub&lt;1.0,&gt;=0.16.4-&gt;tokenizers-&gt;indox) (3.15.3)
+Requirement already satisfied: fsspec&gt;=2023.5.0 in /usr/local/lib/python3.10/dist-packages (from huggingface-hub&lt;1.0,&gt;=0.16.4-&gt;tokenizers-&gt;indox) (2023.6.0)
+Collecting jsonpointer&gt;=1.9 (from jsonpatch&lt;2.0,&gt;=1.33-&gt;langchain-core-&gt;indox)
+  Downloading jsonpointer-3.0.0-py2.py3-none-any.whl (7.6 kB)
+Collecting orjson&lt;4.0.0,&gt;=3.9.14 (from langsmith&lt;0.2.0,&gt;=0.1.17-&gt;langchain-&gt;indox)
+  Downloading orjson-3.10.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (144 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 145.0/145.0 kB 4.1 MB/s eta 0:00:00
+ent already satisfied: llvmlite&lt;0.42,&gt;=0.41.0dev0 in /usr/local/lib/python3.10/dist-packages (from numba&gt;=0.51.2-&gt;umap-learn-&gt;indox) (0.41.1)
+Requirement already satisfied: distro&lt;2,&gt;=1.7.0 in /usr/lib/python3/dist-packages (from openai&lt;2.0.0,&gt;=1.32.0-&gt;langchain-openai-&gt;indox) (1.7.0)
+Requirement already satisfied: annotated-types&gt;=0.4.0 in /usr/local/lib/python3.10/dist-packages (from pydantic&lt;3,&gt;=1-&gt;langchain-&gt;indox) (0.7.0)
+Requirement already satisfied: pydantic-core==2.18.4 in /usr/local/lib/python3.10/dist-packages (from pydantic&lt;3,&gt;=1-&gt;langchain-&gt;indox) (2.18.4)
+Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-packages (from python-dateutil&gt;=2.8.2-&gt;pandas~=2.0.3-&gt;indox) (1.16.0)
+Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /usr/local/lib/python3.10/dist-packages (from scikit-learn&gt;=0.22-&gt;umap-learn-&gt;indox) (3.5.0)
+Requirement already satisfied: greenlet!=0.4.17 in /usr/local/lib/python3.10/dist-packages (from SQLAlchemy&lt;3,&gt;=1.4-&gt;langchain-&gt;indox) (3.0.3)
+Requirement already satisfied: soupsieve&gt;1.2 in /usr/local/lib/python3.10/dist-packages (from beautifulsoup4-&gt;unstructured-&gt;indox) (2.5)
+Collecting deepdiff&gt;=6.0 (from unstructured-client-&gt;unstructured-&gt;indox)
+  Downloading deepdiff-7.0.1-py3-none-any.whl (80 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 80.8/80.8 kB 7.9 MB/s eta 0:00:00
+ unstructured-client-&gt;unstructured-&gt;indox)
+  Downloading jsonpath_python-1.0.6-py3-none-any.whl (7.6 kB)
+Collecting mypy-extensions&gt;=1.0.0 (from unstructured-client-&gt;unstructured-&gt;indox)
+  Downloading mypy_extensions-1.0.0-py3-none-any.whl (4.7 kB)
+Requirement already satisfied: nest-asyncio&gt;=1.6.0 in /usr/local/lib/python3.10/dist-packages (from unstructured-client-&gt;unstructured-&gt;indox) (1.6.0)
+Collecting pypdf&gt;=4.0 (from unstructured-client-&gt;unstructured-&gt;indox)
+  Downloading pypdf-4.2.0-py3-none-any.whl (290 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 290.4/290.4 kB 28.0 MB/s eta 0:00:00
+ unstructured-client-&gt;unstructured-&gt;indox)
+  Downloading requests_toolbelt-1.0.0-py2.py3-none-any.whl (54 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 54.5/54.5 kB 6.1 MB/s eta 0:00:00
+ent already satisfied: exceptiongroup in /usr/local/lib/python3.10/dist-packages (from anyio-&gt;httpx&lt;1,&gt;=0.25.2-&gt;langchain-mistralai-&gt;indox) (1.2.1)
+Collecting ordered-set&lt;4.2.0,&gt;=4.1.0 (from deepdiff&gt;=6.0-&gt;unstructured-client-&gt;unstructured-&gt;indox)
+  Downloading ordered_set-4.1.0-py3-none-any.whl (7.6 kB)
+Building wheels for collected packages: utils, latex2markdown, langdetect
+  Building wheel for utils (setup.py) ... e=utils-1.0.2-py2.py3-none-any.whl size=13906 sha256=9fe6d4555192f730ae4a4e26e3b9a6851d28fecf4686af0c10654dcdc2237859
+  Stored in directory: /root/.cache/pip/wheels/b8/39/f5/9d0ca31dba85773ececf0a7f5469f18810e1c8a8ed9da28ca7
+  Building wheel for latex2markdown (setup.py) ... arkdown: filename=latex2markdown-0.2.1-py3-none-any.whl size=8983 sha256=deef9a64953194243b34d5d77fb3cea36ab147b8cd16c10d7fbb4c214278eb57
+  Stored in directory: /root/.cache/pip/wheels/48/d0/8a/5009532cfcf3a270e1126c6a46d73ab028737188faf768fbba
+  Building wheel for langdetect (setup.py) ... e=langdetect-1.0.9-py3-none-any.whl size=993227 sha256=8560ff85a61a4a8717bc5761ac23954579deeca8028587ec83e5f67a4a99f2c9
+  Stored in directory: /root/.cache/pip/wheels/95/03/7d/59ea870c70ce4e5a370638b5462a7711ab78fba2f655d05106
+Successfully built utils latex2markdown langdetect
+Installing collected packages: latex2markdown, filetype, utils, rapidfuzz, python-magic, python-iso639, python-dotenv, PyPDF2, pypdf, orjson, ordered-set, mypy-extensions, marshmallow, langdetect, jsonpointer, jsonpath-python, httpx-sse, h11, emoji, backoff, typing-inspect, tiktoken, requests-toolbelt, jsonpatch, httpcore, deepdiff, pynndescent, langsmith, httpx, dataclasses-json, unstructured-client, umap-learn, openai, langchain-core, unstructured, langgraph, langchain-text-splitters, langchain-openai, langchain-mistralai, langchain, langchain-community, indox
+Successfully installed PyPDF2-3.0.1 backoff-2.2.1 dataclasses-json-0.6.7 deepdiff-7.0.1 emoji-2.12.1 filetype-1.2.0 h11-0.14.0 httpcore-1.0.5 httpx-0.27.0 httpx-sse-0.4.0 indox-0.1.11 jsonpatch-1.33 jsonpath-python-1.0.6 jsonpointer-3.0.0 langchain-0.2.6 langchain-community-0.2.6 langchain-core-0.2.10 langchain-mistralai-0.1.9 langchain-openai-0.1.13 langchain-text-splitters-0.2.2 langdetect-1.0.9 langgraph-0.1.4 langsmith-0.1.82 latex2markdown-0.2.1 marshmallow-3.21.3 mypy-extensions-1.0.0 openai-1.35.7 ordered-set-4.1.0 orjson-3.10.5 pynndescent-0.5.13 pypdf-4.2.0 python-dotenv-1.0.1 python-iso639-2024.4.27 python-magic-0.4.27 rapidfuzz-3.9.3 requests-toolbelt-1.0.0 tiktoken-0.7.0 typing-inspect-0.9.0 umap-learn-0.5.6 unstructured-0.14.9 unstructured-client-0.23.8 utils-1.0.2
+Requirement already satisfied: openai in /usr/local/lib/python3.10/dist-packages (1.35.7)
+Requirement already satisfied: anyio&lt;5,&gt;=3.5.0 in /usr/local/lib/python3.10/dist-packages (from openai) (3.7.1)
+Requirement already satisfied: distro&lt;2,&gt;=1.7.0 in /usr/lib/python3/dist-packages (from openai) (1.7.0)
+Requirement already satisfied: httpx&lt;1,&gt;=0.23.0 in /usr/local/lib/python3.10/dist-packages (from openai) (0.27.0)
+Requirement already satisfied: pydantic&lt;3,&gt;=1.9.0 in /usr/local/lib/python3.10/dist-packages (from openai) (2.7.4)
+Requirement already satisfied: sniffio in /usr/local/lib/python3.10/dist-packages (from openai) (1.3.1)
+Requirement already satisfied: tqdm&gt;4 in /usr/local/lib/python3.10/dist-packages (from openai) (4.66.4)
+Requirement already satisfied: typing-extensions&lt;5,&gt;=4.7 in /usr/local/lib/python3.10/dist-packages (from openai) (4.12.2)
+Requirement already satisfied: idna&gt;=2.8 in /usr/local/lib/python3.10/dist-packages (from anyio&lt;5,&gt;=3.5.0-&gt;openai) (3.7)
+Requirement already satisfied: exceptiongroup in /usr/local/lib/python3.10/dist-packages (from anyio&lt;5,&gt;=3.5.0-&gt;openai) (1.2.1)
+Requirement already satisfied: certifi in /usr/local/lib/python3.10/dist-packages (from httpx&lt;1,&gt;=0.23.0-&gt;openai) (2024.6.2)
+Requirement already satisfied: httpcore==1.* in /usr/local/lib/python3.10/dist-packages (from httpx&lt;1,&gt;=0.23.0-&gt;openai) (1.0.5)
+Requirement already satisfied: h11&lt;0.15,&gt;=0.13 in /usr/local/lib/python3.10/dist-packages (from httpcore==1.*-&gt;httpx&lt;1,&gt;=0.23.0-&gt;openai) (0.14.0)
+Requirement already satisfied: annotated-types&gt;=0.4.0 in /usr/local/lib/python3.10/dist-packages (from pydantic&lt;3,&gt;=1.9.0-&gt;openai) (0.7.0)
+Requirement already satisfied: pydantic-core==2.18.4 in /usr/local/lib/python3.10/dist-packages (from pydantic&lt;3,&gt;=1.9.0-&gt;openai) (2.18.4)
+Collecting chromadb
+  Downloading chromadb-0.5.3-py3-none-any.whl (559 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 559.5/559.5 kB 9.1 MB/s eta 0:00:00
+ent already satisfied: build&gt;=1.0.3 in /usr/local/lib/python3.10/dist-packages (from chromadb) (1.2.1)
+Requirement already satisfied: requests&gt;=2.28 in /usr/local/lib/python3.10/dist-packages (from chromadb) (2.31.0)
+Requirement already satisfied: pydantic&gt;=1.9 in /usr/local/lib/python3.10/dist-packages (from chromadb) (2.7.4)
+Collecting chroma-hnswlib==0.7.3 (from chromadb)
+  Downloading chroma_hnswlib-0.7.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.4 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.4/2.4 MB 45.2 MB/s eta 0:00:00
+ chromadb)
+  Downloading fastapi-0.111.0-py3-none-any.whl (91 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 92.0/92.0 kB 9.9 MB/s eta 0:00:00
+ chromadb)
+  Downloading uvicorn-0.30.1-py3-none-any.whl (62 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.4/62.4 kB 6.7 MB/s eta 0:00:00
+ent already satisfied: numpy&lt;2.0.0,&gt;=1.22.5 in /usr/local/lib/python3.10/dist-packages (from chromadb) (1.25.2)
+Collecting posthog&gt;=2.4.0 (from chromadb)
+  Downloading posthog-3.5.0-py2.py3-none-any.whl (41 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 41.3/41.3 kB 4.3 MB/s eta 0:00:00
+ent already satisfied: typing-extensions&gt;=4.5.0 in /usr/local/lib/python3.10/dist-packages (from chromadb) (4.12.2)
+Collecting onnxruntime&gt;=1.14.1 (from chromadb)
+  Downloading onnxruntime-1.18.1-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (6.8 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.8/6.8 MB 81.7 MB/s eta 0:00:00
+etry-api&gt;=1.2.0 (from chromadb)
+  Downloading opentelemetry_api-1.25.0-py3-none-any.whl (59 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 59.9/59.9 kB 6.9 MB/s eta 0:00:00
+etry-exporter-otlp-proto-grpc&gt;=1.2.0 (from chromadb)
+  Downloading opentelemetry_exporter_otlp_proto_grpc-1.25.0-py3-none-any.whl (18 kB)
+Collecting opentelemetry-instrumentation-fastapi&gt;=0.41b0 (from chromadb)
+  Downloading opentelemetry_instrumentation_fastapi-0.46b0-py3-none-any.whl (11 kB)
+Collecting opentelemetry-sdk&gt;=1.2.0 (from chromadb)
+  Downloading opentelemetry_sdk-1.25.0-py3-none-any.whl (107 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 107.0/107.0 kB 11.1 MB/s eta 0:00:00
+ent already satisfied: tokenizers&gt;=0.13.2 in /usr/local/lib/python3.10/dist-packages (from chromadb) (0.19.1)
+Collecting pypika&gt;=0.48.9 (from chromadb)
+  Downloading PyPika-0.48.9.tar.gz (67 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 67.3/67.3 kB 5.8 MB/s eta 0:00:00
+ents to build wheel ... etadata (pyproject.toml) ... ent already satisfied: tqdm&gt;=4.65.0 in /usr/local/lib/python3.10/dist-packages (from chromadb) (4.66.4)
+Collecting overrides&gt;=7.3.1 (from chromadb)
+  Downloading overrides-7.7.0-py3-none-any.whl (17 kB)
+Requirement already satisfied: importlib-resources in /usr/local/lib/python3.10/dist-packages (from chromadb) (6.4.0)
+Requirement already satisfied: grpcio&gt;=1.58.0 in /usr/local/lib/python3.10/dist-packages (from chromadb) (1.64.1)
+Collecting bcrypt&gt;=4.0.1 (from chromadb)
+  Downloading bcrypt-4.1.3-cp39-abi3-manylinux_2_28_x86_64.whl (283 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 283.7/283.7 kB 27.6 MB/s eta 0:00:00
+ent already satisfied: typer&gt;=0.9.0 in /usr/local/lib/python3.10/dist-packages (from chromadb) (0.12.3)
+Collecting kubernetes&gt;=28.1.0 (from chromadb)
+  Downloading kubernetes-30.1.0-py2.py3-none-any.whl (1.7 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.7/1.7 MB 68.0 MB/s eta 0:00:00
+ent already satisfied: tenacity&gt;=8.2.3 in /usr/local/lib/python3.10/dist-packages (from chromadb) (8.4.1)
+Requirement already satisfied: PyYAML&gt;=6.0.0 in /usr/local/lib/python3.10/dist-packages (from chromadb) (6.0.1)
+Collecting mmh3&gt;=4.0.1 (from chromadb)
+  Downloading mmh3-4.1.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (67 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 67.6/67.6 kB 1.6 MB/s eta 0:00:00
+ent already satisfied: orjson&gt;=3.9.12 in /usr/local/lib/python3.10/dist-packages (from chromadb) (3.10.5)
+Requirement already satisfied: httpx&gt;=0.27.0 in /usr/local/lib/python3.10/dist-packages (from chromadb) (0.27.0)
+Requirement already satisfied: packaging&gt;=19.1 in /usr/local/lib/python3.10/dist-packages (from build&gt;=1.0.3-&gt;chromadb) (24.1)
+Requirement already satisfied: pyproject_hooks in /usr/local/lib/python3.10/dist-packages (from build&gt;=1.0.3-&gt;chromadb) (1.1.0)
+Requirement already satisfied: tomli&gt;=1.1.0 in /usr/local/lib/python3.10/dist-packages (from build&gt;=1.0.3-&gt;chromadb) (2.0.1)
+Collecting starlette&lt;0.38.0,&gt;=0.37.2 (from fastapi&gt;=0.95.2-&gt;chromadb)
+  Downloading starlette-0.37.2-py3-none-any.whl (71 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 71.9/71.9 kB 7.1 MB/s eta 0:00:00
+ fastapi&gt;=0.95.2-&gt;chromadb)
+  Downloading fastapi_cli-0.0.4-py3-none-any.whl (9.5 kB)
+Requirement already satisfied: jinja2&gt;=2.11.2 in /usr/local/lib/python3.10/dist-packages (from fastapi&gt;=0.95.2-&gt;chromadb) (3.1.4)
+Collecting python-multipart&gt;=0.0.7 (from fastapi&gt;=0.95.2-&gt;chromadb)
+  Downloading python_multipart-0.0.9-py3-none-any.whl (22 kB)
+Collecting ujson!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0,&gt;=4.0.1 (from fastapi&gt;=0.95.2-&gt;chromadb)
+  Downloading ujson-5.10.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (53 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 53.6/53.6 kB 5.4 MB/s eta 0:00:00
+ail_validator&gt;=2.0.0 (from fastapi&gt;=0.95.2-&gt;chromadb)
+  Downloading email_validator-2.2.0-py3-none-any.whl (33 kB)
+Requirement already satisfied: anyio in /usr/local/lib/python3.10/dist-packages (from httpx&gt;=0.27.0-&gt;chromadb) (3.7.1)
+Requirement already satisfied: certifi in /usr/local/lib/python3.10/dist-packages (from httpx&gt;=0.27.0-&gt;chromadb) (2024.6.2)
+Requirement already satisfied: httpcore==1.* in /usr/local/lib/python3.10/dist-packages (from httpx&gt;=0.27.0-&gt;chromadb) (1.0.5)
+Requirement already satisfied: idna in /usr/local/lib/python3.10/dist-packages (from httpx&gt;=0.27.0-&gt;chromadb) (3.7)
+Requirement already satisfied: sniffio in /usr/local/lib/python3.10/dist-packages (from httpx&gt;=0.27.0-&gt;chromadb) (1.3.1)
+Requirement already satisfied: h11&lt;0.15,&gt;=0.13 in /usr/local/lib/python3.10/dist-packages (from httpcore==1.*-&gt;httpx&gt;=0.27.0-&gt;chromadb) (0.14.0)
+Requirement already satisfied: six&gt;=1.9.0 in /usr/local/lib/python3.10/dist-packages (from kubernetes&gt;=28.1.0-&gt;chromadb) (1.16.0)
+Requirement already satisfied: python-dateutil&gt;=2.5.3 in /usr/local/lib/python3.10/dist-packages (from kubernetes&gt;=28.1.0-&gt;chromadb) (2.8.2)
+Requirement already satisfied: google-auth&gt;=1.0.1 in /usr/local/lib/python3.10/dist-packages (from kubernetes&gt;=28.1.0-&gt;chromadb) (2.27.0)
+Requirement already satisfied: websocket-client!=0.40.0,!=0.41.*,!=0.42.*,&gt;=0.32.0 in /usr/local/lib/python3.10/dist-packages (from kubernetes&gt;=28.1.0-&gt;chromadb) (1.8.0)
+Requirement already satisfied: requests-oauthlib in /usr/local/lib/python3.10/dist-packages (from kubernetes&gt;=28.1.0-&gt;chromadb) (1.3.1)
+Requirement already satisfied: oauthlib&gt;=3.2.2 in /usr/local/lib/python3.10/dist-packages (from kubernetes&gt;=28.1.0-&gt;chromadb) (3.2.2)
+Requirement already satisfied: urllib3&gt;=1.24.2 in /usr/local/lib/python3.10/dist-packages (from kubernetes&gt;=28.1.0-&gt;chromadb) (2.0.7)
+Collecting coloredlogs (from onnxruntime&gt;=1.14.1-&gt;chromadb)
+  Downloading coloredlogs-15.0.1-py2.py3-none-any.whl (46 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.0/46.0 kB 4.4 MB/s eta 0:00:00
+ent already satisfied: flatbuffers in /usr/local/lib/python3.10/dist-packages (from onnxruntime&gt;=1.14.1-&gt;chromadb) (24.3.25)
+Requirement already satisfied: protobuf in /usr/local/lib/python3.10/dist-packages (from onnxruntime&gt;=1.14.1-&gt;chromadb) (3.20.3)
+Requirement already satisfied: sympy in /usr/local/lib/python3.10/dist-packages (from onnxruntime&gt;=1.14.1-&gt;chromadb) (1.12.1)
+Collecting deprecated&gt;=1.2.6 (from opentelemetry-api&gt;=1.2.0-&gt;chromadb)
+  Downloading Deprecated-1.2.14-py2.py3-none-any.whl (9.6 kB)
+Collecting importlib-metadata&lt;=7.1,&gt;=6.0 (from opentelemetry-api&gt;=1.2.0-&gt;chromadb)
+  Downloading importlib_metadata-7.1.0-py3-none-any.whl (24 kB)
+Requirement already satisfied: googleapis-common-protos~=1.52 in /usr/local/lib/python3.10/dist-packages (from opentelemetry-exporter-otlp-proto-grpc&gt;=1.2.0-&gt;chromadb) (1.63.1)
+Collecting opentelemetry-exporter-otlp-proto-common==1.25.0 (from opentelemetry-exporter-otlp-proto-grpc&gt;=1.2.0-&gt;chromadb)
+  Downloading opentelemetry_exporter_otlp_proto_common-1.25.0-py3-none-any.whl (17 kB)
+Collecting opentelemetry-proto==1.25.0 (from opentelemetry-exporter-otlp-proto-grpc&gt;=1.2.0-&gt;chromadb)
+  Downloading opentelemetry_proto-1.25.0-py3-none-any.whl (52 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 52.5/52.5 kB 5.6 MB/s eta 0:00:00
+etry-instrumentation-asgi==0.46b0 (from opentelemetry-instrumentation-fastapi&gt;=0.41b0-&gt;chromadb)
+  Downloading opentelemetry_instrumentation_asgi-0.46b0-py3-none-any.whl (14 kB)
+Collecting opentelemetry-instrumentation==0.46b0 (from opentelemetry-instrumentation-fastapi&gt;=0.41b0-&gt;chromadb)
+  Downloading opentelemetry_instrumentation-0.46b0-py3-none-any.whl (29 kB)
+Collecting opentelemetry-semantic-conventions==0.46b0 (from opentelemetry-instrumentation-fastapi&gt;=0.41b0-&gt;chromadb)
+  Downloading opentelemetry_semantic_conventions-0.46b0-py3-none-any.whl (130 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 130.5/130.5 kB 14.0 MB/s eta 0:00:00
+etry-util-http==0.46b0 (from opentelemetry-instrumentation-fastapi&gt;=0.41b0-&gt;chromadb)
+  Downloading opentelemetry_util_http-0.46b0-py3-none-any.whl (6.9 kB)
+Requirement already satisfied: setuptools&gt;=16.0 in /usr/local/lib/python3.10/dist-packages (from opentelemetry-instrumentation==0.46b0-&gt;opentelemetry-instrumentation-fastapi&gt;=0.41b0-&gt;chromadb) (67.7.2)
+Requirement already satisfied: wrapt&lt;2.0.0,&gt;=1.0.0 in /usr/local/lib/python3.10/dist-packages (from opentelemetry-instrumentation==0.46b0-&gt;opentelemetry-instrumentation-fastapi&gt;=0.41b0-&gt;chromadb) (1.14.1)
+Collecting asgiref~=3.0 (from opentelemetry-instrumentation-asgi==0.46b0-&gt;opentelemetry-instrumentation-fastapi&gt;=0.41b0-&gt;chromadb)
+  Downloading asgiref-3.8.1-py3-none-any.whl (23 kB)
+Collecting monotonic&gt;=1.5 (from posthog&gt;=2.4.0-&gt;chromadb)
+  Downloading monotonic-1.6-py2.py3-none-any.whl (8.2 kB)
+Requirement already satisfied: backoff&gt;=1.10.0 in /usr/local/lib/python3.10/dist-packages (from posthog&gt;=2.4.0-&gt;chromadb) (2.2.1)
+Requirement already satisfied: annotated-types&gt;=0.4.0 in /usr/local/lib/python3.10/dist-packages (from pydantic&gt;=1.9-&gt;chromadb) (0.7.0)
+Requirement already satisfied: pydantic-core==2.18.4 in /usr/local/lib/python3.10/dist-packages (from pydantic&gt;=1.9-&gt;chromadb) (2.18.4)
+Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /usr/local/lib/python3.10/dist-packages (from requests&gt;=2.28-&gt;chromadb) (3.3.2)
+Requirement already satisfied: huggingface-hub&lt;1.0,&gt;=0.16.4 in /usr/local/lib/python3.10/dist-packages (from tokenizers&gt;=0.13.2-&gt;chromadb) (0.23.4)
+Requirement already satisfied: click&gt;=8.0.0 in /usr/local/lib/python3.10/dist-packages (from typer&gt;=0.9.0-&gt;chromadb) (8.1.7)
+Requirement already satisfied: shellingham&gt;=1.3.0 in /usr/local/lib/python3.10/dist-packages (from typer&gt;=0.9.0-&gt;chromadb) (1.5.4)
+Requirement already satisfied: rich&gt;=10.11.0 in /usr/local/lib/python3.10/dist-packages (from typer&gt;=0.9.0-&gt;chromadb) (13.7.1)
+Collecting httptools&gt;=0.5.0 (from uvicorn[standard]&gt;=0.18.3-&gt;chromadb)
+  Downloading httptools-0.6.1-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (341 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 341.4/341.4 kB 31.3 MB/s eta 0:00:00
+ent already satisfied: python-dotenv&gt;=0.13 in /usr/local/lib/python3.10/dist-packages (from uvicorn[standard]&gt;=0.18.3-&gt;chromadb) (1.0.1)
+Collecting uvloop!=0.15.0,!=0.15.1,&gt;=0.14.0 (from uvicorn[standard]&gt;=0.18.3-&gt;chromadb)
+  Downloading uvloop-0.19.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.4 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.4/3.4 MB 39.6 MB/s eta 0:00:00
+ uvicorn[standard]&gt;=0.18.3-&gt;chromadb)
+  Downloading watchfiles-0.22.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.2 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 48.5 MB/s eta 0:00:00
+ uvicorn[standard]&gt;=0.18.3-&gt;chromadb)
+  Downloading websockets-12.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (130 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 130.2/130.2 kB 14.7 MB/s eta 0:00:00
+ email_validator&gt;=2.0.0-&gt;fastapi&gt;=0.95.2-&gt;chromadb)
+  Downloading dnspython-2.6.1-py3-none-any.whl (307 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 307.7/307.7 kB 26.4 MB/s eta 0:00:00
+ent already satisfied: cachetools&lt;6.0,&gt;=2.0.0 in /usr/local/lib/python3.10/dist-packages (from google-auth&gt;=1.0.1-&gt;kubernetes&gt;=28.1.0-&gt;chromadb) (5.3.3)
+Requirement already satisfied: pyasn1-modules&gt;=0.2.1 in /usr/local/lib/python3.10/dist-packages (from google-auth&gt;=1.0.1-&gt;kubernetes&gt;=28.1.0-&gt;chromadb) (0.4.0)
+Requirement already satisfied: rsa&lt;5,&gt;=3.1.4 in /usr/local/lib/python3.10/dist-packages (from google-auth&gt;=1.0.1-&gt;kubernetes&gt;=28.1.0-&gt;chromadb) (4.9)
+Requirement already satisfied: filelock in /usr/local/lib/python3.10/dist-packages (from huggingface-hub&lt;1.0,&gt;=0.16.4-&gt;tokenizers&gt;=0.13.2-&gt;chromadb) (3.15.3)
+Requirement already satisfied: fsspec&gt;=2023.5.0 in /usr/local/lib/python3.10/dist-packages (from huggingface-hub&lt;1.0,&gt;=0.16.4-&gt;tokenizers&gt;=0.13.2-&gt;chromadb) (2023.6.0)
+Requirement already satisfied: zipp&gt;=0.5 in /usr/local/lib/python3.10/dist-packages (from importlib-metadata&lt;=7.1,&gt;=6.0-&gt;opentelemetry-api&gt;=1.2.0-&gt;chromadb) (3.19.2)
+Requirement already satisfied: MarkupSafe&gt;=2.0 in /usr/local/lib/python3.10/dist-packages (from jinja2&gt;=2.11.2-&gt;fastapi&gt;=0.95.2-&gt;chromadb) (2.1.5)
+Requirement already satisfied: markdown-it-py&gt;=2.2.0 in /usr/local/lib/python3.10/dist-packages (from rich&gt;=10.11.0-&gt;typer&gt;=0.9.0-&gt;chromadb) (3.0.0)
+Requirement already satisfied: pygments&lt;3.0.0,&gt;=2.13.0 in /usr/local/lib/python3.10/dist-packages (from rich&gt;=10.11.0-&gt;typer&gt;=0.9.0-&gt;chromadb) (2.16.1)
+Requirement already satisfied: exceptiongroup in /usr/local/lib/python3.10/dist-packages (from anyio-&gt;httpx&gt;=0.27.0-&gt;chromadb) (1.2.1)
+Collecting humanfriendly&gt;=9.1 (from coloredlogs-&gt;onnxruntime&gt;=1.14.1-&gt;chromadb)
+  Downloading humanfriendly-10.0-py2.py3-none-any.whl (86 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 86.8/86.8 kB 10.6 MB/s eta 0:00:00
+ent already satisfied: mpmath&lt;1.4.0,&gt;=1.1.0 in /usr/local/lib/python3.10/dist-packages (from sympy-&gt;onnxruntime&gt;=1.14.1-&gt;chromadb) (1.3.0)
+Requirement already satisfied: mdurl~=0.1 in /usr/local/lib/python3.10/dist-packages (from markdown-it-py&gt;=2.2.0-&gt;rich&gt;=10.11.0-&gt;typer&gt;=0.9.0-&gt;chromadb) (0.1.2)
+Requirement already satisfied: pyasn1&lt;0.7.0,&gt;=0.4.6 in /usr/local/lib/python3.10/dist-packages (from pyasn1-modules&gt;=0.2.1-&gt;google-auth&gt;=1.0.1-&gt;kubernetes&gt;=28.1.0-&gt;chromadb) (0.6.0)
+Building wheels for collected packages: pypika
+  Building wheel for pypika (pyproject.toml) ... e=PyPika-0.48.9-py2.py3-none-any.whl size=53726 sha256=7d704afd4589850cf5ea3f7c5d2129673ed73b78f268d3a6837e5fe024134ca4
+  Stored in directory: /root/.cache/pip/wheels/e1/26/51/d0bffb3d2fd82256676d7ad3003faea3bd6dddc9577af665f4
+Successfully built pypika
+Installing collected packages: pypika, monotonic, mmh3, websockets, uvloop, uvicorn, ujson, python-multipart, overrides, opentelemetry-util-http, opentelemetry-proto, importlib-metadata, humanfriendly, httptools, dnspython, deprecated, chroma-hnswlib, bcrypt, asgiref, watchfiles, starlette, posthog, opentelemetry-exporter-otlp-proto-common, opentelemetry-api, email_validator, coloredlogs, opentelemetry-semantic-conventions, opentelemetry-instrumentation, onnxruntime, kubernetes, opentelemetry-sdk, opentelemetry-instrumentation-asgi, fastapi-cli, opentelemetry-instrumentation-fastapi, opentelemetry-exporter-otlp-proto-grpc, fastapi, chromadb
+  Attempting uninstall: importlib-metadata
+    Found existing installation: importlib_metadata 7.2.0
+    Uninstalling importlib_metadata-7.2.0:
+      Successfully uninstalled importlib_metadata-7.2.0
+Successfully installed asgiref-3.8.1 bcrypt-4.1.3 chroma-hnswlib-0.7.3 chromadb-0.5.3 coloredlogs-15.0.1 deprecated-1.2.14 dnspython-2.6.1 email_validator-2.2.0 fastapi-0.111.0 fastapi-cli-0.0.4 httptools-0.6.1 humanfriendly-10.0 importlib-metadata-7.1.0 kubernetes-30.1.0 mmh3-4.1.0 monotonic-1.6 onnxruntime-1.18.1 opentelemetry-api-1.25.0 opentelemetry-exporter-otlp-proto-common-1.25.0 opentelemetry-exporter-otlp-proto-grpc-1.25.0 opentelemetry-instrumentation-0.46b0 opentelemetry-instrumentation-asgi-0.46b0 opentelemetry-instrumentation-fastapi-0.46b0 opentelemetry-proto-1.25.0 opentelemetry-sdk-1.25.0 opentelemetry-semantic-conventions-0.46b0 opentelemetry-util-http-0.46b0 overrides-7.7.0 posthog-3.5.0 pypika-0.48.9 python-multipart-0.0.9 starlette-0.37.2 ujson-5.10.0 uvicorn-0.30.1 uvloop-0.19.0 watchfiles-0.22.0 websockets-12.0</code></pre>
+</div>
+</div>
+<div id="ec52f0c0a7c8f592" class="cell code" data-execution_count="2" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:26:51.269942Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:26:51.252915Z&quot;}">
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>OPENAI_API_KEY <span class="op">=</span> os.getenv(<span class="st">'OPENAI_API_KEY'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="7f71c391" class="cell markdown">
+<section id="initial-setup" class="level2">
+<h2 class="anchored" data-anchor-id="initial-setup">Initial Setup</h2>
+<p>The following imports are essential for setting up the Indox application. These imports include the main Indox retrieval augmentation module, question-answering models, embeddings, and data loader splitter.</p>
+</section>
+</div>
+<div id="506326bc" class="cell code" data-execution_count="3" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:27:01.771108Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:26:51.269942Z&quot;}">
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox <span class="im">import</span> IndoxRetrievalAugmentation</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.llms <span class="im">import</span> OpenAi</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.embeddings <span class="im">import</span> OpenAiEmbedding</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.data_loader_splitter <span class="im">import</span> ClusteredSplit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="d8c124de" class="cell markdown">
+<p>In this step, we initialize the Indox Retrieval Augmentation, the QA model, and the embedding model. Note that the models used for QA and embedding can vary depending on the specific requirements.</p>
+</div>
+<div id="8da2931c" class="cell code" data-execution_count="4" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:27:03.779477Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:27:01.772413Z&quot;}">
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Indox <span class="op">=</span> IndoxRetrievalAugmentation()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>qa_model <span class="op">=</span> OpenAi(api_key<span class="op">=</span>OPENAI_API_KEY,model<span class="op">=</span><span class="st">"gpt-3.5-turbo-0125"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>embed <span class="op">=</span> OpenAiEmbedding(api_key<span class="op">=</span>OPENAI_API_KEY,model<span class="op">=</span><span class="st">"text-embedding-3-small"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="7ddc88c0" class="cell markdown">
+<section id="data-loader-setup" class="level2">
+<h2 class="anchored" data-anchor-id="data-loader-setup">Data Loader Setup</h2>
+<p>We set up the data loader using the <code>ClusteredSplit</code> class. This step involves loading documents, configuring embeddings, and setting options for processing the text.</p>
+</section>
+</div>
+<div id="4f0280aa44ef805b" class="cell code">
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>wget https:<span class="op">//</span>raw.githubusercontent.com<span class="op">/</span>osllmai<span class="op">/</span>inDox<span class="op">/</span>master<span class="op">/</span>Demo<span class="op">/</span>sample.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="8c5de9dc" class="cell code" data-execution_count="5" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:27:03.785039Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:27:03.779883Z&quot;}">
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>loader_splitter <span class="op">=</span> ClusteredSplit(file_path<span class="op">=</span><span class="st">"sample.txt"</span>,embeddings<span class="op">=</span>embed,remove_sword<span class="op">=</span><span class="va">False</span>,re_chunk<span class="op">=</span><span class="va">False</span>,chunk_size<span class="op">=</span><span class="dv">300</span>,summary_model<span class="op">=</span>qa_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="f95f29ed" class="cell code" data-execution_count="6" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:27:09.779603Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:27:03.785039Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" data-outputid="60771a97-425e-47bb-af05-f78f49ede7c3">
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>docs <span class="op">=</span> loader_splitter.load_and_chunk()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output stream stdout">
+<pre><code>--Generated 1 clusters--</code></pre>
+</div>
+</div>
+<div id="b8963612" class="cell markdown">
+<section id="vector-store-connection-and-document-storage" class="level2">
+<h2 class="anchored" data-anchor-id="vector-store-connection-and-document-storage">Vector Store Connection and Document Storage</h2>
+<p>In this step, we connect the Indox application to the vector store and store the processed documents.</p>
+</section>
+</div>
+<div id="28db7399" class="cell code" data-execution_count="7" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:27:10.152713Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:27:09.787673Z&quot;}">
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> indox.vector_stores <span class="im">import</span> ChromaVectorStore</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> ChromaVectorStore(collection_name<span class="op">=</span><span class="st">"sample"</span>,embedding<span class="op">=</span>embed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="74fda1aa" class="cell code" data-execution_count="8" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:27:10.157286Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:27:10.152713Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" data-outputid="63b0ebd8-9ef4-4166-f523-c6ccc253644e">
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>Indox.connect_to_vectorstore(db)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="8">
+<pre><code>&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x7ecf02bf1b10&gt;</code></pre>
+</div>
+</div>
+<div id="f0554a96" class="cell code" data-execution_count="9" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:27:11.742575Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:27:10.157286Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" data-outputid="dbdcd424-b293-488d-b049-52ba525b75fa">
+<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>Indox.store_in_vectorstore(docs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="9">
+<pre><code>&lt;indox.vector_stores.Chroma.ChromaVectorStore at 0x7ecf02bf1b10&gt;</code></pre>
+</div>
+</div>
+<div id="84dceb32" class="cell markdown">
+<section id="querying-and-interpreting-the-response" class="level2">
+<h2 class="anchored" data-anchor-id="querying-and-interpreting-the-response">Querying and Interpreting the Response</h2>
+<p>In this step, we query the Indox application with a specific question and use the QA model to get the response.</p>
+</section>
+</div>
+<div id="e9e2a586" class="cell code" data-execution_count="10" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:27:22.888584Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:27:22.879723Z&quot;}">
+<div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>retriever <span class="op">=</span> Indox.QuestionAnswer(vector_database<span class="op">=</span>db,llm<span class="op">=</span>qa_model,top_k<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="c89e2597" class="cell code" data-execution_count="11" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:27:27.610041Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:27:23.181547Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:122}" data-outputid="66e536cc-ebc9-4cbc-860c-161232c9c3ec">
+<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>retriever.invoke(query<span class="op">=</span><span class="st">"How cinderella reach happy ending?"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="11">
+<div class="sourceCode" id="cb17"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">"type"</span><span class="fu">:</span><span class="st">"string"</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="7b766b26" class="cell code" data-execution_count="12" data-executetime="{&quot;end_time&quot;:&quot;2024-06-09T10:27:27.615330Z&quot;,&quot;start_time&quot;:&quot;2024-06-09T10:27:27.610041Z&quot;}" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" data-outputid="687c96d3-2363-4355-fec2-af0e7aa43098">
+<div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>retriever.context</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="output execute_result" data-execution_count="12">
+<pre><code>["They never once thought of cinderella, and believed that she was sitting at home in the dirt, picking lentils out of the ashes   The prince approached her, took her by the hand and danced with her He would dance with no other maiden, and never let loose of her hand, and if any one else came to invite her, he said, this is my partner She danced till it was evening, and then she wanted to go home But the king's son said, I will go with you and bear you company, for he wished to see to whom the beautiful maiden belonged She escaped from him, however, and sprang into the pigeon-house   The king's son waited until her father came, and then he told him that the unknown maiden had leapt into the pigeon-house   The old man thought, can it be cinderella   And they had to bring him an axe and a pickaxe that he might hew the pigeon-house to pieces, but no one was inside it   And when they got home cinderella lay in her dirty clothes among the ashes, and a dim little oil-lamp was burning on the mantle-piece, for cinderella had jumped quickly down from the back of the pigeon-house and had run to the little hazel-tree, and there she had taken off her beautiful clothes and laid them on the grave, and the bird had taken them away again, and then she had seated herself in the kitchen amongst the ashes in her grey gown",
+ "The documentation provided is a detailed retelling of the classic fairy tale of Cinderella. It starts with the story of a kind and pious girl who is mistreated by her stepmother and stepsisters after her mother's death. Despite their cruelty, Cinderella remains good and pious. Through the help of a magical hazel tree and a little white bird, Cinderella is able to attend a royal festival where she captures the attention of the prince.\n\nThe story unfolds with Cinderella attending the festival on three consecutive days, each time receiving a more splendid dress and accessories from the hazel tree. The prince is captivated by her beauty and dances only with her. However, her stepmother and stepsisters try to deceive the prince by mutilating",
+ "had jumped down on the other side of the tree, had taken the beautiful dress to the bird on the little hazel-tree, and put on her grey gown On the third day, when the parents and sisters had gone away, cinderella went once more to her mother's grave and said to the little tree -      shiver and quiver, my little tree,      silver and gold throw down over me And now the bird threw down to her a dress which was more splendid and magnificent than any she had yet had, and the slippers were golden   And when she went to the festival in the dress, no one knew how to speak for astonishment   The king's son danced with her only, and if any one invited her to dance, he said this is my partner When evening came, cinderella wished to leave, and the king's son was anxious to go with her, but she escaped from him so quickly that he could not follow her   The king's son, however, had employed a ruse, and had caused the whole staircase to be smeared with pitch, and there, when she ran down, had the maiden's left slipper remained stuck   The king's son picked it up, and it was small and dainty, and all golden   Next morning, he went with it to the father, and said to him, no one shall be my wife but she whose foot this golden slipper fits   Then were the two sisters glad,",
+ "and emptied her peas and lentils into the ashes, so that she was forced to sit and pick them out again   In the evening when she had worked till she was weary she had no bed to go to, but had to sleep by the hearth in the cinders   And as on that account she always looked dusty and dirty, they called her cinderella It happened that the father was once going to the fair, and he asked his two step-daughters what he should bring back for them Beautiful dresses, said one, pearls and jewels, said the second And you, cinderella, said he, what will you have   Father break off for me the first branch which knocks against your hat on your way home   So he bought beautiful dresses, pearls and jewels for his two step-daughters, and on his way home, as he was riding through a green thicket, a hazel twig brushed against him and knocked off his hat   Then he broke off the branch and took it with him   When he reached home he gave his step-daughters the things which they had wished for, and to cinderella he gave the branch from the hazel-bush   Cinderella thanked him, went to her mother's grave and planted the branch on it, and wept so much that the tears fell down on it and watered it   And it grew and became a handsome tree  Thrice a day cinderella went and sat beneath it, and wept and",
+ "prayed, and a little white bird always came on the tree, and if cinderella expressed a wish, the bird threw down to her what she had wished for It happened, however, that the king gave orders for a festival which was to last three days, and to which all the beautiful young girls in the country were invited, in order that his son might choose himself a bride   When the two step-sisters heard that they too were to appear among the number, they were delighted, called cinderella and said, comb our hair for us, brush our shoes and fasten our buckles, for we are going to the wedding at the king's palace Cinderella obeyed, but wept, because she too would have liked to go with them to the dance, and begged her step-mother to allow her to do so   You go, cinderella, said she, covered in dust and dirt as you are, and would go to the festival   You have no clothes and shoes, and yet would dance   As, however, cinderella went on asking, the step-mother said at last, I have emptied a dish of lentils into the ashes for you, if you have picked them out again in two hours, you shall go with us   The maiden went through the back-door into the garden, and called, you tame pigeons, you turtle-doves, and all you birds beneath the sky, come and help me to pick"]</code></pre>
+</div>
+</div>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../examples/mistral_unstructured.html" class="pagination-link" aria-label="Mistral As Question Answer Model">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Mistral As Question Answer Model</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Indox Retrieval Augmentation</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/edit/main/examples/openai_clusterSplit.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
