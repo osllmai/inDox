@@ -55,7 +55,7 @@ workflow, bringing clarity and organization to your data retrieval needs.
 | Ollama (e.g. Llama3)      | ❌           | Local Embedding and LLM Models powered by Ollama      |
 | HuggingFace               | ✅           | Local Embedding and LLM Models powered by HuggingFace |
 | Mistral  | ✅           | Embedding and LLM Models by Cohere                    |
-| Google (e.g. Gemini)      | ❌           | Embedding and Generation Models by Google             |
+| Google (e.g. Gemini)      | ✅           | Embedding and Generation Models by Google             |
 | OpenAI (e.g. GPT4)        | ✅           | Embedding and Generation Models by OpenAI 
 
 | Supported Model Via Indox Api | Implemented | Description                                    |
