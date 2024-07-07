@@ -518,11 +518,11 @@
     ]
   },
   {
-    "objectID": "examples/openai_clusterSplit.html#initial-setup",
-    "href": "examples/openai_clusterSplit.html#initial-setup",
+    "objectID": "examples/openai_clusterSplit.html",
+    "href": "examples/openai_clusterSplit.html",
     "title": "Load And Split With Clustering",
-    "section": "Initial Setup",
-    "text": "Initial Setup\nThe following imports are essential for setting up the Indox application. These imports include the main Indox retrieval augmentation module, question-answering models, embeddings, and data loader splitter.",
+    "section": "",
+    "text": "Initial Setup\nThe following imports are essential for setting up the Indox application. These imports include the main Indox retrieval augmentation module, question-answering models, embeddings, and data loader splitter. :::\nfrom indox import IndoxRetrievalAugmentation\nfrom indox.llms import OpenAi\nfrom indox.embeddings import OpenAiEmbedding\nfrom indox.data_loader_splitter import ClusteredSplit\nIn this step, we initialize the Indox Retrieval Augmentation, the QA model, and the embedding model. Note that the models used for QA and embedding can vary depending on the specific requirements.\nIndox = IndoxRetrievalAugmentation()\nqa_model = OpenAi(api_key=OPENAI_API_KEY,model=\"gpt-3.5-turbo-0125\")\nembed = OpenAiEmbedding(api_key=OPENAI_API_KEY,model=\"text-embedding-3-small\")",
     "crumbs": [
       "Examples",
       "<span class='chapter-number'>14</span>  <span class='chapter-title'>Load And Split With Clustering</span>"
