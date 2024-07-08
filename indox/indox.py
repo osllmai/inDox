@@ -1,8 +1,7 @@
 from typing import List, Any, Tuple
 import warnings
 import logging
-
-
+from .utils import show_indox_logo
 
 warnings.filterwarnings("ignore")
 
@@ -21,6 +20,7 @@ class IndoxRetrievalAugmentation:
         self.db = None
         self.qa_history = []
         logging.info("IndoxRetrievalAugmentation initialized")
+        show_indox_logo()
 
     def connect_to_vectorstore(self, vectorstore_database):
         """
@@ -72,7 +72,6 @@ class IndoxRetrievalAugmentation:
             logging.error(f"Unexpected error while storing in the vector store: {e}")
             return None
 
-
     class QuestionAnswer:
         def __init__(self, llm, vector_database, top_k: int = 5, document_relevancy_filter: bool = False,
                      generate_clustered_prompts: bool = False):
@@ -122,7 +121,6 @@ class IndoxRetrievalAugmentation:
                 logging.error(f"Error while answering query: {e}")
                 raise
 
-
     class AgenticRag:
         def __init__(self, llm, vector_database, top_k: int = 5):
             self.llm = llm
@@ -153,7 +151,8 @@ class IndoxRetrievalAugmentation:
                 answer = self.llm.answer_question(context=results_for_searching_query, question=query)
                 print("Check For Hallucination In Generated Answer Base On Web Search")
 
-                hallucination_check_web_search_result = self.llm.check_hallucination(context=results_for_searching_query, answer=answer)
+                hallucination_check_web_search_result = self.llm.check_hallucination(
+                    context=results_for_searching_query, answer=answer)
 
                 if hallucination_check_web_search_result.lower() == "yes":
                     logging.info("Hallucination detected, Regenerate the answer...")

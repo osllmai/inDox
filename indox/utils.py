@@ -12,6 +12,16 @@ from duckduckgo_search import DDGS
 #     # print("\n\nUni Eval Sores")
 #     # [print(f"   {key}@{K}: {np.array(value).mean():4f}") for key, value in dilaouges_scores.items()]
 
+def show_indox_logo():
+    logo = """
+            ██  ███    ██  ██████   ██████  ██       ██
+            ██  ████   ██  ██   ██ ██    ██   ██  ██
+            ██  ██ ██  ██  ██   ██ ██    ██     ██
+            ██  ██  ██ ██  ██   ██ ██    ██   ██   ██
+            ██  ██  █████  ██████   ██████  ██       ██
+            """
+    return print(logo)
+
 
 def search_duckduckgo(query, max_retries=5, delay=2):
     ddgs = DDGS()
