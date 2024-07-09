@@ -1,8 +1,17 @@
-import logging
 import requests
+from loguru import logger
+import sys
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(levelname)s:%(message)s')
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
+
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
+
 
 
 class HuggingFaceModel:
@@ -16,18 +25,18 @@ class HuggingFaceModel:
             prompt_template (str, optional): The template for the prompt. Defaults to None.
         """
         try:
-            logging.info("Initializing HuggingFaceModel with model: %s", model)
+            logger.info(f"Initializing HuggingFaceModel with model: {model}")
             self.model = model
             self.api_key = api_key
             self.prompt_template = prompt_template or "Context: {context}\nQuestion: {question}\nAnswer:"
             if not self.api_key:
                 raise ValueError("A valid Hugging Face API key is required.")
-            logging.info("HuggingFaceModel initialized successfully")
+            logger.info("HuggingFaceModel initialized successfully")
         except ValueError as ve:
-            logging.error("ValueError during initialization: %s", ve)
+            logger.error(f"ValueError during initialization: {ve}")
             raise
         except Exception as e:
-            logging.error("Unexpected error during initialization: %s", e)
+            logger.error(f"Unexpected error during initialization: {e}")
             raise
 
     def _send_request(self, prompt):
@@ -39,7 +48,7 @@ class HuggingFaceModel:
         }
 
         try:
-            logging.info("Sending request to Hugging Face API")
+            logger.info("Sending request to Hugging Face API")
             response = requests.post(
                 f"https://api-inference.huggingface.co/models/{self.model}",
                 headers=headers,
@@ -47,7 +56,7 @@ class HuggingFaceModel:
             )
 
             if response.status_code == 200:
-                logging.info("Received successful response from Hugging Face API")
+                logger.info("Received successful response from Hugging Face API")
                 answer_data = response.json()
                 if isinstance(answer_data, list) and len(answer_data) > 0:
                     answer_data = answer_data[0]
@@ -56,10 +65,10 @@ class HuggingFaceModel:
                 return generated_text
             else:
                 error_message = f"Error from Hugging Face API: {response.status_code}, {response.text}"
-                logging.error(error_message)
+                logger.error(error_message)
                 raise Exception(error_message)
         except Exception as e:
-            logging.error("Error in _send_request: %s", e)
+            logger.error(f"Error in _send_request: {e}")
             raise
 
     def _attempt_answer_question(self, context, question):
@@ -92,11 +101,11 @@ class HuggingFaceModel:
             str: The generated answer.
         """
         try:
-            logging.info("Answering question: %s", question)
+            logger.info("Answering question")
             self.prompt_template = prompt_template or self.prompt_template
             return self._attempt_answer_question(context, question)
         except Exception as e:
-            logging.error("Error in answer_question: %s", e)
+            logger.error(f"Error in answer_question: {e}")
             return str(e)
 
     def get_summary(self, documentation):
@@ -110,11 +119,11 @@ class HuggingFaceModel:
             str: The generated summary.
         """
         try:
-            logging.info("Generating summary for documentation")
+            logger.info("Generating summary for documentation")
             prompt = "You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n" + documentation
             return self._send_request(prompt)
         except Exception as e:
-            logging.error("Error in get_summary: %s", e)
+            logger.error(f"Error in get_summary: {e}")
             return str(e)
 
     def grade_docs(self, context, question):
@@ -147,13 +156,13 @@ class HuggingFaceModel:
                 response = self._send_request(system_prompt + "\n" + user_prompt)
                 response = response.split("\n")[-1]
                 if response.lower().strip() == "yes":
-                    logging.info("Relevant doc")
+                    logger.info("Relevant doc")
                     filtered_docs.append(context[i])
                 elif response.lower().strip() == "no":
-                    logging.info("Not Relevant doc")
+                    logger.info("Not Relevant doc")
             return filtered_docs
         except Exception as e:
-            logging.error("Error generating agent answer: %s", e)
+            logger.error(f"Error generating agent answer: {e}")
             return str(e)
 
     def check_hallucination(self, context, answer):
@@ -184,5 +193,5 @@ class HuggingFaceModel:
             response = self._send_request(system_prompt + "\n" + user_prompt)
             return response.strip()
         except Exception as e:
-            logging.error("Error generating agent answer: %s", e)
+            logger.error(f"Error generating agent answer: {e}")
             return str(e)

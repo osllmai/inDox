@@ -1,10 +1,16 @@
-import logging
 from tenacity import retry, stop_after_attempt, wait_random_exponential
+from loguru import logger
+import sys
 
-import os
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(levelname)s:%(message)s')
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
 
 
 class Mistral:
@@ -18,12 +24,12 @@ class Mistral:
         """
         from mistralai.client import MistralClient
         try:
-            logging.info("Initializing MistralAI with model: %s", model)
+            logger.info(f"Initializing MistralAI with model: {model}")
             self.model = model
             self.client = MistralClient(api_key=api_key)
-            logging.info("MistralAI initialized successfully")
+            logger.info("MistralAI initialized successfully")
         except Exception as e:
-            logging.error("Error initializing MistralAI: %s", e)
+            logger.error(f"Error initializing MistralAI: {e}")
             raise
 
     def run_mistral(self, user_message):
@@ -48,7 +54,7 @@ class Mistral:
             )
             return chat_response.choices[0].message.content
         except Exception as e:
-            logging.error("Error in run_mistral: %s", e)
+            logger.error(f"Error in run_mistral: {e}")
             return str(e)
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
@@ -77,10 +83,10 @@ class Mistral:
         """
 
         try:
-            logging.info("Attempting to generate an answer for the question: %s", question)
+            logger.info("Attempting to generate an answer for the question")
             return self.run_mistral(prompt)
         except Exception as e:
-            logging.error("Error generating answer: %s", e)
+            logger.error(f"Error generating answer: {e}")
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
@@ -98,7 +104,7 @@ class Mistral:
             str: The generated summary.
         """
         try:
-            logging.info("Answering question: %s", question)
+            logger.info("Answering question")
             return self._attempt_answer_question(
                 context,
                 question,
@@ -107,7 +113,7 @@ class Mistral:
                 temperature=0,
             )
         except Exception as e:
-            logging.error("Error in answer_question: %s", e)
+            logger.error(f"Error in answer_question: {e}")
             return str(e)
 
     def get_summary(self, documentation):
@@ -121,11 +127,11 @@ class Mistral:
             str: The generated summary.
         """
         try:
-            logging.info("Generating summary for documentation")
+            logger.info("Generating summary for documentation")
             prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided in maximum 100 token.\n\nDocumentation:\n{documentation}"
             return self.run_mistral(prompt)
         except Exception as e:
-            logging.error("Error generating summary: %s", e)
+            logger.error(f"Error generating summary: {e}")
             return str(e)
 
     def grade_docs(self, context, question):
@@ -157,13 +163,13 @@ class Mistral:
                     {question}"""
                 grade = self.run_mistral(system_prompt + prompt).strip()
                 if grade.lower() == "yes":
-                    print("Relevant doc")
+                    logger.info("Relevant doc")
                     filtered_docs.append(context[i])
                 elif grade.lower() == "no":
-                    print("Not Relevant doc")
+                    logger.info("Not Relevant doc")
             return filtered_docs
         except Exception as e:
-            logging.error("Error generating agent answer: %s", e)
+            logger.error(f"Error generating agent answer: {e}")
             return str(e)
 
     def check_hallucination(self, context, answer):
@@ -182,5 +188,5 @@ class Mistral:
                 """
             return self.run_mistral(system_prompt + prompt).strip()
         except Exception as e:
-            logging.error("Error generating agent answer: %s", e)
+            logger.error(f"Error generating agent answer: {e}")
             return str(e)

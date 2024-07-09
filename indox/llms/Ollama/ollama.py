@@ -16,11 +16,11 @@ class Ollama:
         """
 
         try:
-            logging.info("Initializing Ollama with model: %s", model)
+            logging.info(f"Initializing Ollama with model: {model}")
             self.model = model
             logging.info("Ollama initialized successfully")
         except Exception as e:
-            logging.error("Error initializing Ollama: %s", e)
+            logging.error(f"Error initializing Ollama: {e}")
             raise
 
     def run_ollama_command(self, command):
@@ -28,7 +28,7 @@ class Ollama:
             result = subprocess.run(command, shell=True, check=True, capture_output=True, text=True, encoding='utf-8')
             return result.stdout
         except subprocess.CalledProcessError as e:
-            logging.error("Error running Ollama command: %s", e.stderr)
+            logging.error("Error running Ollama command")
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
@@ -53,7 +53,7 @@ class Ollama:
             logging.info("Answer generated successfully")
             return response.strip()
         except Exception as e:
-            logging.error("Error generating answer: %s", e)
+            logging.error(f"Error generating answer: {e}")
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
@@ -73,7 +73,7 @@ class Ollama:
             logging.info("Answering question")
             return self._attempt_answer_question(context, question)
         except Exception as e:
-            logging.error("Error in answer_question: %s", e)
+            logging.error(f"Error in answer_question: {e}")
             return str(e)
 
     def get_summary(self, documentation):
@@ -94,7 +94,7 @@ class Ollama:
             logging.info("Summary generated successfully")
             return response.strip()
         except Exception as e:
-            logging.error("Error generating summary: %s", e)
+            logging.error(f"Error generating summary: {e}")
             return str(e)
 
     def grade_docs(self, context, question):
@@ -131,7 +131,7 @@ class Ollama:
                     logging.info("Not Relevant doc")
             return filtered_docs
         except Exception as e:
-            logging.error("Error generating agent answer: %s", e)
+            logging.error(f"Error generating agent answer: {e}")
             return str(e)
 
     def check_hallucination(self, context, answer):
@@ -155,5 +155,5 @@ class Ollama:
             logging.info("Agent answer generated successfully")
             return hallucination_answer
         except Exception as e:
-            logging.error("Error generating agent answer: %s", e)
+            logging.error(f"Error generating agent answer: {e}")
             return str(e)

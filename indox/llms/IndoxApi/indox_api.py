@@ -1,9 +1,16 @@
-import logging
 import requests
+from loguru import logger
+import sys
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(levelname)s:%(message)s')
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
 
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
 
 class IndoxApi:
     def __init__(self, api_key, prompt_template=None):
@@ -84,7 +91,7 @@ class IndoxApi:
             # prompt_template = prompt_template or self.prompt_template
             return self._attempt_answer_question(context, question)
         except Exception as e:
-            print(e)
+            logger.error(e)
             return str(e)
 
     def get_summary(self, documentation):
@@ -102,7 +109,7 @@ class IndoxApi:
             user_prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n {documentation}"
             return self._send_request(system_prompt, user_prompt)
         except Exception as e:
-            print(e)
+            logger.error(e)
             return str(e)
 
     def grade_docs(self, context, question):
@@ -132,13 +139,13 @@ class IndoxApi:
                 """
                 response = self._send_request(system_prompt, user_prompt)
                 if response.lower() == "yes":
-                    print("Relevant doc")
+                    logger.info("Relevant doc")
                     filtered_docs.append(context[i])
                 elif response.lower() == "no":
-                    print("Not Relevant doc")
+                    logger.info("Not Relevant doc")
             return filtered_docs
         except Exception as e:
-            logging.error("Error generating agent answer: %s", e)
+            logger.error(f"Error generating agent answer: {e}")
             return str(e)
 
     def check_hallucination(self, context, answer):
@@ -166,7 +173,7 @@ class IndoxApi:
             response = self._send_request(system_prompt, user_prompt)
             return response
         except Exception as e:
-            logging.error("Error generating agent answer: %s", e)
+            logger.error(f"Error generating agent answer: {e}")
             return str(e)
 
     def assistant(self, system_prompt, user_prompt, role, history):
@@ -174,5 +181,5 @@ class IndoxApi:
             response = self._send_request(system_prompt=system_prompt, user_prompt=user_prompt, role=role, history=history)
             return response
         except Exception as e:
-            logging.error("Error generating agent answer: %s", e)
+            logger.error(f"Error generating agent answer: {e}")
             return str(e)

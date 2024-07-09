@@ -1,8 +1,16 @@
-import logging
 from tenacity import retry, stop_after_attempt, wait_random_exponential
+from loguru import logger
+import sys
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s:%(message)s')
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
+
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
 
 
 class GoogleAi:
@@ -16,12 +24,12 @@ class GoogleAi:
         """
         import google.generativeai as genai
         try:
-            logging.info("Initializing GoogleAi with model: %s", model)
+            logger.info(f"Initializing GoogleAi with model: {model}")
             genai.configure(api_key=api_key)
             self.model = genai.GenerativeModel(model)
-            logging.info("GoogleAi initialized successfully")
+            logger.info("GoogleAi initialized successfully")
         except Exception as e:
-            logging.error("Error initializing GoogleAi: %s", e)
+            logger.error(f"Error initializing GoogleAi: {e}")
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
@@ -36,12 +44,12 @@ class GoogleAi:
             str: The generated response text.
         """
         try:
-            logging.info("Generating response")
+            logger.info("Generating response")
             response = self.model.generate_content(contents=prompt)
-            logging.info("Response generated successfully")
+            logger.info("Response in generated successfully")
             return response.text.strip().replace("\n", "")
         except Exception as e:
-            logging.error("Error generating response: %s", e)
+            logger.error(f"Error generating response: {e}")
             raise
 
     def _format_prompt(self, context, question, max_tokens):
@@ -71,11 +79,11 @@ class GoogleAi:
             str: The generated answer.
         """
         try:
-            logging.info("Answering question")
+            logger.info("Answering question")
             prompt = self._format_prompt(context, question, max_tokens)
             return self._generate_response(prompt)
         except Exception as e:
-            logging.error("Error in answer_question: %s", e)
+            logger.error(f"Error in answer_question: {e}")
             return str(e)
 
     def get_summary(self, documentation):
@@ -90,10 +98,10 @@ class GoogleAi:
         """
         prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n {documentation} in maximum 150 tokens"
         try:
-            logging.info("Generating summary for documentation")
+            logger.info("Generating summary for documentation")
             return self._generate_response(prompt)
         except Exception as e:
-            logging.error("Error generating summary: %s", e)
+            logger.error(f"Error generating summary: {e}")
             return str(e)
 
     def grade_docs(self, context, question):
@@ -118,12 +126,12 @@ class GoogleAi:
             try:
                 grade = self._generate_response(prompt).lower()
                 if grade == "yes":
-                    logging.info("Relevant doc")
+                    logger.info("Relevant doc")
                     filtered_docs.append(doc)
                 elif grade == "no":
-                    logging.info("Not relevant doc")
+                    logger.info("Not relevant doc")
             except Exception as e:
-                logging.error("Error grading document: %s", e)
+                logger.error(f"Error grading document: {e}")
         return filtered_docs
 
     def check_hallucination(self, context, answer):
@@ -144,8 +152,8 @@ class GoogleAi:
         """
         prompt = f"Here are the facts:\n{context}\nHere is the answer:\n{answer}"
         try:
-            logging.info("Checking hallucination for answer")
+            logger.info("Checking hallucination for answer")
             return self._generate_response(prompt).lower()
         except Exception as e:
-            logging.error("Error checking hallucination: %s", e)
+            logger.error(f"Error checking hallucination: {e}")
             return str(e)
