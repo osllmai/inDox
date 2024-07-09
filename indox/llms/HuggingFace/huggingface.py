@@ -52,7 +52,7 @@ class HuggingFaceModel:
             response = requests.post(
                 f"https://api-inference.huggingface.co/models/{self.model}",
                 headers=headers,
-                json=payload
+                json=payload,
             )
 
             if response.status_code == 200:
