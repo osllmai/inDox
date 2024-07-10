@@ -43,7 +43,7 @@ class IndoxApiEmbedding:
         self.api_key = api_key
         self.model = model
         self.middle_url = "http://5.78.55.161/api/embedding/generate/"
-        logger.info(f'Initialized IndoxOpenAIEmbedding with model: {model} and middle URL: {self.middle_url}')
+        logger.info(f'Initialized IndoxOpenAIEmbedding with model: {model}')
 
     def _get_len_safe_embeddings(self, texts: List[str], engine: str) -> List[List[float]]:
         """
@@ -63,7 +63,7 @@ class IndoxApiEmbedding:
         }
 
         embeddings = []
-        logger.info(f'Starting to fetch embeddings for {len(texts)} texts using engine: {engine}')
+        logger.info(f'Starting to fetch embeddings texts using engine: {engine}')
 
         for text in texts:
             payload = {
@@ -71,8 +71,6 @@ class IndoxApiEmbedding:
                 "input": text,
                 "model": engine
             }
-            logger.debug(f'Request payload: {payload}')
-
             response = requests.post(self.middle_url, headers=headers, json=payload)
             logger.debug(f'Response status code: {response.status_code}, Response text: {response.text}')
 
@@ -91,20 +89,18 @@ class IndoxApiEmbedding:
 
         return embeddings
 
-    def embed_documents(self, texts: List[str], chunk_size: Optional[int] = 0) -> List[List[float]]:
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
         """
         Call out to OpenAI's embedding endpoint for embedding search docs.
 
         Args:
             texts: The list of texts to embed.
-            chunk_size: The chunk size of embeddings. If None, will use the chunk size
-                        specified by the class.
 
         Returns:
             List of embeddings, one for each text.
         """
         engine = cast(str, self.model)
-        logger.info(f'Embedding documents with chunk size: {chunk_size}')
+        logger.info(f'Embedding documents')
         return self._get_len_safe_embeddings(texts, engine=engine)
 
     def embed_query(self, text: str) -> List[float]:
@@ -117,5 +113,4 @@ class IndoxApiEmbedding:
         Returns:
             Embedding for the text.
         """
-        logger.info(f'Embedding query text: {text}')
         return self.embed_documents([text])[0]

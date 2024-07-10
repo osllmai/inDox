@@ -1,79 +1,90 @@
-import logging
 from tenacity import retry, stop_after_attempt, wait_random_exponential
-import subprocess
+from loguru import logger
+import sys
+import ollama as ol
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(levelname)s:%(message)s')
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
+
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
 
 
 class Ollama:
     def __init__(self, model):
         """
-        Initializes the Ollama model with the specified model version.
+        Initializes the Ollama model with the specified model version and an optional prompt template.
 
         Args:
-            model (str): The Ollama model version.
+            model (str): Ollama model version.
         """
 
         try:
-            logging.info(f"Initializing Ollama with model: {model}")
+            logger.info(f"Initializing Ollama with model: {model}")
             self.model = model
-            logging.info("Ollama initialized successfully")
+            logger.info("Ollama initialized successfully")
         except Exception as e:
-            logging.error(f"Error initializing Ollama: {e}")
-            raise
-
-    def run_ollama_command(self, command):
-        try:
-            result = subprocess.run(command, shell=True, check=True, capture_output=True, text=True, encoding='utf-8')
-            return result.stdout
-        except subprocess.CalledProcessError as e:
-            logging.error("Error running Ollama command")
+            logger.error(f"Error initializing Ollama: {e}")
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-    def _attempt_answer_question(self, context, question):
+    def _generate_response(self, messages, max_tokens=250, temperature=0):
         """
-        Generates an answer to the given question using the Ollama model.
+        Generates a response from the Ollama model.
 
         Args:
-            context (str): The text to summarize.
-            question (str): The question to answer.
-
+            messages : The  messages to send to the model.
+            max_tokens (int, optional): The maximum number of tokens in the generated response. Defaults to 250.
+            temperature (float, optional): The sampling temperature. Defaults to 0.
 
         Returns:
-            str: The generated answer.
+            str: The generated response.
         """
-        prompt = f"Given Context: {context} Give the best full answer amongst the option to question {question}"
-
         try:
-            logging.info("Attempting to generate an answer")
-            command = f"ollama run {self.model} --nowordwrap [{prompt}]"
-            response = self.run_ollama_command(command)
-            logging.info("Answer generated successfully")
-            return response.strip()
+            logger.info("Generating response")
+            response = ol.generate(model=self.model, prompt=messages)
+            result = response["response"].strip().replace("\n", "").replace("\t", "")
+            logger.info("Response generated successfully")
+            return result
         except Exception as e:
-            logging.error(f"Error generating answer: {e}")
+            logger.error(f"Error generating response: {e}")
             raise
 
-    @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-    def answer_question(self, context, question):
+    def _format_prompt(self, context, question):
+        """
+        Formats the prompt for generating a response.
+
+        Args:
+            context (str): The context for the prompt.
+            question (str): The question for the prompt.
+
+        Returns:
+            str: The formatted prompt.
+        """
+        return f"Given Context: {context} Give the best full answer amongst the option to question {question}"
+
+    def answer_question(self, context, question, max_tokens=350):
         """
         Public method to generate an answer to a question based on the given context.
 
         Args:
             context (str): The text to summarize.
             question (str): The question to answer.
-
+            max_tokens (int, optional): The maximum number of tokens in the generated summary. Defaults to 350.
 
         Returns:
-            str: The generated summary.
+            str: The generated answer.
         """
         try:
-            logging.info("Answering question")
-            return self._attempt_answer_question(context, question)
+            logger.info("Answering question")
+            prompt = self._format_prompt(context, question)
+            return self._generate_response(messages=prompt, max_tokens=max_tokens, temperature=0)
         except Exception as e:
-            logging.error(f"Error in answer_question: {e}")
+            logger.error(f"Error in answer_question: {e}")
             return str(e)
 
     def get_summary(self, documentation):
@@ -87,14 +98,12 @@ class Ollama:
             str: The generated summary.
         """
         try:
-            logging.info("Generating summary for documentation")
-            prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n {documentation}"
-            command = f"ollama run {self.model} --nowordwrap [{prompt}]"
-            response = self.run_ollama_command(command)
-            logging.info("Summary generated successfully")
-            return response.strip()
+            logger.info("Generating summary for documentation")
+            prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n{documentation}"
+            messages = prompt
+            return self._generate_response(messages, max_tokens=150, temperature=0)
         except Exception as e:
-            logging.error(f"Error generating summary: {e}")
+            logger.error(f"Error generating summary: {e}")
             return str(e)
 
     def grade_docs(self, context, question):
@@ -106,54 +115,50 @@ class Ollama:
             question (str): The question to answer.
         """
         filtered_docs = []
-        try:
-            system_prompt = f"""
-           You are a grader assessing the relevance of a retrieved document to a user question.
+        system_prompt = """
+            You are a grader assessing the relevance of a retrieved document to a user question.
             If the document contains any keywords or evidence related to the user question, even if minimal, 
             grade it as relevant. The goal is to filter out only completely erroneous retrievals.
             Give a binary "yes" or "no" score to indicate whether the document is relevant to the question.
 
             Provide the score with no preamble or explanation.
-            """
-            for i in range(len(context)):
-                prompt = f"""
-                    Here is the retrieved document:
-                    {context[i]}
-                    Here is the user question: 
-                    {question}"""
-                command = f"ollama run {self.model} --nowordwrap [{prompt}]"
-                response = self.run_ollama_command(command)
-                grade = response.strip()
-                if grade.lower() == "yes":
-                    logging.info("Relevant doc")
-                    filtered_docs.append(context[i])
-                elif grade.lower() == "no":
-                    logging.info("Not Relevant doc")
-            return filtered_docs
-        except Exception as e:
-            logging.error(f"Error generating agent answer: {e}")
-            return str(e)
+                        
+        """
+        for doc in context:
+            prompt = f"Here is the retrieved document:\n{doc}\nHere is the user question:\n{question}"
+            messages = system_prompt + prompt
+            try:
+                grade = self._generate_response(messages, max_tokens=150, temperature=0).lower()
+                if grade == "yes":
+                    logger.info("Relevant doc")
+                    filtered_docs.append(doc)
+                elif grade == "no":
+                    logger.info("Not relevant doc")
+            except Exception as e:
+                logger.error(f"Error grading document: {e}")
+        return filtered_docs
 
     def check_hallucination(self, context, answer):
-        try:
-            system_prompt = """
-                You are a grader assessing whether an answer is grounded in / supported by a set of facts.
-                Give a binary score 'yes' or 'no' score to indicate whether the answer is grounded / supported by a set
-                 of facts. Provide score with no preamble or explanation.
-                """
-            prompt = f"""
-                Here are the facts:
-                \n -------- \n
-                {context}
-                \n -------- \n
-                Here is the answer : {answer}
-                """
+        """
+        Checks if an answer is grounded in the provided context.
 
-            command = f"ollama run {self.model} --nowordwrap [{prompt}]"
-            response = self.run_ollama_command(command)
-            hallucination_answer = response.strip()
-            logging.info("Agent answer generated successfully")
-            return hallucination_answer
+        Args:
+            context (str): The context for checking.
+            answer (str): The answer to check.
+
+        Returns:
+            str: 'yes' if the answer is grounded, 'no' otherwise.
+        """
+        system_prompt = """
+            You are a grader assessing whether an answer is grounded in / supported by a set of facts.
+            Give a binary score 'yes' or 'no' to indicate whether the answer is grounded / supported by the set of facts.
+            Provide the score with no preamble or explanation.
+        """
+        prompt = f"Here are the facts:\n{context}\nHere is the answer:\n{answer}"
+        messages = system_prompt + prompt
+        try:
+            logger.info("Checking hallucination for answer")
+            return self._generate_response(messages, max_tokens=150, temperature=0).lower()
         except Exception as e:
-            logging.error(f"Error generating agent answer: {e}")
+            logger.error(f"Error checking hallucination: {e}")
             return str(e)
