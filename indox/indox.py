@@ -148,7 +148,6 @@ class IndoxRetrievalAugmentation:
             if len(grade_context) < 1:  # it means not relevant doc
                 # go for web search
                 logger.info("No Relevant document found, Start web search")
-                # TODO add web search functionality here
                 from .utils import search_duckduckgo
                 logger.info("No Relevant Context Found, Start Searching On Web...")
                 results_for_searching_query = search_duckduckgo(query)
