@@ -1,11 +1,18 @@
-import logging
 from indox.data_loader_splitter.ClusteredSplit.EmbedClusterSummarize import recursive_embed_cluster_summarize
 from indox.data_loader_splitter.ClusteredSplit.cs_utils import get_all_texts, split_text, create_document
 from typing import Optional, List, Tuple
+from loguru import logger
+import sys
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(levelname)s:%(message)s')
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
 
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
 
 def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
                re_chunk, remove_sword, cluster_prompt, summary_model):
@@ -36,7 +43,7 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
       specified settings. The output varies depending on whether clustering is enabled or not.
     """
     try:
-        logging.info("Starting processing for documents")
+        logger.info("Starting processing for documents")
 
         # Create initial document chunks
         if cluster_prompt:
@@ -61,11 +68,11 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
         )
         all_chunks = get_all_texts(results=results, texts=leaf_chunks)
 
-        logging.info("Completed chunking & clustering process")
+        logger.info("Completed chunking & clustering process")
         return all_chunks
 
     except Exception as e:
-        logging.error("Failed at step with error: %s", e)
+        logger.error(f"Failed at step with error: {e}")
         raise e
 
 
@@ -87,7 +94,6 @@ class ClusteredSplit:
         - dim (int, optional): The dimensionality of the embeddings. Default is 10.
         """
         try:
-            logging.info("Initializing ClusteredSplit")
             self.file_path = file_path
             self.embeddings = embeddings
             self.re_chunk = re_chunk
@@ -99,9 +105,9 @@ class ClusteredSplit:
             self.cluster_prompt = False
             self.summary_model = summary_model
 
-            logging.info("ClusteredSplit initialized successfully")
+            logger.info("ClusteredSplit initialized successfully")
         except Exception as e:
-            logging.error("Error initializing ClusteredSplit: %s", e)
+            logger.error(f"Error initializing ClusteredSplit: {e}")
             raise
 
     def load_and_chunk(self):
@@ -112,7 +118,6 @@ class ClusteredSplit:
         - List[Document]: A list of `Document` objects, each containing a portion of the original content with relevant metadata.
         """
         try:
-            logging.info("Getting all documents")
             docs = get_chunks(docs=self.file_path,
                               chunk_size=self.chunk_size,
                               overlap=self.overlap,
@@ -123,8 +128,8 @@ class ClusteredSplit:
                               dim=self.dim,
                               cluster_prompt=self.cluster_prompt,
                               summary_model=self.summary_model)
-            logging.info("Successfully obtained all documents")
+            logger.info("Successfully obtained all documents")
             return docs
         except Exception as e:
-            logging.error("Error in load_and_chunk: %s", e)
+            logger.error("Error in load_and_chunk: %s", e)
             raise

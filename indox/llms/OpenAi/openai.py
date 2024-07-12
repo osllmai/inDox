@@ -1,7 +1,16 @@
-import logging
 from tenacity import retry, stop_after_attempt, wait_random_exponential
+from loguru import logger
+import sys
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s:%(message)s')
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
+
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
 
 
 class OpenAi:
@@ -16,12 +25,12 @@ class OpenAi:
         from openai import OpenAI
 
         try:
-            logging.info("Initializing OpenAi with model: %s", model)
+            logger.info(f"Initializing OpenAi with model: {model}")
             self.model = model
             self.client = OpenAI(api_key=api_key)
-            logging.info("OpenAi initialized successfully")
+            logger.info("OpenAi initialized successfully")
         except Exception as e:
-            logging.error("Error initializing OpenAi: %s", e)
+            logger.error(f"Error initializing OpenAi: {e}")
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
@@ -38,7 +47,7 @@ class OpenAi:
             str: The generated response.
         """
         try:
-            logging.info("Generating response")
+            logger.info("Generating response")
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
@@ -46,10 +55,10 @@ class OpenAi:
                 max_tokens=max_tokens,
             )
             result = response.choices[0].message.content.strip()
-            logging.info("Response generated successfully")
+            logger.info("Response generated successfully")
             return result
         except Exception as e:
-            logging.error("Error generating response: %s", e)
+            logger.error(f"Error generating response: {e}")
             raise
 
     def _format_prompt(self, context, question):
@@ -78,7 +87,7 @@ class OpenAi:
             str: The generated answer.
         """
         try:
-            logging.info("Answering question")
+            logger.info("Answering question")
             prompt = self._format_prompt(context, question)
             messages = [
                 {"role": "system", "content": "You are Question Answering Portal"},
@@ -86,7 +95,7 @@ class OpenAi:
             ]
             return self._generate_response(messages, max_tokens=max_tokens, temperature=0)
         except Exception as e:
-            logging.error("Error in answer_question: %s", e)
+            logger.error(f"Error in answer_question: {e}")
             return str(e)
 
     def get_summary(self, documentation):
@@ -100,7 +109,7 @@ class OpenAi:
             str: The generated summary.
         """
         try:
-            logging.info("Generating summary for documentation")
+            logger.info("Generating summary for documentation")
             prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n{documentation}"
             messages = [
                 {"role": "system", "content": "You are a helpful assistant"},
@@ -108,7 +117,7 @@ class OpenAi:
             ]
             return self._generate_response(messages, max_tokens=150, temperature=0)
         except Exception as e:
-            logging.error("Error generating summary: %s", e)
+            logger.error(f"Error generating summary: {e}")
             return str(e)
 
     def grade_docs(self, context, question):
@@ -137,12 +146,12 @@ class OpenAi:
             try:
                 grade = self._generate_response(messages, max_tokens=150, temperature=0).lower()
                 if grade == "yes":
-                    logging.info("Relevant doc")
+                    logger.info("Relevant doc")
                     filtered_docs.append(doc)
                 elif grade == "no":
-                    logging.info("Not relevant doc")
+                    logger.info("Not relevant doc")
             except Exception as e:
-                logging.error("Error grading document: %s", e)
+                logger.error(f"Error grading document: {e}")
         return filtered_docs
 
     def check_hallucination(self, context, answer):
@@ -167,8 +176,8 @@ class OpenAi:
             {"role": "user", "content": prompt},
         ]
         try:
-            logging.info("Checking hallucination for answer")
+            logger.info("Checking hallucination for answer")
             return self._generate_response(messages, max_tokens=150, temperature=0).lower()
         except Exception as e:
-            logging.error("Error checking hallucination: %s", e)
+            logger.error(f"Error checking hallucination: {e}")
             return str(e)

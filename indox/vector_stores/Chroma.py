@@ -1,10 +1,17 @@
 # from langchain_core.documents import Document
-import logging
 from indox.core import Document
+from loguru import logger
+import sys
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(levelname)s:%(message)s')
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
 
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
 
 class ChromaVectorStore:
     """
@@ -38,9 +45,9 @@ class ChromaVectorStore:
                 self.db.add_documents(documents=docs)
             elif not isinstance(docs[0], Document):
                 self.db.add_texts(texts=docs)
-            logging.info("Document added successfully to the vector store.")
+            logger.info("Document added successfully to the vector store.")
         except Exception as e:
-            logging.error(f"Failed to add document: {e}")
+            logger.error(f"Failed to add document: {e}")
             raise RuntimeError(f"Can't add document to the vector store: {e}")
 
     def retrieve(self, query: str, top_k: int = 5):
@@ -70,5 +77,5 @@ class ChromaVectorStore:
             all_documents = self.db.get()
             return all_documents
         except Exception as e:
-            logging.error(f"Failed to retrieve documents: {e}")
+            logger.error(f"Failed to retrieve documents: {e}")
             raise RuntimeError(f"Can't retrieve documents from the vector store: {e}")

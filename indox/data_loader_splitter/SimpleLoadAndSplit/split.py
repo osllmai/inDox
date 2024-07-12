@@ -1,10 +1,22 @@
-import logging
 from typing import Optional, List, Tuple
 from indox.core import Document
 from indox.data_loader_splitter.SimpleLoadAndSplit.loader import create_document
-
+from loguru import logger
+import sys
 import PyPDF2
 from indox.splitter import semantic_text_splitter
+
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
+
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
+
+
 
 def get_chunks(file_path, chunk_size, remove_sword):
     """
@@ -27,11 +39,11 @@ def get_chunks(file_path, chunk_size, remove_sword):
 
     """
     try:
-        logging.info("Starting processing")
+        logger.info("Starting processing")
 
         # Create initial document elements using the 'PyPDF2' library
         text = create_document(file_path)
-        logging.info("Created initial document elements")
+        logger.info("Created initial document elements")
 
         # split text by using 'bert-base-uncased' model and split it into chunks
         texts = semantic_text_splitter(text, max_tokens=chunk_size)
@@ -44,23 +56,22 @@ def get_chunks(file_path, chunk_size, remove_sword):
             texts = remove_stopwords_chunk(texts)
 
 
-        logging.info("Completed chunking process")
+        logger.info("Completed chunking process")
         return texts
 
     except Exception as e:
-        logging.error("Failed at step with error: %s", e)
+        logger.error("Failed at step with error: %s", e)
         raise
 
 class SimpleLoadAndSplit:
     def __init__(self, file_path: str, remove_sword: bool = False, max_chunk_size: int = 500):
         try:
-            logging.info("Initializing UnstructuredLoadAndSplit")
             self.file_path = file_path
             self.remove_sword = remove_sword
             self.max_chunk_size = max_chunk_size
-            logging.info("UnstructuredLoadAndSplit initialized successfully")
+            logger.info("UnstructuredLoadAndSplit initialized successfully")
         except Exception as e:
-            logging.error("Error initializing UnstructuredLoadAndSplit: %s", e)
+            logger.error("Error initializing UnstructuredLoadAndSplit: %s", e)
             raise
 
     def load_and_chunk(self) -> List['Document']:
@@ -71,11 +82,9 @@ class SimpleLoadAndSplit:
         - List[Document]: A list of `Document` objects, each containing a portion of the original content with relevant metadata.
         """
         try:
-            logging.info("Getting all documents")
             docs = get_chunks(self.file_path, self.max_chunk_size, self.remove_sword)
-
-            logging.info("Successfully obtained all documents")
+            logger.info("Successfully obtained all documents")
             return docs
         except Exception as e:
-            logging.error("Error in get_all_docs: %s", e)
+            logger.error("Error in get_all_docs: %s", e)
             raise

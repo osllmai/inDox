@@ -1,11 +1,22 @@
 from typing import List
 import pandas as pd
-import logging
 import numpy as np
 from .Embed import embed_cluster_texts
 from .Summary import summarize
 from indox.data_loader_splitter.ClusteredSplit.cs_utils import rechunk
 from indox.data_loader_splitter.utils.clean import remove_stopwords_chunk
+from loguru import logger
+import sys
+
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
+
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
 
 
 def embed_cluster_summarize_texts(
@@ -48,7 +59,7 @@ def embed_cluster_summarize_texts(
     expanded_df = pd.DataFrame(expanded_list)
     # Retrieve unique cluster identifiers for processing
     all_clusters = expanded_df["cluster"].unique()
-    print(f"--Generated {len(all_clusters)} clusters--")
+    logger.info(f"--Generated {len(all_clusters)} clusters--")
 
     # Summarize the texts in each cluster
     summaries = []

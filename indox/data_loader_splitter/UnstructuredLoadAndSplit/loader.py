@@ -1,5 +1,16 @@
 import importlib
+from loguru import logger
+import sys
 
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
+
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
 
 def convert_latex_to_md(latex_path):
     """Converts a LaTeX file to Markdown using the latex2markdown library.
@@ -18,10 +29,10 @@ def convert_latex_to_md(latex_path):
             markdown_content = l2m.to_markdown()
         return markdown_content
     except FileNotFoundError:
-        print(f"Error: LaTeX file not found at {latex_path}")
+        logger.info(f"Error: LaTeX file not found at {latex_path}")
         return None
     except Exception as e:
-        print(f"Error during conversion: {e}")
+        logger.error(f"Error during conversion: {e}")
         return None
 
 
@@ -72,8 +83,8 @@ def create_documents_unstructured(file_path):
             elements = prt(filename=file_path)
         return elements
     except AttributeError as ae:
-        print(f"Attribute error: {ae}")
+        logger.error(f"Attribute error: {ae}")
         return ae
     except Exception as e:
-        print(f"Unexpected error: {e}")
+        logger.error(f"Unexpected error: {e}")
         return e
