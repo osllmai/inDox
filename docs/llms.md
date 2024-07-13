@@ -7,7 +7,8 @@ These models are:
 1.  **OpenAI Model**
 2.  **Mistral Model**
 3.  **HuggingFace Models**
-3.  **GoogleAi Models**
+4.  **GoogleAi Models**
+5.  **Ollama**
 
 
 ## Initial Setup
