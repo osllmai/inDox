@@ -257,3 +257,22 @@ retriever.context
      'face he recognized the beautiful maiden who had danced with\n\nhim and cried, that is the true bride. The step-mother and\n\nthe two sisters were horrified and became pale with rage, he,\n\nhowever, took cinderella on his horse and rode away with her. As\n\nthey passed by the hazel-tree, the two white doves cried -\n\nturn and peep, turn and peep,\n\nno blood is in the shoe,\n\nthe shoe is not too small for her,\n\nthe true bride rides with you,\n\nand when they had cried that, the two came flying down and',
      "to send her up to him, but the mother answered, oh, no, she is\n\nmuch too dirty, she cannot show herself. But he absolutely\n\ninsisted on it, and cinderella had to be called. She first\n\nwashed her hands and face clean, and then went and bowed down\n\nbefore the king's son, who gave her the golden shoe. Then she\n\nseated herself on a stool, drew her foot out of the heavy\n\nwooden shoe, and put it into the slipper, which fitted like a\n\nglove. And when she rose up and the king's son looked at her",
      'slippers embroidered with silk and silver. She put on the dress\n\nwith all speed, and went to the wedding. Her step-sisters and the\n\nstep-mother however did not know her, and thought she must be a\n\nforeign princess, for she looked so beautiful in the golden dress.\n\nThey never once thought of cinderella, and believed that she was\n\nsitting at home in the dirt, picking lentils out of the ashes. The\n\nprince approached her, took her by the hand and danced with her.']
+
+```txt
+                 .----------------.  .-----------------. .----------------.  .----------------.  .----------------. 
+                | .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
+                | |     _____    | || | ____  _____  | || |  ________    | || |     ____     | || |  ____  ____  | |
+                | |    |_   _|   | || ||_   \|_   _| | || | |_   ___ `.  | || |   .'    `.   | || | |_  _||_  _| | |
+                | |      | |     | || |  |   \ | |   | || |   | |   `. \ | || |  /  .--.  \  | || |   \ \  / /   | |
+                | |      | |     | || |  | |\ \| |   | || |   | |    | | | || |  | |    | |  | || |    > `' <    | |
+                | |     _| |_    | || | _| |_\   |_  | || |  _| |___.' / | || |  \  `--'  /  | || |  _/ /'`\ \_  | |
+                | |    |_____|   | || ||_____|\____| | || | |________.'  | || |   `.____.'   | || | |____||____| | |
+                | |              | || |              | || |              | || |              | || |              | |
+                | '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
+                 '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
+
+
+```
+
+
+
