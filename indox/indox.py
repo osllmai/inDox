@@ -4,6 +4,7 @@ import warnings
 from .utils import show_indox_logo
 from loguru import logger
 import sys
+
 warnings.filterwarnings("ignore")
 
 # Set up logging
@@ -15,6 +16,8 @@ logger.add(sys.stdout,
 logger.add(sys.stdout,
            format="<red>{level}</red>: <level>{message}</level>",
            level="ERROR")
+
+
 class IndoxRetrievalAugmentation:
     def __init__(self):
         """
@@ -127,7 +130,7 @@ class IndoxRetrievalAugmentation:
                 raise
 
     class AgenticRag:
-        def __init__(self, llm, vector_database=None , top_k: int = 5):
+        def __init__(self, llm, vector_database=None, top_k: int = 5):
             self.llm = llm
             self.top_k = top_k
             self.vector_database = vector_database
