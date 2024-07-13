@@ -1,6 +1,7 @@
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 from loguru import logger
 import sys
+from indox.llms.BaseLLM import BaseLLM
 
 # Set up logging
 logger.remove()  # Remove the default logger
@@ -13,8 +14,12 @@ logger.add(sys.stdout,
            level="ERROR")
 
 
-class GoogleAi:
+class GoogleAi(BaseLLM):
+    api_key: str
+    model: str = "gemini-1.5-flash-latest"
+
     def __init__(self, api_key, model="gemini-1.5-flash-latest"):
+        super().__init__(api_key=api_key, model=model)
         """
         Initializes with the specified model version and an optional prompt template.
 
