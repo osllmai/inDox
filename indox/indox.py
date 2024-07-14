@@ -1,5 +1,7 @@
 from typing import List, Any, Tuple
 import warnings
+
+from .core import Document
 # import logging
 from .utils import show_indox_logo
 from loguru import logger
@@ -64,7 +66,15 @@ class IndoxRetrievalAugmentation:
         try:
             logger.info("Storing documents in the vector store")
             if self.db is not None:
-                self.db.add_document(docs)
+                try:
+                    if isinstance(docs[0], Document):
+                        self.db.add_documents(documents=docs)
+                    elif not isinstance(docs[0], Document):
+                        self.db.add_texts(texts=docs)
+                    logger.info("Document added successfully to the vector store.")
+                except Exception as e:
+                    logger.error(f"Failed to add document: {e}")
+                    raise RuntimeError(f"Can't add document to the vector store: {e}")
             else:
                 raise RuntimeError("The vector store database is not initialized.")
 
@@ -98,9 +108,14 @@ class IndoxRetrievalAugmentation:
             if not query:
                 logger.error("Query string cannot be empty.")
                 raise ValueError("Query string cannot be empty.")
+            # db.similarity_search_with_score(query, k=top_k)
+            # context = [d[0].page_content for d in retrieved]
+            # scores = [d[1] for d in retrieved]
             try:
                 logger.info("Retrieving context and scores from the vector database")
-                context, scores = self.vector_database.retrieve(query, top_k=self.top_k)
+                retrieved = self.vector_database.similarity_search_with_score(query, k=self.top_k)
+                context = [d[0].page_content for d in retrieved]
+                scores = [d[1] for d in retrieved]
                 if self.generate_clustered_prompts:
                     from .prompt_augmentation import generate_clustered_prompts
                     context = generate_clustered_prompts(context, embeddings=self.vector_database.embeddings)
