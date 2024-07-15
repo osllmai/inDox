@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" /><link rel="canonical" href="https://osllm.ai/docs/0.1/" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Indox</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Home";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = "/docs/0.1/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> Indox
+        </a>
+        <div class="version">
+          {'provider': 'mike', 'alias': True}
+        </div><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
+    <ul class="current">
+    </ul>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="quick_start/">Quickstart</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="installation/">Installation</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Components</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" >LLMs</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href=".">GoogleAi</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Document Loader</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href=".">CSV</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Spliter</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href=".">Split by title</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Embeddings Model</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href=".">OpenAI</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Vector Store</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href=".">Postgres</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usecases</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" >Question Answering</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href=".">Demo1</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Summarization</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href=".">Demo1</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Generate Code</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href=".">Demo1</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">Indox</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Home</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/osllmai/inDox/edit/master/docs/index.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div style="position: relative; width: 100%; text-align: center;">
+    <h1>inDox</h1>
+    <a href="https://github.com/osllmai/inDox">
+        <img src="https://readme-typing-svg.demolab.com?font=Georgia&size=16&duration=3000&pause=500&multiline=true&width=700&height=100&lines=InDox;Advanced+Search+and+Retrieval+Augmentation+Generative+%7C+Open+Source;Copyright+©️+OSLLAM.ai" alt="Typing SVG" style="margin-top: 20px;"/>
+    </a>
+</div>
+
+<p align="center">
+  <img src="lite-logo 1.png" alt="inDox Lite Logo">
+</p>
+<p><br></br></p>
+<p><a href="https://github.com/osllmai/inDox/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/osllmai/inDox" /></a>
+<a href="https://pypi.org/project/Indox/0.1.8/"><img alt="PyPI" src="https://badge.fury.io/py/Indox.svg" /></a>
+<a href="https://pypi.org/project/Indox/0.1.8/"><img alt="Python" src="https://img.shields.io/pypi/pyversions/Indox.svg" /></a>
+<a href="https://pepy.tech/project/indox"><img alt="Downloads" src="https://static.pepy.tech/badge/indox" /></a></p>
+<p><a href="https://discord.com/invite/ossllmai"><img alt="Discord" src="https://img.shields.io/discord/1223867382460579961?label=Discord&amp;logo=Discord&amp;style=social" /></a>
+<a href="https://github.com/osllmai/inDox"><img alt="GitHub stars" src="https://img.shields.io/github/stars/osllmai/inDox?style=social" /></a></p>
+<p align="center">
+  <a href="https://osllm.ai">Official Website</a> &bull; <a href="https://github.com/osllmai/inDox/wiki">Documentation</a> &bull; <a href="https://discord.gg/qrCc56ZR">Discord</a>
+</p>
+
+<p align="center">
+  <b>NEW:</b> <a href="https://docs.google.com/forms/d/1CQXJvxLUqLBSXnjqQmRpOyZqD6nrKubLz2WTcIJ37fU/prefill">Subscribe to our mailing list</a> for updates and news!
+</p>
+
+<p><strong>Indox Retrieval Augmentation</strong> is an innovative application designed to streamline information extraction from a wide
+range of document types, including text files, PDF, HTML, Markdown, and LaTeX. Whether structured or unstructured, Indox
+provides users with a powerful toolset to efficiently extract relevant data.</p>
+<p>Indox Retrieval Augmentation is an innovative application designed to streamline information extraction from a wide
+range of document types, including text files, PDF, HTML, Markdown, and LaTeX. Whether structured or unstructured, Indox
+provides users with a powerful toolset to efficiently extract relevant data. One of its key features is the ability to
+intelligently cluster primary chunks to form more robust groupings, enhancing the quality and relevance of the extracted
+information.
+With a focus on adaptability and user-centric design, Indox aims to deliver future-ready functionality with more
+features planned for upcoming releases. Join us in exploring how Indox can revolutionize your document processing
+workflow, bringing clarity and organization to your data retrieval needs.</p>
+<h2 id="roadmap">Roadmap</h2>
+<table>
+<thead>
+<tr>
+<th>🤖 Model Support</th>
+<th>Implemented</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ollama (e.g. Llama3)</td>
+<td>✅</td>
+<td>Local Embedding and LLM Models powered by Ollama</td>
+</tr>
+<tr>
+<td>HuggingFace</td>
+<td>✅</td>
+<td>Local Embedding and LLM Models powered by HuggingFace</td>
+</tr>
+<tr>
+<td>Mistral</td>
+<td>✅</td>
+<td>Embedding and LLM Models by Cohere</td>
+</tr>
+<tr>
+<td>Google (e.g. Gemini)</td>
+<td>✅</td>
+<td>Embedding and Generation Models by Google</td>
+</tr>
+<tr>
+<td>OpenAI (e.g. GPT4)</td>
+<td>✅</td>
+<td>Embedding and Generation Models by OpenAI</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Supported Model Via Indox Api</th>
+<th>Implemented</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OpenAi</td>
+<td>✅</td>
+<td>Embedding and LLm OpenAi Model From Indox Api</td>
+</tr>
+<tr>
+<td>Mistral</td>
+<td>✅</td>
+<td>Embedding and LLm Mistral Model From Indox Api</td>
+</tr>
+<tr>
+<td>Anthropic</td>
+<td>❌</td>
+<td>Embedding and LLm Anthropic Model From Indox Api</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>📁 Loader and Splitter</th>
+<th>Implemented</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple PDF</td>
+<td>✅</td>
+<td>Import PDF</td>
+</tr>
+<tr>
+<td>UnstructuredIO</td>
+<td>✅</td>
+<td>Import Data through Unstructured</td>
+</tr>
+<tr>
+<td>Clustered Load And Split</td>
+<td>✅</td>
+<td>Load pdf and texts. add a extra clustering layer</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>✨ RAG Features</th>
+<th>Implemented</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hybrid Search</td>
+<td>❌</td>
+<td>Semantic Search combined with Keyword Search</td>
+</tr>
+<tr>
+<td>Semantic Caching</td>
+<td>✅</td>
+<td>Results saved and retrieved based on semantic meaning</td>
+</tr>
+<tr>
+<td>Clustered Prompt</td>
+<td>✅</td>
+<td>Retrieve smaller chunks and do clustering and summarization</td>
+</tr>
+<tr>
+<td>Agentic Rag</td>
+<td>✅</td>
+<td>Generate more reliabale answer, rank context and web search if needed</td>
+</tr>
+<tr>
+<td>Advanced Querying</td>
+<td>❌</td>
+<td>Task Delegation Based on LLM Evaluation</td>
+</tr>
+<tr>
+<td>Reranking</td>
+<td>✅</td>
+<td>Rerank results based on context for improved results</td>
+</tr>
+<tr>
+<td>Customizable Metadata</td>
+<td>❌</td>
+<td>Free control over Metadata</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>🆒 Cool Bonus</th>
+<th>Implemented</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Docker Support</td>
+<td>❌</td>
+<td>Indox is deployable via Docker</td>
+</tr>
+<tr>
+<td>Customizable Frontend</td>
+<td>❌</td>
+<td>Indox's frontend is fully-customizable via the frontend</td>
+</tr>
+</tbody>
+</table>
+<h2 id="examples">Examples</h2>
+<table>
+<thead>
+<tr>
+<th>☑️ Examples</th>
+<th>Run in Colab</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Indox Api (OpenAi)</td>
+<td><a href="https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/indox_api_openai.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></td>
+</tr>
+<tr>
+<td>Mistral (Using Unstructured)</td>
+<td><a href="https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/mistral_unstructured.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></td>
+</tr>
+<tr>
+<td>OpenAi (Using Clustered Split)</td>
+<td><a href="https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/openai_clusterSplit.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></td>
+</tr>
+<tr>
+<td>HuggingFace Models(Mistral)</td>
+<td><a href="https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/hf_mistral_SimpleReader.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></td>
+</tr>
+<tr>
+<td>Ollama</td>
+<td><a href="https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/ollama.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="indox-workflow">Indox Workflow</h2>
+<div style="text-align: center;">
+    <img src="inDox.png" alt="inDox work flow" width="80%">
+</div>
+
+<p><br></p>
+<h2 id="how-indox-works">How Indox Works?</h2>
+<ol>
+<li>We offer multiple approaches to load and split various data. <ul>
+<li><a href="#">How to: Load Documents</a></li>
+<li><a href="#">How to: Split Documents</a></li>
+</ul>
+</li>
+<li>Then the splitted documents store in Database.<ul>
+<li><a href="#">How to: Store vectors</a> </li>
+</ul>
+</li>
+<li>Query is performed on the vector store to retrieve the most relevant information. Actually the retriever searches the vector store for finding relevant text chunks.</li>
+<li>You have two options to obtain your answer. <ul>
+<li><a href="#">Question Answering method</a></li>
+<li><a href="#">Agentic Rag</a></li>
+</ul>
+</li>
+</ol>
+<p>The main difference between them is that Agentic RAG employs intelligent agents to tackle complex questions that require intricate planning and Multi-step reasoning.Our Agent use has the ability to use multiple tools like searching on webs and check the Hallucination.   </p>
+<p>Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 15, 2024</span></p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="quick_start/" class="btn btn-neutral float-right" title="Quickstart">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/osllmai/inDox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+      <span><a href="quick_start/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+      <script src="js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.6.0
+Build Date UTC : 2024-07-15 03:26:31.991550+00:00
+-->

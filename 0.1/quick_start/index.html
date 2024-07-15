@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://osllm.ai/docs/0.1/quick_start/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Quickstart - Indox</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Quickstart";
+        var mkdocs_page_input_path = "quick_start.md";
+        var mkdocs_page_url = "/docs/0.1/quick_start/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Indox
+        </a>
+        <div class="version">
+          {'provider': 'mike', 'alias': True}
+        </div><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Quickstart</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#install-the-required-packages">Install the Required Packages</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#implementation-a-rag-system-for-a-qa-task">Implementation a RAG system for a Q&amp;A task:</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#load-environment-variables">Load Environment Variables</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#import-indox-package">Import Indox Package</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#initialize-indox">Initialize Indox</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#first-step-data-retrieval">First Step: Data Retrieval</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#second-step-vector-embedding">Second Step: Vector Embedding</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#importing-embedding-models">Importing Embedding Models</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#third-step-similarity-search">Third Step: Similarity Search</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#fourth-step-answer-generation">Fourth Step: Answer Generation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#importing-llm-models">Importing LLM Models</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Components</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" >LLMs</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="..">GoogleAi</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Document Loader</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="..">CSV</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Spliter</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="..">Split by title</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Embeddings Model</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="..">OpenAI</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Vector Store</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="..">Postgres</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usecases</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" >Question Answering</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="..">Demo1</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Summarization</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="..">Demo1</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Generate Code</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="..">Demo1</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Indox</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Getting Started</li>
+      <li class="breadcrumb-item active">Quickstart</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/osllmai/inDox/edit/master/docs/quick_start.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="quick-start">Quick Start</h1>
+<h3 id="install-the-required-packages">Install the Required Packages</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">pip</span> <span class="n">install</span> <span class="n">indox</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">pip</span> <span class="n">install</span> <span class="n">openai</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">pip</span> <span class="n">install</span> <span class="n">chromadb</span>
+</span></code></pre></div>
+<h3 id="implementation-a-rag-system-for-a-qa-task">Implementation a RAG system for a Q&amp;A task:</h3>
+<ol>
+<li><strong>Data Retrieval:</strong> Loading a document and processed into a suitable format, often using techniques like text splitting.</li>
+<li><strong>Vector Embedding:</strong> The documents are converted into vector embedding using language models, which help mat the textual information into a numerical space. </li>
+<li><strong>Similarity Search:</strong> Using similarity search techniques, the embeddings of a given user query is compared against the document embeddings. This helps find the most relevant text.</li>
+<li><strong>Answer Generation:</strong> The generator combines the retrieved text with the original query to create a coherent and contextually relevant answer.<br></li>
+</ol>
+<h3 id="load-environment-variables">Load Environment Variables</h3>
+<p>To start, you need to load your API keys from the environment.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span> <span class="nn">os</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span> <span class="nn">dotenv</span> <span class="kn">import</span> <span class="n">load_dotenv</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">load_dotenv</span><span class="p">()</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">OPENAI_API_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;OPENAI_API_KEY&#39;</span><span class="p">]</span>
+</span></code></pre></div>
+<h2 id="import-indox-package">Import Indox Package</h2>
+<p>Import the necessary classes from the Indox package.</p>
+<h3 id="initialize-indox">Initialize Indox</h3>
+<p>Create an instance of IndoxRetrievalAugmentation.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">indox</span> <span class="kn">import</span> <span class="n">IndoxRetrievalAugmentation</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">Indox</span> <span class="o">=</span> <span class="n">IndoxRetrievalAugmentation</span><span class="p">()</span>
+</span></code></pre></div>
+<h2 id="first-step-data-retrieval">First Step: Data Retrieval</h2>
+<p>In this section, we take advantage of the <code>unstructured</code> library to load
+documents and split them into chunks by title. This method helps in
+organizing the document into manageable sections for further
+processing.
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span> <span class="nn">indox.data_loader_splitter</span> <span class="kn">import</span> <span class="n">UnstructuredLoadAndSplit</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># load and split document</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;sample.txt&quot;</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">loader_splitter</span> <span class="o">=</span> <span class="n">UnstructuredLoadAndSplit</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="n">file_path</span><span class="p">)</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">docs</span> <span class="o">=</span> <span class="n">loader_splitter</span><span class="o">.</span><span class="n">load_and_chunk</span><span class="p">()</span>
+</span></code></pre></div></p>
+<div class="language-text highlight"><pre><span></span><code>Starting processing...
+End Chunking process.
+</code></pre></div>
+<h2 id="second-step-vector-embedding">Second Step: Vector Embedding</h2>
+<h3 id="importing-embedding-models">Importing Embedding Models</h3>
+<p>You can import one of this Embedding Models:<br>
+1. <a href="#">OpenAI</a><br>
+2. <a href="#">HuggingFace</a>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">indox.embeddings</span> <span class="kn">import</span> <span class="n">OpenAiEmbedding</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">openai_embeddings</span> <span class="o">=</span> <span class="n">OpenAiEmbedding</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">,</span><span class="n">openai_api_key</span><span class="o">=</span><span class="n">OPENAI_API_KEY</span><span class="p">)</span>
+</span></code></pre></div></p>
+<h2 id="third-step-similarity-search">Third Step: Similarity Search</h2>
+<p>Storing document chunks in a vector store is crucial for enabling
+efficient retrieval and search operations. By converting text data into
+vector representations and storing them in a vector store, you can
+perform rapid similarity searches and other vector-based operations.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span> <span class="nn">indox.vector_stores</span> <span class="kn">import</span> <span class="n">ChromaVectorStore</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">db</span> <span class="o">=</span> <span class="n">ChromaVectorStore</span><span class="p">(</span><span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;sample&quot;</span><span class="p">,</span><span class="n">embedding</span><span class="o">=</span><span class="n">embed_openai</span><span class="p">)</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">Indox</span><span class="o">.</span><span class="n">connect_to_vectorstore</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">Indox</span><span class="o">.</span><span class="n">store_in_vectorstore</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>2024-05-14 15:33:04,916 - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2024-05-14 15:33:12,587 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings &quot;HTTP/1.1 200 OK&quot;
+2024-05-14 15:33:13,574 - INFO - Document added successfully to the vector store.
+
+Connection established successfully.
+
+&lt;Indox.vectorstore.ChromaVectorStore at 0x28cf9369af0&gt;
+</code></pre></div>
+<h2 id="fourth-step-answer-generation">Fourth Step: Answer Generation</h2>
+<h3 id="importing-llm-models">Importing LLM Models</h3>
+<p>You can import one of the LLMs. We support:<br>
+1. <a href="#">GoogleAI</a><br>
+2. <a href="#">HuggingFace</a><br>
+3. <a href="#">Indox</a><br>
+4. <a href="#">Mistral</a><br>
+5. <a href="#">Ollama</a><br>
+6. <a href="#">OpenAI</a>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span> <span class="nn">indox.llms</span> <span class="kn">import</span> <span class="n">OpenAi</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">openai_qa</span> <span class="o">=</span> <span class="n">OpenAiQA</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">OPENAI_API_KEY</span><span class="p">,</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-3.5-turbo-0125&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;how cinderella reach her happy ending?&quot;</span>
+</span></code></pre></div></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">retriever</span> <span class="o">=</span> <span class="n">indox</span><span class="o">.</span><span class="n">QuestionAnswer</span><span class="p">(</span><span class="n">vector_database</span><span class="o">=</span><span class="n">db</span><span class="p">,</span><span class="n">llm</span><span class="o">=</span><span class="n">openai_qa</span><span class="p">,</span><span class="n">top_k</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">retriever</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>2024-05-14 15:34:55,380 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings &quot;HTTP/1.1 200 OK&quot;
+2024-05-14 15:35:01,917 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions &quot;HTTP/1.1 200 OK&quot;
+&#39;Cinderella reached her happy ending by enduring mistreatment from her step-family, finding solace and help from the hazel tree and the little white bird, attending the royal festival where the prince recognized her as the true bride, and ultimately fitting into the golden shoe that proved her identity. This led to her marrying the prince and living happily ever after.&#39;
+</code></pre></div>
+<p><div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">retriever</span><span class="o">.</span><span class="n">context</span>
+</span></code></pre></div>
+    ["from the hazel-bush. Cinderella thanked him, went to her mother's\n\ngrave and planted the branch on it, and wept so much that the tears\n\nfell down on it and watered it. And it grew and became a handsome\n\ntree. Thrice a day cinderella went and sat beneath it, and wept and\n\nprayed, and a little white bird always came on the tree, and if\n\ncinderella expressed a wish, the bird threw down to her what she\n\nhad wished for.\n\nIt happened, however, that the king gave orders for a festival",
+     'worked till she was weary she had no bed to go to, but had to sleep\n\nby the hearth in the cinders. And as on that account she always\n\nlooked dusty and dirty, they called her cinderella.\n\nIt happened that the father was once going to the fair, and he\n\nasked his two step-daughters what he should bring back for them.\n\nBeautiful dresses, said one, pearls and jewels, said the second.\n\nAnd you, cinderella, said he, what will you have. Father',
+     'face he recognized the beautiful maiden who had danced with\n\nhim and cried, that is the true bride. The step-mother and\n\nthe two sisters were horrified and became pale with rage, he,\n\nhowever, took cinderella on his horse and rode away with her. As\n\nthey passed by the hazel-tree, the two white doves cried -\n\nturn and peep, turn and peep,\n\nno blood is in the shoe,\n\nthe shoe is not too small for her,\n\nthe true bride rides with you,\n\nand when they had cried that, the two came flying down and',
+     "to send her up to him, but the mother answered, oh, no, she is\n\nmuch too dirty, she cannot show herself. But he absolutely\n\ninsisted on it, and cinderella had to be called. She first\n\nwashed her hands and face clean, and then went and bowed down\n\nbefore the king's son, who gave her the golden shoe. Then she\n\nseated herself on a stool, drew her foot out of the heavy\n\nwooden shoe, and put it into the slipper, which fitted like a\n\nglove. And when she rose up and the king's son looked at her",
+     'slippers embroidered with silk and silver. She put on the dress\n\nwith all speed, and went to the wedding. Her step-sisters and the\n\nstep-mother however did not know her, and thought she must be a\n\nforeign princess, for she looked so beautiful in the golden dress.\n\nThey never once thought of cinderella, and believed that she was\n\nsitting at home in the dirt, picking lentils out of the ashes. The\n\nprince approached her, took her by the hand and danced with her.']</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>                 .----------------.  .-----------------. .----------------.  .----------------.  .----------------. 
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>                | .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>                | |     _____    | || | ____  _____  | || |  ________    | || |     ____     | || |  ____  ____  | |
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>                | |    |_   _|   | || ||_   \|_   _| | || | |_   ___ `.  | || |   .&#39;    `.   | || | |_  _||_  _| | |
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>                | |      | |     | || |  |   \ | |   | || |   | |   `. \ | || |  /  .--.  \  | || |   \ \  / /   | |
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>                | |      | |     | || |  | |\ \| |   | || |   | |    | | | || |  | |    | |  | || |    &gt; `&#39; &lt;    | |
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>                | |     _| |_    | || | _| |_\   |_  | || |  _| |___.&#39; / | || |  \  `--&#39;  /  | || |  _/ /&#39;`\ \_  | |
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>                | |    |_____|   | || ||_____|\____| | || | |________.&#39;  | || |   `.____.&#39;   | || | |____||____| | |
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>                | |              | || |              | || |              | || |              | || |              | |
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>                | &#39;--------------&#39; || &#39;--------------&#39; || &#39;--------------&#39; || &#39;--------------&#39; || &#39;--------------&#39; |
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>                 &#39;----------------&#39;  &#39;----------------&#39;  &#39;----------------&#39;  &#39;----------------&#39;  &#39;----------------&#39; 
+</span></code></pre></div>
+<p>Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 15, 2024</span></p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../installation/" class="btn btn-neutral float-right" title="Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/osllmai/inDox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../installation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
