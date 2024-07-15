@@ -20,11 +20,11 @@ logger.add(sys.stdout,
 #     return embeddings
 
 
-def HuggingFaceEmbedding(model):
-    from langchain_community.embeddings import HuggingFaceEmbeddings
-    embeddings = HuggingFaceEmbeddings(model_name=model)
-    logger.info(f'Initialized HuggingFace embeddings with model: {model}')
-    return embeddings
+# def HuggingFaceEmbedding(model):
+#     from langchain_community.embeddings import HuggingFaceEmbeddings
+#     embeddings = HuggingFaceEmbeddings(model_name=model)
+#     logger.info(f'Initialized HuggingFace embeddings with model: {model}')
+#     return embeddings
 
 
 # def MistralEmbedding(api_key):
