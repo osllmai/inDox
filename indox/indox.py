@@ -103,7 +103,8 @@ class IndoxRetrievalAugmentation:
                 context, scores = self.vector_database.retrieve(query, top_k=self.top_k)
                 if self.generate_clustered_prompts:
                     from .prompt_augmentation import generate_clustered_prompts
-                    context = generate_clustered_prompts(context, embeddings=self.vector_database.embeddings)
+                    context = generate_clustered_prompts(context, embeddings=self.vector_database.embeddings,
+                                                         summary_model=self.qa_model)
 
                 if not self.document_relevancy_filter:
                     logger.info("Generating answer without document relevancy filter")
