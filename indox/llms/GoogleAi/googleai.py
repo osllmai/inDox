@@ -122,7 +122,7 @@ class GoogleAi:
             Provide the score with no preamble or explanation.
         """
         for doc in context:
-            prompt = f"Here is the retrieved document:\n{doc}\nHere is the user question:\n{question}"
+            prompt = f"{system_prompt} \n Here is the retrieved document:\n{doc}\nHere is the user question:\n{question}"
             try:
                 grade = self._generate_response(prompt).lower()
                 if grade == "yes":
