@@ -1,4 +1,3 @@
-# from .Chroma import ChromaVectorStore
-from .Faiss import FAISSVectorStore
 from .PGVector import PGVectorStore
-from .test_chroma import Chroma
+from .chroma import Chroma
+from .faiss import FAISS

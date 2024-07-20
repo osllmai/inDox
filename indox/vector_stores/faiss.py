@@ -1,8 +1,8 @@
 from __future__ import annotations
-
 import logging
 import os
 import pickle
+import operator
 import uuid
 import warnings
 from pathlib import Path
@@ -17,15 +17,46 @@ from typing import (
     Tuple,
     Union,
 )
-
+from abc import ABC, abstractmethod
 import numpy as np
+from enum import Enum
+from indox.core import Embeddings, VectorStore, Document
 
-from indox.core import Embeddings,VectorStore,Document
-# from langchain_community.docstore.base import AddableMixin, Docstore
-# from langchain_community.docstore.in_memory import InMemoryDocstore
-# from langchain_community.vectorstores.utils import (
-#     DistanceStrategy,
-# )
+
+class DistanceStrategy(str, Enum):
+    """Enumerator of the Distance strategies for calculating distances
+    between vectors."""
+
+    EUCLIDEAN_DISTANCE = "EUCLIDEAN_DISTANCE"
+    MAX_INNER_PRODUCT = "MAX_INNER_PRODUCT"
+    DOT_PRODUCT = "DOT_PRODUCT"
+    JACCARD = "JACCARD"
+    COSINE = "COSINE"
+
+
+class Docstore(ABC):
+    """Interface to access to place that stores documents."""
+
+    @abstractmethod
+    def search(self, search: str) -> Union[str, Document]:
+        """Search for document.
+
+        If page exists, return the page summary, and a Document object.
+        If page does not exist, return similar entries.
+        """
+
+    def delete(self, ids: List) -> None:
+        """Deleting IDs from in memory dictionary."""
+        raise NotImplementedError
+
+
+class AddableMixin(ABC):
+    """Mixin class that supports adding texts."""
+
+    @abstractmethod
+    def add(self, texts: Dict[str, Document]) -> None:
+        """Add more documents."""
+
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +88,50 @@ def dependable_faiss_import(no_avx2: Optional[bool] = None) -> Any:
     return faiss
 
 
+class InMemoryDocstore(Docstore, AddableMixin):
+    """Simple in memory docstore in the form of a dict."""
+
+    def __init__(self, _dict: Optional[Dict[str, Document]] = None):
+        """Initialize with dict."""
+        self._dict = _dict if _dict is not None else {}
+
+    def add(self, texts: Dict[str, Document]) -> None:
+        """Add texts to in memory dictionary.
+
+        Args:
+            texts: dictionary of id -> document.
+
+        Returns:
+            None
+        """
+        overlapping = set(texts).intersection(self._dict)
+        if overlapping:
+            raise ValueError(f"Tried to add ids that already exist: {overlapping}")
+        self._dict = {**self._dict, **texts}
+
+    def delete(self, ids: List) -> None:
+        """Deleting IDs from in memory dictionary."""
+        overlapping = set(ids).intersection(self._dict)
+        if not overlapping:
+            raise ValueError(f"Tried to delete ids that does not  exist: {ids}")
+        for _id in ids:
+            self._dict.pop(_id)
+
+    def search(self, search: str) -> Union[str, Document]:
+        """Search via direct lookup.
+
+        Args:
+            search: id of a document to search for.
+
+        Returns:
+            Document if found, else error message.
+        """
+        if search not in self._dict:
+            return f"ID {search} not found."
+        else:
+            return self._dict[search]
+
+
 def _len_check_if_sized(x: Any, y: Any, x_name: str, y_name: str) -> None:
     if isinstance(x, Sized) and isinstance(y, Sized) and len(x) != len(y):
         raise ValueError(
@@ -66,52 +141,41 @@ def _len_check_if_sized(x: Any, y: Any, x_name: str, y_name: str) -> None:
     return
 
 
-class FAISS(VectorStore):
+class FAISS(ABC):
     """`Meta Faiss` vector store.
 
     To use, you must have the ``faiss`` python package installed.
-
-    Example:
-        .. code-block:: python
-
-            from langchain_community.embeddings.openai import OpenAIEmbeddings
-            from langchain_community.vectorstores import FAISS
-
-            embeddings = OpenAIEmbeddings()
-            texts = ["FAISS is an important library", "LangChain supports FAISS"]
-            faiss = FAISS.from_texts(texts, embeddings)
-
     """
 
     def __init__(
-        self,
-        embedding_function: Union[
-            Callable[[str], List[float]],
-            Embeddings,
-        ],
-        index: Any,
-        docstore: Docstore,
-        index_to_docstore_id: Dict[int, str],
-        relevance_score_fn: Optional[Callable[[float], float]] = None,
-        normalize_L2: bool = False,
-        distance_strategy: DistanceStrategy = DistanceStrategy.EUCLIDEAN_DISTANCE,
+            self,
+            embedding_function: Union[
+                Callable[[str], List[float]],
+                Embeddings,
+            ],
+            relevance_score_fn: Optional[Callable[[float], float]] = None,
+            normalize_L2: bool = False,
+            distance_strategy: DistanceStrategy = DistanceStrategy.EUCLIDEAN_DISTANCE,
     ):
         """Initialize with necessary components."""
+        import faiss
         if not isinstance(embedding_function, Embeddings):
             logger.warning(
                 "`embedding_function` is expected to be an Embeddings object, support "
                 "for passing in a function will soon be removed."
             )
         self.embedding_function = embedding_function
-        self.index = index
-        self.docstore = docstore
-        self.index_to_docstore_id = index_to_docstore_id
+        embedding_dim = len(self.embedding_function.embed_query(""))
+
+        self.index = faiss.IndexFlatL2(embedding_dim)
+        self.docstore = InMemoryDocstore({})
+        self.index_to_docstore_id = {}
         self.distance_strategy = distance_strategy
         self.override_relevance_score_fn = relevance_score_fn
         self._normalize_L2 = normalize_L2
         if (
-            self.distance_strategy != DistanceStrategy.EUCLIDEAN_DISTANCE
-            and self._normalize_L2
+                self.distance_strategy != DistanceStrategy.EUCLIDEAN_DISTANCE
+                and self._normalize_L2
         ):
             warnings.warn(
                 "Normalizing L2 is not applicable for "
@@ -132,22 +196,18 @@ class FAISS(VectorStore):
         else:
             return [self.embedding_function(text) for text in texts]
 
-
-
     def _embed_query(self, text: str) -> List[float]:
         if isinstance(self.embedding_function, Embeddings):
             return self.embedding_function.embed_query(text)
         else:
             return self.embedding_function(text)
 
-
-
     def __add(
-        self,
-        texts: Iterable[str],
-        embeddings: Iterable[List[float]],
-        metadatas: Optional[Iterable[dict]] = None,
-        ids: Optional[List[str]] = None,
+            self,
+            texts: Iterable[str],
+            embeddings: Iterable[List[float]],
+            metadatas: Optional[Iterable[dict]] = None,
+            ids: Optional[List[str]] = None,
     ) -> List[str]:
         faiss = dependable_faiss_import()
 
@@ -184,11 +244,11 @@ class FAISS(VectorStore):
         return ids
 
     def add_texts(
-        self,
-        texts: Iterable[str],
-        metadatas: Optional[List[dict]] = None,
-        ids: Optional[List[str]] = None,
-        **kwargs: Any,
+            self,
+            texts: Iterable[str],
+            metadatas: Optional[List[dict]] = None,
+            ids: Optional[List[str]] = None,
+            **kwargs: Any,
     ) -> List[str]:
         """Run more texts through the embeddings and add to the vectorstore.
 
@@ -204,13 +264,12 @@ class FAISS(VectorStore):
         embeddings = self._embed_documents(texts)
         return self.__add(texts, embeddings, metadatas=metadatas, ids=ids)
 
-
     def add_embeddings(
-        self,
-        text_embeddings: Iterable[Tuple[str, List[float]]],
-        metadatas: Optional[List[dict]] = None,
-        ids: Optional[List[str]] = None,
-        **kwargs: Any,
+            self,
+            text_embeddings: Iterable[Tuple[str, List[float]]],
+            metadatas: Optional[List[dict]] = None,
+            ids: Optional[List[str]] = None,
+            **kwargs: Any,
     ) -> List[str]:
         """Add the given texts and embeddings to the vectorstore.
 
@@ -227,15 +286,13 @@ class FAISS(VectorStore):
         texts, embeddings = zip(*text_embeddings)
         return self.__add(texts, embeddings, metadatas=metadatas, ids=ids)
 
-
-
     def similarity_search_with_score(
-        self,
-        query: str,
-        k: int = 4,
-        filter: Optional[Union[Callable, Dict[str, Any]]] = None,
-        fetch_k: int = 20,
-        **kwargs: Any,
+            self,
+            query: str,
+            k: int = 4,
+            filter: Optional[Union[Callable, Dict[str, Any]]] = None,
+            fetch_k: int = 20,
+            **kwargs: Any,
     ) -> List[Tuple[Document, float]]:
         """Return docs most similar to query.
 
@@ -263,43 +320,70 @@ class FAISS(VectorStore):
         )
         return docs
 
-
-
-    def similarity_search_by_vector(
-        self,
-        embedding: List[float],
-        k: int = 4,
-        filter: Optional[Dict[str, Any]] = None,
-        fetch_k: int = 20,
-        **kwargs: Any,
-    ) -> List[Document]:
-        """Return docs most similar to embedding vector.
+    def similarity_search_with_score_by_vector(
+            self,
+            embedding: List[float],
+            k: int = 4,
+            filter: Optional[Union[Callable, Dict[str, Any]]] = None,
+            fetch_k: int = 20,
+            **kwargs: Any,
+    ) -> List[Tuple[Document, float]]:
+        """Return docs most similar to query.
 
         Args:
-            embedding: Embedding to look up documents similar to.
+            embedding: Embedding vector to look up documents similar to.
             k: Number of Documents to return. Defaults to 4.
-            filter (Optional[Dict[str, str]]): Filter by metadata.
+            filter (Optional[Union[Callable, Dict[str, Any]]]): Filter by metadata.
                 Defaults to None. If a callable, it must take as input the
                 metadata dict of Document and return a bool.
-
             fetch_k: (Optional[int]) Number of Documents to fetch before filtering.
                       Defaults to 20.
+            **kwargs: kwargs to be passed to similarity search. Can include:
+                score_threshold: Optional, a floating point value between 0 to 1 to
+                    filter the resulting set of retrieved docs
 
         Returns:
-            List of Documents most similar to the embedding.
+            List of documents most similar to the query text and L2 distance
+            in float for each. Lower score represents more similarity.
         """
-        docs_and_scores = self.similarity_search_with_score_by_vector(
-            embedding,
-            k,
-            filter=filter,
-            fetch_k=fetch_k,
-            **kwargs,
-        )
-        return [doc for doc, _ in docs_and_scores]
+        faiss = dependable_faiss_import()
+        vector = np.array([embedding], dtype=np.float32)
+        if self._normalize_L2:
+            faiss.normalize_L2(vector)
+        scores, indices = self.index.search(vector, k if filter is None else fetch_k)
+        docs = []
 
+        if filter is not None:
+            filter_func = self._create_filter_func(filter)
 
+        for j, i in enumerate(indices[0]):
+            if i == -1:
+                # This happens when not enough docs are returned.
+                continue
+            _id = self.index_to_docstore_id[i]
+            doc = self.docstore.search(_id)
+            if not isinstance(doc, Document):
+                raise ValueError(f"Could not find document for id {_id}, got {doc}")
+            if filter is not None:
+                if filter_func(doc.metadata):
+                    docs.append((doc, scores[0][j]))
+            else:
+                docs.append((doc, scores[0][j]))
 
-
+        score_threshold = kwargs.get("score_threshold")
+        if score_threshold is not None:
+            cmp = (
+                operator.ge
+                if self.distance_strategy
+                   in (DistanceStrategy.MAX_INNER_PRODUCT, DistanceStrategy.JACCARD)
+                else operator.le
+            )
+            docs = [
+                (doc, similarity)
+                for doc, similarity in docs
+                if cmp(similarity, score_threshold)
+            ]
+        return docs[:k]
     def delete(self, ids: Optional[List[str]] = None, **kwargs: Any) -> Optional[bool]:
         """Delete by ID. These are the IDs in the vectorstore.
 
@@ -368,15 +452,15 @@ class FAISS(VectorStore):
 
     @classmethod
     def __from(
-        cls,
-        texts: Iterable[str],
-        embeddings: List[List[float]],
-        embedding: Embeddings,
-        metadatas: Optional[Iterable[dict]] = None,
-        ids: Optional[List[str]] = None,
-        normalize_L2: bool = False,
-        distance_strategy: DistanceStrategy = DistanceStrategy.EUCLIDEAN_DISTANCE,
-        **kwargs: Any,
+            cls,
+            texts: Iterable[str],
+            embeddings: List[List[float]],
+            embedding: Embeddings,
+            metadatas: Optional[Iterable[dict]] = None,
+            ids: Optional[List[str]] = None,
+            normalize_L2: bool = False,
+            distance_strategy: DistanceStrategy = DistanceStrategy.EUCLIDEAN_DISTANCE,
+            **kwargs: Any,
     ) -> FAISS:
         faiss = dependable_faiss_import()
         if distance_strategy == DistanceStrategy.MAX_INNER_PRODUCT:
@@ -400,12 +484,12 @@ class FAISS(VectorStore):
 
     @classmethod
     def from_texts(
-        cls,
-        texts: List[str],
-        embedding: Embeddings,
-        metadatas: Optional[List[dict]] = None,
-        ids: Optional[List[str]] = None,
-        **kwargs: Any,
+            cls,
+            texts: List[str],
+            embedding: Embeddings,
+            metadatas: Optional[List[dict]] = None,
+            ids: Optional[List[str]] = None,
+            **kwargs: Any,
     ) -> FAISS:
         """Construct FAISS wrapper from raw documents.
 
@@ -437,12 +521,12 @@ class FAISS(VectorStore):
 
     @classmethod
     async def afrom_texts(
-        cls,
-        texts: list[str],
-        embedding: Embeddings,
-        metadatas: Optional[List[dict]] = None,
-        ids: Optional[List[str]] = None,
-        **kwargs: Any,
+            cls,
+            texts: list[str],
+            embedding: Embeddings,
+            metadatas: Optional[List[dict]] = None,
+            ids: Optional[List[str]] = None,
+            **kwargs: Any,
     ) -> FAISS:
         """Construct FAISS wrapper from raw documents asynchronously.
 
@@ -474,12 +558,12 @@ class FAISS(VectorStore):
 
     @classmethod
     def from_embeddings(
-        cls,
-        text_embeddings: Iterable[Tuple[str, List[float]]],
-        embedding: Embeddings,
-        metadatas: Optional[Iterable[dict]] = None,
-        ids: Optional[List[str]] = None,
-        **kwargs: Any,
+            cls,
+            text_embeddings: Iterable[Tuple[str, List[float]]],
+            embedding: Embeddings,
+            metadatas: Optional[Iterable[dict]] = None,
+            ids: Optional[List[str]] = None,
+            **kwargs: Any,
     ) -> FAISS:
         """Construct FAISS wrapper from raw documents.
 
@@ -513,12 +597,12 @@ class FAISS(VectorStore):
 
     @classmethod
     async def afrom_embeddings(
-        cls,
-        text_embeddings: Iterable[Tuple[str, List[float]]],
-        embedding: Embeddings,
-        metadatas: Optional[Iterable[dict]] = None,
-        ids: Optional[List[str]] = None,
-        **kwargs: Any,
+            cls,
+            text_embeddings: Iterable[Tuple[str, List[float]]],
+            embedding: Embeddings,
+            metadatas: Optional[Iterable[dict]] = None,
+            ids: Optional[List[str]] = None,
+            **kwargs: Any,
     ) -> FAISS:
         """Construct FAISS wrapper from raw documents asynchronously."""
         return cls.from_embeddings(
@@ -550,13 +634,13 @@ class FAISS(VectorStore):
 
     @classmethod
     def load_local(
-        cls,
-        folder_path: str,
-        embeddings: Embeddings,
-        index_name: str = "index",
-        *,
-        allow_dangerous_deserialization: bool = False,
-        **kwargs: Any,
+            cls,
+            folder_path: str,
+            embeddings: Embeddings,
+            index_name: str = "index",
+            *,
+            allow_dangerous_deserialization: bool = False,
+            **kwargs: Any,
     ) -> FAISS:
         """Load FAISS index, docstore, and index_to_docstore_id from disk.
 
@@ -606,12 +690,12 @@ class FAISS(VectorStore):
 
     @classmethod
     def deserialize_from_bytes(
-        cls,
-        serialized: bytes,
-        embeddings: Embeddings,
-        *,
-        allow_dangerous_deserialization: bool = False,
-        **kwargs: Any,
+            cls,
+            serialized: bytes,
+            embeddings: Embeddings,
+            *,
+            allow_dangerous_deserialization: bool = False,
+            **kwargs: Any,
     ) -> FAISS:
         """Deserialize FAISS index, docstore, and index_to_docstore_id from bytes."""
         if not allow_dangerous_deserialization:
@@ -663,10 +747,9 @@ class FAISS(VectorStore):
                 " or euclidean"
             )
 
-
     @staticmethod
     def _create_filter_func(
-        filter: Optional[Union[Callable, Dict[str, Any]]],
+            filter: Optional[Union[Callable, Dict[str, Any]]],
     ) -> Callable[[Dict[str, Any]], bool]:
         """
         Create a filter function based on the provided filter.
