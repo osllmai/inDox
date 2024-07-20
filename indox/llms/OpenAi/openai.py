@@ -181,3 +181,23 @@ class OpenAi:
         except Exception as e:
             logger.error(f"Error checking hallucination: {e}")
             return str(e)
+    def custom_prompt(self,prompt):
+        """
+        Generates a response to a custom prompt.
+
+        Args:
+            prompt (str): The custom prompt to generate a response for.
+
+        Returns:
+            str: The generated response.
+        """
+        try:
+            logger.info("Generating response to custom prompt")
+            messages = [
+                {"role": "system", "content": "You are a chatbot for llm evaluation"},
+                {"role": "user", "content": prompt},
+            ]
+            return self._generate_response(messages, max_tokens=150, temperature=0)
+        except Exception as e:
+            logger.error(f"Error generating response to custom prompt: {e}")
+            return str(e)
