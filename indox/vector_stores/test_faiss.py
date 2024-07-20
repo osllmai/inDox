@@ -140,15 +140,7 @@ class FAISS(VectorStore):
         else:
             return self.embedding_function(text)
 
-    async def _aembed_query(self, text: str) -> List[float]:
-        if isinstance(self.embedding_function, Embeddings):
-            return await self.embedding_function.aembed_query(text)
-        else:
-            # return await self.embedding_function(text)
-            raise Exception(
-                "`embedding_function` is expected to be an Embeddings object, support "
-                "for passing in a function will soon be removed."
-            )
+
 
     def __add(
         self,
