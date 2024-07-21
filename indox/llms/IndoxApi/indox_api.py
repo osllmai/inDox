@@ -1,6 +1,7 @@
 import requests
 from loguru import logger
 import sys
+from indox.llms.BaseLLM import BaseLLM
 
 # Set up logging
 logger.remove()  # Remove the default logger
@@ -12,8 +13,11 @@ logger.add(sys.stdout,
            format="<red>{level}</red>: <level>{message}</level>",
            level="ERROR")
 
-class IndoxApi:
-    def __init__(self, api_key, prompt_template=None):
+class IndoxApi(BaseLLM):
+    api_key: str
+    prompt_template: str = ""
+    def __init__(self, api_key, prompt_template=""):
+        super().__init__(api_key=api_key, prompt_template=prompt_template)
         """
         Initializes the IndoxApiOpenAiQa with the specified API key and an optional prompt template.
 

@@ -1,6 +1,8 @@
 import requests
 from loguru import logger
 import sys
+from indox.llms.BaseLLM import BaseLLM
+from typing import Any
 
 # Set up logging
 logger.remove()  # Remove the default logger
@@ -14,8 +16,12 @@ logger.add(sys.stdout,
 
 
 
-class HuggingFaceModel:
-    def __init__(self, api_key, model="mistralai/Mistral-7B-Instruct-v0.2", prompt_template=None):
+class HuggingFaceModel(BaseLLM):
+    api_key: str
+    model: str = "mistralai/Mistral-7B-Instruct-v0.2"
+    prompt_template: str = ""
+    def __init__(self, api_key, model="mistralai/Mistral-7B-Instruct-v0.2", prompt_template=""):
+        super().__init__(api_key=api_key, model=model, prompt_template=prompt_template)
         """
         Initializes the specified model via the Hugging Face Inference API.
 

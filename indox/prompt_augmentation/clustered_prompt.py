@@ -13,7 +13,8 @@ logger.add(sys.stdout,
            format="<red>{level}</red>: <level>{message}</level>",
            level="ERROR")
 
-def generate_clustered_prompts(context, embeddings):
+
+def generate_clustered_prompts(context, embeddings, summary_model):
     """
     Clusters the provided context using the given embeddings and generates clustered prompts.
 
@@ -30,15 +31,15 @@ def generate_clustered_prompts(context, embeddings):
         load_dotenv()
 
         # Check if OpenAI API key is set
-        use_openai_summary = os.getenv("OPENAI_API_KEY") is not None
-        logger.info(f"OpenAI API key is {'set' if use_openai_summary else 'not set'}")
+        # use_openai_summary = os.getenv("OPENAI_API_KEY") is not None
+        # logger.info(f"OpenAI API key is {'set' if use_openai_summary else 'not set'}")
 
         texts = ' '.join(context)
         from indox.data_loader_splitter import ClusteredSplit
 
         logger.info("Initializing ClusteredSplit")
         loader_splitter = ClusteredSplit(file_path=texts, embeddings=embeddings, chunk_size=50, threshold=0.1, dim=30,
-                                         use_openai_summary=use_openai_summary)
+                                         summary_model=summary_model)
         loader_splitter.cluster_prompt = True
 
         logger.info("Retrieving all documents")

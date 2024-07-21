@@ -1,6 +1,9 @@
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 from loguru import logger
 import sys
+from indox.llms.BaseLLM import BaseLLM
+from pydantic import ConfigDict
+from openai import OpenAI
 
 # Set up logging
 logger.remove()  # Remove the default logger
@@ -13,8 +16,13 @@ logger.add(sys.stdout,
            level="ERROR")
 
 
-class OpenAi:
+class OpenAi(BaseLLM):
+    api_key: str
+    model: str = ""
+    model_config = ConfigDict(arbitrary_types_allowed=True, ignored_types=(OpenAI,))
+    client: OpenAI = OpenAI(api_key="")
     def __init__(self, api_key, model):
+        super().__init__(api_key=api_key, model=model)
         """
         Initializes the GPT-3 model with the specified model version and an optional prompt template.
 
