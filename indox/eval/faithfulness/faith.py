@@ -31,7 +31,7 @@ class Reason(BaseModel):
 
 class FaithfulnessEvaluator:
     # def __init__(self, model):
-    #     # self.model = model
+    #     self.model = model
 
     def evaluate_claims(self, text: str) -> Claims:
         prompt = FaithfulnessTemplate.generate_claims(text)
@@ -82,10 +82,10 @@ class FaithfulnessEvaluator:
         return Reason(reason=reason)
 
     def call_language_model(self, prompt: str) -> str:
-        from indox.llms import OpenAi
+        from indox.eval.llms import OpenAi
+        from indox.llms import IndoxApi
         llm = OpenAi(api_key=os.getenv("OPENAI_API"), model="gpt-3.5-turbo-0125")
-        response = llm.custom_prompt(prompt=prompt)
-        print(response)
+        response = llm.generate_evaluation_response(prompt=prompt)
         return response
 
     async def a_call_language_model(self, prompt: str) -> str:
