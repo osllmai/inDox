@@ -500,14 +500,7 @@ class FAISS(ABC):
 
         This is intended to be a quick way to get started.
 
-        Example:
-            .. code-block:: python
 
-                from langchain_community.vectorstores import FAISS
-                from langchain_community.embeddings import OpenAIEmbeddings
-
-                embeddings = OpenAIEmbeddings()
-                faiss = FAISS.from_texts(texts, embeddings)
         """
         embeddings = embedding.embed_documents(texts)
         return cls.__from(
@@ -536,15 +529,6 @@ class FAISS(ABC):
             3. Initializes the FAISS database
 
         This is intended to be a quick way to get started.
-
-        Example:
-            .. code-block:: python
-
-                from langchain_community.vectorstores import FAISS
-                from langchain_community.embeddings import OpenAIEmbeddings
-
-                embeddings = OpenAIEmbeddings()
-                faiss = await FAISS.afrom_texts(texts, embeddings)
         """
         embeddings = await embedding.aembed_documents(texts)
         return cls.__from(
@@ -571,19 +555,6 @@ class FAISS(ABC):
             1. Embeds documents.
             2. Creates an in memory docstore
             3. Initializes the FAISS database
-
-        This is intended to be a quick way to get started.
-
-        Example:
-            .. code-block:: python
-
-                from langchain_community.vectorstores import FAISS
-                from langchain_community.embeddings import OpenAIEmbeddings
-
-                embeddings = OpenAIEmbeddings()
-                text_embeddings = embeddings.embed_documents(texts)
-                text_embedding_pairs = zip(texts, text_embeddings)
-                faiss = FAISS.from_embeddings(text_embedding_pairs, embeddings)
         """
         texts, embeddings = zip(*text_embeddings)
         return cls.__from(
