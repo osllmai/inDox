@@ -5,4 +5,4 @@ from .IndoxApi import IndoxApi
 from .HuggingFace import HuggingFaceModel
 from .GoogleAi import GoogleAi
 from .Ollama import Ollama
-from .BaseModelLLM import LLMModel
+from .BaseLLM import BaseLLM
