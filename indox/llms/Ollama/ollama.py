@@ -2,7 +2,6 @@ from tenacity import retry, stop_after_attempt, wait_random_exponential
 from loguru import logger
 import sys
 import ollama as ol
-
 # Set up logging
 logger.remove()  # Remove the default logger
 logger.add(sys.stdout,

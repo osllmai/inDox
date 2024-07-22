@@ -1,8 +1,6 @@
 graph==0.4
 langchain==0.2.7
 langchain_community==0.2.7
-langchain_mistralai==0.1.9
-langchain_openai==0.1.14
 langgraph==0.1.5
 latex2markdown==0.2.1
 loguru==0.7.2
