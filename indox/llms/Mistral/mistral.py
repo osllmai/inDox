@@ -1,9 +1,9 @@
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 from loguru import logger
 import sys
-from indox.llms.BaseLLM import BaseLLM
+from indox.core import BaseLLM
 from pydantic import ConfigDict
-from mistralai.client import MistralClient
+
 
 # Set up logging
 logger.remove()  # Remove the default logger
@@ -17,6 +17,7 @@ logger.add(sys.stdout,
 
 
 class Mistral(BaseLLM):
+    from mistralai.client import MistralClient
     model_config = ConfigDict(arbitrary_types_allowed=True, ignored_types=(MistralClient,))
     api_key: str
     model: str = "mistral-medium-latest"
