@@ -1,3 +1,4 @@
-from .PGVector import PGVectorStore
+# from .PGVector import PGVectorStore
 from .chroma import Chroma
 from .faiss import FAISS
+from .pgvector import PGVector
