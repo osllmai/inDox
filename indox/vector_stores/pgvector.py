@@ -1,4 +1,3 @@
-# from langchain_core.documents import Document
 from indox.core import Document
 from loguru import logger
 import sys
@@ -14,7 +13,7 @@ logger.add(sys.stdout,
            level="ERROR")
 
 
-class PGVectorStore:
+class PGVector:
     """
     A concrete implementation of VectorStoreBase using PostgreSQL for storage.
 
@@ -36,7 +35,8 @@ class PGVectorStore:
             embedding (Embedding): The embedding to be used.
         """
         from langchain_community.vectorstores.pgvector import PGVector
-        from langchain_community.vectorstores.pgvector import DistanceStrategy as PGDistancesTRATEGY
+        from .pgvector_setup import PGVectorSetup as PGVector
+        from .pgvector_setup import DistanceStrategy as PGDistancesTRATEGY
         self.embeddings = embedding
         self.host = host
         self.port = port
