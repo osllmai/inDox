@@ -1,9 +1,9 @@
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 from loguru import logger
 import sys
-from indox.llms.BaseLLM import BaseLLM
+from indox.core import BaseLLM
 from pydantic import ConfigDict
-from openai import OpenAI
+
 
 # Set up logging
 logger.remove()  # Remove the default logger
@@ -17,6 +17,7 @@ logger.add(sys.stdout,
 
 
 class OpenAi(BaseLLM):
+    from openai import OpenAI
     api_key: str
     model: str = ""
     model_config = ConfigDict(arbitrary_types_allowed=True, ignored_types=(OpenAI,))
