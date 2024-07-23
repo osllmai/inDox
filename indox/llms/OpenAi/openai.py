@@ -1,7 +1,7 @@
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 from loguru import logger
 import sys
-from indox.llms.BaseLLM import BaseLLM
+from indox.core.base_llm import BaseLLM
 from pydantic import ConfigDict
 from openai import OpenAI
 

@@ -1,7 +1,7 @@
 import requests
 from loguru import logger
 import sys
-from indox.llms.BaseLLM import BaseLLM
+from indox.core.base_llm import BaseLLM
 from typing import Any
 
 # Set up logging
