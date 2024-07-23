@@ -98,9 +98,3 @@ class BLEU:
             scores.append(self.calculate_bleu(ctx, llm_answer))
         average_score = np.mean(scores)
         return average_score
-
-bleu = BLEU(n=4, remove_repeating_ngrams=False)
-context = ["The quick brown fox jumps over the lazy dog while the dog watches the fox jump and run across the field."]
-llm_answer = ["The quick brown fox leaps over the lazy dog as the dog observes the fox hopping and sprinting through the meadow."]
-score = bleu(context=context, llm_answer=llm_answer)
-print(score)

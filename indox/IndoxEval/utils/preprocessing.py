@@ -4,24 +4,25 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
-from typing import List, Callable
+from typing import List
 
-nltk.download("stopwords")
+# nltk.download("stopwords")
 
 # TODO : Handling missing values
-# TODO : Remove top n stopwords
+
+with open("utils/stopwords.txt", "r") as file:
+    stopwords = file.read().splitlines()
 
 
 class TextPreprocessor:
-    def __init__(self):
+    def __init__(self, stopwords: List[str] = stopwords):
         """
         Initializes the TextPreprocessor with:
         - A set of English stopwords
         - A Porter Stemmer instance
         - A WordNet Lemmatizer instance
-        - A SpellChecker instance for spelling correction
         """
-        self.stop_words = set(stopwords.words("english"))
+        self.stop_words = stopwords
         self.stemmer = PorterStemmer()
         self.lemmatizer = WordNetLemmatizer()
 
@@ -55,13 +56,14 @@ class TextPreprocessor:
         """
         return re.sub(r"\b\d+\b", "", text)
 
-    def remove_stopword(self, text: str) -> str:
+    def remove_stopword(self, text: List[str], top_n_stopwords: int = 5) -> str:
         """
         Removes stopwords from the text.
 
         :param text: The input text from which stopwords will be removed.
         :return: The text with stopwords removed.
         """
+        self.stop_words = self.stop_words[0:top_n_stopwords]
         return " ".join(
             [
                 word
@@ -90,14 +92,39 @@ class TextPreprocessor:
             [self.lemmatizer.lemmatize(word) for word in word_tokenize(text)]
         )
 
-    def preprocess_text(self, text: str, methods: List[Callable[[str], str]]) -> str:
+    def preprocess_text(
+        self,
+        text: str,
+        to_lower: bool = True,
+        keep_alpha_numeric: bool = True,
+        remove_number: bool = True,
+        remove_stopword: bool = True,
+        stem_word: bool = False,
+        lemmatize_word: bool = True,
+        top_n_stopwords: int = 5,
+    ) -> str:
         """
-        Applies a list of preprocessing methods to the input text.
+        Applies a list of preprocessing methods to the input text based on the flags provided.
 
         :param text: The input text to be processed.
-        :param methods: A list of preprocessing methods (functions) to be applied to the text.
+        :param to_lower: Flag to apply lowercasing.
+        :param keep_alpha_numeric: Flag to remove non-alphanumeric characters.
+        :param remove_number: Flag to remove numbers.
+        :param remove_stopword: Flag to remove stopwords.
+        :param stem_word: Flag to apply stemming.
+        :param lemmatize_word: Flag to apply lemmatization.
         :return: The processed text after applying all methods.
         """
-        for method in methods:
-            text = method(text)
+        if to_lower:
+            text = self.to_lower(text)
+        if keep_alpha_numeric:
+            text = self.keep_alpha_numeric(text)
+        if remove_number:
+            text = self.remove_number(text)
+        if remove_stopword:
+            text = self.remove_stopword(text, top_n_stopwords)
+        if stem_word:
+            text = self.stem_word(text)
+        if lemmatize_word:
+            text = self.lemmatize_word(text)
         return text
