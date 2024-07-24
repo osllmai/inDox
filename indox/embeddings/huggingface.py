@@ -1,4 +1,3 @@
-from sentence_transformers import SentenceTransformer
 from typing import List
 from loguru import logger
 import sys
@@ -13,6 +12,7 @@ logger.add(sys.stdout, format="<red>{level}</red>: <level>{message}</level>", le
 
 class HuggingFaceEmbedding(Embeddings):
     def __init__(self, model: str, api_key: str):
+        from sentence_transformers import SentenceTransformer
         self.model = model
         self.api_key = api_key
         self.model = SentenceTransformer(model, use_auth_token=api_key)
