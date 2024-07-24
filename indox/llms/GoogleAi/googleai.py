@@ -153,7 +153,7 @@ class GoogleAi:
         prompt = f"Here are the facts:\n{context}\nHere is the answer:\n{answer}"
         try:
             logger.info("Checking hallucination for answer")
-            return self._generate_response(prompt).lower()
+            return self._generate_response(system_prompt+prompt).lower()
         except Exception as e:
             logger.error(f"Error checking hallucination: {e}")
             return str(e)

@@ -28,7 +28,6 @@ class OpenAi:
             logger.info(f"Initializing OpenAi with model: {model}")
             self.model = model
             self.client = OpenAI(api_key=api_key)
-            logger.info("OpenAi initialized successfully")
         except Exception as e:
             logger.error(f"Error initializing OpenAi: {e}")
             raise
@@ -55,29 +54,27 @@ class OpenAi:
                 max_tokens=max_tokens,
             )
             result = response.choices[0].message.content.strip()
-            logger.info("Response generated successfully")
             return result
         except Exception as e:
             logger.error(f"Error generating response: {e}")
             raise
 
     def generate_evaluation_response(self, prompt):
-            """
-            Generates a response to a custom prompt.
+        """
+        Generates a response to a custom prompt.
 
-            Args:
-                prompt (str): The custom prompt to generate a response for.
+        Args:
+            prompt (str): The custom prompt to generate a response for.
 
-            Returns:
-                str: The generated response.
-            """
-            try:
-                logger.info("Generating response to custom prompt")
-                messages = [
-                    {"role": "system", "content": "You are a assistant for llm evaluation"},
-                    {"role": "user", "content": prompt},
-                ]
-                return self._generate_response(messages, max_tokens=150, temperature=0)
-            except Exception as e:
-                logger.error(f"Error generating response to custom prompt: {e}")
-                return str(e)
+        Returns:
+            str: The generated response.
+        """
+        try:
+            messages = [
+                {"role": "system", "content": "You are a assistant for llm evaluation"},
+                {"role": "user", "content": prompt},
+            ]
+            return self._generate_response(messages, max_tokens=150, temperature=0)
+        except Exception as e:
+            logger.error(f"Error generating response to custom prompt: {e}")
+            return str(e)
