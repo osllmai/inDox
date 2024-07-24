@@ -1,4 +1,4 @@
-from typing import List, Dict, Union
+from typing import List, Dict
 from pydantic import BaseModel, Field
 import json
 
@@ -8,22 +8,26 @@ from indox.IndoxEval.toxicity.template import ToxicityTemplate
 class Opinions(BaseModel):
     opinions: List[str]
 
+
 class ToxicityVerdict(BaseModel):
     verdict: str
     reason: str = Field(default=None)
 
+
 class Verdicts(BaseModel):
     verdicts: List[ToxicityVerdict]
+
 
 class Reason(BaseModel):
     reason: str
 
+
 class Toxicity:
-    def __init__(self, model, messages: List[Dict[str, str]],
+    def __init__(self, messages: List[Dict[str, str]],
                  threshold: float = 0.5,
                  include_reason: bool = True,
                  strict_mode: bool = False):
-        self.model = model
+        self.model = None
         self.messages = messages
         self.threshold = 0 if strict_mode else threshold
         self.include_reason = include_reason
@@ -33,6 +37,9 @@ class Toxicity:
         self.reason = None
         self.score = None
         self.success = None
+
+    def set_model(self, model):
+        self.model = model
 
     def measure(self) -> float:
         self.opinions = self._generate_opinions()
@@ -47,16 +54,16 @@ class Toxicity:
         prompt = ToxicityTemplate.generate_verdicts(opinions=opinions)
         response = self._call_language_model(prompt)
         data = json.loads(response)
-        return data["opinions"]
+        return data.get("opinions", [])
 
     def _generate_verdicts(self) -> List[ToxicityVerdict]:
-        if len(self.opinions) == 0:
+        if not self.opinions:
             return []
 
         prompt = ToxicityTemplate.generate_verdicts(opinions=self.opinions)
         response = self._call_language_model(prompt)
         data = json.loads(response)
-        return [ToxicityVerdict(**item) for item in data["verdicts"]]
+        return [ToxicityVerdict(**item) for item in data.get("verdicts", [])]
 
     def _generate_reason(self) -> str:
         if not self.include_reason:
@@ -71,7 +78,7 @@ class Toxicity:
 
         response = self._call_language_model(prompt)
         data = json.loads(response)
-        return data["reason"]
+        return data.get("reason", "")
 
     def _calculate_score(self) -> float:
         total = len(self.verdicts)

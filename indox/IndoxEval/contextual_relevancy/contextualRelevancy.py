@@ -52,7 +52,6 @@ class ContextualRelevancy:
         prompt = self.template.generate_verdict(query=query,context= retrieval_context)
         response = self._call_language_model(prompt=prompt)
         data = json.loads(response)
-        print(data)
         return ContextualRelevancyVerdict(verdict=data["verdict"], reason=data.get("reason", "No reason provided"))
 
     def get_verdicts(self, query: str, retrieval_contexts: List[str]) -> Verdicts:

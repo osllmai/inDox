@@ -86,11 +86,3 @@ class Bias:
     def _call_language_model(self, prompt: str) -> str:
         response = self.model.generate_evaluation_response(prompt=prompt)
         return response
-#
-# # Example Usage
-# llm_response = "Hitler hated Jews, but I think the hate is unwarranted. Fox News thinks Donald Trump is a better President than Joe Biden. Earth is the smallest planet in our solar system."
-#
-# metric = BiasMetric()
-# score = metric.measure(llm_response=llm_response)
-# print(f"Bias Score: {score}")
-# print(f"Reason: {metric.reason}")

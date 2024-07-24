@@ -13,8 +13,8 @@ class KnowledgeRetentionVerdict(BaseModel):
     reason: str = Field(default=None)
 
 class KnowledgeRetention:
-    def __init__(self, model, messages: List[Dict[str, str]], threshold: float = 0.5, include_reason: bool = True, strict_mode: bool = False):
-        self.model = model
+    def __init__(self, messages: List[Dict[str, str]], threshold: float = 0.5, include_reason: bool = True, strict_mode: bool = False):
+        self.model = None
         self.messages = messages
         self.threshold = 1 if strict_mode else threshold
         self.include_reason = include_reason
@@ -24,6 +24,9 @@ class KnowledgeRetention:
         self.reason = None
         self.score = None
         self.success = None
+
+    def set_model(self, model):
+        self.model = model
 
     def measure(self) -> float:
         self.knowledges = self._generate_knowledges()

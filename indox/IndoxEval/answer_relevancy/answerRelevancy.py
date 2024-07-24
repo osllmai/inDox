@@ -95,11 +95,3 @@ class AnswerRelevancy:
         response = self.model.generate_evaluation_response(prompt=prompt)
         return response
 
-# # Example Usage
-# query = "What should I do if there is an earthquake?"
-# llm_response = "Shoes. Thanks for asking the question! Is there anything else I can help you with? Duck and hide"
-#
-# metric = AnswerRelevancyMetric()
-# score = metric.measure(query=query, llm_response=llm_response)
-# print(f"Relevancy Score: {score}")
-# print(f"Reason: {metric.reason}")

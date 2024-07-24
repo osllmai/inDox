@@ -42,7 +42,7 @@ class GEval:
         """
         self.model = model
 
-    def generate_evaluation_steps(self, parameters):
+    def generate_evaluation_steps(self):
         """
         Generate evaluation steps using the provided parameters and criteria.
 
@@ -79,7 +79,7 @@ class GEval:
         response = self.model.generate_evaluation_response(prompt=prompt)
         return response
 
-    def g_eval(self, parameters):
+    def g_eval(self):
         """
         Evaluate the quality of NLG outputs using GPT-4 with the GEvalTemplate.
 
@@ -89,11 +89,11 @@ class GEval:
         Returns:
         list of dict: Evaluation scores and reasons for each text.
         """
-        eval_steps_prompt = self.generate_evaluation_steps(self.parameters)
+        eval_steps_prompt = self.generate_evaluation_steps()
         eval_steps_response = self._call_language_model(eval_steps_prompt)
         eval_steps = json.loads(eval_steps_response)["steps"]
 
-        eval_results_prompt = self.generate_evaluation_results(eval_steps, self.parameters)
+        eval_results_prompt = self.generate_evaluation_results(eval_steps)
         eval_result = self._call_language_model(eval_results_prompt)
 
         return eval_result
