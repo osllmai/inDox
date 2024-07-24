@@ -16,14 +16,8 @@ logger.add(sys.stdout,
            level="ERROR")
 
 
-class OpenAi(BaseLLM):
-    from openai import OpenAI
-    api_key: str
-    model: str = ""
-    model_config = ConfigDict(arbitrary_types_allowed=True, ignored_types=(OpenAI,))
-    client: OpenAI = OpenAI(api_key="")
+class OpenAi:
     def __init__(self, api_key, model):
-        super().__init__(api_key=api_key, model=model)
         """
         Initializes the GPT-3 model with the specified model version and an optional prompt template.
 
