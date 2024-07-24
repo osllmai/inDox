@@ -1,7 +1,6 @@
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 from loguru import logger
 import sys
-import ollama as ol
 from indox.core import BaseLLM
 
 # Set up logging
@@ -47,6 +46,8 @@ class Ollama(BaseLLM):
         Returns:
             str: The generated response.
         """
+        import ollama as ol
+
         try:
             logger.info("Generating response")
             response = ol.generate(model=self.model, prompt=messages)

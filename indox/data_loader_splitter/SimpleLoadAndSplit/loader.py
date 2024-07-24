@@ -1,4 +1,3 @@
-import PyPDF2
 
 
 def create_document(file_path: str) -> str:
@@ -20,6 +19,8 @@ def create_document(file_path: str) -> str:
     - Handles case-insensitive extensions.
 
     """
+    import PyPDF2
+
     # Check for valid file extensions and process accordingly
     if file_path.lower().endswith(".pdf"):
         text = ""
