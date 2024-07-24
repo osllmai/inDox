@@ -1,7 +1,6 @@
 from loguru import logger
 import sys
 from indox.data_loader_splitter.UnstructuredLoadAndSplit.loader import create_documents_unstructured
-from unstructured.chunking.title import chunk_by_title
 from indox.vector_stores.utils import filter_complex_metadata
 from typing import List, Tuple, Optional, Any, Dict
 from indox.core import Document
@@ -35,6 +34,8 @@ def get_chunks_unstructured(file_path, chunk_size, remove_sword, splitter):
     - The `filter_complex_metadata` function is used to simplify and sanitize metadata attributes.
 
     """
+    from unstructured.chunking.title import chunk_by_title
+
     try:
         logger.info("Starting processing")
 
