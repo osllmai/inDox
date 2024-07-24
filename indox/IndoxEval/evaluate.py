@@ -4,6 +4,10 @@ from indox.IndoxEval.faithfulness.faithfulness import Faithfulness
 from indox.IndoxEval.answer_relevancy.answerRelevancy import AnswerRelevancy
 from indox.IndoxEval.bias.bias import Bias
 from indox.IndoxEval.contextual_relevancy.contextualRelevancy import ContextualRelevancy
+from indox.IndoxEval.g_eval.geval import GEval
+from indox.IndoxEval.hallucination.hallucination import Hallucination
+from indox.IndoxEval.knowledge_retention.KnowledgeRetention import KnowledgeRetention
+from indox.IndoxEval.toxicity.toxicity import Toxicity
 
 
 class Evaluator:
@@ -56,5 +60,31 @@ class Evaluator:
                     'verdicts': [verdict.dict() for verdict in verdicts.verdicts],
                     'reason': reason.dict()
                 }
+            elif isinstance(metric, GEval):
+                eval_result = metric.g_eval()
+                results['geval'] = eval_result
 
+            elif isinstance(metric, Hallucination):
+                score = metric.measure()
+                results['hallucination'] = {
+                    'score': score,
+                    'reason': metric.reason,
+                    'verdicts': [verdict.dict() for verdict in metric.verdicts]
+                    }
+            elif isinstance(metric, KnowledgeRetention):
+                score = metric.measure()
+                results['knowledge_retention'] = {
+                    'score': score,
+                    'reason': metric.reason,
+                    'verdicts': [verdict.dict() for verdict in metric.verdicts],
+                    'knowledges': [knowledge.data for knowledge in metric.knowledges]
+                }
+            elif isinstance(metric, Toxicity):
+                score = metric.measure()
+                results['toxicity'] = {
+                    'score': score,
+                    'reason': metric.reason,
+                    'opinions': metric.opinions,
+                    'verdicts': [verdict.dict() for verdict in metric.verdicts]
+                }
             return results
