@@ -1,8 +1,6 @@
-import openai
 from typing import List, cast
 from loguru import logger
 import sys
-from openai import OpenAI
 from indox.core import Embeddings
 
 # Set up logging
@@ -13,6 +11,8 @@ logger.add(sys.stdout, format="<red>{level}</red>: <level>{message}</level>", le
 
 class OpenAiEmbedding(Embeddings):
     def __init__(self, api_key: str, model: str):
+        from openai import OpenAI
+
         self.api_key = api_key
         self.model = model
         self.client = OpenAI(api_key=api_key)

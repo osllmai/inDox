@@ -3,7 +3,6 @@ from indox.core import Document
 from indox.data_loader_splitter.SimpleLoadAndSplit.loader import create_document
 from loguru import logger
 import sys
-import PyPDF2
 from indox.splitter import semantic_text_splitter
 
 # Set up logging

@@ -1,10 +1,10 @@
-import os
-from typing import List, Optional, Tuple
-import requests
-from openai import OpenAI
-from dotenv import load_dotenv
-
-load_dotenv()
+# import os
+# from typing import List, Optional, Tuple
+# import requests
+# from openai import OpenAI
+# from dotenv import load_dotenv
+#
+# load_dotenv()
 
 
 #
