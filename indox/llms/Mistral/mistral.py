@@ -4,7 +4,6 @@ import sys
 from indox.core import BaseLLM
 from pydantic import ConfigDict
 
-
 # Set up logging
 logger.remove()  # Remove the default logger
 logger.add(sys.stdout,
@@ -16,14 +15,8 @@ logger.add(sys.stdout,
            level="ERROR")
 
 
-class Mistral(BaseLLM):
-    from mistralai.client import MistralClient
-    model_config = ConfigDict(arbitrary_types_allowed=True, ignored_types=(MistralClient,))
-    api_key: str
-    model: str = "mistral-medium-latest"
-    client: MistralClient = MistralClient(api_key="")
+class Mistral:
     def __init__(self, api_key, model="mistral-medium-latest"):
-        super().__init__(api_key=api_key, model=model)
         """
         Initializes the Mistral AI model with the specified model version and an optional prompt template.
 
@@ -31,6 +24,8 @@ class Mistral(BaseLLM):
             api_key (str): The API key for Mistral AI.
             model (str): The Mistral AI model version.
         """
+        from mistralai.client import MistralClient
+
         try:
             logger.info(f"Initializing MistralAI with model: {model}")
             self.model = model

@@ -1,7 +1,8 @@
 import abc
 from pydantic import BaseModel
 
-class BaseLLM( BaseModel , abc.ABC):
+
+class BaseLLM(BaseModel, abc.ABC):
 
     @abc.abstractmethod
     def answer_question(self, context, question, max_tokens=200):
@@ -18,7 +19,4 @@ class BaseLLM( BaseModel , abc.ABC):
     @abc.abstractmethod
     def check_hallucination(self, context, answer):
         pass
-
-    class config:
-        arbitrary_types_allowed = True
 

@@ -12,7 +12,7 @@ logger.add(sys.stdout, format="<red>{level}</red>: <level>{message}</level>", le
 
 
 class MistralEmbedding(Embeddings):
-    def __init__(self, api_key: str, model: str):
+    def __init__(self, api_key: str, model: str = "mistral-embed"):
         self.api_key = api_key
         self.model = model
         self.client = MistralClient(api_key=api_key)
