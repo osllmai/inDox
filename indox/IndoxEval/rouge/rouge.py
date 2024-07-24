@@ -2,11 +2,13 @@ import re
 from collections import Counter
 from typing import Union, List, Tuple, Dict
 import numpy as np
-from utils.preprocessing import TextPreprocessor
+from indox.IndoxEval.utils import TextPreprocessor
 
 
 class Rouge:
-    def __init__(self, n: int = 1):
+    def __init__(
+        self, llm_response: str, retrieval_context: Union[str, List[str]], n: int = 1
+    ):
         """
         Initialize the RougeEvaluator with the desired n-gram size.
 
@@ -18,7 +20,15 @@ class Rouge:
         Returns:
         dict of scores: Evaluation scores for each candidate text.
         """
+        self.llm_response = llm_response
+        self.retrieval_context = retrieval_context
         self.n = n
+
+    def measure(self) -> float:
+        self.score = self._calculate_scores(
+            llm_answer=self.llm_response, context=self.retrieval_context
+        )
+        return self.score
 
     def preprocess_text(self, text: str) -> str:
         preprocessor = TextPreprocessor()
@@ -53,7 +63,7 @@ class Rouge:
         )
         return matches
 
-    def __call__(
+    def _calculate_scores(
         self, llm_answer: Union[str, List[str]], context: Union[str, List[str]]
     ) -> Dict[str, float]:
         if isinstance(llm_answer, list):

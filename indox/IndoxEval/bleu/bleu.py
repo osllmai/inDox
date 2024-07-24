@@ -2,11 +2,18 @@ import numpy as np
 import math
 from collections import Counter
 from typing import List, Union
-from utils.preprocessing import TextPreprocessor
+from indox.IndoxEval.utils import TextPreprocessor
 
 
+# TODO : Improve metric performance
 class BLEU:
-    def __init__(self, n: int = 2, remove_repeating_ngrams: bool = False):
+    def __init__(
+        self,
+        llm_response: str,
+        retrieval_context: Union[str, List[str]],
+        n: int = 2,
+        remove_repeating_ngrams: bool = False,
+    ):
         """
         Initialize the BLEU evaluator with the desired n-gram size and option to remove repeating n-grams.
 
@@ -14,8 +21,16 @@ class BLEU:
         n (int): The maximum size of the n-grams to use for evaluation (default is 2).
         remove_repeating_ngrams (bool): Whether to remove repeating n-grams (default is False).
         """
+        self.llm_response = llm_response
+        self.retrieval_context = retrieval_context
         self.n = n
         self.remove_repeating_ngrams = remove_repeating_ngrams
+
+    def measure(self) -> float:
+        self.score = self._calculate_score(
+            llm_answer=self.llm_response, context=self.retrieval_context
+        )
+        return self.score
 
     def preprocess_text(self, text: str) -> str:
         preprocessor = TextPreprocessor()
@@ -84,7 +99,7 @@ class BLEU:
 
         return score
 
-    def __call__(
+    def _calculate_score(
         self, context: Union[str, List[str]], llm_answer: Union[str, List[str]]
     ) -> float:
         if isinstance(context, str):

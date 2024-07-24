@@ -4,13 +4,18 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
+from nltk.corpus import wordnet
 from typing import List
+from nltk import pos_tag
 
 # nltk.download("stopwords")
+nltk.download("punkt")
+nltk.download("averaged_perceptron_tagger")
+nltk.download("wordnet")
 
 # TODO : Handling missing values
 
-with open("utils/stopwords.txt", "r") as file:
+with open("indox/IndoxEval/utils/stopwords.txt", "r") as file:
     stopwords = file.read().splitlines()
 
 
@@ -81,6 +86,19 @@ class TextPreprocessor:
         """
         return " ".join([self.stemmer.stem(word) for word in word_tokenize(text)])
 
+    def get_wordnet_pos(self, treebank_tag):
+
+        if treebank_tag.startswith("J"):
+            return wordnet.ADJ
+        elif treebank_tag.startswith("V"):
+            return wordnet.VERB
+        elif treebank_tag.startswith("N"):
+            return wordnet.NOUN
+        elif treebank_tag.startswith("R"):
+            return wordnet.ADV
+        else:
+            return wordnet.NOUN
+
     def lemmatize_word(self, text: str) -> str:
         """
         Applies lemmatization to each word in the text.
@@ -88,8 +106,13 @@ class TextPreprocessor:
         :param text: The input text to be lemmatized.
         :return: The text with each word lemmatized.
         """
+        tokens = word_tokenize(text)
+        tagged_tokens = pos_tag(tokens)
         return " ".join(
-            [self.lemmatizer.lemmatize(word) for word in word_tokenize(text)]
+            [
+                self.lemmatizer.lemmatize(word, self.get_wordnet_pos(pos))
+                for word, pos in tagged_tokens
+            ]
         )
 
     def preprocess_text(
@@ -98,7 +121,7 @@ class TextPreprocessor:
         to_lower: bool = True,
         keep_alpha_numeric: bool = True,
         remove_number: bool = True,
-        remove_stopword: bool = True,
+        remove_stopword: bool = False,
         stem_word: bool = False,
         lemmatize_word: bool = True,
         top_n_stopwords: int = 5,

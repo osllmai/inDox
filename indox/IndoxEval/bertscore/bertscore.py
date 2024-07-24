@@ -3,28 +3,25 @@ from transformers import AutoTokenizer, AutoModel
 import numpy as np
 from typing import Union, List, Dict
 
+
 # TODO : Applying different models
 class BertScore:
-    def __init__(self, model_name: str = "roberta-base", max_length: int = 1024):
+    def __init__(
+        self,
+        llm_response: str,
+        retrieval_context: Union[str, List[str]],
+        model_name: str = "roberta-base",
+        max_length: int = 1024,
+    ):
         """
         Evaluate the similarity between an actual answer and one or more expected answers
         using a specified pre-trained transformer model.
-
-        This class computes embeddings for the given texts using a pre-trained model
-        and calculates similarity scores between the embeddings of the actual answer
-        and the expected answers. The similarity is used to derive precision, recall,
-        and F1-score metrics, which provide insights into the quality of the actual
-        answer compared to the expected answers.
 
         Parameters:
             model_name (str):
                 The identifier for the pre-trained model to be used for generating
                 text embeddings. This should be a model name supported by the Hugging
                 Face `transformers` library (e.g., 'bert-base-uncased', 'roberta-base').
-                The default value is 'bert-base-uncased', which is a standard BERT model
-                trained on lowercase English text. Different model names will load
-                different model architectures and pre-trained weights, which may impact
-                the resulting embeddings and similarity calculations.
 
             max_length (int):
                 The maximum length of input sequences to be processed by the model.
@@ -36,9 +33,17 @@ class BertScore:
                 model.
 
         """
+        self.llm_response = llm_response
+        self.retrieval_context = retrieval_context
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModel.from_pretrained(model_name)
         self.max_length = max_length
+
+    def measure(self) -> float:
+        self.score = self._calculate_scores(
+            llm_answer=self.llm_response, context=self.retrieval_context
+        )
+        return self.score
 
     def get_embeddings(self, text: str) -> torch.Tensor:
         inputs = self.tokenizer(
@@ -55,7 +60,7 @@ class BertScore:
     def cosine_similarity(self, a: np.ndarray, b: np.ndarray) -> float:
         return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
-    def __call__(
+    def _calculate_scores(
         self, llm_answer: Union[str, List[str]], context: Union[str, List[str]]
     ) -> Dict[str, float]:
 
