@@ -14,18 +14,38 @@ logger.add(sys.stdout,
 
 
 class IndoxApi:
-    def __init__(self, api_key, prompt_template=None):
+    """
+    A class to interface with the Indox API for generating responses for evaluation purposes.
+
+    This class uses the Indox API to send requests and receive responses, which are utilized
+    for evaluating the performance of language models.
+    """
+
+    def __init__(self, api_key: str, prompt_template: str = None):
         """
-        Initializes the IndoxApiOpenAiQa with the specified API key and an optional prompt template.
+        Initializes the IndoxApi with the specified API key and an optional prompt template.
 
         Args:
-            api_key (str): The API key for Indox API.
-            prompt_template (str, optional): The template for the prompt. Defaults to None.
+            api_key (str): The API key for accessing the Indox API.
+            prompt_template (str, optional): The template for formatting prompts. Defaults to None.
         """
         self.api_key = api_key
         self.prompt_template = prompt_template or "Context: {context}\nQuestion: {question}\nAnswer:"
 
-    def _send_request(self, system_prompt, user_prompt):
+    def _send_request(self, system_prompt: str, user_prompt: str) -> str:
+        """
+        Sends a request to the Indox API to generate a response.
+
+        Args:
+            system_prompt (str): The system prompt to include in the request.
+            user_prompt (str): The user prompt to generate a response for.
+
+        Returns:
+            str: The generated response text.
+
+        Raises:
+            Exception: If there is an error during the API request.
+        """
         url = 'http://5.78.55.161/api/chat_completion/generate/'
         headers = {
             'accept': '*/*',
@@ -59,15 +79,29 @@ class IndoxApi:
             generated_text = answer_data.get("text_message", "")
             return generated_text
         else:
-            raise Exception(f"Error From Indox API: {response.status_code}, {response.text}")
+            error_message = f"Error from Indox API: {response.status_code}, {response.text}"
+            logger.error(error_message)
+            raise Exception(error_message)
 
-    def generate_evaluation_response(self, prompt):
+    def generate_evaluation_response(self, prompt: str) -> str:
+        """
+        Generates an evaluation response using the Indox API.
 
+        This method adds a system prompt indicating that the response is for evaluation purposes,
+        and then sends the prompt to the API for generating a response.
+
+        Args:
+            prompt (str): The prompt to evaluate.
+
+        Returns:
+            str: The generated evaluation response.
+        """
         try:
-            system_prompt = "You are a assistant for llm evaluation"
+            logger.info("Generating evaluation response")
+            system_prompt = "You are an assistant for LLM evaluation."
 
             response = self._send_request(system_prompt, prompt)
-            return response
+            return response.strip()
         except Exception as e:
-            logger.error(f"Error generating agent answer: {e}")
+            logger.error(f"Error generating evaluation response: {e}")
             return str(e)

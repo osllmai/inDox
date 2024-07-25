@@ -5,15 +5,35 @@ import json
 from indox.IndoxEval.knowledge_retention.template import KnowledgeRetentionTemplate
 
 class Knowledge(BaseModel):
+    """
+    Model representing a dictionary of knowledge data, which can include strings and lists of strings.
+    """
     data: Dict[str, Union[str, List[str]]]
 
 class KnowledgeRetentionVerdict(BaseModel):
+    """
+    Model representing a verdict on the retention of knowledge in the LLM response,
+    including the index of the message, the verdict itself, and the reasoning behind it.
+    """
     index: int
     verdict: str
     reason: str = Field(default=None)
 
 class KnowledgeRetention:
+    """
+    Class for evaluating the retention of knowledge in language model outputs by analyzing the continuity of knowledge
+    across multiple messages, generating verdicts, and calculating retention scores.
+    """
     def __init__(self, messages: List[Dict[str, str]], threshold: float = 0.5, include_reason: bool = True, strict_mode: bool = False):
+        """
+        Initializes the KnowledgeRetention class with the messages, threshold, and evaluation settings.
+
+        Parameters:
+        messages (List[Dict[str, str]]): A list of messages containing queries and LLM responses.
+        threshold (float): The threshold for determining successful knowledge retention. Defaults to 0.5.
+        include_reason (bool): Whether to include reasoning for the knowledge retention verdicts. Defaults to True.
+        strict_mode (bool): Whether to use strict mode, which forces a score of 0 if retention is below the threshold. Defaults to False.
+        """
         self.model = None
         self.messages = messages
         self.threshold = 1 if strict_mode else threshold
@@ -26,9 +46,22 @@ class KnowledgeRetention:
         self.success = None
 
     def set_model(self, model):
+        """
+        Sets the language model to be used for evaluation.
+
+        Parameters:
+        model: The language model to use.
+        """
         self.model = model
 
     def measure(self) -> float:
+        """
+        Measures the level of knowledge retention in the LLM responses by generating knowledges and verdicts,
+        then calculating the retention score.
+
+        Returns:
+        float: The calculated knowledge retention score.
+        """
         self.knowledges = self._generate_knowledges()
         self.verdicts = self._generate_verdicts()
         knowledge_retention_score = self._calculate_score()
@@ -38,6 +71,15 @@ class KnowledgeRetention:
         return self.score
 
     def _generate_reason(self, score: float) -> str:
+        """
+        Generates the reasoning behind the knowledge retention score if include_reason is set to True.
+
+        Parameters:
+        score (float): The calculated knowledge retention score.
+
+        Returns:
+        str: The reasoning behind the knowledge retention score.
+        """
         if not self.include_reason:
             return None
 
@@ -53,6 +95,12 @@ class KnowledgeRetention:
         return data["reason"]
 
     def _calculate_score(self) -> float:
+        """
+        Calculates the knowledge retention score based on the number of retained knowledges.
+
+        Returns:
+        float: The calculated knowledge retention score.
+        """
         number_of_verdicts = len(self.verdicts)
         if number_of_verdicts == 0:
             return 0
@@ -64,6 +112,12 @@ class KnowledgeRetention:
         return 0 if self.strict_mode and score < self.threshold else score
 
     def _generate_verdicts(self) -> List[KnowledgeRetentionVerdict]:
+        """
+        Generates a list of verdicts on the retention of knowledge for each message.
+
+        Returns:
+        List[KnowledgeRetentionVerdict]: A list of KnowledgeRetentionVerdict instances.
+        """
         verdicts = []
         for index, message in enumerate(self.messages):
             previous_knowledge = self.knowledges[index].data
@@ -80,6 +134,12 @@ class KnowledgeRetention:
         return verdicts
 
     def _generate_knowledges(self) -> List[Knowledge]:
+        """
+        Generates a list of knowledge data for each message.
+
+        Returns:
+        List[Knowledge]: A list of Knowledge instances.
+        """
         knowledges = []
         for index, message in enumerate(self.messages):
             previous_knowledge = knowledges[-1].data if knowledges else {}
@@ -99,5 +159,14 @@ class KnowledgeRetention:
         return knowledges
 
     def _call_language_model(self, prompt: str) -> str:
+        """
+        Calls the language model with the given prompt and returns the response.
+
+        Parameters:
+        prompt (str): The prompt to provide to the language model.
+
+        Returns:
+        str: The response from the language model.
+        """
         response = self.model.generate_evaluation_response(prompt=prompt)
         return response

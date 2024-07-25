@@ -14,13 +14,20 @@ logger.add(sys.stdout,
 
 
 class GoogleAi:
-    def __init__(self, api_key, model="gemini-1.5-flash-latest"):
+    """
+    A class to interface with Google AI's generative models for evaluation purposes.
+
+    This class is specifically designed to use a Google AI model to generate responses
+    for the purpose of evaluating language model outputs.
+    """
+
+    def __init__(self, api_key: str, model: str = "gemini-1.5-flash-latest"):
         """
-        Initializes with the specified model version and an optional prompt template.
+        Initializes the GoogleAi class with the specified model version.
 
         Args:
-            api_key (str): The API key for Google Ai.
-            model (str): The Gemini model version.
+            api_key (str): The API key for accessing Google AI services.
+            model (str): The model version to use for generating responses.
         """
         import google.generativeai as genai
         try:
@@ -33,9 +40,9 @@ class GoogleAi:
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-    def _generate_response(self, prompt):
+    def _generate_response(self, prompt: str) -> str:
         """
-        Generates a response using the model.
+        Generates a response using the Google AI model.
 
         Args:
             prompt (str): The prompt to generate a response for.
@@ -46,17 +53,29 @@ class GoogleAi:
         try:
             logger.info("Generating response")
             response = self.model.generate_content(contents=prompt)
-            logger.info("Response in generated successfully")
+            logger.info("Response generated successfully")
             return response.text.strip().replace("\n", "")
         except Exception as e:
             logger.error(f"Error generating response: {e}")
             raise
 
-    def generate_evaluation_response(self, prompt):
+    def generate_evaluation_response(self, prompt: str) -> str:
+        """
+        Generates an evaluation response using the Google AI model.
+
+        This method prepends a system prompt indicating that the response is for evaluation purposes,
+        and then generates the response.
+
+        Args:
+            prompt (str): The prompt to evaluate.
+
+        Returns:
+            str: The generated evaluation response.
+        """
         try:
-            logger.info("Answering question")
-            system_prompt = "You are a assistant for llm evaluation"
+            logger.info("Generating evaluation response")
+            system_prompt = "You are an assistant for LLM evaluation."
             return self._generate_response(system_prompt + prompt)
         except Exception as e:
-            logger.error(f"Error : {e}")
+            logger.error(f"Error generating evaluation response: {e}")
             return str(e)
