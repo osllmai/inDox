@@ -17,9 +17,6 @@ The `Evaluator` class is initialized with two main components:
 ### Example
 
 ```python
-from typing import List
-
-
 class Evaluator:
     def __init__(self, model, metrics: List):
         """
