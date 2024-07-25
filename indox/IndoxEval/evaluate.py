@@ -9,7 +9,10 @@ from indox.IndoxEval.g_eval.geval import GEval
 from indox.IndoxEval.hallucination.hallucination import Hallucination
 from indox.IndoxEval.knowledge_retention.KnowledgeRetention import KnowledgeRetention
 from indox.IndoxEval.toxicity.toxicity import Toxicity
-
+from indox.IndoxEval.bertscore.bertscore import BertScore
+from indox.IndoxEval.bleu.bleu import BLEU
+from indox.IndoxEval.rouge.rouge import Rouge
+from indox.IndoxEval.meteor.meteor import METEOR
 # Set up logging
 logger.remove()  # Remove the default logger
 logger.add(sys.stdout,
@@ -122,6 +125,26 @@ class Evaluator:
                         'reason': metric.reason,
                         'opinions': metric.opinions,
                         'verdicts': [verdict.dict() for verdict in metric.verdicts]
+                    }
+                elif isinstance(metric, BertScore):
+                    score = metric.measure()
+                    results['BertScore'] = {
+                        'score': score
+                    }
+                elif isinstance(metric, BLEU):
+                    score = metric.measure()
+                    results['BLEU'] = {
+                        'score': score
+                    }
+                elif isinstance(metric, Rouge):
+                    score = metric.measure()
+                    results['Rouge'] = {
+                        'score': score
+                    }
+                elif isinstance(metric, METEOR):
+                    score = metric.measure()
+                    results['Meteor'] = {
+                        'score': score
                     }
                 logger.info(f"Completed evaluation for metric: {metric_name}")
             except Exception as e:
