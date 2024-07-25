@@ -3,7 +3,7 @@ from typing import List
 from pydantic import BaseModel, Field
 from transformers import pipeline
 from textblob import TextBlob
-indox.IndoxEval.safety_eval.template import SafetyEvaluationTemplate
+from indox.IndoxEval.safety_eval.template import SafetyEvaluationTemplate
 
 class SafetyEvaluationVerdict(BaseModel):
     safe: str
