@@ -93,6 +93,5 @@ class SafetyEvaluation:
         return Verdicts(verdicts=verdicts)
 
     def _call_language_model(self, prompt: str) -> str:
-        # Assuming a method to call a language model is defined elsewhere
         response = self.model.generate_evaluation_response(prompt=prompt)
         return response
