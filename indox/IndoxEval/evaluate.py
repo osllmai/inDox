@@ -13,6 +13,7 @@ from indox.IndoxEval.bertscore.bertscore import BertScore
 from indox.IndoxEval.bleu.bleu import BLEU
 from indox.IndoxEval.rouge.rouge import Rouge
 from indox.IndoxEval.meteor.meteor import METEOR
+
 # Set up logging
 logger.remove()  # Remove the default logger
 logger.add(sys.stdout,
@@ -27,7 +28,8 @@ class Evaluator:
     """
     The Evaluator class is designed to evaluate various aspects of language model outputs using specified metrics.
 
-    It supports metrics such as Faithfulness, Answer Relevancy, Bias, Contextual Relevancy, GEval, Hallucination, Knowledge Retention, and Toxicity.
+    It supports metrics such as Faithfulness, Answer Relevancy, Bias, Contextual Relevancy, GEval, Hallucination,
+    Knowledge Retention, Toxicity, BertScore, BLEU, Rouge, and METEOR.
     """
 
     def __init__(self, model, metrics: List):
