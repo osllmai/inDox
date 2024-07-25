@@ -15,21 +15,6 @@ class Verdicts(BaseModel):
 class Reason(BaseModel):
     reason: str
 
-import json
-from typing import List
-from pydantic import BaseModel, Field
-from transformers import pipeline
-from textblob import TextBlob
-class SafetyEvaluationVerdict(BaseModel):
-    safe: str
-    reason: str = Field(default=None)
-
-class Verdicts(BaseModel):
-    verdicts: List[SafetyEvaluationVerdict]
-
-class Reason(BaseModel):
-    reason: str
-
 class SafeEval:
     def __init__(self, query: str, retrieval_context: List[str]):
         self.toxicity_model = pipeline("text-classification", model="cardiffnlp/twitter-roberta-base-sentiment")
