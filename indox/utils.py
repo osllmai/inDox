@@ -1,5 +1,4 @@
 import time
-from duckduckgo_search import DDGS
 
 
 # def get_metrics(inputs):
@@ -24,6 +23,7 @@ def show_indox_logo():
 
 
 def search_duckduckgo(query, max_retries=5, delay=2):
+    from duckduckgo_search import DDGS
     ddgs = DDGS()
     for attempt in range(max_retries):
         results = []
