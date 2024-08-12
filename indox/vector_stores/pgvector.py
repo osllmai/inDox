@@ -2,6 +2,8 @@ from indox.core import Document
 from loguru import logger
 import sys
 
+from indox.core.vectorstore import VectorStore
+
 # Set up logging
 logger.remove()  # Remove the default logger
 logger.add(sys.stdout,
@@ -13,7 +15,7 @@ logger.add(sys.stdout,
            level="ERROR")
 
 
-class PGVector:
+class PGVector(VectorStore):
     """
     A concrete implementation of VectorStoreBase using PostgreSQL for storage.
 
