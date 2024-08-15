@@ -1,8 +1,6 @@
-from typing import List
 import pandas as pd
 import numpy as np
 from .Embed import embed_cluster_texts
-from .Summary import summarize
 from indox.data_loader_splitter.ClusteredSplit.cs_utils import rechunk
 from loguru import logger
 import sys
