@@ -4,7 +4,6 @@ import numpy as np
 from .Embed import embed_cluster_texts
 from .Summary import summarize
 from indox.data_loader_splitter.ClusteredSplit.cs_utils import rechunk
-from indox.data_loader_splitter.utils.clean import remove_stopwords_chunk
 from loguru import logger
 import sys
 
@@ -106,6 +105,7 @@ def recursive_embed_cluster_summarize(texts, embeddings, dim: int, threshold: fl
     - A tuple containing the results, input tokens, and output tokens.
     """
     if remove_sword:
+        from indox.data_loader_splitter.utils.clean import remove_stopwords_chunk
         texts = remove_stopwords_chunk(texts)
 
     results = {}
