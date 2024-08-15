@@ -4,6 +4,7 @@ from indox.data_loader_splitter.UnstructuredLoadAndSplit.loader import create_do
 from indox.vector_stores.utils import filter_complex_metadata
 from typing import List, Tuple, Optional, Any, Dict
 from indox.core import Document
+
 # Set up logging
 logger.remove()  # Remove the default logger
 logger.add(sys.stdout,
@@ -13,6 +14,7 @@ logger.add(sys.stdout,
 logger.add(sys.stdout,
            format="<red>{level}</red>: <level>{message}</level>",
            level="ERROR")
+
 
 def get_chunks_unstructured(file_path, chunk_size, remove_sword, splitter):
     """
