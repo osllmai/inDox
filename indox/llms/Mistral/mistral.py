@@ -24,12 +24,12 @@ class Mistral:
             api_key (str): The API key for Mistral AI.
             model (str): The Mistral AI model version.
         """
-        from mistralai.client import MistralClient
+        from mistralai import Mistral
 
         try:
             logger.info(f"Initializing MistralAI with model: {model}")
             self.model = model
-            self.client = MistralClient(api_key=api_key)
+            self.client = Mistral(api_key=api_key)
             logger.info("MistralAI initialized successfully")
         except Exception as e:
             logger.error(f"Error initializing MistralAI: {e}")
