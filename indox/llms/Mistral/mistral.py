@@ -24,7 +24,7 @@ class Mistral:
             api_key (str): The API key for Mistral AI.
             model (str): The Mistral AI model version.
         """
-        from mistralai import Mistral
+        from mistralai import Mistral, UserMessage
 
         try:
             logger.info(f"Initializing MistralAI with model: {model}")
@@ -45,16 +45,20 @@ class Mistral:
         Returns:
             str: The generated response.
         """
-        from mistralai.models.chat_completion import ChatMessage
-
         try:
+
             messages = [
-                ChatMessage(role="user", content=user_message)
+                {
+                    "role": "user",
+                    "content": user_message,
+                },
             ]
-            chat_response = self.client.chat(
+
+            chat_response = self.client.chat.complete(
                 model=self.model,
-                messages=messages
+                messages=messages,
             )
+
             return chat_response.choices[0].message.content
         except Exception as e:
             logger.error(f"Error in run_mistral: {e}")
