@@ -17,10 +17,12 @@
 #     filtered_words = [word for word in words if word.lower() not in stop_words]
 #     filtered_text = ' '.join(filtered_words)
 #     return filtered_text
-#
-#
+
+
 # def remove_stopwords_chunk(chunks: List[str]) -> List[str]:
 #     return [remove_stopwords(a) for a in chunks]
+
+
 from typing import List
 
 nlp = None  # Initialize nlp as None

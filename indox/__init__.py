@@ -1,4 +1,5 @@
 # Indox/__init__.py
 from .indox import IndoxRetrievalAugmentation
+import importlib.metadata
 
-__version__ = "0.1.19"
+__version__ = importlib.metadata.version("indox")
