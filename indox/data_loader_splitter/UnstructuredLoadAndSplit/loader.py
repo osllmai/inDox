@@ -12,6 +12,7 @@ logger.add(sys.stdout,
            format="<red>{level}</red>: <level>{message}</level>",
            level="ERROR")
 
+
 def convert_latex_to_md(latex_path):
     """Converts a LaTeX file to Markdown using the latex2markdown library.
 
