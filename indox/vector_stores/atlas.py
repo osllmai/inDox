@@ -1,13 +1,10 @@
 from __future__ import annotations
 
-import logging
 import uuid
 from typing import Any, Iterable, List, Optional, Type, Dict
 
 import numpy as np
 from indox.core import Document,Embeddings,VectorStore
-
-logger = logging.getLogger(__name__)
 
 
 class Atlas:

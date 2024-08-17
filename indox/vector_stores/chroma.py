@@ -186,7 +186,6 @@ class Chroma:
         metadatas = [doc.metadata for doc in documents]
         return self.add_texts(texts, metadatas, **kwargs)
 
-
     def similarity_search_with_score(
             self,
             query: str,

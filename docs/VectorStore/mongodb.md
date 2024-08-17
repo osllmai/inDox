@@ -6,10 +6,7 @@ MongoDB is a document-oriented NoSQL database that provides high performance, hi
 To use MongoDB as the vector store:
 
 ```python
-from indox.vector_stores import MongoDB
-from indox.embeddings import SomeEmbeddingFunction
-
-db = MongoDB(
+MongoDB(
     collection_name="your_collection",
     embedding_function=SomeEmbeddingFunction(),
     connection_string="mongodb://localhost:27017/",
@@ -58,8 +55,8 @@ HUGGINGFACE_API_KEY = os.getenv('HUGGINGFACE_API_KEY')
 **Import Essential Libraries**
 ```python
 from indox import IndoxRetrievalAugmentation
-from indox.llms import SomeLLMModel
-from indox.embeddings import SomeEmbeddingFunction
+from indox.llms import HuggingFaceModel
+from indox.embeddings import HuggingFaceEmbedding
 from indox.data_loader_splitter.SimpleLoadAndSplit import SimpleLoadAndSplit
 from indox.vector_stores import MongoDB
 
