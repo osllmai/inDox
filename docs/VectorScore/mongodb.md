@@ -58,8 +58,8 @@ HUGGINGFACE_API_KEY = os.getenv('HUGGINGFACE_API_KEY')
 **Import Essential Libraries**
 ```python
 from indox import IndoxRetrievalAugmentation
-from indox.llms import SomeLLMModel
-from indox.embeddings import SomeEmbeddingFunction
+from indox.llms import HuggingFaceModel
+from indox.embeddings import HuggingFaceEmbedding
 from indox.data_loader_splitter.SimpleLoadAndSplit import SimpleLoadAndSplit
 from indox.vector_stores import MongoDB
 
@@ -77,7 +77,7 @@ docs = simpleLoadAndSplit.load_and_chunk()
 **Initialize MongoDB**
 ```python
 db = MongoDB(
-    collection_name="your_collection",
+    collection_name="Indox_collection",
     embedding_function=embed,
     connection_string="mongodb://localhost:27017/",
     database_name="vector_db"
