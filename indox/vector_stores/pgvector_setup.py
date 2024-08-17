@@ -40,12 +40,15 @@ from indox.core import Document,Embeddings,VectorStore
 
 from indox.vector_stores.utils import maximal_marginal_relevance
 
-class DistanceStrategy(str, enum.Enum):
-    """Enumerator of the Distance strategies."""
+class DistanceStrategy:
+    """Enumerator of the Distance strategies for calculating distances
+    between vectors."""
 
-    EUCLIDEAN = "l2"
-    COSINE = "cosine"
-    MAX_INNER_PRODUCT = "inner"
+    EUCLIDEAN_DISTANCE = "EUCLIDEAN_DISTANCE"
+    MAX_INNER_PRODUCT = "MAX_INNER_PRODUCT"
+    DOT_PRODUCT = "DOT_PRODUCT"
+    JACCARD = "JACCARD"
+    COSINE = "COSINE"
 
 
 DEFAULT_DISTANCE_STRATEGY = DistanceStrategy.COSINE

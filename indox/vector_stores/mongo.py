@@ -7,7 +7,7 @@ import uuid
 # from pymongo.collection import Collection
 
 
-class MongoDB():
+class MongoDB:
     DEFAULT_K = 4
     """
     A vector store implementation using MongoDB for document storage and retrieval.

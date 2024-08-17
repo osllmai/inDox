@@ -4,7 +4,7 @@ import uuid
 from typing import Any, Iterable, List, Optional, Type, Dict
 
 import numpy as np
-from indox.core import Document,Embeddings,VectorStore
+from indox.core import Document, Embeddings, VectorStore
 
 
 class Atlas:
@@ -19,13 +19,13 @@ class Atlas:
     _ATLAS_DEFAULT_ID_FIELD: str = "atlas_id"
 
     def __init__(
-        self,
-        name: str,
-        embedding_function: Optional[Embeddings] = None,
-        api_key: Optional[str] = None,
-        description: str = "A description for your project",
-        is_public: bool = True,
-        reset_project_if_exists: bool = False,
+            self,
+            name: str,
+            embedding_function: Optional[Embeddings] = None,
+            api_key: Optional[str] = None,
+            description: str = "A description for your project",
+            is_public: bool = True,
+            reset_project_if_exists: bool = False,
     ) -> None:
         """
         Initialize the Atlas Client
@@ -46,7 +46,7 @@ class Atlas:
         """
         try:
             import nomic
-            from nomic import AtlasProject
+            from nomic import AtlasDataset
         except ImportError:
             raise ImportError(
                 "Could not import nomic python package. "
@@ -63,26 +63,27 @@ class Atlas:
             modality = "embedding"
 
         # Check if the project exists, create it if not
-        self.project = AtlasProject(
-            name=name,
+        self.project = AtlasDataset(
+            identifier=name,
             description=description,
-            modality=modality,
+            # modality=modality,
             is_public=is_public,
-            reset_project_if_exists=reset_project_if_exists,
-            unique_id_field=Atlas._ATLAS_DEFAULT_ID_FIELD,
+            # reset_project_if_exists=reset_project_if_exists,
+            # unique_id_field=Atlas._ATLAS_DEFAULT_ID_FIELD,
         )
-        self.project._latest_project_state()
+        self.project._latest_dataset_state()
 
     @property
     def embeddings(self) -> Optional[Embeddings]:
         return self._embedding_function
+
     def add_documents(
-        self,
-        documents: Iterable[Dict[str, Any]],
-        metadatas: Optional[List[dict]] = None,
-        ids: Optional[List[str]] = None,
-        refresh: bool = True,
-        **kwargs: Any,
+            self,
+            documents: Iterable[Dict[str, Any]],
+            metadatas: Optional[List[dict]] = None,
+            ids: Optional[List[str]] = None,
+            refresh: bool = True,
+            **kwargs: Any,
     ) -> List[str]:
         """
         Run more documents through the embeddings and add them to the vectorstore.
@@ -98,9 +99,9 @@ class Atlas:
         """
 
         if (
-            metadatas is not None
-            and len(metadatas) > 0
-            and "text" in metadatas[0].keys()
+                metadatas is not None
+                and len(metadatas) > 0
+                and "text" in metadatas[0].keys()
         ):
             raise ValueError("Cannot accept key 'text' in metadata!")
 
@@ -126,10 +127,10 @@ class Atlas:
                 data = metadatas
 
             self.project._validate_map_data_inputs(
-                [], id_field=Atlas._ATLAS_DEFAULT_ID_FIELD, data=data
+                [], id_field=Atlas._ATLAS_DEFAULT_ID_FIELD, data_sample=data
             )
-            with self.project.wait_for_project_lock():
-                self.project.add_embeddings(embeddings=embeddings, data=data)
+            with self.project.wait_for_dataset_lock():
+                self.project._add_embeddings(embeddings=embeddings, data=data)
 
         # Document upload case without embeddings
         else:
@@ -145,25 +146,26 @@ class Atlas:
                 data = metadatas
 
             self.project._validate_map_data_inputs(
-                [], id_field=Atlas._ATLAS_DEFAULT_ID_FIELD, data=data
+                [], id_field=Atlas._ATLAS_DEFAULT_ID_FIELD, data_sample=data
             )
 
-            with self.project.wait_for_project_lock():
-                self.project.add_text(data)
+            with self.project.wait_for_dataset_lock():
+                self.project._add_text(data)
 
         if refresh:
             if len(self.project.indices) > 0:
-                with self.project.wait_for_project_lock():
+                with self.project.wait_for_dataset_lock():
                     self.project.rebuild_maps()
 
         return ids
+
     def add_texts(
-        self,
-        texts: Iterable[str],
-        metadatas: Optional[List[dict]] = None,
-        ids: Optional[List[str]] = None,
-        refresh: bool = True,
-        **kwargs: Any,
+            self,
+            texts: Iterable[str],
+            metadatas: Optional[List[dict]] = None,
+            ids: Optional[List[str]] = None,
+            refresh: bool = True,
+            **kwargs: Any,
     ) -> List[str]:
         """Run more texts through the embeddings and add to the vectorstore.
 
@@ -178,9 +180,9 @@ class Atlas:
         """
 
         if (
-            metadatas is not None
-            and len(metadatas) > 0
-            and "text" in metadatas[0].keys()
+                metadatas is not None
+                and len(metadatas) > 0
+                and "text" in metadatas[0].keys()
         ):
             raise ValueError("Cannot accept key text in metadata!")
 
@@ -204,10 +206,10 @@ class Atlas:
                 data = metadatas
 
             self.project._validate_map_data_inputs(
-                [], id_field=Atlas._ATLAS_DEFAULT_ID_FIELD, data=data
+                [], id_field=Atlas._ATLAS_DEFAULT_ID_FIELD, data_sample=data
             )
-            with self.project.wait_for_project_lock():
-                self.project.add_embeddings(embeddings=embeddings, data=data)
+            with self.project.wait_for_dataset_lock():
+                self.project._add_embeddings(embeddings=embeddings, data=data)
         # Text upload case
         else:
             if metadatas is None:
@@ -222,15 +224,15 @@ class Atlas:
                 data = metadatas
 
             self.project._validate_map_data_inputs(
-                [], id_field=Atlas._ATLAS_DEFAULT_ID_FIELD, data=data
+                [], id_field=Atlas._ATLAS_DEFAULT_ID_FIELD, data_sample=data
             )
 
-            with self.project.wait_for_project_lock():
-                self.project.add_text(data)
+            with self.project.wait_for_dataset_lock():
+                self.project._add_text(data)
 
         if refresh:
             if len(self.project.indices) > 0:
-                with self.project.wait_for_project_lock():
+                with self.project.wait_for_dataset_lock():
                     self.project.rebuild_maps()
 
         return ids
@@ -242,14 +244,14 @@ class Atlas:
         https://docs.nomic.ai/atlas_api.html#nomic.project.AtlasProject.create_index
         for full detail.
         """
-        with self.project.wait_for_project_lock():
+        with self.project.wait_for_dataset_lock():
             return self.project.create_index(**kwargs)
 
     def similarity_search(
-        self,
-        query: str,
-        k: int = 4,
-        **kwargs: Any,
+            self,
+            query: str,
+            k: int = 4,
+            **kwargs: Any,
     ) -> List[Document]:
         """Run similarity search with AtlasDB
 
@@ -267,7 +269,7 @@ class Atlas:
 
         _embedding = self._embedding_function.embed_documents([query])[0]
         embedding = np.array(_embedding).reshape(1, -1)
-        with self.project.wait_for_project_lock():
+        with self.project.wait_for_dataset_lock():
             neighbors, _ = self.project.projections[0].vector_search(
                 queries=embedding, k=k
             )
@@ -281,18 +283,18 @@ class Atlas:
 
     @classmethod
     def from_texts(
-        cls: Type[Atlas],
-        texts: List[str],
-        embedding: Optional[Embeddings] = None,
-        metadatas: Optional[List[dict]] = None,
-        ids: Optional[List[str]] = None,
-        name: Optional[str] = None,
-        api_key: Optional[str] = None,
-        description: str = "A description for your project",
-        is_public: bool = True,
-        reset_project_if_exists: bool = False,
-        index_kwargs: Optional[dict] = None,
-        **kwargs: Any,
+            cls: Type[Atlas],
+            texts: List[str],
+            embedding: Optional[Embeddings] = None,
+            metadatas: Optional[List[dict]] = None,
+            ids: Optional[List[str]] = None,
+            name: Optional[str] = None,
+            api_key: Optional[str] = None,
+            description: str = "A description for your project",
+            is_public: bool = True,
+            reset_project_if_exists: bool = False,
+            index_kwargs: Optional[dict] = None,
+            **kwargs: Any,
     ) -> Atlas:
         """Create an AtlasDB vectorstore from a raw documents.
 
@@ -334,25 +336,25 @@ class Atlas:
             is_public=is_public,
             reset_project_if_exists=reset_project_if_exists,
         )
-        with atlasDB.project.wait_for_project_lock():
+        with atlasDB.project.wait_for_dataset_lock():
             atlasDB.add_texts(texts=texts, metadatas=metadatas, ids=ids)
             atlasDB.create_index(**all_index_kwargs)
         return atlasDB
 
     @classmethod
     def from_documents(
-        cls: Type[Atlas],
-        documents: List[Document],
-        embedding: Optional[Embeddings] = None,
-        ids: Optional[List[str]] = None,
-        name: Optional[str] = None,
-        api_key: Optional[str] = None,
-        persist_directory: Optional[str] = None,
-        description: str = "A description for your project",
-        is_public: bool = True,
-        reset_project_if_exists: bool = False,
-        index_kwargs: Optional[dict] = None,
-        **kwargs: Any,
+            cls: Type[Atlas],
+            documents: List[Document],
+            embedding: Optional[Embeddings] = None,
+            ids: Optional[List[str]] = None,
+            name: Optional[str] = None,
+            api_key: Optional[str] = None,
+            persist_directory: Optional[str] = None,
+            description: str = "A description for your project",
+            is_public: bool = True,
+            reset_project_if_exists: bool = False,
+            index_kwargs: Optional[dict] = None,
+            **kwargs: Any,
     ) -> Atlas:
         """Create an AtlasDB vectorstore from a list of documents.
 
