@@ -6,7 +6,7 @@ import os
 import time
 
 
-def load_html(file_path: str) -> List[Document]:
+def Bs4(file_path: str) -> List[Document]:
     """
     Load an HTML file and extract its text and metadata.
 

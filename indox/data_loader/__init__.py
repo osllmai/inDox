@@ -9,7 +9,7 @@ from .csv import Csv
 from .txt import Txt
 from .json import Json
 #from .xml import Xml
-from .bs4 import load_html
+from .bs4 import Bs4
 from .md import Md
 #from .rtf import Rtf
 from .pptx import Pptx
