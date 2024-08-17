@@ -24,6 +24,8 @@ from sqlalchemy import delete, func
 from sqlalchemy.dialects.postgresql import JSON, JSONB, UUID
 from sqlalchemy.orm import Session, relationship
 
+from indox.vector_stores.pgvector import PGVector
+
 try:
     from sqlalchemy.orm import declarative_base
 except ImportError:
