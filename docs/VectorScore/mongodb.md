@@ -7,11 +7,11 @@ To use MongoDB as the vector store:
 
 ```python
 from indox.vector_stores import MongoDB
-from indox.embeddings import SomeEmbeddingFunction
+from indox.embeddings import HuggingFaceEmbedding
 
 db = MongoDB(
     collection_name="your_collection",
-    embedding_function=SomeEmbeddingFunction(),
+    embedding_function=HuggingFaceEmbedding(),
     connection_string="mongodb://localhost:27017/",
     database_name="vector_db"
 )
