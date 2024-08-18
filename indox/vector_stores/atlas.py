@@ -155,7 +155,7 @@ class Atlas:
         if refresh:
             if len(self.project.indices) > 0:
                 with self.project.wait_for_dataset_lock():
-                    self.project.rebuild_maps()
+                    self.project.update_indices()
 
         return ids
 
@@ -233,7 +233,7 @@ class Atlas:
         if refresh:
             if len(self.project.indices) > 0:
                 with self.project.wait_for_dataset_lock():
-                    self.project.rebuild_maps()
+                    self.project.update_indices()
 
         return ids
 
@@ -266,21 +266,28 @@ class Atlas:
             raise NotImplementedError(
                 "AtlasDB requires an embedding_function for text similarity search!"
             )
-
         _embedding = self._embedding_function.embed_documents([query])[0]
         embedding = np.array(_embedding).reshape(1, -1)
+
+
         with self.project.wait_for_dataset_lock():
+            print(self.project.projections[0])
             neighbors, _ = self.project.projections[0].vector_search(
                 queries=embedding, k=k
             )
+            if not neighbors:
+                raise ValueError("No neighbors found for the given query.")
+
             data = self.project.get_data(ids=neighbors[0])
+
+            if not data:
+                raise ValueError("No data found for the retrieved neighbors.")
 
         docs = [
             Document(page_content=data[i]["text"], metadata=data[i])
             for i, neighbor in enumerate(neighbors)
         ]
         return docs
-
     @classmethod
     def from_texts(
             cls: Type[Atlas],
