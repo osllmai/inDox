@@ -5,10 +5,13 @@ import logging
 from pymilvus import MilvusClient, MilvusException
 from typing import Any, Dict, List, Optional, Tuple, Union, Callable, Literal, Iterable
 from indox.core import VectorStore, Embeddings
+from indox import IndoxRetrievalAugmentation
+import uuid
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 class Document:
     """
@@ -57,11 +60,11 @@ class Document:
         }
 
 
-
-class MilvusWrapper:
+class Milvus:
     """
     A wrapper class for interacting with the Milvus vector database.
     """
+
     def __init__(self, collection_name, embedding_model, qa_model):
         """
         Initialize the MilvusWrapper with collection name, embedding model, and QA model.
@@ -110,7 +113,7 @@ class MilvusWrapper:
             search_params={"metric_type": "IP", "params": {}},
             output_fields=["text"],
         )
-        
+
         # Creating Document objects for the results
         documents_with_scores = [
             (Document(page_content=res["entity"]["text"]), res["distance"])
@@ -181,7 +184,8 @@ class MilvusWrapper:
         Args:
             text_lines (List[str]): List of text lines to insert.
         """
-        data = [{"id": i, "vector": self.emb_text(line), "text": line} for i, line in enumerate(tqdm(text_lines, desc="Creating embeddings"))]
+        data = [{"id": i, "vector": self.emb_text(line), "text": line} for i, line in
+                enumerate(tqdm(text_lines, desc="Creating embeddings"))]
         self.milvus_client.insert(collection_name=self.collection_name, data=data)
 
     def add(
