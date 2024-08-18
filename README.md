@@ -183,6 +183,41 @@ pip install openai
 pip install chromadb
 ```
 
+## Setting Up the Python Environment
+
+If you are running this project in your local IDE, please create a Python environment to ensure all dependencies are correctly managed. You can follow the steps below to set up a virtual environment named `indox`:
+
+### Windows
+
+1. **Create the virtual environment:**
+```bash
+python -m venv indox
+```
+2. **Activate the virtual environment:**
+```bash
+indox_judge\Scripts\activate
+```
+
+### macOS/Linux
+
+1. **Create the virtual environment:**
+   ```bash
+   python3 -m venv indox
+```
+
+2. **Activate the virtual environment:**
+    ```bash
+   source indox/bin/activate
+```
+### Install Dependencies
+
+Once the virtual environment is activated, install the required dependencies by running:
+
+```bash
+pip install -r requirements.txt
+```
+
+
 ### Load Environment Variables
 
 To start, you need to load your API keys from the environment.
@@ -295,17 +330,17 @@ retriever.context
      'slippers embroidered with silk and silver. She put on the dress\n\nwith all speed, and went to the wedding. Her step-sisters and the\n\nstep-mother however did not know her, and thought she must be a\n\nforeign princess, for she looked so beautiful in the golden dress.\n\nThey never once thought of cinderella, and believed that she was\n\nsitting at home in the dirt, picking lentils out of the ashes. The\n\nprince approached her, took her by the hand and danced with her.']
 
 ```txt
-                 .----------------.  .-----------------. .----------------.  .----------------.  .----------------. 
-                | .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
-                | |     _____    | || | ____  _____  | || |  ________    | || |     ____     | || |  ____  ____  | |
-                | |    |_   _|   | || ||_   \|_   _| | || | |_   ___ `.  | || |   .'    `.   | || | |_  _||_  _| | |
-                | |      | |     | || |  |   \ | |   | || |   | |   `. \ | || |  /  .--.  \  | || |   \ \  / /   | |
-                | |      | |     | || |  | |\ \| |   | || |   | |    | | | || |  | |    | |  | || |    > `' <    | |
-                | |     _| |_    | || | _| |_\   |_  | || |  _| |___.' / | || |  \  `--'  /  | || |  _/ /'`\ \_  | |
-                | |    |_____|   | || ||_____|\____| | || | |________.'  | || |   `.____.'   | || | |____||____| | |
-                | |              | || |              | || |              | || |              | || |              | |
-                | '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
-                 '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
+  .----------------.  .-----------------. .----------------.  .----------------.  .----------------. 
+| .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
+| |     _____    | || | ____  _____  | || |  ________    | || |     ____     | || |  ____  ____  | |
+| |    |_   _|   | || ||_   \|_   _| | || | |_   ___ `.  | || |   .'    `.   | || | |_  _||_  _| | |
+| |      | |     | || |  |   \ | |   | || |   | |   `. \ | || |  /  .--.  \  | || |   \ \  / /   | |
+| |      | |     | || |  | |\ \| |   | || |   | |    | | | || |  | |    | |  | || |    > `' <    | |
+| |     _| |_    | || | _| |_\   |_  | || |  _| |___.' / | || |  \  `--'  /  | || |  _/ /'`\ \_  | |
+| |    |_____|   | || ||_____|\____| | || | |________.'  | || |   `.____.'   | || | |____||____| | |
+| |              | || |              | || |              | || |              | || |              | |
+| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
+  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
 
 
 ```
