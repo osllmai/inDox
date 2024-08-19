@@ -201,7 +201,42 @@ class MongoDB:
 
         return [(Document(page_content=doc[self._text_key], metadata=doc.get("metadata", {})), score) for doc, score in
                 top_k]
+    def _similarity_search(
+        self,
+        query: str,
+        k: int = 4,
+        pre_filter: Optional[Dict] = None,
+        post_filter_pipeline: Optional[List[Dict]] = None,
+        **kwargs: Any,
+    ) -> List[Document]:
+        """Return MongoDB documents most similar to the given query.
 
+        Uses the vectorSearch operator available in MongoDB Atlas Search.
+        For more: https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-stage/
+
+        Args:
+            query: Text to look up documents similar to.
+            k: (Optional) number of documents to return. Defaults to 4.
+            pre_filter: (Optional) dictionary of argument(s) to prefilter document
+                fields on.
+            post_filter_pipeline: (Optional) Pipeline of MongoDB aggregation stages
+                following the vectorSearch stage.
+
+        Returns:
+            List of documents most similar to the query and their scores.
+        """
+        additional = kwargs.get("additional")
+        docs_and_scores = self._similarity_search_with_score(
+            query,
+            k=k,
+            pre_filter=pre_filter,
+            post_filter_pipeline=post_filter_pipeline,
+        )
+
+        if additional and "similarity_score" in additional:
+            for doc, score in docs_and_scores:
+                doc.metadata["score"] = score
+        return [doc for doc, _ in docs_and_scores]
     def delete(self, ids: Optional[List[str]] = None, **kwargs: Any) -> None:
         """
         Delete documents from the vector store.

@@ -78,18 +78,22 @@ class PGVector(VectorStore):
             logger.error(f"Failed to add document: {e}")
             raise RuntimeError(f"Can't add document to the vector store: {e}")
 
-    def retrieve(self, query: str, top_k: int = 5):
+    def _similarity_search(self, query: str, k: int = 5):
         """
         Retrieves documents similar to the given query from the PostgreSQL vector store.
 
         Args:
             query (str): The query to retrieve similar documents.
-            top_k (int, optional): The number of top similar documents to retrieve. Defaults to 5.
+            k (int, optional): The number of top similar documents to retrieve. Defaults to 5.
 
-        Returns:
-            Tuple[List[str], List[float]]: The context and scores of the retrieved documents.
+
         """
-        retrieved = self.db.similarity_search_with_score(query, k=top_k)
-        context = [d[0].page_content for d in retrieved]
-        scores = [d[1] for d in retrieved]
-        return context, scores
+        # retrieved = self.db.similarity_search(query, k=top_k)
+        # context = [d[0].page_content for d in retrieved]
+        # scores = [d[1] for d in retrieved]
+        # return context, scores
+        embedding = self.embeddings.embed_query(text=query)
+        return self.db.similarity_search_by_vector(
+            embedding=embedding,
+            k=k
+        )

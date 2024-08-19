@@ -286,7 +286,7 @@ class FAISS(ABC):
         texts, embeddings = zip(*text_embeddings)
         return self.__add(texts, embeddings, metadatas=metadatas, ids=ids)
 
-    def similarity_search_with_score(
+    def _similarity_search_with_score(
             self,
             query: str,
             k: int = 4,
@@ -311,7 +311,7 @@ class FAISS(ABC):
             L2 distance in float. Lower score represents more similarity.
         """
         embedding = self._embed_query(query)
-        docs = self.similarity_search_with_score_by_vector(
+        docs = self._similarity_search_with_score_by_vector(
             embedding,
             k,
             filter=filter,
@@ -320,7 +320,7 @@ class FAISS(ABC):
         )
         return docs
 
-    def similarity_search_with_score_by_vector(
+    def _similarity_search_with_score_by_vector(
             self,
             embedding: List[float],
             k: int = 4,
@@ -384,6 +384,30 @@ class FAISS(ABC):
                 if cmp(similarity, score_threshold)
             ]
         return docs[:k]
+    def _similarity_search(
+        self,
+        query: str,
+        k: int = 4,
+        filter: Optional[Union[Callable, Dict[str, Any]]] = None,
+        fetch_k: int = 20,
+        **kwargs: Any,
+    ) -> List[Document]:
+        """Return docs most similar to query.
+
+        Args:
+            query: Text to look up documents similar to.
+            k: Number of Documents to return. Defaults to 4.
+            filter: (Optional[Dict[str, str]]): Filter by metadata. Defaults to None.
+            fetch_k: (Optional[int]) Number of Documents to fetch before filtering.
+                      Defaults to 20.
+
+        Returns:
+            List of Documents most similar to the query.
+        """
+        docs_and_scores = self._similarity_search_with_score(
+            query, k, filter=filter, fetch_k=fetch_k, **kwargs
+        )
+        return [doc for doc, _ in docs_and_scores]
     def delete(self, ids: Optional[List[str]] = None, **kwargs: Any) -> Optional[bool]:
         """Delete by ID. These are the IDs in the vectorstore.
 

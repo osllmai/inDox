@@ -71,6 +71,37 @@ class Milvus:
             for res in search_res[0]
         ]
         return documents_with_scores
+    def _similarity_search(
+        self,
+        query: str,
+        k: int = 4,
+        param: Optional[dict] = None,
+        expr: Optional[str] = None,
+        timeout: Optional[float] = None,
+        **kwargs: Any,
+    ) -> List[Document]:
+        """Perform a similarity search against the query string.
+
+        Args:
+            query (str): The text to search.
+            k (int, optional): How many results to return. Defaults to 4.
+            param (dict, optional): The search params for the index type.
+                Defaults to None.
+            expr (str, optional): Filtering expression. Defaults to None.
+            timeout (int, optional): How long to wait before timeout error.
+                Defaults to None.
+            kwargs: Collection.search() keyword arguments.
+
+        Returns:
+            List[Document]: Document results for search.
+        """
+        if self.col is None:
+            logger.debug("No existing collection to search.")
+            return []
+        res = self._similarity_search_with_score(
+            query=query, k=k
+        )
+        return [doc for doc, _ in res]
 
     def _process_question(self, question: str):
         """

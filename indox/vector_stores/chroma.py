@@ -257,6 +257,27 @@ class Chroma:
             )
 
         return _results_to_docs_and_scores(results)
+    def _similarity_search(
+        self,
+        query: str,
+        k: int = DEFAULT_K,
+        filter: Optional[Dict[str, str]] = None,
+        **kwargs: Any,
+    ) -> List[Document]:
+        """Run similarity search with Chroma.
+
+        Args:
+            query (str): Query text to search for.
+            k (int): Number of results to return. Defaults to 4.
+            filter (Optional[Dict[str, str]]): Filter by metadata. Defaults to None.
+
+        Returns:
+            List[Document]: List of documents most similar to the query text.
+        """
+        docs_and_scores = self._similarity_search_with_score(
+            query, k, filter=filter, **kwargs
+        )
+        return [doc for doc, _ in docs_and_scores]
 
     def delete_collection(self) -> None:
         """Delete the collection."""
