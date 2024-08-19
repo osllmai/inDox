@@ -115,7 +115,7 @@ class PineconeVectorStore:
         """Access the query embedding object if available."""
         return self._embedding
 
-    def add_texts(
+    def _add_texts(
             self,
             texts: Iterable[str],
             metadatas: Optional[List[dict]] = None,
@@ -193,7 +193,7 @@ class PineconeVectorStore:
 
         return ids
 
-    def similarity_search_with_score(
+    def _similarity_search_with_score(
             self,
             query: str,
             k: int = 4,
@@ -215,7 +215,7 @@ class PineconeVectorStore:
             self._embedding.embed_query(query), k=k, filter=filter, namespace=namespace
         )
 
-    def add_document(self, documents: List[Document], **kwargs: Any) -> list[str]:
+    def _add_document(self, documents: List[Document], **kwargs: Any) -> list[str]:
         """Run more documents through the embeddings and add to the vectorstore.
 
         Args:
@@ -226,7 +226,24 @@ class PineconeVectorStore:
         """
         texts = [doc.page_content for doc in documents]
         metadatas = [doc.metadata for doc in documents]
-        return self.add_texts(texts, metadatas, **kwargs)
+        return self._add_texts(texts, metadatas, **kwargs)
+
+    def add(self,docs):
+        """
+        Adds documents to the PostgreSQL vector store.
+
+        Args:
+            docs: The documents to be added to the vector store.
+        """
+        try:
+            if isinstance(docs[0], Document):
+                self._add_document(documents=docs)
+            else:
+                self._add_texts(texts=docs)
+            logger.info("Document added successfully to the vector store.")
+        except Exception as e:
+            logger.error(f"Failed to add document: {e}")
+            raise RuntimeError(f"Can't add document to the vector store: {e}")
 
     def retrieve(self, query: str, top_k: int = 5):
         """

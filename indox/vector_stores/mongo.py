@@ -69,7 +69,7 @@ class MongoDB:
     def embeddings(self) -> Optional[Embeddings]:
         return self._embedding_function
 
-    def add_texts(
+    def _add_texts(
             self,
             texts: Iterable[str],
             metadatas: Optional[List[dict]] = None,
@@ -122,7 +122,7 @@ class MongoDB:
 
         return ids
 
-    def add_documents(self, documents: List[Document], **kwargs: Any) -> List[str]:
+    def _add_documents(self, documents: List[Document], **kwargs: Any) -> List[str]:
         """
         Add documents to the vector store.
 
@@ -135,9 +135,24 @@ class MongoDB:
         """
         texts = [doc.page_content for doc in documents]
         metadatas = [doc.metadata for doc in documents]
-        return self.add_texts(texts, metadatas, **kwargs)
+        return self._add_texts(texts, metadatas, **kwargs)
 
-    def similarity_search_with_score(
+    def add(self, docs):
+        """
+        Adds documents to the MongoDB vector store.
+
+        Args:
+            docs: The documents to be added to the vector store.
+        """
+        try:
+            if isinstance(docs[0], Document):
+                self._add_documents(documents=docs)
+            else:
+                self._add_texts(texts=docs)
+        except Exception as e:
+            raise RuntimeError(f"Can't add document to the vector store: {e}")
+
+    def _similarity_search_with_score(
             self,
             query: str,
             k: int = DEFAULT_K,

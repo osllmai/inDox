@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime
 import os
+import warnings
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -19,6 +20,20 @@ from indox.core import Document, Embeddings, VectorStore
 
 if TYPE_CHECKING:
     import weaviate
+from loguru import logger
+import sys
+
+warnings.filterwarnings("ignore")
+
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
+
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
 
 
 def _default_schema(index_name: str, text_key: str) -> Dict:
@@ -113,7 +128,7 @@ class Weaviate:
             else _default_score_normalizer
         )
 
-    def add_documents(self, documents: List[Document], **kwargs: Any) -> List[str]:
+    def _add_documents(self, documents: List[Document], **kwargs: Any) -> List[str]:
         """Upload Indox Document objects to Weaviate."""
         from weaviate.util import get_valid_uuid
 
@@ -149,7 +164,7 @@ class Weaviate:
                 ids.append(_id)
         return ids
 
-    def add_texts(
+    def _add_texts(
             self,
             texts: Iterable[str],
             metadatas: Optional[List[dict]] = None,
@@ -188,7 +203,24 @@ class Weaviate:
                 ids.append(_id)
         return ids
 
-    def similarity_search_with_score(
+    def add(self, docs):
+        """
+               Adds documents to the Weaviate vector store.
+
+               Args:
+                   docs: The documents to be added to the vector store.
+               """
+        try:
+            if isinstance(docs[0], Document):
+                self._add_documents(documents=docs)
+            else:
+                self._add_texts(texts=docs)
+            logger.info("Document added successfully to the vector store.")
+        except Exception as e:
+            logger.error(f"Failed to add document: {e}")
+            raise RuntimeError(f"Can't add document to the vector store: {e}")
+
+    def _similarity_search_with_score(
             self, query: str, k: int = 4, **kwargs: Any
     ) -> List[Tuple[Document, float]]:
         """

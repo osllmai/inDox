@@ -61,7 +61,7 @@ class PGVector(VectorStore):
         """
         return f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.dbname}"
 
-    def add_document(self, docs):
+    def add(self, docs):
         """
         Adds documents to the PostgreSQL vector store.
 
