@@ -7,57 +7,11 @@ from typing import Any, Dict, List, Optional, Tuple, Union, Callable, Literal, I
 from indox.core import VectorStore, Embeddings
 from indox import IndoxRetrievalAugmentation
 import uuid
-
+from indox.core import Embeddings, VectorStore, Document
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
-class Document:
-    """
-    Class for storing a piece of text and associated metadata.
-
-    Args:
-        page_content (str): The content of the page as a string.
-        **kwargs (Any): Arbitrary metadata associated with the document.
-
-    Attributes:
-        page_content (str): The content of the page.
-        metadata (dict): Arbitrary metadata associated with the document.
-        type (Literal["Document"]): Type of the object, always "Document".
-
-    Methods:
-        __repr__():
-            Return a string representation of the Document.
-        to_dict():
-            Convert the Document to a dictionary.
-    """
-
-    def __init__(self, page_content: str, **kwargs: Any) -> None:
-        self.page_content = page_content
-        self.metadata: Dict[str, Any] = kwargs
-        self.type: Literal["Document"] = "Document"
-
-    def __repr__(self) -> str:
-        """
-        Return a string representation of the Document.
-
-        Returns:
-            str: A string representation of the Document object.
-        """
-        return f"Document(page_content={self.page_content}, metadata={self.metadata})"
-
-    def to_dict(self) -> Dict[str, Any]:
-        """
-        Convert the Document to a dictionary.
-
-        Returns:
-            dict: Dictionary containing the page content and metadata.
-        """
-        return {
-            "page_content": self.page_content,
-            "metadata": self.metadata
-        }
 
 
 class Milvus:
@@ -130,11 +84,11 @@ class Milvus:
         """
         retrieved_lines_with_distances = self.similarity_search_with_score(question, k=5)
         # Convert Document objects to dictionaries
-        context = "\n".join([doc.to_dict()['page_content'] for doc, _ in retrieved_lines_with_distances])
+        context = "\n".join([self.to_dict(doc)['page_content'] for doc, _ in retrieved_lines_with_distances])
         # answer = self.generate_answer(context, question)
         # print(f"Answer: {answer}")
         print(json.dumps(
-            [{"document": doc.to_dict(), "score": score} for doc, score in retrieved_lines_with_distances],
+            [{"document": self.to_dict(doc), "score": score} for doc, score in retrieved_lines_with_distances],
             indent=4
         ))
 
@@ -262,3 +216,32 @@ class Milvus:
         """
         texts, embeddings = zip(*text_embeddings)
         return self.add(texts, embeddings, metadatas=metadatas, ids=ids)
+
+    def add_docs(self, file_path: str) -> List[Document]:
+        """
+        Load text lines from a file, create Document objects.
+
+        Args:
+            file_path (str): Path to the text file.
+
+        Returns:
+            List[Document]: List of Document objects created from the text lines.
+        """
+        raw_docs = self.load_text_from_file(file_path)
+        docs = [Document(page_content=doc) for doc in raw_docs]
+        return docs
+
+    def to_dict(self, document: Document) -> Dict[str, Any]:
+        """
+        Convert a Document to a dictionary.
+
+        Args:
+            document (Document): Document object to convert.
+
+        Returns:
+            dict: Dictionary containing the page content and metadata.
+        """
+        return {
+            "page_content": document.page_content,
+            "metadata": document.metadata
+        }
