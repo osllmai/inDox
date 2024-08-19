@@ -8,10 +8,10 @@ from indox.core import VectorStore, Embeddings
 from indox import IndoxRetrievalAugmentation
 import uuid
 from indox.core import Embeddings, VectorStore, Document
+
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 
 class Milvus:
@@ -19,22 +19,21 @@ class Milvus:
     A wrapper class for interacting with the Milvus vector database.
     """
 
-    def __init__(self, collection_name, embedding_model, qa_model):
+    def __init__(self, collection_name, embedding_model):
         """
         Initialize the MilvusWrapper with collection name, embedding model, and QA model.
 
         Args:
             collection_name (str): The name of the collection in Milvus.
             embedding_model (object): An object with methods `embed_query` and `embed_documents`.
-            qa_model (object): A model used for question answering.
         """
         self.collection_name = collection_name
         self.embedding_model = embedding_model
         self.embedding_dim = None
-        self.qa_model = qa_model
+        # self.qa_model = qa_model
         self.milvus_client = MilvusClient(host='127.0.0.1', port='19530')
-        self.indox = IndoxRetrievalAugmentation()
-        self.indox.connect_to_vectorstore(vectorstore_database=self.milvus_client)
+        # self.indox = IndoxRetrievalAugmentation()
+        # self.indox.connect_to_vectorstore(vectorstore_database=self.milvus_client)
 
     def _embed_query(self, query: str) -> List[float]:
         """
@@ -48,7 +47,7 @@ class Milvus:
         """
         return self.embedding_model.embed_query(query)
 
-    def similarity_search_with_score(self, query: str, k: int = 3) -> List[Tuple[Document, float]]:
+    def _similarity_search_with_score(self, query: str, k: int = 3) -> List[Tuple[Document, float]]:
         """
         Return docs most similar to the query.
 
@@ -75,14 +74,14 @@ class Milvus:
         ]
         return documents_with_scores
 
-    def process_question(self, question: str):
+    def _process_question(self, question: str):
         """
         Process a question by retrieving relevant documents and printing them.
 
         Args:
             question (str): The question to process.
         """
-        retrieved_lines_with_distances = self.similarity_search_with_score(question, k=5)
+        retrieved_lines_with_distances = self._similarity_search_with_score(question, k=5)
         # Convert Document objects to dictionaries
         context = "\n".join([self.to_dict(doc)['page_content'] for doc, _ in retrieved_lines_with_distances])
         # answer = self.generate_answer(context, question)
@@ -92,15 +91,15 @@ class Milvus:
             indent=4
         ))
 
-    def store_in_vectorstore(self, docs: List[Document]):
-        """
-        Store documents in the Milvus vector store.
-
-        Args:
-            docs (List[Document]): List of Document objects to store.
-        """
-        text_lines = [doc.page_content for doc in docs]
-        self.insert_data(text_lines)
+    # def store_in_vectorstore(self, docs: List[Document]):
+    #     """
+    #     Store documents in the Milvus vector store.
+    #
+    #     Args:
+    #         docs (List[Document]): List of Document objects to store.
+    #     """
+    #     text_lines = [doc.page_content for doc in docs]
+    #     self.insert_data(text_lines)
 
     def emb_text(self, text: str) -> List[float]:
         """
@@ -142,7 +141,7 @@ class Milvus:
                 enumerate(tqdm(text_lines, desc="Creating embeddings"))]
         self.milvus_client.insert(collection_name=self.collection_name, data=data)
 
-    def add(
+    def _add(
             self,
             texts: Iterable[str],
             embeddings: Iterable[List[float]],
@@ -174,7 +173,24 @@ class Milvus:
             self.milvus_client.add(embedding=embedding, metadata=doc.metadata)
         return ids
 
-    def add_texts(
+    def add(self, docs):
+        """
+        Adds documents to the Milvus vector store.
+
+        Args:
+            docs: The documents to be added to the vector store.
+        """
+        try:
+            if isinstance(docs[0], Document):
+                self._add_documents(documents=docs)
+            else:
+                self._add_texts(texts=docs)
+            logger.info("Document added successfully to the vector store.")
+        except Exception as e:
+            logger.error(f"Failed to add document: {e}")
+            raise RuntimeError(f"Can't add document to the vector store: {e}")
+
+    def _add_texts(
             self,
             texts: Iterable[str],
             metadatas: Optional[List[dict]] = None,
@@ -194,7 +210,7 @@ class Milvus:
         """
         texts = list(texts)
         embeddings = self.embedding_model.embed_documents(texts)
-        return self.add(texts, embeddings, metadatas=metadatas, ids=ids)
+        return self._add(texts, embeddings, metadatas=metadatas, ids=ids)
 
     def add_embeddings(
             self,
@@ -217,21 +233,20 @@ class Milvus:
         texts, embeddings = zip(*text_embeddings)
         return self.add(texts, embeddings, metadatas=metadatas, ids=ids)
 
-    def add_docs(self, file_path: str) -> List[Document]:
-        """
-        Load text lines from a file, create Document objects.
+    def _add_documents(self, documents: List[Document], **kwargs: Any) -> List[str]:
+        """Run more documents through the embeddings and add to the vectorstore.
 
         Args:
-            file_path (str): Path to the text file.
+            documents (List[Document]: Documents to add to the vectorstore.
 
         Returns:
-            List[Document]: List of Document objects created from the text lines.
+            List[str]: List of IDs of the added texts.
         """
-        raw_docs = self.load_text_from_file(file_path)
-        docs = [Document(page_content=doc) for doc in raw_docs]
-        return docs
+        texts = [doc.page_content for doc in documents]
+        metadatas = [doc.metadata for doc in documents]
+        return self._add_texts(texts, metadatas, **kwargs)
 
-    def to_dict(self, document: Document) -> Dict[str, Any]:
+    def _to_dict(self, document: Document) -> Dict[str, Any]:
         """
         Convert a Document to a dictionary.
 

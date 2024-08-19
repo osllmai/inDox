@@ -56,6 +56,7 @@ class PineconeVectorStore:
     """Pinecone vector store integration.
 
     """
+
     # from pinecone import Index
 
     def __init__(
@@ -228,7 +229,7 @@ class PineconeVectorStore:
         metadatas = [doc.metadata for doc in documents]
         return self._add_texts(texts, metadatas, **kwargs)
 
-    def add(self,docs):
+    def add(self, docs):
         """
         Adds documents to the PostgreSQL vector store.
 
@@ -268,7 +269,7 @@ class PineconeVectorStore:
             pool_threads: int = 4,
             *,
             pinecone_api_key: Optional[str] = None,
-    ) :
+    ):
         """Return a Pinecone Index instance.
 
         Args:
