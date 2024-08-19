@@ -30,10 +30,8 @@ class Milvus:
         self.collection_name = collection_name
         self.embedding_model = embedding_model
         self.embedding_dim = None
-        # self.qa_model = qa_model
         self.milvus_client = MilvusClient(host='127.0.0.1', port='19530')
-        # self.indox = IndoxRetrievalAugmentation()
-        # self.indox.connect_to_vectorstore(vectorstore_database=self.milvus_client)
+
 
     def _embed_query(self, query: str) -> List[float]:
         """
@@ -83,11 +81,11 @@ class Milvus:
         """
         retrieved_lines_with_distances = self._similarity_search_with_score(question, k=5)
         # Convert Document objects to dictionaries
-        context = "\n".join([self.to_dict(doc)['page_content'] for doc, _ in retrieved_lines_with_distances])
+        context = "\n".join([self._to_dict(doc)['page_content'] for doc, _ in retrieved_lines_with_distances])
         # answer = self.generate_answer(context, question)
         # print(f"Answer: {answer}")
         print(json.dumps(
-            [{"document": self.to_dict(doc), "score": score} for doc, score in retrieved_lines_with_distances],
+            [{"document": self._to_dict(doc), "score": score} for doc, score in retrieved_lines_with_distances],
             indent=4
         ))
 
