@@ -85,8 +85,7 @@ db = MongoDB(
 ```
 **Connecting VectorStore to Indox**
 ```python
-indox.connect_to_vectorstore(vectorstore_database=db)
-indox.store_in_vectorstore(docs)
+db.add(docs=docs)
 ```
 **Querying the Database**
 ```python

@@ -23,14 +23,14 @@ db = FAISSVectorStore(embedding=embed)
 
 ## Usage
 
-Connect to the vector store:
-
-``` python
-Indox.connect_to_vectorstore(db)
-```
-
 Store documents in the vector store:
 
 ``` python
-Indox.store_in_vectorstore(docs=docs)
+db.add(docs=docs)
+```
+
+``` python
+query = "How cinderella reach her happy ending?"
+retriever = indox.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5, document_relevancy_filter=True)
+answer = retriever.invoke(query=query)
 ```

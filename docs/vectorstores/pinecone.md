@@ -89,10 +89,12 @@ if index_name not in pc.list_indexes().names():
 index = pc.Index(index_name)
 db = PineconeVectorStore(embedding=embed,pinecone_api_key=PINECONE_API_KEY,index_name=index_name)
 ```
-#### Connecting VectorStore to Indox
+## Usage
+
+Store documents in the vector store:
+
 ``` python
-indox.connect_to_vectorstore(vectorstore_database=db)
-indox.store_in_vectorstore(docs)
+db.add(docs=docs)
 ```
 
 ``` python
