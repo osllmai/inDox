@@ -11,7 +11,7 @@
 
 
 <p align="center">
-  <img src="docs/lite-logo 1.png" alt="inDox Lite Logo">
+  <img src="https://raw.githubusercontent.com/osllmai/inDox/master/docs/lite-logo%201.png" alt="inDox Lite Logo">
 </p>
 </br>
 
@@ -99,7 +99,7 @@ workflow, bringing clarity and organization to your data retrieval needs.
 
 ## Indox Workflow
 <div style="text-align: center;">
-    <img src="docs/inDox.png" alt="inDox work flow" width="80%">
+    <img src="https://raw.githubusercontent.com/osllmai/inDox/master/docs/inDox.png" alt="inDox work flow" width="80%">
 </div>
 
 
