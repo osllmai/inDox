@@ -89,7 +89,7 @@ class IndoxRetrievalAugmentation:
     #         logger.error(f"Unexpected error while storing in the vector store: {e}")
     #         return None
 
-    class RetrievalAugmentation:
+    class QuestionAnswer:
         def __init__(self, llm, vector_database, top_k: int = 5, document_relevancy_filter: bool = False,
                      generate_clustered_prompts: bool = False):
             self.qa_model = llm
