@@ -14,7 +14,7 @@ class GithubClient:
         :param verbose: If True, enables verbose output.
         """
         self.github = Github(github_token)
-        self.verbose = verbose #prints detailed processing and error messages if set to True.
+        self.verbose = verbose #prints detailed processing an d error messages if set to True.
 
 
 class GithubRepositoryReader:

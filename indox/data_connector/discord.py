@@ -71,7 +71,7 @@ class DiscordChannelReader:
         client = discord.Client(intents=discord.Intents.default())
         documents = []
 
-        @client.even
+        @client.event
         async def on_ready():
             for channel_id in channel_ids:
                 channel = client.get_channel(int(channel_id))
