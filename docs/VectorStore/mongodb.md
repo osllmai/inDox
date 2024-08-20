@@ -33,7 +33,7 @@ db = MongoDB(
 ```bash
 python -m venv indox
 ```
-2**Activate the virtual environment:**
+2. **Activate the virtual environment:**
 ```bash
 indox\Scripts\activate
 ```
