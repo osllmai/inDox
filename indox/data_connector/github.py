@@ -1,4 +1,3 @@
-from github import Github
 import base64
 import os
 from typing import List, Optional, Tuple, Dict, Any
@@ -6,6 +5,7 @@ from indox.data_connector.utils import Document
 
 
 class GithubClient:
+
     def __init__(self, github_token: str, verbose: bool = False):
         """
         Initializes the GithubClient with a GitHub token and optional verbosity.
@@ -13,6 +13,8 @@ class GithubClient:
         :param github_token: Personal access token for authenticating with the GitHub API.
         :param verbose: If True, enables verbose output.
         """
+        from github import Github
+
         self.github = Github(github_token)
         self.verbose = verbose #prints detailed processing an d error messages if set to True.
 
