@@ -1,5 +1,3 @@
-from geopy.geocoders import Nominatim
-from geopy.exc import GeopyError
 
 class MapsTextSearch:
     """
@@ -16,6 +14,7 @@ class MapsTextSearch:
     - Results, including the full address, latitude, and longitude, are printed.
     """
 
+
     def __init__(self, user_agent: str = "osm_search"):
         """
         Initialize the MapsTextSearch with the specified user agent.
@@ -23,6 +22,8 @@ class MapsTextSearch:
         Parameters:
         - user_agent (str): The user agent for the Nominatim geolocator. Default is "osm_search".
         """
+        from geopy.geocoders import Nominatim
+        from geopy.exc import GeopyError
         try:
             self.geolocator = Nominatim(user_agent=user_agent)
             print(f"MapsTextSearch initialized with user agent: {user_agent}")
@@ -46,6 +47,8 @@ class MapsTextSearch:
         - Prints a message if the address is not found.
         - Prints an error message if an exception occurs during the search process.
         """
+        from geopy.exc import GeopyError
+
         try:
             location = self.geolocator.geocode(address)
             if location:

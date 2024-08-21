@@ -1,9 +1,5 @@
 import os.path
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
+
 
 class GoogleSheet:
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
@@ -19,6 +15,8 @@ class GoogleSheet:
         Returns:
         - None
         """
+
+
         self.creds = None
         self.creds_file = creds_file
         self.credentials_json = credentials_json
@@ -31,6 +29,10 @@ class GoogleSheet:
         Returns:
         - None
         """
+        from google_auth_oauthlib.flow import InstalledAppFlow
+        from google.auth.transport.requests import Request
+
+        from google.oauth2.credentials import Credentials
         try:
             if os.path.exists(self.creds_file):
                 print("Loading credentials from file.")
@@ -61,6 +63,8 @@ class GoogleSheet:
         Returns:
         - None
         """
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         try:
             service = build('sheets', 'v4', credentials=self.creds)
             sheet = service.spreadsheets()

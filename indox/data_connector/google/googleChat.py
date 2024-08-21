@@ -1,9 +1,6 @@
 from __future__ import print_function
 import os.path
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.apps import chat_v1 as google_chat
+
 
 
 class GoogleChat:
@@ -46,6 +43,11 @@ class GoogleChat:
         - Saves the new credentials to a token file.
         - Sets up the Google Chat API client using the authenticated credentials.
         """
+        from google.auth.transport.requests import Request
+        from google.oauth2.credentials import Credentials
+        from google_auth_oauthlib.flow import InstalledAppFlow
+        from google.apps import chat_v1 as google_chat
+
         if os.path.exists(self.TOKEN_FILE):
             self.creds = Credentials.from_authorized_user_file(self.TOKEN_FILE, self.SCOPES)
         if not self.creds or not self.creds.valid:
@@ -75,6 +77,8 @@ class GoogleChat:
         - Prints the details of each space found in Google Chat.
         - Prints an error message if an exception occurs during the process.
         """
+        from google.apps import chat_v1 as google_chat
+
         try:
             request = google_chat.ListSpacesRequest(
                 filter='space_type = "SPACE"'

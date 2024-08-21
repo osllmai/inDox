@@ -2,16 +2,7 @@ import os
 import io
 import pandas as pd
 import nbformat
-import PyPDF2
-from pptx import Presentation
-from docx import Document
 import json
-import xml.etree.ElementTree as ET
-from bs4 import BeautifulSoup
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from googleapiclient.discovery import build
 
 class GoogleDrive:
     SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
@@ -27,6 +18,7 @@ class GoogleDrive:
         Returns:
         - None
         """
+
         self.creds_file = creds_file
         self.credentials_json = credentials_json
         self.creds = self._authenticate()
@@ -38,6 +30,12 @@ class GoogleDrive:
         Returns:
         - Credentials: The authenticated Google API credentials.
         """
+        from google.auth.transport.requests import Request
+
+        from google.oauth2.credentials import Credentials
+        from google_auth_oauthlib.flow import InstalledAppFlow
+
+
         creds = None
         if os.path.exists(self.creds_file):
             print("Loading credentials from file.")
@@ -77,6 +75,13 @@ class GoogleDrive:
         Returns:
         - None
         """
+        import xml.etree.ElementTree as ET
+        from bs4 import BeautifulSoup
+        from googleapiclient.discovery import build
+        import PyPDF2
+        from pptx import Presentation
+        from docx import Document
+
         try:
             service = build('drive', 'v3', credentials=self.creds)
             file = service.files().get(fileId=file_id, fields='id, name, mimeType, webViewLink').execute()

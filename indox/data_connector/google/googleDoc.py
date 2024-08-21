@@ -1,9 +1,5 @@
 import os.path
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
+
 
 
 class GoogleDoc:
@@ -20,6 +16,7 @@ class GoogleDoc:
         Returns:
         - None
         """
+
         self.creds_file = creds_file
         self.credentials_json = credentials_json
         self.creds = None
@@ -32,6 +29,10 @@ class GoogleDoc:
         Returns:
         - None
         """
+        from google.oauth2.credentials import Credentials
+        from google_auth_oauthlib.flow import InstalledAppFlow
+        from google.auth.transport.requests import Request
+
         try:
             if os.path.exists(self.creds_file):
                 self.creds = Credentials.from_authorized_user_file(self.creds_file, self.SCOPES)
@@ -59,6 +60,8 @@ class GoogleDoc:
         Returns:
         - None
         """
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         try:
             service = build('docs', 'v1', credentials=self.creds)
             document = service.documents().get(documentId=document_id).execute()
