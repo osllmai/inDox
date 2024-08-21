@@ -5,32 +5,28 @@ from typing import TYPE_CHECKING, List, Optional
 from indox.core import Embeddings
 
 def get_from_env(key: str, env_key: str, default: Optional[str] = None) -> str:
-    """Get a value from a dictionary or an environment variable.
+    """Get a value from an environment variable or return a default value.
 
     Args:
-        key: The key to look up in the dictionary.
-        env_key: The environment variable to look up if the key is not
-            in the dictionary.
-        default: The default value to return if the key is not in the dictionary
-            or the environment. Defaults to None.
+        key: The key to look up.
+        env_key: The environment variable to look up if the key is not found.
+        default: The default value to return if the key is not found.
 
     Returns:
-        str: The value of the key.
+        str: The value of the key or default value.
 
     Raises:
-        ValueError: If the key is not in the dictionary and no default value is
-            provided or if the environment variable is not set.
+        ValueError: If the key is not found and no default value is provided.
     """
-    if env_key in os.environ and os.environ[env_key]:
-        return os.environ[env_key]
-    elif default is not None:
+    value = os.environ.get(env_key)
+    if value:
+        return value
+    if default is not None:
         return default
-    else:
-        raise ValueError(
-            f"Did not find {key}, please add an environment variable"
-            f" `{env_key}` which contains it, or pass"
-            f" `{key}` as a named parameter."
-        )
+    raise ValueError(
+        f"Did not find {key}, please add an environment variable `{env_key}` "
+        f"which contains it, or pass `{key}` as a named parameter."
+    )
 
 
 class ElasticsearchEmbeddings(Embeddings):
@@ -40,7 +36,7 @@ class ElasticsearchEmbeddings(Embeddings):
     in an Elasticsearch cluster. It requires an Elasticsearch connection object
     and the model_id of the model deployed in the cluster.
 
-    In Elasticsearch you need to have an embedding model loaded and deployed.
+    In Elasticsearch, you need to have an embedding model loaded and deployed.
     - https://www.elastic.co/guide/en/elasticsearch/reference/current/infer-trained-model.html
     - https://www.elastic.co/guide/en/machine-learning/current/ml-nlp-deploy-models.html
     """
@@ -90,32 +86,8 @@ class ElasticsearchEmbeddings(Embeddings):
             es_user: (str, optional): Elasticsearch username.
             es_password: (str, optional): Elasticsearch password.
 
-        Example:
-            .. code-block:: python
-
-                from langchain_community.embeddings import ElasticsearchEmbeddings
-
-                # Define the model ID and input field name (if different from default)
-                model_id = "your_model_id"
-                # Optional, only if different from 'text_field'
-                input_field = "your_input_field"
-
-                # Credentials can be passed in two ways. Either set the env vars
-                # ES_CLOUD_ID, ES_USER, ES_PASSWORD and they will be automatically
-                # pulled in, or pass them in directly as kwargs.
-                embeddings = ElasticsearchEmbeddings.from_credentials(
-                    model_id,
-                    input_field=input_field,
-                    # es_cloud_id="foo",
-                    # es_user="bar",
-                    # es_password="baz",
-                )
-
-                documents = [
-                    "This is an example document.",
-                    "Another example document to generate embeddings for.",
-                ]
-                embeddings_generator.embed_documents(documents)
+        Returns:
+            ElasticsearchEmbeddings: An instance of ElasticsearchEmbeddings initialized with the provided credentials.
         """
         try:
             from elasticsearch import Elasticsearch
@@ -155,41 +127,11 @@ class ElasticsearchEmbeddings(Embeddings):
         Args:
         model_id (str): The model_id of the model deployed in the Elasticsearch cluster.
         es_connection (elasticsearch.Elasticsearch): An existing Elasticsearch
-        connection object. input_field (str, optional): The name of the key for the
-        input text field in the document. Defaults to 'text_field'.
+        connection object.
+        input_field (str, optional): The name of the key for the input text field in the document. Defaults to 'text_field'.
 
         Returns:
-        ElasticsearchEmbeddings: An instance of the ElasticsearchEmbeddings class.
-
-        Example:
-            .. code-block:: python
-
-                from elasticsearch import Elasticsearch
-
-                from langchain_community.embeddings import ElasticsearchEmbeddings
-
-                # Define the model ID and input field name (if different from default)
-                model_id = "your_model_id"
-                # Optional, only if different from 'text_field'
-                input_field = "your_input_field"
-
-                # Create Elasticsearch connection
-                es_connection = Elasticsearch(
-                    hosts=["localhost:9200"], http_auth=("user", "password")
-                )
-
-                # Instantiate ElasticsearchEmbeddings using the existing connection
-                embeddings = ElasticsearchEmbeddings.from_es_connection(
-                    model_id,
-                    es_connection,
-                    input_field=input_field,
-                )
-
-                documents = [
-                    "This is an example document.",
-                    "Another example document to generate embeddings for.",
-                ]
-                embeddings_generator.embed_documents(documents)
+        ElasticsearchEmbeddings: An instance of ElasticsearchEmbeddings initialized with the provided connection.
         """
         # Importing MlClient from elasticsearch.client within the method to
         # avoid unnecessary import if the method is not used
@@ -198,8 +140,7 @@ class ElasticsearchEmbeddings(Embeddings):
         # Create an MlClient from the given Elasticsearch connection
         client = MlClient(es_connection)
 
-        # Return a new instance of the ElasticsearchEmbeddings class with
-        # the MlClient, model_id, and input_field
+        # Return a new instance of the ElasticsearchEmbeddings class
         return cls(client, model_id, input_field=input_field)
 
     def _embedding_func(self, texts: List[str]) -> List[List[float]]:
@@ -210,8 +151,7 @@ class ElasticsearchEmbeddings(Embeddings):
             texts (List[str]): A list of text strings to generate embeddings for.
 
         Returns:
-            List[List[float]]: A list of embeddings, one for each text in the input
-                list.
+            List[List[float]]: A list of embeddings, one for each text in the input list.
         """
         response = self.client.infer_trained_model(
             model_id=self.model_id, docs=[{self.input_field: text} for text in texts]
@@ -225,12 +165,10 @@ class ElasticsearchEmbeddings(Embeddings):
         Generate embeddings for a list of documents.
 
         Args:
-            texts (List[str]): A list of document text strings to generate embeddings
-                for.
+            texts (List[str]): A list of document text strings to generate embeddings for.
 
         Returns:
-            List[List[float]]: A list of embeddings, one for each document in the input
-                list.
+            List[List[float]]: A list of embeddings, one for each document in the input list.
         """
         return self._embedding_func(texts)
 

@@ -1,11 +1,9 @@
-import logging
 from typing import Any, Dict, List, Mapping, Optional
 
 import requests
 from indox.core import Embeddings
 from loguru import logger
 import sys
-
 
 # Set up logging
 logger.remove()  # Remove the default logger
@@ -23,87 +21,49 @@ class OllamaEmbeddings(Embeddings):
 
     To use, follow the instructions at https://ollama.ai/.
 
-
+    Attributes:
+        base_url: The base URL where the model is hosted.
+        model: The name of the model to use.
+        embed_instruction: Instruction used to embed documents.
+        query_instruction: Instruction used to embed the query.
+        mirostat: Optional integer to enable Mirostat sampling for controlling perplexity.
+        mirostat_eta: Optional float to influence how quickly the algorithm responds to feedback.
+        mirostat_tau: Optional float to control the balance between coherence and diversity.
+        num_ctx: Optional integer to set the size of the context window used to generate the next token.
+        num_gpu: Optional integer to set the number of GPUs to use.
+        num_thread: Optional integer to set the number of threads to use during computation.
+        repeat_last_n: Optional integer to set how far back the model looks to prevent repetition.
+        repeat_penalty: Optional float to set how strongly to penalize repetitions.
+        temperature: Optional float to set the temperature of the model.
+        stop: Optional list of strings to set the stop tokens to use.
+        tfs_z: Optional float to reduce the impact of less probable tokens from the output.
+        top_k: Optional integer to reduce the probability of generating nonsense.
+        top_p: Optional float to work together with top-k for diversity in text generation.
+        show_progress: Boolean to determine whether to show a progress bar.
+        headers: Optional dictionary for additional headers to pass to the endpoint.
     """
 
     base_url: str = "http://localhost:11434"
-    """Base url the model is hosted under."""
     model: str = "llama2"
-    """Model name to use."""
 
     embed_instruction: str = "passage: "
-    """Instruction used to embed documents."""
     query_instruction: str = "query: "
-    """Instruction used to embed the query."""
 
     mirostat: Optional[int] = None
-    """Enable Mirostat sampling for controlling perplexity.
-    (default: 0, 0 = disabled, 1 = Mirostat, 2 = Mirostat 2.0)"""
-
     mirostat_eta: Optional[float] = None
-    """Influences how quickly the algorithm responds to feedback
-    from the generated text. A lower learning rate will result in
-    slower adjustments, while a higher learning rate will make
-    the algorithm more responsive. (Default: 0.1)"""
-
     mirostat_tau: Optional[float] = None
-    """Controls the balance between coherence and diversity
-    of the output. A lower value will result in more focused and
-    coherent text. (Default: 5.0)"""
-
     num_ctx: Optional[int] = None
-    """Sets the size of the context window used to generate the
-    next token. (Default: 2048)	"""
-
     num_gpu: Optional[int] = None
-    """The number of GPUs to use. On macOS it defaults to 1 to
-    enable metal support, 0 to disable."""
-
     num_thread: Optional[int] = None
-    """Sets the number of threads to use during computation.
-    By default, Ollama will detect this for optimal performance.
-    It is recommended to set this value to the number of physical
-    CPU cores your system has (as opposed to the logical number of cores)."""
-
     repeat_last_n: Optional[int] = None
-    """Sets how far back for the model to look back to prevent
-    repetition. (Default: 64, 0 = disabled, -1 = num_ctx)"""
-
     repeat_penalty: Optional[float] = None
-    """Sets how strongly to penalize repetitions. A higher value (e.g., 1.5)
-    will penalize repetitions more strongly, while a lower value (e.g., 0.9)
-    will be more lenient. (Default: 1.1)"""
-
     temperature: Optional[float] = None
-    """The temperature of the model. Increasing the temperature will
-    make the model answer more creatively. (Default: 0.8)"""
-
     stop: Optional[List[str]] = None
-    """Sets the stop tokens to use."""
-
     tfs_z: Optional[float] = None
-    """Tail free sampling is used to reduce the impact of less probable
-    tokens from the output. A higher value (e.g., 2.0) will reduce the
-    impact more, while a value of 1.0 disables this setting. (default: 1)"""
-
     top_k: Optional[int] = None
-    """Reduces the probability of generating nonsense. A higher value (e.g. 100)
-    will give more diverse answers, while a lower value (e.g. 10)
-    will be more conservative. (Default: 40)"""
-
     top_p: Optional[float] = None
-    """Works together with top-k. A higher value (e.g., 0.95) will lead
-    to more diverse text, while a lower value (e.g., 0.5) will
-    generate more focused and conservative text. (Default: 0.9)"""
-
     show_progress: bool = False
-    """Whether to show a tqdm progress bar. Must have `tqdm` installed."""
-
     headers: Optional[dict] = None
-    """Additional headers to pass to endpoint (e.g. Authorization, Referer).
-    This is useful when Ollama is hosted on cloud services that require
-    tokens for authentication.
-    """
 
     @property
     def _default_params(self) -> Dict[str, Any]:
@@ -128,7 +88,6 @@ class OllamaEmbeddings(Embeddings):
         }
 
     model_kwargs: Optional[dict] = None
-    """Other model keyword args"""
 
     @property
     def _identifying_params(self) -> Mapping[str, Any]:
@@ -142,10 +101,13 @@ class OllamaEmbeddings(Embeddings):
         """Process a response from the API.
 
         Args:
-            response: The response from the API.
+            input: The input string to process.
 
         Returns:
-            The response as a dictionary.
+            The embedding as a list of floats.
+
+        Raises:
+            ValueError: If there is an issue with the API request or response.
         """
         headers = {
             "Content-Type": "application/json",
@@ -163,18 +125,24 @@ class OllamaEmbeddings(Embeddings):
 
         if res.status_code != 200:
             raise ValueError(
-                "Error raised by inference API HTTP code: %s, %s"
-                % (res.status_code, res.text)
+                f"Error raised by inference API HTTP code: {res.status_code}, {res.text}"
             )
         try:
-            t = res.json()
-            return t["embedding"]
-        except requests.exceptions.JSONDecodeError as e:
+            return res.json()["embedding"]
+        except (requests.exceptions.JSONDecodeError, KeyError) as e:
             raise ValueError(
                 f"Error raised by inference API: {e}.\nResponse: {res.text}"
             )
 
     def _embed(self, input: List[str]) -> List[List[float]]:
+        """Embed a list of inputs using Ollama.
+
+        Args:
+            input: A list of strings to embed.
+
+        Returns:
+            A list of embeddings, one for each input string.
+        """
         if self.show_progress:
             try:
                 from tqdm import tqdm
@@ -200,11 +168,10 @@ class OllamaEmbeddings(Embeddings):
             List of embeddings, one for each text.
         """
         instruction_pairs = [f"{self.embed_instruction}{text}" for text in texts]
-        embeddings = self._embed(instruction_pairs)
-        return embeddings
+        return self._embed(instruction_pairs)
 
     def embed_query(self, text: str) -> List[float]:
-        """Embed a query using a Ollama deployed embedding model.
+        """Embed a query using an Ollama deployed embedding model.
 
         Args:
             text: The text to embed.
@@ -213,5 +180,4 @@ class OllamaEmbeddings(Embeddings):
             Embeddings for the text.
         """
         instruction_pair = f"{self.query_instruction}{text}"
-        embedding = self._embed([instruction_pair])[0]
-        return embedding
+        return self._embed([instruction_pair])[0]
