@@ -1,3 +1,5 @@
+from indox.core.document_object import Document
+from typing import List
 
 
 def Scipy(file_path: str) -> List[Document]:
@@ -19,8 +21,7 @@ def Scipy(file_path: str) -> List[Document]:
     - Metadata includes only 'source' and page number.
     """
     from scipy.io import loadmat
-    from indox.core.document_object import Document
-    from typing import List
+
     try:
         mat_data = loadmat(file_path)
 

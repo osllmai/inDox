@@ -1,3 +1,6 @@
+from indox.core.document_object import Document
+from typing import List
+import os
 
 
 def PdfPlumber(file_path: str) -> List[Document]:
@@ -20,9 +23,6 @@ def PdfPlumber(file_path: str) -> List[Document]:
     - Metadata is directly retrieved from the `pdfplumber` object and used to populate the `Document` objects.
     """
     import pdfplumber
-    from indox.core.document_object import Document
-    from typing import List
-    import os
 
     file_path = os.path.abspath(file_path)
 
@@ -49,4 +49,3 @@ def PdfPlumber(file_path: str) -> List[Document]:
         raise FileNotFoundError(f"File not found: {file_path}. Details: {e}")
     except Exception as e:
         raise RuntimeError(f"Unexpected error while processing PDF file: {file_path}. Details: {e}")
-

@@ -1,4 +1,5 @@
-
+from indox.core.document_object import Document
+from typing import List
 def Bs4(file_path: str) -> List[Document]:
     """
     Load an HTML file and extract its text and minimal metadata.
@@ -16,8 +17,7 @@ def Bs4(file_path: str) -> List[Document]:
     - RuntimeError: For any other errors encountered during HTML processing.
     """
     from bs4 import BeautifulSoup
-    from indox.core.document_object import Document
-    from typing import List
+
     import os
     try:
         if not os.path.exists(file_path):

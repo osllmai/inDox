@@ -1,4 +1,6 @@
-
+import os
+import time
+from indox.core.document_object import Document
 def Md(file_path: str):
     """
     Load a Markdown file and extract its text and metadata.
@@ -16,9 +18,7 @@ def Md(file_path: str):
     Notes:
     - Metadata includes the file path, a fixed page number  1.
     """
-    import os
-    import time
-    from indox.core.document_object import Document
+
 
     try:
         with open(file_path, 'r', encoding='utf-8') as f:

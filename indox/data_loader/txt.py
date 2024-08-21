@@ -1,3 +1,6 @@
+from indox.core.document_object import Document
+import os
+
 
 def Txt(file_path):
     """
@@ -17,8 +20,6 @@ def Txt(file_path):
     - Metadata includes the file name, size, and path.
     - The entire text content of the file is stored in a single `Document` object.
     """
-    from indox.core.document_object import Document
-    import os
 
     try:
         with open(file_path, 'r') as f:
@@ -36,4 +37,3 @@ def Txt(file_path):
         return [document]
     except Exception as e:
         raise RuntimeError(f"Error loading text file: {e}")
-

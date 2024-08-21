@@ -1,3 +1,6 @@
+from indox.core.document_object import Document
+from typing import List
+import os
 
 
 def PyPdf4(file_path: str) -> List[Document]:
@@ -16,9 +19,6 @@ def PyPdf4(file_path: str) -> List[Document]:
     - RuntimeError: If there is an error reading the PDF file or extracting text.
     """
     import PyPDF4
-    from indox.core.document_object import Document
-    from typing import List
-    import os
 
     file_path = os.path.abspath(file_path)
 
@@ -50,4 +50,3 @@ def PyPdf4(file_path: str) -> List[Document]:
         raise FileNotFoundError(f"File not found: {file_path}. Details: {e}")
     except Exception as e:
         raise RuntimeError(f"Unexpected error while processing PDF file: {file_path}. Details: {e}")
-

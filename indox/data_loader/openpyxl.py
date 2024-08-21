@@ -1,3 +1,7 @@
+import pandas as pd
+from indox.core.document_object import Document
+import os
+
 
 def OpenPyXl(file_path):
     """
@@ -18,10 +22,8 @@ def OpenPyXl(file_path):
     - Each sheet in the Excel file is loaded into a separate `Document` object.
     - The data in each sheet is converted to a string for storage in the `Document` object.
     """
-    import pandas as pd
+
     from openpyxl import load_workbook
-    from indox.core.document_object import Document
-    import os
 
     try:
         workbook = load_workbook(file_path, read_only=True)

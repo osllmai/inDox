@@ -1,3 +1,7 @@
+from indox.core.document_object import Document
+from typing import List
+import os
+
 
 def PyPdf2(file_path: str) -> List[Document]:
     """
@@ -19,9 +23,7 @@ def PyPdf2(file_path: str) -> List[Document]:
     - Metadata is converted to a dictionary format before being included in the `Document` object.
     """
     import PyPDF2
-    from indox.core.document_object import Document
-    from typing import List
-    import os
+
     file_path = os.path.abspath(file_path)
 
     try:
@@ -51,6 +53,3 @@ def PyPdf2(file_path: str) -> List[Document]:
         raise FileNotFoundError(f"File not found: {file_path}. Details: {e}")
     except Exception as e:
         raise RuntimeError(f"Unexpected error while processing PDF file: {file_path}. Details: {e}")
-
-
-

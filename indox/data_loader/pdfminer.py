@@ -1,3 +1,7 @@
+from indox.core.document_object import Document
+from typing import List
+import os
+
 
 def PdfMiner(file_path: str) -> List[Document]:
     """
@@ -17,9 +21,7 @@ def PdfMiner(file_path: str) -> List[Document]:
     """
     from pdfminer.high_level import extract_pages
     from pdfminer.pdfparser import PDFSyntaxError
-    from indox.core.document_object import Document
-    from typing import List
-    import os
+
     file_path = os.path.abspath(file_path)
 
     try:
@@ -32,7 +34,6 @@ def PdfMiner(file_path: str) -> List[Document]:
             with open(file_path, 'rb') as f:
                 parser = PDFParser(f)
                 doc = PDFDocument(parser)
-
 
                 for i, page_layout in enumerate(extract_pages(file_path)):
                     text = ''.join([element.get_text() for element in page_layout if hasattr(element, 'get_text')])
@@ -53,4 +54,3 @@ def PdfMiner(file_path: str) -> List[Document]:
         raise FileNotFoundError(f"File not found: {file_path}. Details: {e}")
     except Exception as e:
         raise RuntimeError(f"Unexpected error: {e}")
-
