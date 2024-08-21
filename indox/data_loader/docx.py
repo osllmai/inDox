@@ -1,6 +1,4 @@
-import docx
-from indox.core.document_object import Document
-import os
+
 def Docx(file_path):
     """
     Load a DOCX file and extract its text and metadata, including estimated page numbers.
@@ -15,6 +13,9 @@ def Docx(file_path):
     Raises:
     - RuntimeError: If there is an error in loading the DOCX file.
     """
+    import docx
+    from indox.core.document_object import Document
+    import os
     try:
         doc = docx.Document(file_path)
         paragraphs = doc.paragraphs

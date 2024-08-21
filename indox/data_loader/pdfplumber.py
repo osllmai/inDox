@@ -1,7 +1,3 @@
-import pdfplumber
-from indox.core.document_object import Document
-from typing import List
-import os
 
 
 def PdfPlumber(file_path: str) -> List[Document]:
@@ -23,6 +19,11 @@ def PdfPlumber(file_path: str) -> List[Document]:
     - Uses the `pdfplumber` library to read and extract text from the PDF.
     - Metadata is directly retrieved from the `pdfplumber` object and used to populate the `Document` objects.
     """
+    import pdfplumber
+    from indox.core.document_object import Document
+    from typing import List
+    import os
+
     file_path = os.path.abspath(file_path)
 
     try:

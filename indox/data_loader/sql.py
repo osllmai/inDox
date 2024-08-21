@@ -1,8 +1,3 @@
-# sql_loader.py
-from indox.core.document_object import Document
-import os
-import time
-
 
 def Sql(file_path):
     """
@@ -21,6 +16,9 @@ def Sql(file_path):
     Notes:
     - Metadata includes file details, content statistics, and the number of SQL statements.
     """
+    from indox.core.document_object import Document
+    import os
+    import time
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             text = f.read()

@@ -1,9 +1,5 @@
-import joblib
-from indox.core.document_object import Document
-from typing import List
-import os
 
-def Joblib(file_path: str) -> List[Document]:
+def Joblib(file_path: str) :
     """
     Load a PKL (Pickle) or Joblib file and extract its content.
 
@@ -19,6 +15,11 @@ def Joblib(file_path: str) -> List[Document]:
     Notes:
     - Metadata includes only 'source' and page number.
     """
+    import joblib
+    from indox.core.document_object import Document
+    from typing import List
+    import os
+
     try:
         content = joblib.load(file_path)
 

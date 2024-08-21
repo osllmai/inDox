@@ -1,9 +1,3 @@
-from pdfminer.high_level import extract_pages
-from pdfminer.pdfparser import PDFSyntaxError
-from indox.core.document_object import Document
-from typing import List
-import os
-
 
 def PdfMiner(file_path: str) -> List[Document]:
     """
@@ -21,6 +15,11 @@ def PdfMiner(file_path: str) -> List[Document]:
     - PDFSyntaxError: If there is a syntax-related issue in the PDF file.
     - RuntimeError: For any other errors encountered during PDF processing.
     """
+    from pdfminer.high_level import extract_pages
+    from pdfminer.pdfparser import PDFSyntaxError
+    from indox.core.document_object import Document
+    from typing import List
+    import os
     file_path = os.path.abspath(file_path)
 
     try:

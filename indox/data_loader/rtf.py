@@ -1,8 +1,4 @@
-import pyth.plugins.rtf15.reader as rtf_reader
-import pyth.plugins.plaintext.writer as plaintext_writer
-from indox.core.document_object import Document
-from typing import List
-import os
+
 def Rtf(file_path: str) -> List[Document]:
     """
     Load an RTF file and extract its text and metadata.
@@ -20,6 +16,11 @@ def Rtf(file_path: str) -> List[Document]:
     Notes:
     - Metadata includes only 'source' and page number.
     """
+    import pyth.plugins.rtf15.reader as rtf_reader
+    import pyth.plugins.plaintext.writer as plaintext_writer
+    from indox.core.document_object import Document
+    from typing import List
+    import os
     try:
         with open(file_path, 'rb') as f:
             doc = rtf_reader.read(f)

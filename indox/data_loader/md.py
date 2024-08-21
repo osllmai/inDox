@@ -1,6 +1,3 @@
-from indox.core.document_object import Document
-import os
-import time
 
 def Md(file_path: str):
     """
@@ -19,6 +16,10 @@ def Md(file_path: str):
     Notes:
     - Metadata includes the file path, a fixed page number  1.
     """
+    import os
+    import time
+    from indox.core.document_object import Document
+
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             text = f.read()

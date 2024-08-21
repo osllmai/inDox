@@ -1,7 +1,3 @@
-import csv
-from indox.core.document_object import Document
-from typing import List, Dict, Any
-import os
 
 
 def Csv(file_path: str, metadata: Dict[str, Any] = None) -> List[Document]:
@@ -19,6 +15,11 @@ def Csv(file_path: str, metadata: Dict[str, Any] = None) -> List[Document]:
     Notes:
     - Metadata can be customized and will be included in each `Document` object along with the CSV row content.
     """
+    import csv
+    from indox.core.document_object import Document
+    from typing import List, Dict, Any
+    import os
+
     try:
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"File not found: {file_path}")

@@ -1,8 +1,3 @@
-import PyPDF2
-from indox.core.document_object import Document
-from typing import List
-import os
-
 
 def PyPdf2(file_path: str) -> List[Document]:
     """
@@ -23,6 +18,10 @@ def PyPdf2(file_path: str) -> List[Document]:
     - Uses the `PyPDF2` library to read and extract text from the PDF.
     - Metadata is converted to a dictionary format before being included in the `Document` object.
     """
+    import PyPDF2
+    from indox.core.document_object import Document
+    from typing import List
+    import os
     file_path = os.path.abspath(file_path)
 
     try:

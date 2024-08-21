@@ -1,6 +1,3 @@
-# txt_loader.py
-from indox.core.document_object import Document
-import os
 
 def Txt(file_path):
     """
@@ -20,6 +17,9 @@ def Txt(file_path):
     - Metadata includes the file name, size, and path.
     - The entire text content of the file is stored in a single `Document` object.
     """
+    from indox.core.document_object import Document
+    import os
+
     try:
         with open(file_path, 'r') as f:
             text = f.read()

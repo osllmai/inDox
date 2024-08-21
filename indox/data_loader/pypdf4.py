@@ -1,7 +1,3 @@
-import PyPDF4
-from indox.core.document_object import Document
-from typing import List
-import os
 
 
 def PyPdf4(file_path: str) -> List[Document]:
@@ -19,6 +15,11 @@ def PyPdf4(file_path: str) -> List[Document]:
     - FileNotFoundError: If the specified file does not exist.
     - RuntimeError: If there is an error reading the PDF file or extracting text.
     """
+    import PyPDF4
+    from indox.core.document_object import Document
+    from typing import List
+    import os
+
     file_path = os.path.abspath(file_path)
 
     try:

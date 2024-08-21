@@ -1,7 +1,4 @@
-import json
-from indox.core.document_object import Document
-from typing import List
-import os
+
 def Json(file_path: str) -> List[Document]:
     """
     Load a JSON file and return its content as a list of `Document` objects.
@@ -19,6 +16,11 @@ def Json(file_path: str) -> List[Document]:
     - Metadata includes the file name and the number of entries in the JSON data.
     - Each JSON key-value pair is stored as a string in a separate `Document` object.
     """
+    from indox.core.document_object import Document
+    from typing import List
+    import os
+    import json
+
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             json_data = json.load(f)

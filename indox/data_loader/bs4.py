@@ -1,7 +1,3 @@
-from bs4 import BeautifulSoup
-from indox.core.document_object import Document
-from typing import List
-import os
 
 def Bs4(file_path: str) -> List[Document]:
     """
@@ -19,6 +15,10 @@ def Bs4(file_path: str) -> List[Document]:
     - UnicodeDecodeError: If there is an error decoding the HTML file.
     - RuntimeError: For any other errors encountered during HTML processing.
     """
+    from bs4 import BeautifulSoup
+    from indox.core.document_object import Document
+    from typing import List
+    import os
     try:
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"File not found: {file_path}")

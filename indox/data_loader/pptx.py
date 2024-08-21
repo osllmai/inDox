@@ -1,8 +1,4 @@
-# pptx_loader.py
-from pptx import Presentation
-from indox.core.document_object import Document
-from typing import List, Dict
-import os
+
 
 def Pptx(file_path: str) -> List[Document]:
     """
@@ -22,6 +18,10 @@ def Pptx(file_path: str) -> List[Document]:
     - Each slide's text is extracted and stored in a separate `Document` object.
     - Metadata includes the file name and the number of slides in the presentation.
     """
+    from pptx import Presentation
+    from indox.core.document_object import Document
+    from typing import List, Dict
+    import os
     try:
         presentation = Presentation(file_path)
         documents = []
