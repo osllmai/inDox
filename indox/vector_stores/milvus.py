@@ -1,266 +1,291 @@
 import os
 from tqdm import tqdm
 import json
-from pymilvus import MilvusClient
-from typing import Optional, Dict, Any, List, Tuple, Type, Callable, Iterable
-from indox.core import VectorStore, Embeddings, Document
+import logging
+from pymilvus import MilvusClient, MilvusException
+from typing import Any, Dict, List, Optional, Tuple, Union, Callable, Literal, Iterable
+from indox.core import VectorStore, Embeddings
+from indox import IndoxRetrievalAugmentation
+import uuid
+from indox.core import Embeddings, VectorStore, Document
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class Milvus:
     """
-    A class for managing a Milvus vector database, including text embeddings,
-    document insertion, deletion, and similarity search using SentenceTransformers
-    and OpenAI's GPT models.
+    A wrapper class for interacting with the Milvus vector database.
     """
 
-    def __init__(self, embedding_model: Embeddings, collection_name: str = "indox_collection"):
+    def __init__(self, collection_name, embedding_model):
         """
-        Initialize the Milvus client, set the embedding model, and set up
-        the collection parameters.
+        Initialize the MilvusWrapper with collection name, embedding model, and QA model.
 
-        Parameters
-        ----------
-        embedding_model : Embeddings
-            An instance of a class implementing the Embeddings interface.
-        collection_name : str, optional
-            The name of the collection to use in Milvus (default is "indox_collection").
-
-        Attributes
-        ----------
-        embedding_model : Embeddings
-            The embedding model used to generate embeddings.
-        collection_name : str
-            The name of the collection to use in Milvus.
+        Args:
+            collection_name (str): The name of the collection in Milvus.
+            embedding_model (object): An object with methods `embed_query` and `embed_documents`.
         """
-        self.milvus_client = MilvusClient(host='127.0.0.1', port='19530')
         self.collection_name = collection_name
-        self.embedding_dim = None
         self.embedding_model = embedding_model
+        self.embedding_dim = None
+        self.milvus_client = MilvusClient(host='127.0.0.1', port='19530')
 
-    def load_text_lines(self, file_path: str) -> List[str]:
+
+    def _embed_query(self, query: str) -> List[float]:
         """
-        Load text lines from a .txt file.
+        Embed the query into a vector.
 
-        Parameters
-        ----------
-        file_path : str
-            The path to the text file.
+        Args:
+            query (str): The query text to embed.
 
-        Returns
-        -------
-        List[str]
-            A list of lines loaded from the text file.
+        Returns:
+            List[float]: The embedding vector for the query.
         """
-        with open(file_path, 'r') as file:
-            text_lines = file.readlines()
-        text_lines = [line.strip() for line in text_lines]
-        return text_lines
+        return self.embedding_model.embed_query(query)
+
+    def _similarity_search_with_score(self, query: str, k: int = 3) -> List[Tuple[Document, float]]:
+        """
+        Return docs most similar to the query.
+
+        Args:
+            query (str): Text to look up documents similar to.
+            k (int, optional): Number of Documents to return. Defaults to 3.
+
+        Returns:
+            List[Tuple[Document, float]]: List of documents most similar to the query text with
+            L2 distance in float. Lower score represents more similarity.
+        """
+        search_res = self.milvus_client.search(
+            collection_name=self.collection_name,
+            data=[self.emb_text(query)],
+            limit=k,
+            search_params={"metric_type": "IP", "params": {}},
+            output_fields=["text"],
+        )
+
+        # Creating Document objects for the results
+        documents_with_scores = [
+            (Document(page_content=res["entity"]["text"]), res["distance"])
+            for res in search_res[0]
+        ]
+        return documents_with_scores
+    def _similarity_search(
+        self,
+        query: str,
+        k: int = 4,
+        param: Optional[dict] = None,
+        expr: Optional[str] = None,
+        timeout: Optional[float] = None,
+        **kwargs: Any,
+    ) -> List[Document]:
+        """Perform a similarity search against the query string.
+
+        Args:
+            query (str): The text to search.
+            k (int, optional): How many results to return. Defaults to 4.
+            param (dict, optional): The search params for the index type.
+                Defaults to None.
+            expr (str, optional): Filtering expression. Defaults to None.
+            timeout (int, optional): How long to wait before timeout error.
+                Defaults to None.
+            kwargs: Collection.search() keyword arguments.
+
+        Returns:
+            List[Document]: Document results for search.
+        """
+        if self.col is None:
+            logger.debug("No existing collection to search.")
+            return []
+        res = self._similarity_search_with_score(
+            query=query, k=k
+        )
+        return [doc for doc, _ in res]
+
+    def _process_question(self, question: str):
+        """
+        Process a question by retrieving relevant documents and printing them.
+
+        Args:
+            question (str): The question to process.
+        """
+        retrieved_lines_with_distances = self._similarity_search_with_score(question, k=5)
+        # Convert Document objects to dictionaries
+        context = "\n".join([self._to_dict(doc)['page_content'] for doc, _ in retrieved_lines_with_distances])
+        # answer = self.generate_answer(context, question)
+        # print(f"Answer: {answer}")
+        print(json.dumps(
+            [{"document": self._to_dict(doc), "score": score} for doc, score in retrieved_lines_with_distances],
+            indent=4
+        ))
+
+    # def store_in_vectorstore(self, docs: List[Document]):
+    #     """
+    #     Store documents in the Milvus vector store.
+    #
+    #     Args:
+    #         docs (List[Document]): List of Document objects to store.
+    #     """
+    #     text_lines = [doc.page_content for doc in docs]
+    #     self.insert_data(text_lines)
 
     def emb_text(self, text: str) -> List[float]:
         """
-        Generate the embedding for a given text using the provided embedding model.
+        Get the embedding vector for the provided text.
 
-        Parameters
-        ----------
-        text : str
-            The text to embed.
+        Args:
+            text (str): The text to embed.
 
-        Returns
-        -------
-        List[float]
-            The generated embedding as a list of floats.
+        Returns:
+            List[float]: The embedding vector for the text.
         """
-        embedding = self.embedding_model.embed_query(text)
+        embedding = self.embedding_model.embed_documents([text])[0]
         if self.embedding_dim is None:
             self.embedding_dim = len(embedding)
         return embedding
 
-    def create_collection(self) -> None:
+    def load_text_from_file(self, file_path: str) -> List[str]:
         """
-        Create a collection in Milvus with the appropriate settings.
+        Load text lines from a file.
 
-        Raises
-        ------
-        ValueError
-            If the embedding dimension is not set.
+        Args:
+            file_path (str): Path to the text file.
+
+        Returns:
+            List[str]: List of text lines read from the file.
         """
-        if self.embedding_dim is None:
-            raise ValueError("Embedding dimension is not set. Ensure that you generate an embedding first.")
+        with open(file_path, "r") as file:
+            text_lines = file.readlines()
+        return text_lines
 
-        if self.milvus_client.has_collection(self.collection_name):
-            self.milvus_client.drop_collection(self.collection_name)
-
-        self.milvus_client.create_collection(
-            collection_name=self.collection_name,
-            dimension=self.embedding_dim,
-            metric_type="IP",
-            consistency_level="Strong",
-        )
-
-    def insert_data(self, text_lines: List[str]) -> None:
+    def insert_data(self, text_lines: List[str]):
         """
-        Insert a list of text lines into the Milvus collection.
+        Insert data into the Milvus vector store.
 
-        Parameters
-        ----------
-        text_lines : List[str]
-            The list of text lines to insert.
+        Args:
+            text_lines (List[str]): List of text lines to insert.
         """
         data = [{"id": i, "vector": self.emb_text(line), "text": line} for i, line in
                 enumerate(tqdm(text_lines, desc="Creating embeddings"))]
         self.milvus_client.insert(collection_name=self.collection_name, data=data)
 
-    def similarity_search_with_score(self, question: str, limit: int = 3) -> List[tuple]:
+    def _add(
+            self,
+            texts: Iterable[str],
+            embeddings: Iterable[List[float]],
+            metadatas: Optional[Iterable[dict]] = None,
+            ids: Optional[List[str]] = None,
+    ) -> List[str]:
         """
-        Perform a similarity search in the Milvus collection for a given question.
+        Add documents with embeddings to the vector store.
 
-        Parameters
-        ----------
-        question : str
-            The question to search for.
-        limit : int, optional
-            The maximum number of results to return (default is 3).
+        Args:
+            texts (Iterable[str]): Texts to add.
+            embeddings (Iterable[List[float]]): Corresponding embeddings for the texts.
+            metadatas (Optional[Iterable[dict]]): Optional metadata for the documents.
+            ids (Optional[List[str]]): Optional IDs for the documents.
 
-        Returns
-        -------
-        List[tuple]
-            A list of tuples, each containing a retrieved text and its similarity score.
+        Returns:
+            List[str]: List of document IDs.
         """
-        search_res = self.milvus_client.search(
-            collection_name=self.collection_name,
-            data=[self.emb_text(question)],
-            limit=limit,
-            search_params={"metric_type": "IP", "params": {}},
-            output_fields=["text"],
-        )
-        return [
-            (res["entity"]["text"], res["distance"])
-            for res in search_res[0]
+        _metadatas = metadatas or ({} for _ in texts)
+        documents = [
+            Document(page_content=t, metadata=m) for t, m in zip(texts, _metadatas)
         ]
 
-    def generate_answer(self, context: str, question: str) -> str:
-        """
-        Generate an answer to a question using the provided context with OpenAI's GPT model.
+        if ids and len(ids) != len(set(ids)):
+            raise ValueError("Duplicate ids found in the ids list.")
 
-        Parameters
-        ----------
-        context : str
-            The context from which to generate the answer.
-        question : str
-            The question to be answered.
+        ids = ids or [str(uuid.uuid4()) for _ in texts]
+        for id_, doc, embedding in zip(ids, documents, embeddings):
+            self.milvus_client.add(embedding=embedding, metadata=doc.metadata)
+        return ids
 
-        Returns
-        -------
-        str
-            The generated answer.
+    def add(self, docs):
         """
-        SYSTEM_PROMPT = """
-        Human: You are an AI assistant. You are able to find answers to the questions from the contextual passage snippets provided.
-        """
-        USER_PROMPT = f"""
-        Use the following pieces of information enclosed in <context> tags to provide an answer to the question enclosed in <question> tags.
-        <context>
-        {context}
-        </context>
-        <question>
-        {question}
-        </question>
-        """
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": USER_PROMPT},
-            ],
-        )
-        return response.choices[0].message['content']
+        Adds documents to the Milvus vector store.
 
-    def process_question(self, question: str) -> None:
+        Args:
+            docs: The documents to be added to the vector store.
         """
-        Process a question by performing a similarity search and generating an answer.
+        try:
+            if isinstance(docs[0], Document):
+                self._add_documents(documents=docs)
+            else:
+                self._add_texts(texts=docs)
+            logger.info("Document added successfully to the vector store.")
+        except Exception as e:
+            logger.error(f"Failed to add document: {e}")
+            raise RuntimeError(f"Can't add document to the vector store: {e}")
 
-        Parameters
-        ----------
-        question : str
-            The question to be processed.
+    def _add_texts(
+            self,
+            texts: Iterable[str],
+            metadatas: Optional[List[dict]] = None,
+            ids: Optional[List[str]] = None,
+            **kwargs: Any,
+    ) -> List[str]:
         """
-        retrieved_lines_with_distances = self.similarity_search_with_score(question)
-        context = "\n".join([line_with_distance[0] for line_with_distance in retrieved_lines_with_distances])
-        answer = self.generate_answer(context, question)
-        print(json.dumps(retrieved_lines_with_distances, indent=4))
-        print(answer)
+        Add texts with embeddings to the vector store.
 
-    def add_documents(self, documents: List[str]) -> List[str]:
-        """
-        Add more documents to the vector store by generating embeddings and inserting them.
+        Args:
+            texts (Iterable[str]): Texts to add.
+            metadatas (Optional[List[dict]]): Optional metadata for the documents.
+            ids (Optional[List[str]]): Optional IDs for the documents.
 
-        Parameters
-        ----------
-        documents : List[str]
-            The documents to add to the vector store.
+        Returns:
+            List[str]: List of document IDs.
+        """
+        texts = list(texts)
+        embeddings = self.embedding_model.embed_documents(texts)
+        return self._add(texts, embeddings, metadatas=metadatas, ids=ids)
 
-        Returns
-        -------
-        List[str]
-            A list of IDs of the added texts.
+    def add_embeddings(
+            self,
+            text_embeddings: Iterable[Tuple[str, List[float]]],
+            metadatas: Optional[List[dict]] = None,
+            ids: Optional[List[str]] = None,
+            **kwargs: Any,
+    ) -> List[str]:
         """
-        new_ids = []
-        for i, doc in enumerate(documents):
-            embedding = self.emb_text(doc)
-            doc_id = str(len(new_ids))  # Generate a new ID
-            self.milvus_client.insert(
-                collection_name=self.collection_name,
-                data=[{"id": doc_id, "vector": embedding, "text": doc}]
-            )
-            new_ids.append(doc_id)
-        return new_ids
+        Add embeddings with corresponding texts to the vector store.
 
-    def delete_collection(self) -> None:
-        """
-        Delete the entire collection in Milvus.
-        """
-        if self.milvus_client.has_collection(self.collection_name):
-            self.milvus_client.drop_collection(self.collection_name)
+        Args:
+            text_embeddings (Iterable[Tuple[str, List[float]]]): Iterable of text and embedding pairs.
+            metadatas (Optional[List[dict]]): Optional metadata for the documents.
+            ids (Optional[List[str]]): Optional IDs for the documents.
 
-    def update_document(self, document_id: str, document: str) -> None:
+        Returns:
+            List[str]: List of document IDs.
         """
-        Update an existing document in the Milvus collection.
+        texts, embeddings = zip(*text_embeddings)
+        return self.add(texts, embeddings, metadatas=metadatas, ids=ids)
 
-        Parameters
-        ----------
-        document_id : str
-            The ID of the document to update.
-        document : str
-            The new content for the document.
-        """
-        embedding = self.emb_text(document)
-        self.milvus_client.update(
-            collection_name=self.collection_name,
-            data=[{"id": document_id, "vector": embedding, "text": document}]
-        )
+    def _add_documents(self, documents: List[Document], **kwargs: Any) -> List[str]:
+        """Run more documents through the embeddings and add to the vectorstore.
 
-    def delete(self, ids: Optional[List[str]] = None) -> None:
-        """
-        Delete documents from the Milvus collection by their IDs.
+        Args:
+            documents (List[Document]: Documents to add to the vectorstore.
 
-        Parameters
-        ----------
-        ids : List[str], optional
-            The IDs of the documents to delete (default is None).
+        Returns:
+            List[str]: List of IDs of the added texts.
         """
-        if ids is not None:
-            self.milvus_client.delete(
-                collection_name=self.collection_name,
-                ids=ids
-            )
+        texts = [doc.page_content for doc in documents]
+        metadatas = [doc.metadata for doc in documents]
+        return self._add_texts(texts, metadatas, **kwargs)
 
-    def __len__(self) -> int:
+    def _to_dict(self, document: Document) -> Dict[str, Any]:
         """
-        Count the number of documents in the Milvus collection.
+        Convert a Document to a dictionary.
 
-        Returns
-        -------
-        int
-            The number of documents in the collection.
+        Args:
+            document (Document): Document object to convert.
+
+        Returns:
+            dict: Dictionary containing the page content and metadata.
         """
-        return self.milvus_client.count(collection_name=self.collection_name)
+        return {
+            "page_content": document.page_content,
+            "metadata": document.metadata
+        }

@@ -1,6 +1,21 @@
+import warnings
 from typing import Optional, Dict, Any, List, Tuple, Type, Callable, Iterable
 from indox.core import VectorStore, Embeddings, Document
 import uuid
+from loguru import logger
+import sys
+
+warnings.filterwarnings("ignore")
+
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
+
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
 
 DEFAULT_K = 4  # Default number of results to return
 
@@ -99,7 +114,7 @@ class Chroma:
     def embeddings(self) -> Optional[Embeddings]:
         return self._embedding_function
 
-    def add_texts(
+    def _add_texts(
             self,
             texts: Iterable[str],
             metadatas: Optional[List[dict]] = None,
@@ -173,7 +188,7 @@ class Chroma:
             )
         return ids
 
-    def add_documents(self, documents: List[Document], **kwargs: Any) -> List[str]:
+    def _add_documents(self, documents: List[Document], **kwargs: Any) -> List[str]:
         """Run more documents through the embeddings and add to the vectorstore.
 
         Args:
@@ -184,9 +199,26 @@ class Chroma:
         """
         texts = [doc.page_content for doc in documents]
         metadatas = [doc.metadata for doc in documents]
-        return self.add_texts(texts, metadatas, **kwargs)
+        return self._add_texts(texts, metadatas, **kwargs)
 
-    def similarity_search_with_score(
+    def add(self, docs) -> Any:
+        """
+        Store text chunks into a vector store database.
+        """
+        try:
+            logger.info("Storing documents in the vector store")
+
+            if isinstance(docs[0], Document):
+                self._add_documents(documents=docs)
+            elif not isinstance(docs[0], Document):
+                self._add_texts(texts=docs)
+            logger.info("Document added successfully to the vector store.")
+        except Exception as e:
+            logger.error(f"Failed to add document: {e}")
+            raise RuntimeError(f"Can't add document to the vector store: {e}")
+        logger.info("Documents stored successfully")
+
+    def _similarity_search_with_score(
             self,
             query: str,
             k: int = DEFAULT_K,
@@ -225,6 +257,27 @@ class Chroma:
             )
 
         return _results_to_docs_and_scores(results)
+    def _similarity_search(
+        self,
+        query: str,
+        k: int = DEFAULT_K,
+        filter: Optional[Dict[str, str]] = None,
+        **kwargs: Any,
+    ) -> List[Document]:
+        """Run similarity search with Chroma.
+
+        Args:
+            query (str): Query text to search for.
+            k (int): Number of results to return. Defaults to 4.
+            filter (Optional[Dict[str, str]]): Filter by metadata. Defaults to None.
+
+        Returns:
+            List[Document]: List of documents most similar to the query text.
+        """
+        docs_and_scores = self._similarity_search_with_score(
+            query, k, filter=filter, **kwargs
+        )
+        return [doc for doc, _ in docs_and_scores]
 
     def delete_collection(self) -> None:
         """Delete the collection."""

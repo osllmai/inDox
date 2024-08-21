@@ -69,7 +69,7 @@ class MongoDB:
     def embeddings(self) -> Optional[Embeddings]:
         return self._embedding_function
 
-    def add_texts(
+    def _add_texts(
             self,
             texts: Iterable[str],
             metadatas: Optional[List[dict]] = None,
@@ -122,7 +122,7 @@ class MongoDB:
 
         return ids
 
-    def add_documents(self, documents: List[Document], **kwargs: Any) -> List[str]:
+    def _add_documents(self, documents: List[Document], **kwargs: Any) -> List[str]:
         """
         Add documents to the vector store.
 
@@ -135,9 +135,24 @@ class MongoDB:
         """
         texts = [doc.page_content for doc in documents]
         metadatas = [doc.metadata for doc in documents]
-        return self.add_texts(texts, metadatas, **kwargs)
+        return self._add_texts(texts, metadatas, **kwargs)
 
-    def similarity_search_with_score(
+    def add(self, docs):
+        """
+        Adds documents to the MongoDB vector store.
+
+        Args:
+            docs: The documents to be added to the vector store.
+        """
+        try:
+            if isinstance(docs[0], Document):
+                self._add_documents(documents=docs)
+            else:
+                self._add_texts(texts=docs)
+        except Exception as e:
+            raise RuntimeError(f"Can't add document to the vector store: {e}")
+
+    def _similarity_search_with_score(
             self,
             query: str,
             k: int = DEFAULT_K,
@@ -186,7 +201,42 @@ class MongoDB:
 
         return [(Document(page_content=doc[self._text_key], metadata=doc.get("metadata", {})), score) for doc, score in
                 top_k]
+    def _similarity_search(
+        self,
+        query: str,
+        k: int = 4,
+        pre_filter: Optional[Dict] = None,
+        post_filter_pipeline: Optional[List[Dict]] = None,
+        **kwargs: Any,
+    ) -> List[Document]:
+        """Return MongoDB documents most similar to the given query.
 
+        Uses the vectorSearch operator available in MongoDB Atlas Search.
+        For more: https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-stage/
+
+        Args:
+            query: Text to look up documents similar to.
+            k: (Optional) number of documents to return. Defaults to 4.
+            pre_filter: (Optional) dictionary of argument(s) to prefilter document
+                fields on.
+            post_filter_pipeline: (Optional) Pipeline of MongoDB aggregation stages
+                following the vectorSearch stage.
+
+        Returns:
+            List of documents most similar to the query and their scores.
+        """
+        additional = kwargs.get("additional")
+        docs_and_scores = self._similarity_search_with_score(
+            query,
+            k=k,
+            pre_filter=pre_filter,
+            post_filter_pipeline=post_filter_pipeline,
+        )
+
+        if additional and "similarity_score" in additional:
+            for doc, score in docs_and_scores:
+                doc.metadata["score"] = score
+        return [doc for doc, _ in docs_and_scores]
     def delete(self, ids: Optional[List[str]] = None, **kwargs: Any) -> None:
         """
         Delete documents from the vector store.

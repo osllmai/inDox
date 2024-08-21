@@ -1,10 +1,24 @@
 from __future__ import annotations
-
 import uuid
+import warnings
 from typing import Any, Iterable, List, Optional, Type, Dict
 
 import numpy as np
 from indox.core import Document, Embeddings, VectorStore
+from loguru import logger
+import sys
+
+warnings.filterwarnings("ignore")
+
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
+
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
 
 
 class Atlas:
@@ -77,7 +91,7 @@ class Atlas:
     def embeddings(self) -> Optional[Embeddings]:
         return self._embedding_function
 
-    def add_documents(
+    def _add_documents(
             self,
             documents: Iterable[Dict[str, Any]],
             metadatas: Optional[List[dict]] = None,
@@ -159,7 +173,7 @@ class Atlas:
 
         return ids
 
-    def add_texts(
+    def _add_texts(
             self,
             texts: Iterable[str],
             metadatas: Optional[List[dict]] = None,
@@ -247,7 +261,7 @@ class Atlas:
         with self.project.wait_for_dataset_lock():
             return self.project.create_index(**kwargs)
 
-    def similarity_search(
+    def _similarity_search(
             self,
             query: str,
             k: int = 4,
@@ -269,7 +283,6 @@ class Atlas:
         _embedding = self._embedding_function.embed_documents([query])[0]
         embedding = np.array(_embedding).reshape(1, -1)
 
-
         with self.project.wait_for_dataset_lock():
             print(self.project.projections[0])
             neighbors, _ = self.project.projections[0].vector_search(
@@ -288,6 +301,7 @@ class Atlas:
             for i, neighbor in enumerate(neighbors)
         ]
         return docs
+
     @classmethod
     def from_texts(
             cls: Type[Atlas],
@@ -344,9 +358,26 @@ class Atlas:
             reset_project_if_exists=reset_project_if_exists,
         )
         with atlasDB.project.wait_for_dataset_lock():
-            atlasDB.add_texts(texts=texts, metadatas=metadatas, ids=ids)
+            atlasDB._add_texts(texts=texts, metadatas=metadatas, ids=ids)
             atlasDB.create_index(**all_index_kwargs)
         return atlasDB
+
+    def add(self, docs):
+        """
+        Store text chunks into a vector store database.
+        """
+        try:
+            logger.info("Storing documents in the vector store")
+
+            if isinstance(docs[0], Document):
+                self._add_documents(documents=docs)
+            elif not isinstance(docs[0], Document):
+                self._add_texts(texts=docs)
+            logger.info("Document added successfully to the vector store.")
+        except Exception as e:
+            logger.error(f"Failed to add document: {e}")
+            raise RuntimeError(f"Can't add document to the vector store: {e}")
+        logger.info("Documents stored successfully")
 
     @classmethod
     def from_documents(

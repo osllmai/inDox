@@ -1,7 +1,7 @@
-from typing import List, Any, Tuple
+# from typing import List, Any, Tuple
 import warnings
 
-from .core import Document
+# from .core import Document
 # import logging
 from .utils import show_indox_logo
 from loguru import logger
@@ -30,65 +30,64 @@ class IndoxRetrievalAugmentation:
         self.db = None
         self.qa_history = []
         logger.info("IndoxRetrievalAugmentation initialized")
-        # logging.info("IndoxRetrievalAugmentation initialized")
         show_indox_logo()
 
-    def connect_to_vectorstore(self, vectorstore_database):
-        """
-        Establish a connection to the vector store database using configuration parameters.
-        """
-        try:
-            self.db = vectorstore_database
+    # def connect_to_vectorstore(self, vectorstore_database):
+    #     """
+    #     Establish a connection to the vector store database using configuration parameters.
+    #     """
+    #     try:
+    #         self.db = vectorstore_database
+    #
+    #         if self.db is None:
+    #             raise RuntimeError('Failed to connect to the vector store database.')
+    #
+    #         logger.info("Connection to the vector store database established successfully")
+    #         return self.db
+    #     except ValueError as ve:
+    #         logger.error(f"Invalid input: {ve}")
+    #         raise ValueError(f"Invalid input: {ve}")
+    #     except RuntimeError as re:
+    #         logger.error(f"Runtime error: {re}")
+    #         raise RuntimeError(f"Runtime error: {re}")
+    #     except Exception as e:
+    #         logger.error(f"Failed to connect to the database due to an unexpected error: {e}")
+    #         raise RuntimeError(f"Failed to connect to the database due to an unexpected error: {e}")
 
-            if self.db is None:
-                raise RuntimeError('Failed to connect to the vector store database.')
-
-            logger.info("Connection to the vector store database established successfully")
-            return self.db
-        except ValueError as ve:
-            logger.error(f"Invalid input: {ve}")
-            raise ValueError(f"Invalid input: {ve}")
-        except RuntimeError as re:
-            logger.error(f"Runtime error: {re}")
-            raise RuntimeError(f"Runtime error: {re}")
-        except Exception as e:
-            logger.error(f"Failed to connect to the database due to an unexpected error: {e}")
-            raise RuntimeError(f"Failed to connect to the database due to an unexpected error: {e}")
-
-    def store_in_vectorstore(self, docs: List[str]) -> Any:
-        """
-        Store text chunks into a vector store database.
-        """
-        if not docs or not isinstance(docs, list):
-            logger.error("The `docs` parameter must be a non-empty list.")
-            raise ValueError("The `docs` parameter must be a non-empty list.")
-
-        try:
-            logger.info("Storing documents in the vector store")
-            if self.db is not None:
-                try:
-                    if isinstance(docs[0], Document):
-                        self.db.add_documents(documents=docs)
-                    elif not isinstance(docs[0], Document):
-                        self.db.add_texts(texts=docs)
-                    logger.info("Document added successfully to the vector store.")
-                except Exception as e:
-                    logger.error(f"Failed to add document: {e}")
-                    raise RuntimeError(f"Can't add document to the vector store: {e}")
-            else:
-                raise RuntimeError("The vector store database is not initialized.")
-
-            logger.info("Documents stored successfully")
-            return self.db
-        except ValueError as ve:
-            logger.error(f"Invalid input data: {ve}")
-            raise ValueError(f"Invalid input data: {ve}")
-        except RuntimeError as re:
-            logger.error(f"Runtime error while storing in the vector store: {re}")
-            return None
-        except Exception as e:
-            logger.error(f"Unexpected error while storing in the vector store: {e}")
-            return None
+    # def store_in_vectorstore(self, docs: List[str]) -> Any:
+    #     """
+    #     Store text chunks into a vector store database.
+    #     """
+    #     if not docs or not isinstance(docs, list):
+    #         logger.error("The `docs` parameter must be a non-empty list.")
+    #         raise ValueError("The `docs` parameter must be a non-empty list.")
+    #
+    #     try:
+    #         logger.info("Storing documents in the vector store")
+    #         if self.db is not None:
+    #             try:
+    #                 if isinstance(docs[0], Document):
+    #                     self.db.add_documents(documents=docs)
+    #                 elif not isinstance(docs[0], Document):
+    #                     self.db.add_texts(texts=docs)
+    #                 logger.info("Document added successfully to the vector store.")
+    #             except Exception as e:
+    #                 logger.error(f"Failed to add document: {e}")
+    #                 raise RuntimeError(f"Can't add document to the vector store: {e}")
+    #         else:
+    #             raise RuntimeError("The vector store database is not initialized.")
+    #
+    #         logger.info("Documents stored successfully")
+    #         return self.db
+    #     except ValueError as ve:
+    #         logger.error(f"Invalid input data: {ve}")
+    #         raise ValueError(f"Invalid input data: {ve}")
+    #     except RuntimeError as re:
+    #         logger.error(f"Runtime error while storing in the vector store: {re}")
+    #         return None
+    #     except Exception as e:
+    #         logger.error(f"Unexpected error while storing in the vector store: {e}")
+    #         return None
 
     class QuestionAnswer:
         def __init__(self, llm, vector_database, top_k: int = 5, document_relevancy_filter: bool = False,
@@ -108,12 +107,10 @@ class IndoxRetrievalAugmentation:
             if not query:
                 logger.error("Query string cannot be empty.")
                 raise ValueError("Query string cannot be empty.")
-            # db.similarity_search_with_score(query, k=top_k)
-            # context = [d[0].page_content for d in retrieved]
-            # scores = [d[1] for d in retrieved]
+
             try:
                 logger.info("Retrieving context and scores from the vector database")
-                retrieved = self.vector_database.similarity_search_with_score(query, k=self.top_k)
+                retrieved = self.vector_database._similarity_search_with_score(query, k=self.top_k)
                 context = [d[0].page_content for d in retrieved]
                 scores = [d[1] for d in retrieved]
                 if self.generate_clustered_prompts:
@@ -126,12 +123,6 @@ class IndoxRetrievalAugmentation:
                     answer = self.qa_model.answer_question(context=context, question=query)
                 else:
                     logger.info("Generating answer with document relevancy filter")
-                    # from .prompt_augmentation import RAGGraph
-                    # graph = RAGGraph(self.qa_model)
-                    # graph_out = graph.run({'question': query, 'documents': context, 'scores': scores})
-                    # answer = self.qa_model.answer_question(context=graph_out['documents'],
-                    #                                        question=graph_out['question'])
-                    # context, scores = graph_out['documents'], graph_out['scores']
                     context = self.qa_model.grade_docs(context=context, question=query)
                     answer = self.qa_model.answer_question(context=context, query=query)
 
@@ -199,59 +190,3 @@ class IndoxRetrievalAugmentation:
                 else:  # it means there is no hallucination
                     logger.info("Not Hallucinate")
                     return answer
-
-    # TODO add visualization for evaluation
-    # def evaluate(self):
-    #     """
-    #     Evaluate the performance of the system based on the inputs provided from previous queries.
-    #
-    #     Returns:
-    #     - dict: The evaluation metrics generated by `get_metrics` if inputs exist.
-    #     - None: If no previous query results are available.
-    #
-    #     Raises:
-    #     - RuntimeError: If no previous query results are available to evaluate.
-    #     """
-    #     if self.inputs:
-    #         return get_metrics(self.inputs)
-    #     else:
-    #         raise RuntimeError("No inputs available for evaluation. Please make a query first.")
-
-    # def visualize_context(self):
-    #     """
-    #     Visualize the context of the last query made by the user.
-    #     """
-    #     if not self.qa_history:
-    #         print("No entries to visualize.")
-    #         return
-    #
-    #     last_entry = self.qa_history[-1]
-    #     return visualize_contexts_(last_entry['query'], last_entry['context'], last_entry['scores'])
-
-    # def get_tokens_info(self):
-    #     """
-    #     Print an overview of the number of tokens used for different operations.
-    #
-    #     Displays the following token counts:
-    #     - `input_tokens_all`: Number of input tokens sent to GPT-3.5 Turbo for summarization.
-    #     - `output_tokens_all`: Number of output tokens received from GPT-3.5 Turbo.
-    #     - `embedding_tokens`: Number of tokens used in the embedding process and sent to the database.
-    #
-    #     If no output tokens were used, only the embedding token information is displayed.
-    #     """
-    # if self.output_tokens_all > 0:
-    #     print(
-    #         f"""
-    #         Overview of All Tokens Used:
-    #         Input tokens sent to GPT-3.5 Turbo (Model ID: 0125) for summarizing: {self.input_tokens_all}
-    #         Output tokens received from GPT-3.5 Turbo (Model ID: 0125): {self.output_tokens_all}
-    #         Tokens used in the embedding section that were sent to the database: {self.embedding_tokens}
-    #         """
-    #     )
-    # else:
-    #     print(
-    #         f"""
-    #         Overview of All Tokens Used:
-    #         Tokens used in the embedding section that were sent to the database: {self.embedding_tokens}
-    #         """
-    #     )

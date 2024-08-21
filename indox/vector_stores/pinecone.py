@@ -56,6 +56,7 @@ class PineconeVectorStore:
     """Pinecone vector store integration.
 
     """
+
     # from pinecone import Index
 
     def __init__(
@@ -115,7 +116,7 @@ class PineconeVectorStore:
         """Access the query embedding object if available."""
         return self._embedding
 
-    def add_texts(
+    def _add_texts(
             self,
             texts: Iterable[str],
             metadatas: Optional[List[dict]] = None,
@@ -193,7 +194,7 @@ class PineconeVectorStore:
 
         return ids
 
-    def similarity_search_with_score(
+    def _similarity_search_with_score(
             self,
             query: str,
             k: int = 4,
@@ -211,11 +212,67 @@ class PineconeVectorStore:
         Returns:
             List of Documents most similar to the query and score for each
         """
-        return self.similarity_search_by_vector_with_score(
+        return self._similarity_search_by_vector_with_score(
             self._embedding.embed_query(query), k=k, filter=filter, namespace=namespace
         )
 
-    def add_document(self, documents: List[Document], **kwargs: Any) -> list[str]:
+    def _similarity_search_by_vector_with_score(
+            self,
+            embedding: List[float],
+            *,
+            k: int = 4,
+            filter: Optional[dict] = None,
+            namespace: Optional[str] = None,
+    ) -> List[Tuple[Document, float]]:
+        """Return pinecone documents most similar to embedding, along with scores."""
+
+        if namespace is None:
+            namespace = self._namespace
+        docs = []
+        results = self._index.query(
+            vector=[embedding],
+            top_k=k,
+            include_metadata=True,
+            namespace=namespace,
+            filter=filter,
+        )
+        for res in results["matches"]:
+            metadata = res["metadata"]
+            if self._text_key in metadata:
+                text = metadata.pop(self._text_key)
+                score = res["score"]
+                docs.append((Document(page_content=text, metadata=metadata), score))
+            else:
+                logger.warning(
+                    f"Found document with no `{self._text_key}` key. Skipping."
+                )
+        return docs
+
+    def _similarity_search(
+            self,
+            query: str,
+            k: int = 4,
+            filter: Optional[dict] = None,
+            namespace: Optional[str] = None,
+            **kwargs: Any,
+    ) -> List[Document]:
+        """Return pinecone documents most similar to query.
+
+        Args:
+            query: Text to look up documents similar to.
+            k: Number of Documents to return. Defaults to 4.
+            filter: Dictionary of argument(s) to filter on metadata
+            namespace: Namespace to search in. Default will search in '' namespace.
+
+        Returns:
+            List of Documents most similar to the query and score for each
+        """
+        docs_and_scores = self._similarity_search_with_score(
+            query, k=k, filter=filter, namespace=namespace, **kwargs
+        )
+        return [doc for doc, _ in docs_and_scores]
+
+    def _add_document(self, documents: List[Document], **kwargs: Any) -> list[str]:
         """Run more documents through the embeddings and add to the vectorstore.
 
         Args:
@@ -226,7 +283,24 @@ class PineconeVectorStore:
         """
         texts = [doc.page_content for doc in documents]
         metadatas = [doc.metadata for doc in documents]
-        return self.add_texts(texts, metadatas, **kwargs)
+        return self._add_texts(texts, metadatas, **kwargs)
+
+    def add(self, docs):
+        """
+        Adds documents to the PostgreSQL vector store.
+
+        Args:
+            docs: The documents to be added to the vector store.
+        """
+        try:
+            if isinstance(docs[0], Document):
+                self._add_document(documents=docs)
+            else:
+                self._add_texts(texts=docs)
+            logger.info("Document added successfully to the vector store.")
+        except Exception as e:
+            logger.error(f"Failed to add document: {e}")
+            raise RuntimeError(f"Can't add document to the vector store: {e}")
 
     def retrieve(self, query: str, top_k: int = 5):
         """
@@ -239,7 +313,7 @@ class PineconeVectorStore:
         Returns:
             Tuple[List[str], List[float]]: The context and scores of the retrieved documents.
         """
-        retrieved = self.similarity_search_with_score(query, k=top_k)
+        retrieved = self._similarity_search_with_score(query, k=top_k)
         context = [d[0].page_content for d in retrieved]
         scores = [d[1] for d in retrieved]
         return context, scores
@@ -251,7 +325,7 @@ class PineconeVectorStore:
             pool_threads: int = 4,
             *,
             pinecone_api_key: Optional[str] = None,
-    ) :
+    ):
         """Return a Pinecone Index instance.
 
         Args:
@@ -318,7 +392,7 @@ class PineconeVectorStore:
         pinecone_index = cls.get_pinecone_index(index_name, pool_threads)
         pinecone = cls(pinecone_index, embedding, text_key, namespace, **kwargs)
 
-        pinecone.add_texts(
+        pinecone._add_texts(
             texts,
             metadatas=metadatas,
             ids=ids,
@@ -376,33 +450,3 @@ class PineconeVectorStore:
 
         return None
 
-    def max_marginal_relevance_search(
-            self,
-            query: str,
-            k: int = 4,
-            fetch_k: int = 20,
-            lambda_mult: float = 0.5,
-            filter: Optional[dict] = None,
-            namespace: Optional[str] = None,
-            **kwargs: Any,
-    ) -> List[Document]:
-        """Return docs selected using the maximal marginal relevance.
-
-        Maximal marginal relevance optimizes for similarity to query AND diversity
-        among selected documents.
-
-        Args:
-            query: Text to look up documents similar to.
-            k: Number of Documents to return. Defaults to 4.
-            fetch_k: Number of Documents to fetch to pass to MMR algorithm.
-            lambda_mult: Number between 0 and 1 that determines the degree
-                    of diversity among the results with 0 corresponding
-                    to maximum diversity and 1 to minimum diversity.
-                    Defaults to 0.5.
-        Returns:
-            List of Documents selected by maximal marginal relevance.
-        """
-        embedding = self._embedding.embed_query(query)
-        return self.max_marginal_relevance_search_by_vector(
-            embedding, k, fetch_k, lambda_mult, filter, namespace
-        )
