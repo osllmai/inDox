@@ -293,6 +293,31 @@ retriever.context
      "to send her up to him, but the mother answered, oh, no, she is\n\nmuch too dirty, she cannot show herself. But he absolutely\n\ninsisted on it, and cinderella had to be called. She first\n\nwashed her hands and face clean, and then went and bowed down\n\nbefore the king's son, who gave her the golden shoe. Then she\n\nseated herself on a stool, drew her foot out of the heavy\n\nwooden shoe, and put it into the slipper, which fitted like a\n\nglove. And when she rose up and the king's son looked at her",
      'slippers embroidered with silk and silver. She put on the dress\n\nwith all speed, and went to the wedding. Her step-sisters and the\n\nstep-mother however did not know her, and thought she must be a\n\nforeign princess, for she looked so beautiful in the golden dress.\n\nThey never once thought of cinderella, and believed that she was\n\nsitting at home in the dirt, picking lentils out of the ashes. The\n\nprince approached her, took her by the hand and danced with her.']
 
+
+
+```mermaid
+timeline
+    title Indox Release Timeline
+
+    section 2024-07-21
+    Version 0.1.17 : Performance Enhancements & Lighter Installation
+
+    section 2024-08-18
+    Version 0.1.21 : MongoDB Integration, Weaviate Support, Bug Fixes, Performance Optimizations
+
+    section 2024-08-22
+    Version 0.1.22 : Modular Data Loading, Expanded Integrations, New Embedding Models, New Vector Stores, Direct Document Storage
+
+    section 2024-08-22 - Details
+    Modular Data Loading and Splitting : Data Loader and Data Connector Separation, New Data Loaders Added (PyPdf2, PyPdf4, PdfMiner, PdfPlumber, OpenPyXl, Docx, Csv, Txt, Json, Bs4, Md, Pptx, Sql, Joblib, Scipy)
+    Enhanced Data Connectors : New Data Connectors Added (WikipediaReader, YoutubeTranscriptReader, ArxivReader, TwitterTweetReader, GutenbergReader, GithubClient & GithubRepositoryReader, DiscordChannelReader, GoogleDoc, GoogleSheet, GoogleDrive, GoogleChat, MapsTextSearch)
+    Expanded Embedding Model Support : New Embedding Models Supported (Cohere, Elasticsearch, Clarifai, GPT4All, Ollama)
+    New Vector Store Integrations : New Vector Stores Supported (MongoDB, Pathway, Milvus)
+    Direct Document Storage : Database.add() Method for Direct Document Storage
+
+```
+
+
 ```txt
   .----------------.  .-----------------. .----------------.  .----------------.  .----------------. 
 | .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
@@ -305,8 +330,6 @@ retriever.context
 | |              | || |              | || |              | || |              | || |              | |
 | '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
   '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
-
-
 ```
 
 
