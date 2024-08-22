@@ -51,7 +51,7 @@ class GithubRepositoryReader:
         self.filter_directories = filter_directories or ([], self.FilterType.INCLUDE)
         self.filter_file_extensions = filter_file_extensions or ([], self.FilterType.INCLUDE)
 
-    def load_data(self, branch: str = "main") -> List[Document]:
+    def load_data(self, branch: str = "main") -> List[Document] | Document:
         """
         Loads data from the specified branch of the GitHub repository.
 
@@ -73,8 +73,42 @@ class GithubRepositoryReader:
                         document = self._process_file(file_content)
                         if document:
                             documents.append(document)
+            if len(documents) == 1:
+                return documents[0]
 
             return documents
+        except Exception as e:
+            if self.verbose:
+                print(f"Error loading data from repository '{self.owner}/{self.repo}' on branch '{branch}': {str(e)}")
+            return []
+
+    def load_content(self, branch: str = "main") -> List[str] | str:
+        """
+        Loads content from the specified branch of the GitHub repository.
+
+        :param branch: The branch from which to load data. Defaults to 'main'.
+        :return: A list of strings containing the content from the repository files, or a single string if only one file is loaded.
+        """
+        try:
+            repo = self.github_client.github.get_repo(f"{self.owner}/{self.repo}")
+            contents = repo.get_contents("", ref=branch)
+            file_contents = []
+
+            while contents:
+                file_content = contents.pop(0)
+                if file_content.type == "dir":
+                    if self._should_process_directory(file_content.path):
+                        contents.extend(repo.get_contents(file_content.path, ref=branch))
+                else:
+                    if self._should_process_file(file_content.name):
+                        content = self._process_file_content(file_content)
+                        if content:
+                            file_contents.append(content)
+
+            if len(file_contents) == 1:
+                return file_contents[0]
+
+            return file_contents
         except Exception as e:
             if self.verbose:
                 print(f"Error loading data from repository '{self.owner}/{self.repo}' on branch '{branch}': {str(e)}")
@@ -132,5 +166,20 @@ class GithubRepositoryReader:
         except Exception as e:
             if self.verbose:
                 print(f"Error processing file {file_content.path}: {str(e)}")
+            return None
+
+    def _process_file_content(self, file_content) -> Optional[str]:
+        """
+        Processes a file content and returns its text content.
+
+        :param file_content: The file content object to process.
+        :return: The text content of the file, or None if processing fails.
+        """
+        try:
+            # Assuming the file content is text-based, otherwise adjust accordingly.
+            return file_content.decoded_content.decode('utf-8')
+        except Exception as e:
+            if self.verbose:
+                print(f"Error processing file '{file_content.path}': {str(e)}")
             return None
 

@@ -90,6 +90,50 @@ class DiscordChannelReader:
                     raise ValueError(f"Channel ID '{channel_id}' not found in Discord server.")
 
             await client.close()
-
+        if len(documents) == 1:
+            return documents[0]
         client.run(self.bot_token)
         return documents
+
+    def load_content(
+            self,
+            channel_ids: List[str],
+            num_messages: Optional[int] = None,
+            **load_kwargs: Any
+    ) -> List[str]:
+        """Loads messages from specified Discord channels.
+
+        Args:
+            channel_ids (List[str]): A list of Discord channel IDs to read messages from.
+            num_messages (Optional[int]): The maximum number of messages to retrieve
+                from each channel. Defaults to the default value set during initialization
+                or 100 if not set.
+
+        Returns:
+            List[str]: A list of strings, each containing the concatenated messages from a channel.
+
+        Raises:
+            ValueError: If a channel ID is not found in the Discord server.
+        """
+        import discord
+        client = discord.Client(intents=discord.Intents.default())
+        channel_contents = []
+
+        @client.event
+        async def on_ready():
+            for channel_id in channel_ids:
+                channel = client.get_channel(int(channel_id))
+                if channel:
+                    messages = []
+                    async for message in channel.history(limit=num_messages or self.num_messages):
+                        messages.append(message.content)
+                    response = "\n".join(messages)
+                    channel_contents.append(response)
+                else:
+                    raise ValueError(f"Channel ID '{channel_id}' not found in Discord server.")
+
+            await client.close()
+        client.run(self.bot_token)
+        if len(channel_contents) == 1:
+            return channel_contents[0]
+        return channel_contents

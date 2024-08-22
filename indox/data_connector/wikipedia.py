@@ -31,7 +31,7 @@ class WikipediaReader:
         """
         return "WikipediaReader"
 
-    def load_data(self, pages: List[str], **load_kwargs: Any) -> List[Document]:
+    def load_data(self, pages: List[str], **load_kwargs: Any) -> List[Document] | Document:
         """Load data from specified Wikipedia pages.
 
         Args:
@@ -69,5 +69,41 @@ class WikipediaReader:
                 print(f"PageError: The page '{page}' does not exist.")
             except Exception as e:
                 print(f"Unexpected error while processing page '{page}': {e}")
-
+        if len(documents) == 1:
+            return documents[0]
         return documents
+
+    def load_content(self, pages: List[str], **load_kwargs: Any) -> List[str] | str:
+        """Load data from specified Wikipedia pages.
+
+        Args:
+            pages (List[str]): List of Wikipedia page titles to read.
+            **load_kwargs: Additional keyword arguments to pass to the `wikipedia.page` method.
+
+        Returns:
+            List[str]: A list of strings, each containing the content of a Wikipedia page.
+
+        Raises:
+            wikipedia.exceptions.DisambiguationError: If a page title is ambiguous and requires
+                disambiguation.
+            wikipedia.exceptions.PageError: If a page title does not correspond to any page.
+            Exception: For any other unexpected exceptions during data retrieval.
+        """
+        import wikipedia
+
+        contents = []
+        for page in pages:
+            try:
+                wiki_page = wikipedia.page(page, **load_kwargs)
+                page_content = wiki_page.content
+                contents.append(page_content)
+            except wikipedia.exceptions.DisambiguationError as e:
+                print(f"DisambiguationError for page '{page}': {e.options}")
+            except wikipedia.exceptions.PageError:
+                print(f"PageError: The page '{page}' does not exist.")
+            except Exception as e:
+                print(f"Unexpected error while processing page '{page}': {e}")
+        if len(contents) == 1:
+            return contents[0]
+
+        return contents
