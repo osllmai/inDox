@@ -23,7 +23,7 @@ class YoutubeTranscriptReader:
         """
         return "YoutubeTranscriptReader"
 
-    def load_data(self, ytlinks: List[str], **load_kwargs: Any) -> List[Document]:
+    def load_data(self, ytlinks: List[str], **load_kwargs: Any) -> List[Document] | Document:
         """Load transcripts from the provided YouTube video links.
 
         Args:
@@ -62,8 +62,48 @@ class YoutubeTranscriptReader:
                 print(f"ValueError: {e}")
             except Exception as e:
                 print(f"Unexpected error while processing link '{link}': {e}")
+        if len(documents) == 1:
+            return documents[0]
 
         return documents
+
+    def load_content(self, ytlinks: List[str], **load_kwargs: Any) -> List[str] | str:
+        """Load transcripts from the provided YouTube video links.
+
+        Args:
+            ytlinks (List[str]): List of YouTube video links from which transcripts are to be fetched.
+            **load_kwargs: Additional keyword arguments to pass to `YouTubeTranscriptApi.get_transcript`.
+
+        Returns:
+            List[str]: A list of strings, each containing the transcript for a YouTube video.
+
+        Raises:
+            ImportError: If the `youtube_transcript_api` package is not installed.
+            ValueError: If the YouTube link format is invalid and cannot extract the video ID.
+            Exception: For other unexpected errors that may occur while fetching transcripts.
+        """
+        try:
+            from youtube_transcript_api import YouTubeTranscriptApi
+        except ImportError:
+            raise ImportError(
+                "`youtube_transcript_api` package not found. Please install it using `pip install youtube-transcript-api`."
+            )
+
+        transcripts = []
+        for link in ytlinks:
+            try:
+                video_id = self._extract_video_id(link)
+                srt = YouTubeTranscriptApi.get_transcript(video_id, languages=self.languages, **load_kwargs)
+                transcript = "\n".join(chunk["text"] for chunk in srt)
+                transcripts.append(transcript)
+            except ValueError as e:
+                print(f"ValueError: {e}")
+            except Exception as e:
+                print(f"Unexpected error while processing link '{link}': {e}")
+        if len(transcripts) == 1:
+            return transcripts[0]
+
+        return transcripts
 
     def _extract_video_id(self, link: str) -> str:
         """Extract the video ID from a YouTube link.
