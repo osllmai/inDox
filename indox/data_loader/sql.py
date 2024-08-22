@@ -35,3 +35,4 @@ class Sql:
         except Exception as e:
             raise RuntimeError(f"Error loading SQL file: {e}")
 
+

@@ -51,4 +51,3 @@ class Pptx:
         except Exception as e:
             raise RuntimeError(f"Error loading PowerPoint file: {e}")
 
-

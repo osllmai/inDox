@@ -3,6 +3,7 @@ from indox.core.document_object import Document
 import os
 from typing import List
 
+
 class OpenPyXl:
     """
     Load an Excel file and extract its data and metadata.

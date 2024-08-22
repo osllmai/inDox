@@ -47,4 +47,3 @@ class Docx:
         except Exception as e:
             raise RuntimeError(f"Error loading DOCX file: {e}")
 
-

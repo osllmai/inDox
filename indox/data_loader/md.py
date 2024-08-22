@@ -1,7 +1,10 @@
 import os
 from indox.core.document_object import Document
 from typing import List
+
 class Md:
+
+def Md(file_path: str):
     """
     Load a Markdown file and extract its text and metadata.
 
@@ -18,6 +21,7 @@ class Md:
     Notes:
     - Metadata includes the file path and a fixed page number of 1.
     """
+
 
     def __init__(self, file_path: str):
         self.file_path = os.path.abspath(file_path)

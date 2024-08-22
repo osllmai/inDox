@@ -2,6 +2,7 @@ from indox.core.document_object import Document
 from typing import List
 import os
 
+
 class Rtf:
     """
     Load an RTF file and extract its text and metadata.
@@ -40,3 +41,4 @@ class Rtf:
                 return [Document(page_content=text, metadata=metadata_dict)]
         except Exception as e:
             raise RuntimeError(f"Error loading RTF file: {e}")
+

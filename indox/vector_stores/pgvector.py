@@ -2,6 +2,8 @@ from indox.core import Document
 from loguru import logger
 import sys
 
+from indox.core.vectorstore import VectorStore
+
 # Set up logging
 logger.remove()  # Remove the default logger
 logger.add(sys.stdout,
@@ -13,7 +15,7 @@ logger.add(sys.stdout,
            level="ERROR")
 
 
-class PGVector:
+class PGVector(VectorStore):
     """
     A concrete implementation of VectorStoreBase using PostgreSQL for storage.
 
@@ -59,7 +61,7 @@ class PGVector:
         """
         return f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.dbname}"
 
-    def add_document(self, docs):
+    def add(self, docs):
         """
         Adds documents to the PostgreSQL vector store.
 
@@ -76,18 +78,22 @@ class PGVector:
             logger.error(f"Failed to add document: {e}")
             raise RuntimeError(f"Can't add document to the vector store: {e}")
 
-    def retrieve(self, query: str, top_k: int = 5):
+    def _similarity_search(self, query: str, k: int = 5):
         """
         Retrieves documents similar to the given query from the PostgreSQL vector store.
 
         Args:
             query (str): The query to retrieve similar documents.
-            top_k (int, optional): The number of top similar documents to retrieve. Defaults to 5.
+            k (int, optional): The number of top similar documents to retrieve. Defaults to 5.
 
-        Returns:
-            Tuple[List[str], List[float]]: The context and scores of the retrieved documents.
+
         """
-        retrieved = self.db.similarity_search_with_score(query, k=top_k)
-        context = [d[0].page_content for d in retrieved]
-        scores = [d[1] for d in retrieved]
-        return context, scores
+        # retrieved = self.db.similarity_search(query, k=top_k)
+        # context = [d[0].page_content for d in retrieved]
+        # scores = [d[1] for d in retrieved]
+        # return context, scores
+        embedding = self.embeddings.embed_query(text=query)
+        return self.db.similarity_search_by_vector(
+            embedding=embedding,
+            k=k
+        )

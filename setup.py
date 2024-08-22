@@ -13,10 +13,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name='Indox',
-    version='0.1.19',
-    license='MIT',
+    version='0.1.22',
+    license='AGPL-3.0',
     packages=find_packages(),
-    package_data={'Indox': ['config.yaml']},
     include_package_data=True,
     description='Indox Retrieval Augmentation',
     long_description=long_description,
@@ -24,16 +23,27 @@ setup(
     author='nerdstudio',
     author_email='ashkan@nematifamilyfundation.onmicrosoft.com',
     url='https://github.com/osllmai/inDox',
-    keywords=['RAG', 'LLM'],
+    keywords=[
+        'RAG',
+        'LLM',
+        'retrieval-augmented generation',
+        'machine learning',
+        'natural language processing',
+        'NLP',
+        'AI',
+        'deep learning',
+        'language models'
+    ],
     install_requires=packages,
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
     python_requires='>=3.9',
 )

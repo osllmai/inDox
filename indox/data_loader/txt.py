@@ -35,3 +35,4 @@ class Txt:
             return [document]
         except Exception as e:
             raise RuntimeError(f"Error loading text file: {e}")
+

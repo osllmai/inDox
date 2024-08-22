@@ -1,7 +1,8 @@
 import csv
-import os
-from typing import List, Dict, Any
 from indox.core.document_object import Document
+from typing import List, Dict, Any
+import os
+
 
 class Csv:
     """
@@ -55,5 +56,6 @@ class Csv:
             raise UnicodeDecodeError(f"Error decoding CSV file: {self.file_path}. Details: {e}")
         except Exception as e:
             raise RuntimeError(f"Unexpected error while reading the CSV file: {self.file_path}. Details: {e}")
+
 
 

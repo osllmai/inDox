@@ -53,4 +53,3 @@ class PyPdf4:
         except Exception as e:
             raise RuntimeError(f"Unexpected error while processing PDF file: {self.file_path}. Details: {e}")
 
-

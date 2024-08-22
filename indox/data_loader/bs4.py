@@ -1,7 +1,9 @@
 from indox.core.document_object import Document
 from typing import List
+
 import os
 from bs4 import BeautifulSoup
+
 
 class Bs4:
     """
