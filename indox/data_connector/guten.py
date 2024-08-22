@@ -41,6 +41,26 @@ class GutenbergReader:
             }
         )
 
+    def get_content(self, book_id: str) -> Optional[str]:
+        """
+        Fetch a book from Project Gutenberg by its ID.
+
+        :param book_id: The ID of the book on Project Gutenberg.
+        :return: The text content of the book, or None if the book cannot be fetched.
+        """
+        url = f"{self.BASE_URL}/{book_id}/{book_id}-0.txt"
+        try:
+            response = self.session.get(url)
+            response.raise_for_status()  # Raises an HTTPError for bad responses (4xx and 5xx)
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to fetch book with ID {book_id}. Error: {str(e)}")
+            return None
+
+        content = response.text
+        text = self._extract_text(content)
+
+        return text
+
     def _extract_title(self, content: str) -> str:
         """
         Extract the title of the book from its content.
