@@ -4,7 +4,7 @@ from typing import List, Dict, Any
 import os
 
 
-def Csv(file_path: str, metadata: Dict[str, Any] = None) -> List[Document]:
+class Csv:
     """
     Load a CSV file and return its content as a list of `Document` objects.
 
@@ -12,49 +12,50 @@ def Csv(file_path: str, metadata: Dict[str, Any] = None) -> List[Document]:
     - file_path (str): The path to the CSV file to be loaded.
     - metadata (dict, optional): Additional metadata to include in each `Document`. Default is None.
 
-    Returns:
-    - List[Document]: A list of `Document` objects, each containing the CSV rows and associated metadata.
+    Methods:
+    - load_file(): Reads the CSV file and creates a list of `Document` objects with associated metadata.
 
-
-    Notes:
-    - Metadata can be customized and will be included in each `Document` object along with the CSV row content.
+    Raises:
+    - FileNotFoundError: If the specified file does not exist.
+    - UnicodeDecodeError: If there is an issue decoding the CSV file.
+    - RuntimeError: For any other errors encountered during CSV processing.
     """
 
-    try:
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"File not found: {file_path}")
+    def __init__(self, file_path: str, metadata: Dict[str, Any] = None):
+        self.file_path = os.path.abspath(file_path)
+        self.metadata = metadata if metadata is not None else {}
+
+    def load(self) -> List[Document]:
+        if not os.path.exists(self.file_path):
+            raise FileNotFoundError(f"File not found: {self.file_path}")
 
         try:
-            # First, determine the number of rows in the CSV file
-            with open(file_path, 'r', newline='', encoding='utf-8') as f:
+            with open(self.file_path, 'r', newline='', encoding='utf-8') as f:
                 reader = csv.reader(f)
-                num_rows = sum(1 for _ in reader)  # Count the number of rows
+                num_rows = sum(1 for _ in reader)
 
-            with open(file_path, 'r', newline='', encoding='utf-8') as f:
+            documents = []
+            metadata_dict = {
+                'source': self.file_path,
+                'pages': 1,
+                'num_rows': num_rows
+            }
+
+            metadata_dict.update(self.metadata)
+
+            # Read the CSV file and create Document objects
+            with open(self.file_path, 'r', newline='', encoding='utf-8') as f:
                 reader = csv.reader(f)
-                documents = []
-                metadata_dict = {
-                    'source': os.path.abspath(file_path),
-                    'pages': 1
-                }
-
-                if metadata:
-                    metadata_dict.update(metadata)
-
-                for i, row in enumerate(reader):
+                for row in reader:
                     row_content = ','.join(row)
-
-                    # Create a Document for each row
                     document = Document(page_content=row_content, **metadata_dict)
                     documents.append(document)
 
-                return documents
+            return documents
         except UnicodeDecodeError as e:
-            raise UnicodeDecodeError(f"Error decoding CSV file: {file_path}. Details: {e}")
+            raise UnicodeDecodeError(f"Error decoding CSV file: {self.file_path}. Details: {e}")
         except Exception as e:
-            raise RuntimeError(f"Unexpected error while reading the CSV file: {file_path}. Details: {e}")
+            raise RuntimeError(f"Unexpected error while reading the CSV file: {self.file_path}. Details: {e}")
 
-    except FileNotFoundError as e:
-        raise FileNotFoundError(f"File not found: {file_path}. Details: {e}")
-    except Exception as e:
-        raise RuntimeError(f"Unexpected error occurred: {file_path}. Details: {e}")
+
+
