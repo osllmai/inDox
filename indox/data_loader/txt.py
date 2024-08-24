@@ -1,5 +1,5 @@
-from indox.core.document_object import Document
-import os
+# from indox.core.document_object import Document
+# import os
 
 class Txt:
     """
@@ -25,14 +25,14 @@ class Txt:
                 text = f.read()
 
             # Metadata extraction
-            metadata_dict = {
-                'source': os.path.basename(self.file_path),
-                'page': 1
-            }
+            # metadata_dict = {
+            #     'source': os.path.basename(self.file_path),
+            #     'page': 1
+            # }
+            #
+            # document = Document(page_content=text, **metadata_dict)
 
-            document = Document(page_content=text, **metadata_dict)
-
-            return [document]
+            return text
         except Exception as e:
             raise RuntimeError(f"Error loading text file: {e}")
 
