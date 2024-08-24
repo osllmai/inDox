@@ -2,6 +2,7 @@ import os
 from indox.core.document_object import Document
 from typing import List
 
+
 class Md:
     """
     Load a Markdown file and extract its text and metadata.
@@ -20,23 +21,22 @@ class Md:
     - Metadata includes the file path and a fixed page number of 1.
     """
 
-
     def __init__(self, file_path: str):
         self.file_path = os.path.abspath(file_path)
 
-    def load(self) -> List[Document]:
+    def load(self):
         try:
             with open(self.file_path, 'r', encoding='utf-8') as f:
                 text = f.read()
 
-            metadata_dict = {
-                'source': self.file_path,
-                'page': 1,
-            }
-
-            document = Document(page_content=text, **metadata_dict)
-
-            return [document]
+            # metadata_dict = {
+            #     'source': self.file_path,
+            #     'page': 1,
+            # }
+            #
+            # document = Document(page_content=text, **metadata_dict)
+            #
+            # return [document]
+            return text
         except Exception as e:
             raise RuntimeError(f"Error loading Markdown file: {e}")
-

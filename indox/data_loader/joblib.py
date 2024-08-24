@@ -22,19 +22,20 @@ class Joblib:
     def __init__(self, file_path: str):
         self.file_path = os.path.abspath(file_path)
 
-    def load(self) -> List[Document]:
+    def load(self):
         import joblib
 
         try:
             content = joblib.load(self.file_path)
 
-            metadata_dict = {
-                'source': self.file_path,
-                'page': 1
-            }
-            document = Document(page_content=str(content), metadata=metadata_dict)
-
-            return [document]
+            # metadata_dict = {
+            #     'source': self.file_path,
+            #     'page': 1
+            # }
+            # document = Document(page_content=str(content), metadata=metadata_dict)
+            #
+            # return [document]
+            return content
         except Exception as e:
             raise RuntimeError(f"Error loading file: {e}")
 

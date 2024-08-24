@@ -24,14 +24,15 @@ class Sql:
             with open(self.file_path, 'r', encoding='utf-8') as f:
                 text = f.read()
 
-            metadata_dict = {
-                'source': os.path.basename(self.file_path),
-                'page': 1
-            }
-
-            document = Document(page_content=text, **metadata_dict)
-
-            return [document]
+            # metadata_dict = {
+            #     'source': os.path.basename(self.file_path),
+            #     'page': 1
+            # }
+            #
+            # document = Document(page_content=text, **metadata_dict)
+            #
+            # return [document]
+            return text
         except Exception as e:
             raise RuntimeError(f"Error loading SQL file: {e}")
 
