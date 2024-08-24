@@ -2,7 +2,6 @@ from indox.core.document_object import Document
 from typing import List
 
 import os
-from bs4 import BeautifulSoup
 
 
 class Bs4:
@@ -28,6 +27,8 @@ class Bs4:
         self.file_path = os.path.abspath(file_path)
 
     def load(self) -> List[Document]:
+        from bs4 import BeautifulSoup
+
         if not os.path.exists(self.file_path):
             raise FileNotFoundError(f"File not found: {self.file_path}")
 

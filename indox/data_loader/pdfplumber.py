@@ -52,30 +52,4 @@ class PdfPlumber:
             raise RuntimeError(f"Unexpected error while processing PDF file: {self.file_path}. Details: {e}")
 
 
-    import pdfplumber
 
-    file_path = os.path.abspath(file_path)
-
-    try:
-        with pdfplumber.open(file_path) as pdf:
-            documents = []
-            for i, page in enumerate(pdf.pages):
-                try:
-                    text = page.extract_text()
-                except Exception as e:
-                    raise RuntimeError(f"Error extracting text from page {i}. Details: {e}")
-
-                # Metadata structure
-                metadata_dict = {
-                    'source': file_path,
-                    'page': i
-                }
-
-                document = Document(page_content=text, metadata=metadata_dict)
-                documents.append(document)
-
-            return documents
-    except FileNotFoundError as e:
-        raise FileNotFoundError(f"File not found: {file_path}. Details: {e}")
-    except Exception as e:
-        raise RuntimeError(f"Unexpected error while processing PDF file: {file_path}. Details: {e}")

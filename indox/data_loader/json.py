@@ -51,21 +51,3 @@ class Json:
             raise RuntimeError(f"Error loading JSON file: {e}")
 
 
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            json_data = json.load(f)
-            documents = []
-
-            metadata_dict = {
-                'source':  os.path.abspath(file_path),
-                'num_entries': len(json_data),
-            }
-
-            for key, value in json_data.items():
-                content = f"{key}: {value}"
-                document = Document(metadata={'source': file_path, 'key': key}, page_content=content)
-                documents.append(document)
-
-            return documents
-    except Exception as e:
-        raise RuntimeError(f"Error loading JSON file: {e}")
