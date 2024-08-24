@@ -1,6 +1,7 @@
 from indox.splitter import RecursiveCharacterTextSplitter
 from typing import List, Any
 
+
 class MarkdownTextSplitter(RecursiveCharacterTextSplitter):
     """
     A class for splitting Markdown-formatted text into chunks.
@@ -62,10 +63,10 @@ class MarkdownTextSplitter(RecursiveCharacterTextSplitter):
         """
         lines = text.split('\n')
         for i in range(len(lines) - 1):
-            if set(lines[i+1]) == {'='}:
+            if set(lines[i + 1]) == {'='}:
                 lines[i] = '# ' + lines[i]
-                lines[i+1] = ''
-            elif set(lines[i+1]) == {'-'}:
+                lines[i + 1] = ''
+            elif set(lines[i + 1]) == {'-'}:
                 lines[i] = '## ' + lines[i]
-                lines[i+1] = ''
+                lines[i + 1] = ''
         return '\n'.join(lines)

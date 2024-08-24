@@ -141,7 +141,7 @@ pip install Indox
 To install the latest development version, you may run
 
 ```
-pip install git+https://github.com/osllmai/inDox@main
+pip install git+https://github.com/osllmai/inDox@master
 ```
 
 

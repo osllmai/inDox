@@ -1,6 +1,7 @@
 import re
 from typing import List
 
+
 class CharacterTextSplitter:
     """
     A class for splitting text into chunks based on a specified separator.
@@ -18,11 +19,11 @@ class CharacterTextSplitter:
     """
 
     def __init__(
-        self,
-        separator: str = "\n\n",
-        chunk_size: int = 4000,
-        chunk_overlap: int = 200,
-        length_function: callable = len,
+            self,
+            separator: str = "\n\n",
+            chunk_size: int = 4000,
+            chunk_overlap: int = 200,
+            length_function: callable = len,
     ):
         """
         Initialize the CharacterTextSplitter.

@@ -24,7 +24,7 @@ class Rtf:
     def __init__(self, file_path: str):
         self.file_path = file_path
 
-    def load(self) -> List[Document]:
+    def load(self):
         import pyth.plugins.rtf15.reader as rtf_reader
         import pyth.plugins.plaintext.writer as plaintext_writer
 
@@ -33,12 +33,13 @@ class Rtf:
                 doc = rtf_reader.read(f)
                 text = plaintext_writer.write(doc).getvalue()
 
-                metadata_dict = {
-                    'source': os.path.abspath(self.file_path),
-                    'page': 1
-                }
-
-                return [Document(page_content=text, metadata=metadata_dict)]
+                # metadata_dict = {
+                #     'source': os.path.abspath(self.file_path),
+                #     'page': 1
+                # }
+                #
+                # return [Document(page_content=text, metadata=metadata_dict)]
+                return text
         except Exception as e:
             raise RuntimeError(f"Error loading RTF file: {e}")
 
