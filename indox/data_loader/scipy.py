@@ -2,16 +2,16 @@ from indox.core.document_object import Document
 from typing import List
 
 
-def Scipy(file_path: str) -> List[Document]:
+class Scipy:
     """
     Load a MATLAB .mat file and extract its contents as metadata.
 
     Parameters:
     - file_path (str): The path to the .mat file to be loaded.
 
-    Returns:
-    - List[Document]: A list of `Document` objects, each containing the data variables
-      from the .mat file as metadata.
+    Methods:
+    - load_file(): Loads the .mat file and returns a list containing `Document` objects with
+                   the data variables from the file as metadata.
 
     Raises:
     - RuntimeError: If there is an error in loading the .mat file.
@@ -20,27 +20,31 @@ def Scipy(file_path: str) -> List[Document]:
     - MATLAB-specific metadata such as `__header__`, `__version__`, and `__globals__` are removed.
     - Metadata includes only 'source' and page number.
     """
-    from scipy.io import loadmat
+    def __init__(self, file_path: str):
+        self.file_path = file_path
 
-    try:
-        mat_data = loadmat(file_path)
+    def load(self) -> List[Document]:
+        from scipy.io import loadmat
+        try:
+            mat_data = loadmat(self.file_path)
 
-        # Remove MATLAB-specific metadata
-        mat_data.pop('__header__', None)
-        mat_data.pop('__version__', None)
-        mat_data.pop('__globals__', None)
+            # Remove MATLAB-specific metadata
+            mat_data.pop('__header__', None)
+            mat_data.pop('__version__', None)
+            mat_data.pop('__globals__', None)
 
-        documents = []
+            documents = []
 
-        for i, (var_name, var_data) in enumerate(mat_data.items()):
-            metadata_dict = {
-                'source': file_path,
-                'page': i
-            }
-            document = Document(page_content=str(var_data), metadata=metadata_dict)
-            documents.append(document)
+            for i, (var_name, var_data) in enumerate(mat_data.items()):
+                metadata_dict = {
+                    'source': self.file_path,
+                    'page': i
+                }
+                document = Document(page_content=str(var_data), metadata=metadata_dict)
+                documents.append(document)
 
-        return documents
+            return documents
 
-    except Exception as e:
-        raise RuntimeError(f"Error loading MATLAB file: {e}")
+        except Exception as e:
+            raise RuntimeError(f"Error loading MATLAB file: {e}")
+

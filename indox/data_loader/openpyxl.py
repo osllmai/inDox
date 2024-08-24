@@ -1,18 +1,19 @@
 import pandas as pd
 from indox.core.document_object import Document
 import os
+from typing import List
 
 
-def OpenPyXl(file_path):
+class OpenPyXl:
     """
     Load an Excel file and extract its data and metadata.
 
     Parameters:
     - file_path (str): Path to the Excel file to be loaded.
 
-    Returns:
-    - List[Document]: A list of `Document` objects, each containing the text content of a sheet
-      and the associated metadata.
+    Methods:
+    - load_file(): Loads the Excel file and returns a list of `Document` objects, each containing the text
+                   content of a sheet and the associated metadata.
 
     Raises:
     - RuntimeError: If there is an error in loading the Excel file.
@@ -23,27 +24,35 @@ def OpenPyXl(file_path):
     - The data in each sheet is converted to a string for storage in the `Document` object.
     """
 
-    from openpyxl import load_workbook
+    def __init__(self, file_path: str):
+        self.file_path = os.path.abspath(file_path)
 
-    try:
-        workbook = load_workbook(file_path, read_only=True)
-        properties = workbook.properties
+    def load(self) -> List[Document]:
+        from openpyxl import load_workbook
 
-        metadata_dict = {
-            "source": os.path.abspath(file_path),
-            "page": 1
-        }
+        try:
+            # Load workbook properties
+            workbook = load_workbook(self.file_path, read_only=True)
+            properties = workbook.properties
 
-        # Load the actual data
-        excel_data = pd.read_excel(file_path, sheet_name=None)
+            # Metadata extraction
+            metadata_dict = {
+                "source": self.file_path,
+                "page": 1
+            }
 
-        documents = []
-        for sheet_name, data in excel_data.items():
-            text_content = data.to_string(index=False)
-            document = Document(page_content=text_content, sheet_name=sheet_name, **metadata_dict)
-            documents.append(document)
+            # Load the actual data
+            excel_data = pd.read_excel(self.file_path, sheet_name=None)
 
-        return documents
+            documents = []
+            for sheet_name, data in excel_data.items():
+                text_content = data.to_string(index=False)
+                document = Document(page_content=text_content, sheet_name=sheet_name, **metadata_dict)
+                documents.append(document)
 
-    except Exception as e:
-        raise RuntimeError(f"Error loading Excel file: {e}")
+            return documents
+
+        except Exception as e:
+            raise RuntimeError(f"Error loading Excel file: {e}")
+
+
