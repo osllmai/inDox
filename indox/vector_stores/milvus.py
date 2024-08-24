@@ -1,24 +1,27 @@
-import os
-from tqdm import tqdm
 import json
-import logging
-from pymilvus import MilvusClient, MilvusException
 from typing import Any, Dict, List, Optional, Tuple, Union, Callable, Literal, Iterable
-from indox.core import VectorStore, Embeddings
-from indox import IndoxRetrievalAugmentation
 import uuid
 from indox.core import Embeddings, VectorStore, Document
+from loguru import logger
+import sys
+
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
+
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
+
 
 
 class Milvus:
     """
     A wrapper class for interacting with the Milvus vector database.
     """
-
     def __init__(self, collection_name, embedding_model):
         """
         Initialize the MilvusWrapper with collection name, embedding model, and QA model.
@@ -27,6 +30,8 @@ class Milvus:
             collection_name (str): The name of the collection in Milvus.
             embedding_model (object): An object with methods `embed_query` and `embed_documents`.
         """
+        from pymilvus import MilvusClient, MilvusException
+
         self.collection_name = collection_name
         self.embedding_model = embedding_model
         self.embedding_dim = None
@@ -166,6 +171,8 @@ class Milvus:
         Args:
             text_lines (List[str]): List of text lines to insert.
         """
+        from tqdm import tqdm
+
         data = [{"id": i, "vector": self.emb_text(line), "text": line} for i, line in
                 enumerate(tqdm(text_lines, desc="Creating embeddings"))]
         self.milvus_client.insert(collection_name=self.collection_name, data=data)
