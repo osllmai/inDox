@@ -118,6 +118,16 @@ timeline
     New Vector Store Integrations : New Vector Stores Supported (MongoDB, Pathway, Milvus)
     Direct Document Storage : Database.add() Method for Direct Document Storage
 
+    section 2024-08-24
+    Version 0.1.23 : Enhanced Splitters, Weaviate Integration, Optimized Data Handling
+
+    section 2024-08-24 - Details
+    New Splitters Added : semantic_text_splitter, RecursiveCharacterTextSplitter, CharacterTextSplitter, MarkdownTextSplitter
+    New Vector Store Integration : Weaviate
+    Refactored Data Loaders and Connectors : Optimized separation of data loaders and connectors for better performance and usability
+    General Improvements : Enhanced flexibility and optimization, broader integration capabilities
+
+
 ```
 
 
