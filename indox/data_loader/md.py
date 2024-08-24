@@ -3,8 +3,6 @@ from indox.core.document_object import Document
 from typing import List
 
 class Md:
-
-def Md(file_path: str):
     """
     Load a Markdown file and extract its text and metadata.
 

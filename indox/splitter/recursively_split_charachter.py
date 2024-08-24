@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+
 class RecursiveCharacterTextSplitter:
     """
     A class for splitting text into chunks recursively based on specified separators.
@@ -14,11 +15,12 @@ class RecursiveCharacterTextSplitter:
         chunk_overlap (int): The number of characters to overlap between chunks.
         separators (List[str]): A list of separators to use for splitting the text.
     """
+
     def __init__(
-        self,
-        chunk_size: int = 4000,
-        chunk_overlap: int = 200,
-        separators: Optional[List[str]] = None
+            self,
+            chunk_size: int = 4000,
+            chunk_overlap: int = 200,
+            separators: Optional[List[str]] = None
     ):
         """
         Initialize the RecursiveCharacterTextSplitter.
