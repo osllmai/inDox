@@ -3,6 +3,7 @@ from typing import List
 from indox.core.document_object import Document
 import os
 
+
 class Json:
     """
     Load a JSON file and return its content as a list of `Document` objects.
@@ -50,4 +51,6 @@ class Json:
         except Exception as e:
             raise RuntimeError(f"Error loading JSON file: {e}")
 
-
+    def load_and_split(self, splitter, remove_stopwords=False):
+        from indox.data_loader.utils import load_and_process_input
+        return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)

@@ -52,3 +52,6 @@ class PyPdf2:
         except Exception as e:
             raise RuntimeError(f"Unexpected error while processing PDF file: {self.file_path}. Details: {e}")
 
+    def load_and_split(self, splitter, remove_stopwords=False):
+        from indox.data_loader.utils import load_and_process_input
+        return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)

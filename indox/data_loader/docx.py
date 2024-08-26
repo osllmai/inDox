@@ -2,6 +2,7 @@ import os
 from indox.core.document_object import Document
 from typing import List
 
+
 class Docx:
     """
     Load a DOCX file and extract its text and metadata, including estimated page numbers.
@@ -47,3 +48,6 @@ class Docx:
         except Exception as e:
             raise RuntimeError(f"Error loading DOCX file: {e}")
 
+    def load_and_split(self, splitter, remove_stopwords=False):
+        from indox.data_loader.utils import load_and_process_input
+        return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)

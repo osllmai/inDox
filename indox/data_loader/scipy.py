@@ -20,6 +20,7 @@ class Scipy:
     - MATLAB-specific metadata such as `__header__`, `__version__`, and `__globals__` are removed.
     - Metadata includes only 'source' and page number.
     """
+
     def __init__(self, file_path: str):
         self.file_path = file_path
 
@@ -48,3 +49,6 @@ class Scipy:
         except Exception as e:
             raise RuntimeError(f"Error loading MATLAB file: {e}")
 
+    def load_and_split(self, splitter, remove_stopwords=False):
+        from indox.data_loader.utils import load_and_process_input
+        return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)

@@ -26,7 +26,7 @@ class Bs4:
     def __init__(self, file_path: str):
         self.file_path = os.path.abspath(file_path)
 
-    def load(self) -> List[Document]:
+    def load(self):
         from bs4 import BeautifulSoup
 
         if not os.path.exists(self.file_path):
@@ -46,16 +46,8 @@ class Bs4:
         except Exception as e:
             raise RuntimeError(f"Error parsing HTML content: {self.file_path}. Details: {e}")
 
-        metadata_dict = {
-            'source': self.file_path,
-            'page': 1
-        }
+        return text
 
-        try:
-            document = Document(page_content=text, **metadata_dict)
-        except Exception as e:
-            raise RuntimeError(f"Error creating Document object: {self.file_path}. Details: {e}")
-
-        return [document]
-
-
+    def load_and_split(self, splitter, remove_stopwords=False):
+        from indox.data_loader.utils import load_and_process_input
+        return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)

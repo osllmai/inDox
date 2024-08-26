@@ -2,6 +2,7 @@ import os
 from indox.core.document_object import Document
 from typing import List
 
+
 class Joblib:
     """
     Load a PKL (Pickle) or Joblib file and extract its content.
@@ -39,5 +40,6 @@ class Joblib:
         except Exception as e:
             raise RuntimeError(f"Error loading file: {e}")
 
-
-
+    def load_and_split(self, splitter, remove_stopwords=False):
+        from indox.data_loader.utils import load_and_process_input
+        return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)

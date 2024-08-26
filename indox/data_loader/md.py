@@ -40,3 +40,7 @@ class Md:
             return text
         except Exception as e:
             raise RuntimeError(f"Error loading Markdown file: {e}")
+
+    def load_and_split(self, splitter, remove_stopwords=False):
+        from indox.data_loader.utils import load_and_process_input
+        return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)

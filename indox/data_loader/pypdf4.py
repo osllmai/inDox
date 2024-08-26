@@ -2,6 +2,7 @@ from indox.core.document_object import Document
 from typing import List
 import os
 
+
 class PyPdf4:
     """
     Load a PDF file and extract its text and metadata using PyPDF4.
@@ -53,3 +54,6 @@ class PyPdf4:
         except Exception as e:
             raise RuntimeError(f"Unexpected error while processing PDF file: {self.file_path}. Details: {e}")
 
+    def load_and_split(self, splitter, remove_stopwords=False):
+        from indox.data_loader.utils import load_and_process_input
+        return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)
