@@ -4,7 +4,7 @@ from indox.core import Document
 import csv
 import os
 
-class CSV:
+class Csv:
     """
     Load a CSV file and extract its data as Document objects.
 
