@@ -7,7 +7,7 @@ ArxivReader is a data connector for loading paper information from the arXiv rep
 To use ArxivReader:
 
 ```python
-from indox.data_connector import ArxivReader
+from indox.data_connectors import ArxivReader
 
 reader = ArxivReader()
 documents = reader.load_data(paper_ids=["1234.56789"])
@@ -49,8 +49,9 @@ source indox/bin/activate
 ```
 ## Get started
 ### Import Essential Libraries
+
 ```python
-from indox.data_connector import ArxivReader
+from indox.data_connectors import ArxivReader
 
 reader = ArxivReader()
 
@@ -60,7 +61,7 @@ documents = reader.load_data(paper_ids)
 for doc in documents:
     print(f"Title: {doc.metadata['title']}")
     print(f"Authors: {doc.metadata['authors']}")
-    print(f"Abstract: {doc.content[:200]}...") 
+    print(f"Abstract: {doc.content[:200]}...")
     print(f"arXiv URL: {doc.metadata['arxiv_url']}")
     print("---")
 ```

@@ -7,7 +7,7 @@ GithubRepositoryReader is a data connector for loading file content from GitHub 
 To use GithubRepositoryReader:
 
 ```python
-from indox.data_connector import GithubClient, GithubRepositoryReader
+from indox.data_connectors import GithubClient, GithubRepositoryReader
 
 github_client = GithubClient(github_token="your_github_token")
 reader = GithubRepositoryReader(
@@ -77,9 +77,9 @@ source indox/bin/activate
 ### Import Essential Libraries and Set Up Client
 
 ```python
-from indox.data_connector import GithubClient, GithubRepositoryReader
+from indox.data_connectors import GithubClient, GithubRepositoryReader
 from dotenv import load_dotenv
-import os 
+import os
 
 load_dotenv('github.env')
 github_token = os.environ['github_token']
