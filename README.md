@@ -16,7 +16,7 @@
 </br>
 
 [![License](https://img.shields.io/github/license/osllmai/inDox)](https://github.com/osllmai/inDox/blob/main/LICENSE)
-[![PyPI](https://badge.fury.io/py/Indox.svg)](https://pypi.org/project/Indox/0.1.22/)
+[![PyPI](https://badge.fury.io/py/Indox.svg)](https://pypi.org/project/Indox/0.1.24/)
 [![Python](https://img.shields.io/pypi/pyversions/Indox.svg)](https://pypi.org/project/Indox/0.1.8/)
 [![Downloads](https://static.pepy.tech/badge/indox)](https://pepy.tech/project/indox)
 
@@ -96,29 +96,6 @@ workflow, bringing clarity and organization to your data retrieval needs.
 | HuggingFace Models(Mistral)    | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/hf_mistral_SimpleReader.ipynb) |
 | Ollama                         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/ollama.ipynb)                  |
 
-## Timeline
-
-```mermaid
-timeline
-    title Indox Release Timeline
-
-    section 2024-07-21
-    Version 0.1.17 : Performance Enhancements & Lighter Installation
-
-    section 2024-08-18
-    Version 0.1.21 : MongoDB Integration, Weaviate Support, Bug Fixes, Performance Optimizations
-
-    section 2024-08-22
-    Version 0.1.22 : Modular Data Loading, Expanded Integrations, New Embedding Models, New Vector Stores, Direct Document Storage
-
-    section 2024-08-22 - Details
-    Modular Data Loading and Splitting : Data Loader and Data Connector Separation, New Data Loaders Added (PyPdf2, PyPdf4, PdfMiner, PdfPlumber, OpenPyXl, Docx, Csv, Txt, Json, Bs4, Md, Pptx, Sql, Joblib, Scipy)
-    Enhanced Data Connectors : New Data Connectors Added (WikipediaReader, YoutubeTranscriptReader, ArxivReader, TwitterTweetReader, GutenbergReader, GithubClient & GithubRepositoryReader, DiscordChannelReader, GoogleDoc, GoogleSheet, GoogleDrive, GoogleChat, MapsTextSearch)
-    Expanded Embedding Model Support : New Embedding Models Supported (Cohere, Elasticsearch, Clarifai, GPT4All, Ollama)
-    New Vector Store Integrations : New Vector Stores Supported (MongoDB, Pathway, Milvus)
-    Direct Document Storage : Database.add() Method for Direct Document Storage
-
-```
 
 
 

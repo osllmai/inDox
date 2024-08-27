@@ -15,4 +15,4 @@ tokenizers==0.15.2
 umap_learn==0.5.6
 unstructured==0.15.5
 nltk==3.8.1
-
+pillow_heif==0.18.0
