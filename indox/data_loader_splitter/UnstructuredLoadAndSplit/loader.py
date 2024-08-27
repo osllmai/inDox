@@ -2,6 +2,8 @@ import importlib
 from loguru import logger
 import sys
 
+from indox.data_loaders.utils import convert_latex_to_md
+
 # Set up logging
 logger.remove()  # Remove the default logger
 logger.add(sys.stdout,
@@ -11,30 +13,6 @@ logger.add(sys.stdout,
 logger.add(sys.stdout,
            format="<red>{level}</red>: <level>{message}</level>",
            level="ERROR")
-
-
-def convert_latex_to_md(latex_path):
-    """Converts a LaTeX file to Markdown using the latex2markdown library.
-
-    Args:
-        latex_path (str): The path to the LaTeX file.
-
-    Returns:
-        str: The converted Markdown content, or None if there's an error.
-    """
-    import latex2markdown
-    try:
-        with open(latex_path, 'r') as f:
-            latex_content = f.read()
-            l2m = latex2markdown.LaTeX2Markdown(latex_content)
-            markdown_content = l2m.to_markdown()
-        return markdown_content
-    except FileNotFoundError:
-        logger.info(f"Error: LaTeX file not found at {latex_path}")
-        return None
-    except Exception as e:
-        logger.error(f"Error during conversion: {e}")
-        return None
 
 
 def import_unstructured_partition(content_type):
