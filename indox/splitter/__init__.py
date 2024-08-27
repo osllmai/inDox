@@ -2,3 +2,4 @@ from .semantic_text_splitter import semantic_text_splitter
 from .recursively_split_charachter import RecursiveCharacterTextSplitter
 from .split_charachter import CharacterTextSplitter
 from .markdown_text_splitter import MarkdownTextSplitter
+from .ai21_text_splitter import AI21SemanticTextSplitter
