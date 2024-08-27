@@ -10,16 +10,16 @@ To use AI21SemanticTextSplitter:
 from indox.splitter import AI21SemanticTextSplitter
 
 splitter = AI21SemanticTextSplitter(
-    chunk_size=4000,
-    chunk_overlap=200,
+    chunk_size=400,
+    chunk_overlap=50,
     api_key="your_ai21_api_key"
 )
 ```
 
 ## Hyperparameters
 
-- **chunk_size** [int]: Maximum size of each chunk (default: 4000). Set to 0 to disable merging.
-- **chunk_overlap** [int]: Number of characters to overlap between chunks (default: 200).
+- **chunk_size** [int]: Maximum size of each chunk (default: 400). Set to 0 to disable merging.
+- **chunk_overlap** [int]: Number of characters to overlap between chunks (default: 50).
 - **api_key** [Optional[str]]: AI21 API key (optional if set as an environment variable).
 - **api_host** [str]: Base URL for the AI21 API (default: "https://api.ai21.com/studio/v1").
 - **timeout_sec** [Optional[float]]: Timeout for API requests in seconds (optional).
@@ -63,8 +63,8 @@ from indox.splitter import AI21SemanticTextSplitter
 ### Initialize AI21SemanticTextSplitter
 ```python
 splitter = AI21SemanticTextSplitter(
-    chunk_size=4000,
-    chunk_overlap=200
+    chunk_size=400,
+    chunk_overlap=50
 )
 ```
 ### Split And Processing Chunks

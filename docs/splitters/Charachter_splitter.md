@@ -7,15 +7,15 @@ CharacterTextSplitter is a Python class designed for splitting text into chunks 
 To use CharacterTextSplitter:
 
 ```python
-from your_module import CharacterTextSplitter
+from indox.splitter import CharacterTextSplitter
 
-splitter = CharacterTextSplitter(chunk_size=4000, chunk_overlap=200)
+splitter = CharacterTextSplitter(chunk_size=400, chunk_overlap=50)
 ```
 ## Hyperparameters
 
 - **separator** [str]: The string used to split the text (default: "\n\n").
-- **chunk_size** [int]: The maximum size of each chunk (default: 4000).
-- **chunk_overlap** [int]: The number of characters to overlap between chunks (default: 200).
+- **chunk_size** [int]: The maximum size of each chunk (default: 400).
+- **chunk_overlap** [int]: The number of characters to overlap between chunks (default: 50).
 - **length_function** [callable]: A function used to calculate the length of text (default: len).
 
 ## Usage
@@ -42,12 +42,12 @@ source indox/bin/activate
 
 ### Import the CharacterTextSplitter
 ```python
-from your_module import CharacterTextSplitter
+from indox.splitter import CharacterTextSplitter
 ```
 
 ### Initialize CharacterTextSplitter
 ```python
-splitter = CharacterTextSplitter(chunk_size=4000, chunk_overlap=200)
+splitter = CharacterTextSplitter(chunk_size=400, chunk_overlap=50)
 ```
 ### Split And Processing Chunks
 ```python

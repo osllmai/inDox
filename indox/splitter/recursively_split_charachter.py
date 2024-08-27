@@ -18,8 +18,8 @@ class RecursiveCharacterTextSplitter:
 
     def __init__(
             self,
-            chunk_size: int = 4000,
-            chunk_overlap: int = 200,
+            chunk_size: int = 400,
+            chunk_overlap: int = 50,
             separators: Optional[List[str]] = None
     ):
         """

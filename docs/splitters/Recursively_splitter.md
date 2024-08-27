@@ -9,13 +9,13 @@ To use RecursiveCharacterTextSplitter:
 ```python
 from indox.splitter import RecursiveCharacterTextSplitter
 
-splitter = RecursiveCharacterTextSplitter(chunk_size=4000, chunk_overlap=200)
+splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=50)
 ```
 
 ## Hyperparameters
 
-- **chunk_size** [int]: The maximum size of each chunk (default: 4000).
-- **chunk_overlap** [int]: The number of characters to overlap between chunks (default: 200).
+- **chunk_size** [int]: The maximum size of each chunk (default: 400).
+- **chunk_overlap** [int]: The number of characters to overlap between chunks (default: 50).
 - **separators** [Optional[List[str]]]: A list of separators to use for splitting the text (default: ["\n\n", "\n", ". ", " ", ""]).
 
 ## Usage
@@ -46,7 +46,7 @@ from indox.splitter import RecursiveCharacterTextSplitter
 ```
 ### Initialize RecursiveCharacterTextSplitter
 ```python
-splitter = RecursiveCharacterTextSplitter(chunk_size=4000, chunk_overlap=200)
+splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=50)
 ```
 ### Split And Processing Chunks
 ```python

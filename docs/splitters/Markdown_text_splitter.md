@@ -9,7 +9,7 @@ To use MarkdownTextSplitter:
 ```python
 from indox.splitter import MarkdownTextSplitter
 
-splitter = MarkdownTextSplitter(chunk_size=1000, chunk_overlap=200)
+splitter = MarkdownTextSplitter(chunk_size=400, chunk_overlap=50)
 
 ```
 
@@ -19,8 +19,6 @@ MarkdownTextSplitter inherits all parameters from RecursiveCharacterTextSplitter
 - **chunk_size** [int]: The maximum size of each text chunk.
 - **chunk_overlap** [int]: The number of characters to overlap between chunks.
 - **length_function** [Callable[[str],int]]: Function to measure the length of given text.
-- **keep_separator** [bool]: Whether to keep the separator in the resulting chunks.
-- **add_start_index** [bool]: Whether to add the start index of each chunk in the original text.
 
 ## Usage
 ### Setting Up the Python Environment
@@ -50,7 +48,7 @@ from indox.splitter import MarkdownTextSplitter
 ```
 ### Initialize MarkdownTextSplitter
 ```python
-splitter = MarkdownTextSplitter(chunk_size=1000, chunk_overlap=200)
+splitter = MarkdownTextSplitter(chunk_size=400, chunk_overlap=50)
 ```
 ### Split And Processing Chunks
 ```python

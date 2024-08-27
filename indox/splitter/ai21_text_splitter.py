@@ -14,8 +14,8 @@ class AI21SemanticTextSplitter:
 
     def __init__(
             self,
-            chunk_size: int = 4000,
-            chunk_overlap: int = 200,
+            chunk_size: int = 400,
+            chunk_overlap: int = 50,
             api_key: Optional[str] = None,
             api_host: str = "https://api.ai21.com/studio/v1",
             timeout_sec: Optional[float] = None,
