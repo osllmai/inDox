@@ -1,53 +1,57 @@
-import os
-from indox.core.document_object import Document
-from typing import List
-
+from typing import List, Dict
+from indox.vector_stores.utils import filter_complex_metadata
+from indox.core import Document
 
 class Docx:
     """
-    Load a DOCX file and extract its text and metadata, including estimated page numbers.
+    Load a DOCX file and extract its content and metadata.
 
     Parameters:
-    - file_path (str): The path to the DOCX file to be loaded.
+    - docx_path (str): The path to the DOCX file to be loaded.
 
     Methods:
-    - load_file(): Extracts text from the DOCX file and returns a list of `Document` objects with associated metadata.
+    - load(): Reads the DOCX file, extracts text, and creates a `Document` object with metadata.
+
+    Returns:
+    - Document: A `Document` object with the text content and associated metadata.
 
     Raises:
-    - RuntimeError: If there is an error in loading the DOCX file.
+    - FileNotFoundError: If the specified file does not exist.
+    - RuntimeError: For any other errors encountered during DOCX file processing.
     """
 
-    def __init__(self, file_path: str):
-        self.file_path = os.path.abspath(file_path)
+    def __init__(self, docx_path: str):
+        self.docx_path = docx_path
+        self.content: Document = None
+        self.metadata = {}
 
-    def load(self) -> List[Document]:
-        import docx
-
+    def load(self) -> Document:
         try:
-            doc = docx.Document(self.file_path)
-            paragraphs = doc.paragraphs
+            import docx
+            from docx import Document as DocxDocument
 
-            paragraphs_per_page = 20
-            num_pages = (len(paragraphs) + paragraphs_per_page - 1) // paragraphs_per_page
+            doc = DocxDocument(self.docx_path)
+            text_content = "\n".join([para.text for para in doc.paragraphs])
 
-            # Extract text content
-            documents = []
-            for page in range(num_pages):
-                start = page * paragraphs_per_page
-                end = (page + 1) * paragraphs_per_page
-                page_text = '\n'.join([p.text for p in paragraphs[start:end]])
-                metadata_dict = {
-                    'source': self.file_path,
-                    'page': page
-                }
-                document = Document(metadata=metadata_dict, page_content=page_text)
-                documents.append(document)
+            core_properties = doc.core_properties
+            self.metadata = {prop: getattr(core_properties, prop)
+                             for prop in dir(core_properties)
+                             if not prop.startswith('_') and not callable(getattr(core_properties, prop))}
 
-            return documents
+            filtered_docx = filter_complex_metadata([self])[0]
+            self.metadata = filtered_docx.metadata
 
+            self.content = Document(page_content=text_content, **self.metadata)
+
+            return self.content
+
+
+        except FileNotFoundError:
+            raise FileNotFoundError(f"The specified file '{self.docx_path}' does not exist.")
         except Exception as e:
-            raise RuntimeError(f"Error loading DOCX file: {e}")
+            raise RuntimeError(f"An error occurred while processing the DOCX file: {e}")
 
     def load_and_split(self, splitter, remove_stopwords=False):
-        from indox.data_loader.utils import load_and_process_input
+        from indox.data_loaders.utils import load_and_process_input
         return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)
+

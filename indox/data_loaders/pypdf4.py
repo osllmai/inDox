@@ -1,6 +1,6 @@
-from indox.core.document_object import Document
 from typing import List
-import os
+from indox.vector_stores.utils import filter_complex_metadata
+from indox.core import Document
 
 
 class PyPdf4:
@@ -8,52 +8,51 @@ class PyPdf4:
     Load a PDF file and extract its text and metadata using PyPDF4.
 
     Parameters:
-    - file_path (str): The path to the PDF file to be loaded.
+    - pdf_path (str): The path to the PDF file to be loaded.
 
     Methods:
-    - load_file(): Loads the PDF file and returns a list containing `Document` objects, each with the
-                   text content of a page and the associated metadata.
+    - load(): Reads the PDF file, extracts text, and creates a list of `Document` objects with metadata.
+
+    Returns:
+    - List[Document]: A list containing `Document` objects with the text content of each page and associated metadata.
 
     Raises:
     - FileNotFoundError: If the specified file does not exist.
-    - RuntimeError: If there is an error reading the PDF file or extracting text.
+    - RuntimeError: For any other errors encountered during PDF processing.
     """
 
-    def __init__(self, file_path: str):
-        self.file_path = os.path.abspath(file_path)
-
-    def load(self) -> List[Document]:
+    def __init__(self, pdf_path: str):
         import PyPDF4
 
+        self.pdf_path = pdf_path
+        self.pages: List[Document] = []
+        self.metadata = {}
+        self.PyPDF4 = PyPDF4
+        self.filter_complex_metadata = filter_complex_metadata
+
+    def load(self) -> List[Document]:
         try:
-            with open(self.file_path, 'rb') as f:
-                try:
-                    reader = PyPDF4.PdfFileReader(f)
-                except PyPDF4.utils.PdfReadError as e:
-                    raise RuntimeError(f"Error reading PDF file: {self.file_path}. Details: {e}")
+            with open(self.pdf_path, 'rb') as file:
+                reader = self.PyPDF4.PdfFileReader(file)
+                self.metadata = {key[1:]: value for key, value in reader.getDocumentInfo().items()}
 
-                documents = []
-                for i in range(reader.getNumPages()):
-                    page = reader.getPage(i)
-                    try:
-                        text = page.extractText()
-                    except Exception as e:
-                        raise RuntimeError(f"Error extracting text from page {i}. Details: {e}")
+                filtered_pdf_reader = self.filter_complex_metadata([self])[0]
+                self.metadata = filtered_pdf_reader.metadata
 
-                    metadata_dict = {
-                        'source': self.file_path,
-                        'page': i
-                    }
+                self.pages = [
+                    Document(page_content=page.extractText(), **self.metadata)
+                    for page in reader.pages
+                ]
 
-                    document = Document(page_content=text, metadata=metadata_dict)
-                    documents.append(document)
+                return self.pages
 
-                return documents
-        except FileNotFoundError as e:
-            raise FileNotFoundError(f"File not found: {self.file_path}. Details: {e}")
+        except FileNotFoundError:
+            raise FileNotFoundError(f"The specified file '{self.pdf_path}' does not exist.")
         except Exception as e:
-            raise RuntimeError(f"Unexpected error while processing PDF file: {self.file_path}. Details: {e}")
+            raise RuntimeError(f"An error occurred while processing the PDF file: {e}")
+
 
     def load_and_split(self, splitter, remove_stopwords=False):
-        from indox.data_loader.utils import load_and_process_input
+        from indox.data_loaders.utils import load_and_process_input
         return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)
+

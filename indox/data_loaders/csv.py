@@ -1,62 +1,58 @@
+from typing import List, Dict
+from indox.vector_stores.utils import filter_complex_metadata
+from indox.core import Document
 import csv
-from indox.core.document_object import Document
-from typing import List, Dict, Any
 import os
 
-
-class Csv:
+class CSV:
     """
-    Load a CSV file and return its content as a list of `Document` objects.
+    Load a CSV file and extract its data as Document objects.
 
     Parameters:
-    - file_path (str): The path to the CSV file to be loaded.
-    - metadata (dict, optional): Additional metadata to include in each `Document`. Default is None.
+    - csv_path (str): The path to the CSV file to be loaded.
 
     Methods:
-    - load_file(): Reads the CSV file and creates a list of `Document` objects with associated metadata.
+    - load(): Reads the CSV file, extracts data from each row, and creates a list of `Document` objects.
+
+    Returns:
+    - List[Document]: A list containing `Document` objects with the data of each row and associated metadata.
 
     Raises:
     - FileNotFoundError: If the specified file does not exist.
-    - UnicodeDecodeError: If there is an issue decoding the CSV file.
-    - RuntimeError: For any other errors encountered during CSV processing.
+    - RuntimeError: For any other errors encountered during CSV file processing.
     """
 
-    def __init__(self, file_path: str, metadata: Dict[str, Any] = None):
-        self.file_path = os.path.abspath(file_path)
-        self.metadata = metadata if metadata is not None else {}
+    def __init__(self, csv_path: str):
+        self.csv_path = csv_path
+        self.data: List[Document] = []
+        self.metadata = {}
 
     def load(self) -> List[Document]:
-        if not os.path.exists(self.file_path):
-            raise FileNotFoundError(f"File not found: {self.file_path}")
-
         try:
-            with open(self.file_path, 'r', newline='', encoding='utf-8') as f:
-                reader = csv.reader(f)
-                num_rows = sum(1 for _ in reader)
+            with open(self.csv_path, mode='r', newline='', encoding='utf-8') as file:
+                reader = csv.reader(file)
+                rows = [row for row in reader]
 
-            documents = []
-            metadata_dict = {
-                'source': self.file_path,
-                'pages': 1,
-                'num_rows': num_rows
+            self.metadata = {
+                attr: getattr(os.stat(self.csv_path), attr)
+                for attr in dir(os.stat(self.csv_path))
+                if not attr.startswith('_') and not callable(getattr(os.stat(self.csv_path), attr))
             }
 
-            metadata_dict.update(self.metadata)
+            filtered_csv_reader = filter_complex_metadata([self])[0]
+            self.metadata = filtered_csv_reader.metadata
 
-            # Read the CSV file and create Document objects
-            with open(self.file_path, 'r', newline='', encoding='utf-8') as f:
-                reader = csv.reader(f)
-                for row in reader:
-                    row_content = ','.join(row)
-                    document = Document(page_content=row_content, **metadata_dict)
-                    documents.append(document)
+            self.data = [Document(page_content=row, **self.metadata) for row in rows]
 
-            return documents
-        except UnicodeDecodeError as e:
-            raise UnicodeDecodeError(f"Error decoding CSV file: {self.file_path}. Details: {e}")
+            return self.data
+        except FileNotFoundError:
+            raise FileNotFoundError(f"The specified file '{self.csv_path}' does not exist.")
         except Exception as e:
-            raise RuntimeError(f"Unexpected error while reading the CSV file: {self.file_path}. Details: {e}")
+            raise RuntimeError(f"An error occurred while processing the CSV file: {e}")
+
 
     def load_and_split(self, splitter, remove_stopwords=False):
-        from indox.data_loader.utils import load_and_process_input
+        from indox.data_loaders.utils import load_and_process_input
         return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)
+
+

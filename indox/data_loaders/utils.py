@@ -55,4 +55,3 @@ def convert_latex_to_md(latex_path):
         return None
     except Exception as e:
         logger.error(f"Error during conversion: {e}")
-        return None

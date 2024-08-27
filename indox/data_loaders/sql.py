@@ -1,42 +1,39 @@
-from indox.core.document_object import Document
-import os
-
-
 class Sql:
     """
-    Load an SQL file and extract its text and metadata.
+    Load a SQL file and extract its content.
 
     Parameters:
-    - file_path (str): The path to the SQL file to be loaded.
+    - sql_path (str): The path to the SQL file to be loaded.
 
     Methods:
-    - load_file(): Loads the SQL file and returns a list containing a single `Document` object with
-                   the text content of the file and the associated metadata.
+    - load(): Reads the SQL file and extracts its content.
+
+    Returns:
+    - str: The content of the SQL file.
 
     Raises:
-    - RuntimeError: If there is an error in loading the SQL file.
+    - FileNotFoundError: If the specified file does not exist.
+    - UnicodeDecodeError: If there is an error decoding the SQL file.
+    - RuntimeError: For any other errors encountered during SQL file processing.
     """
 
-    def __init__(self, file_path: str):
-        self.file_path = file_path
+    def __init__(self, sql_path: str):
+        self.sql_path = sql_path
+        self.content = ""
 
-    def load(self):
+    def load(self) -> str:
         try:
-            with open(self.file_path, 'r', encoding='utf-8') as f:
-                text = f.read()
-
-            # metadata_dict = {
-            #     'source': os.path.basename(self.file_path),
-            #     'page': 1
-            # }
-            #
-            # document = Document(page_content=text, **metadata_dict)
-            #
-            # return [document]
-            return text
+            with open(self.sql_path, 'r', encoding='utf-8') as file:
+                self.content = file.read()
+            return self.content
+        except FileNotFoundError:
+            raise FileNotFoundError(f"The specified file '{self.sql_path}' does not exist.")
+        except UnicodeDecodeError:
+            raise UnicodeDecodeError("There was an error decoding the SQL file.")
         except Exception as e:
-            raise RuntimeError(f"Error loading SQL file: {e}")
+            raise RuntimeError(f"An error occurred while processing the SQL file: {e}")
+
 
     def load_and_split(self, splitter, remove_stopwords=False):
-        from indox.data_loader.utils import load_and_process_input
+        from indox.data_loaders.utils import load_and_process_input
         return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)
