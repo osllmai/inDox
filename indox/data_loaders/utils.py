@@ -32,3 +32,27 @@ def load_and_process_input(loader, splitter, remove_stopwords=False):
 
     except Exception as e:
         raise RuntimeError(f"Error processing input: {e}")
+
+
+def convert_latex_to_md(latex_path):
+    """Converts a LaTeX file to Markdown using the latex2markdown library.
+
+    Args:
+        latex_path (str): The path to the LaTeX file.
+
+    Returns:
+        str: The converted Markdown content, or None if there's an error.
+    """
+    import latex2markdown
+    try:
+        with open(latex_path, 'r') as f:
+            latex_content = f.read()
+            l2m = latex2markdown.LaTeX2Markdown(latex_content)
+            markdown_content = l2m.to_markdown()
+        return markdown_content
+    except FileNotFoundError:
+        logger.info(f"Error: LaTeX file not found at {latex_path}")
+        return None
+    except Exception as e:
+        logger.error(f"Error during conversion: {e}")
+        return None
