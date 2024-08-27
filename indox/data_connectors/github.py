@@ -1,7 +1,7 @@
 import base64
 import os
 from typing import List, Optional, Tuple, Dict, Any
-from indox.data_connector.utils import Document
+from indox.data_connectors.utils import Document
 
 
 class GithubClient:

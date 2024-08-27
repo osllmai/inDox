@@ -5,8 +5,9 @@ DiscordChannelReader is a data connector for loading messages from specified Dis
 **Note:** To use DiscordChannelReader, users need to install the `discord.py` package. You can install it using `pip install discord.py.`
 
 To use DiscordChannelReader:
+
 ```python
-from indox.data_connector import DiscordChannelReader
+from indox.data_connectors import DiscordChannelReader
 
 reader = DiscordChannelReader(bot_token="your_bot_token")
 documents = reader.load_data(channel_ids=["channel_id1", "channel_id2"])
@@ -58,8 +59,9 @@ source indox/bin/activate
 
 ## Get Started
 ### Import Essential Libraries and Use DiscordChannelReader
+
 ```python
-from indox.data_connector import DiscordChannelReader
+from indox.data_connectors import DiscordChannelReader
 import os
 from dotenv import load_dotenv
 import nest_asyncio

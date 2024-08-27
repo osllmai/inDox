@@ -1,4 +1,4 @@
-from indox.data_connector.utils import Document
+from indox.data_connectors.utils import Document
 from typing import Any, List, Optional
 
 class DiscordChannelReader:

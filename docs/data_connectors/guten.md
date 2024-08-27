@@ -7,7 +7,7 @@ GutenbergReader is a data connector for fetching and searching books from Projec
 To use GutenbergReader:
 
 ```python
-from indox.data_connector import GutenbergReader
+from indox.data_connectors import GutenbergReader
 
 reader = GutenbergReader()
 
@@ -71,8 +71,9 @@ source indox/bin/activate
 ```
 ## Get started
 ### Import Essential Libraries
+
 ```python
-from indox.data_connector import GutenbergReader
+from indox.data_connectors import GutenbergReader
 
 # Initialize the reader
 reader = GutenbergReader()
