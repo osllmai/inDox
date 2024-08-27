@@ -21,8 +21,8 @@ class CharacterTextSplitter:
     def __init__(
             self,
             separator: str = "\n\n",
-            chunk_size: int = 4000,
-            chunk_overlap: int = 200,
+            chunk_size: int = 400,
+            chunk_overlap: int = 50,
             length_function: callable = len,
     ):
         """
