@@ -32,10 +32,8 @@ def create_documents_unstructured(file_path):
             elements = partition_pdf(
                 filename=file_path,
                 strategy="hi_res",
-                infer_table_structure=True,
-                model_name="yolox"
+                # infer_table_structure=True,
             )
-
             # Remove "References" and header elements
             reference_title = [
                 el for el in elements
