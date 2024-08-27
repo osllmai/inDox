@@ -7,7 +7,7 @@ WikipediaReader is a data connector for loading content from Wikipedia pages. It
 To use WikipediaReader:
 
 ```python
-from indox.data_connector import WikipediaReader
+from indox.data_connectors import WikipediaReader
 
 reader = WikipediaReader()
 documents = reader.load_data(pages=["Python (programming language)", "Artificial intelligence"])
@@ -57,8 +57,9 @@ source indox/bin/activate
 
 ## Get Started
 ### Import Essential Libraries and Use WikipediaReader
+
 ```python
-from indox.data_connector import WikipediaReader
+from indox.data_connectors import WikipediaReader
 
 # Initialize the reader
 reader = WikipediaReader()

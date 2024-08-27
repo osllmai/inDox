@@ -7,7 +7,7 @@ YoutubeTranscriptReader is a data connector for loading transcripts from YouTube
 To use YoutubeTranscriptReader:
 
 ```python
-from indox.data_connector import YoutubeTranscriptReader
+from indox.data_connectors import YoutubeTranscriptReader
 
 reader = YoutubeTranscriptReader()
 documents = reader.load_data(ytlinks=["https://www.youtube.com/watch?v=dN0lsF2cvm4&t=44s"])
@@ -55,8 +55,9 @@ source indox/bin/activate
 
 ## Get Started
 ### Import Essential Libraries and Use YoutubeTranscriptReader
+
 ```python
-from indox.data_connector import YoutubeTranscriptReader
+from indox.data_connectors import YoutubeTranscriptReader
 
 # Initialize the reader
 reader = YoutubeTranscriptReader()

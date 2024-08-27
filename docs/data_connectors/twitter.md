@@ -9,7 +9,7 @@ For API access, follow the instructions at 'https://developer.twitter.com/en/doc
 To use TwitterTweetReader:
 
 ```python
-from indox.data_connector import TwitterTweetReader
+from indox.data_connectors import TwitterTweetReader
 
 reader = TwitterTweetReader(bearer_token="your_bearer_token")
 documents = reader.load_data(twitterhandles=["username1", "username2"])
@@ -62,8 +62,9 @@ source indox/bin/activate
 
 ## Get Started
 ### Import Essential Libraries and Use TwitterTweetReader
+
 ```python
-from indox.data_connector import TwitterTweetReader
+from indox.data_connectors import TwitterTweetReader
 import os
 from dotenv import load_dotenv
 

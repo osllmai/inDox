@@ -5,7 +5,7 @@ Document is a class that represents a data document from various sources. It pro
 To use the Document class:
 
 ```python
-from indox.data_connector import Document
+from indox.data_connectors import Document
 
 # Create a new document
 doc = Document(source="Wikipedia", content="Wikipedia is a free online encyclopedia.")
@@ -71,7 +71,7 @@ Creates a Document object from a dictionary.
 ## Usage
 
 ```python
-from indox.data_connector import Document
+from indox.data_connectors import Document
 
 # Create a new document
 doc = Document(

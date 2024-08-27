@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from typing import List, Optional
-from indox.data_connector.utils import Document
+from indox.data_connectors.utils import Document
 
 class GutenbergReader:
     BASE_URL = "https://www.gutenberg.org/files"

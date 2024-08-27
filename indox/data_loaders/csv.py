@@ -55,3 +55,4 @@ class CSV:
         from indox.data_loaders.utils import load_and_process_input
         return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)
 
+
