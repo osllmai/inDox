@@ -5,7 +5,7 @@ from .pdfminer import PdfMiner
 from .pdfplumber import PdfPlumber
 from .openpyxl import OpenPyXl
 from .docx import Docx
-from .csv import Csv
+from .csv import CSV
 from .txt import Txt
 from .json import Json
 from .bs4 import Bs4

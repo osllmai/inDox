@@ -4,6 +4,7 @@ from indox.core import Document
 import csv
 import os
 
+
 class CSV:
     """
     Load a CSV file and extract its data as Document objects.
@@ -50,9 +51,6 @@ class CSV:
         except Exception as e:
             raise RuntimeError(f"An error occurred while processing the CSV file: {e}")
 
-
     def load_and_split(self, splitter, remove_stopwords=False):
         from indox.data_loaders.utils import load_and_process_input
         return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)
-
-
