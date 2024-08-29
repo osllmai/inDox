@@ -59,6 +59,7 @@ class Chroma:
     ) -> None:
         """Initialize with a Chroma client."""
         try:
+        
             import chromadb
             import chromadb.config
             from chromadb.api.types import ID, OneOrMany, Where, WhereDocument
