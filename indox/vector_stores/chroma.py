@@ -42,8 +42,8 @@ class Chroma:
 
 
     """
-    import chromadb.config
-    from chromadb.api.types import ID, OneOrMany, Where, WhereDocument
+    # import chromadb.config
+    # from chromadb.api.types import ID, OneOrMany, Where, WhereDocument
 
     _INDOX_DEFAULT_COLLECTION_NAME = "indox_collection"
 
@@ -52,15 +52,16 @@ class Chroma:
             collection_name: str = _INDOX_DEFAULT_COLLECTION_NAME,
             embedding_function: Optional[Embeddings] = None,
             persist_directory: Optional[str] = None,
-            client_settings: Optional[chromadb.config.Settings] = None,
+            client_settings: Optional['chromadb.config.Settings'] = None,
             collection_metadata: Optional[Dict] = None,
-            client: Optional[chromadb.Client] = None,
+            client: Optional['chromadb.Client'] = None,
             relevance_score_fn: Optional[Callable[[float], float]] = None,
     ) -> None:
         """Initialize with a Chroma client."""
         try:
             import chromadb
             import chromadb.config
+            from chromadb.api.types import ID, OneOrMany, Where, WhereDocument
         except ImportError:
             raise ImportError(
                 "Could not import chromadb python package. "
@@ -285,11 +286,11 @@ class Chroma:
 
     def get(
             self,
-            ids: Optional[OneOrMany[ID]] = None,
-            where: Optional[Where] = None,
+            ids: Optional['OneOrMany[ID]'] = None,
+            where: Optional['Where'] = None,
             limit: Optional[int] = None,
             offset: Optional[int] = None,
-            where_document: Optional[WhereDocument] = None,
+            where_document: Optional['WhereDocument'] = None,
             include: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """Gets the collection.
@@ -308,6 +309,7 @@ class Chroma:
                      Ids are always included.
                      Defaults to `["metadatas", "documents"]`. Optional.
         """
+
         kwargs = {
             "ids": ids,
             "where": where,

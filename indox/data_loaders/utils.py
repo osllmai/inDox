@@ -1,4 +1,18 @@
 from indox.core import Document
+from loguru import logger
+import sys
+
+from indox.core import Document
+
+# Set up logging
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
+
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
 
 
 def load_and_process_input(loader, splitter, remove_stopwords=False):
