@@ -27,7 +27,7 @@
 
 
 <p align="center">
-  <a href="https://osllm.ai">Official Website</a> &bull; <a href="https://github.com/osllmai/inDox/wiki">Documentation</a> &bull; <a href="https://discord.gg/qrCc56ZR">Discord</a>
+  <a href="https://osllm.ai">Official Website</a> &bull; <a href="https://docs.osllm.ai/index.html">Documentation</a> &bull; <a href="https://discord.gg/qrCc56ZR">Discord</a>
 </p>
 
 
