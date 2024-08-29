@@ -4,8 +4,7 @@ from loguru import logger
 import sys
 
 from indox.core import Document
-from indox.data_loader_splitter.UnstructuredLoadAndSplit.loader import create_documents_unstructured
-from indox.data_loader_splitter.UnstructuredLoadAndSplit.split import get_chunks_unstructured
+from indox.data_loader_splitter.utils.unstructured_utills import create_documents_unstructured, get_chunks_unstructured
 
 # Set up logging
 logger.remove()  # Remove the default logger
@@ -34,6 +33,7 @@ class Unstructured:
             raise
 
     def load(self):
+
         elements = create_documents_unstructured(file_path=self.file_path)
         return elements
 
