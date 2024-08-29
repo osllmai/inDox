@@ -16,7 +16,7 @@
 </br>
 
 [![License](https://img.shields.io/github/license/osllmai/inDox)](https://github.com/osllmai/inDox/blob/main/LICENSE)
-[![PyPI](https://badge.fury.io/py/Indox.svg)](https://pypi.org/project/Indox/0.1.25/)
+[![PyPI](https://badge.fury.io/py/Indox.svg)](https://pypi.org/project/Indox/0.1.26/)
 [![Python](https://img.shields.io/pypi/pyversions/Indox.svg)](https://pypi.org/project/Indox/0.1.8/)
 [![Downloads](https://static.pepy.tech/badge/indox)](https://pepy.tech/project/indox)
 

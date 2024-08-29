@@ -13,6 +13,6 @@ tenacity==8.2.3
 tiktoken==0.6.0
 tokenizers==0.15.2
 umap_learn==0.5.6
-unstructured==0.15.5
-nltk==3.8.1
+unstructured==0.15.8
+nltk==3.9.1
 pillow_heif==0.18.0
