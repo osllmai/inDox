@@ -28,6 +28,24 @@ class PineconeVectorStore:
         ValueError: If the embedding function is not provided or if the Pinecone API key is missing.
     """
 
+    def _flatten_metadata(self, metadata: Dict[str, Any]) -> Dict[str, Union[str, int, float, bool, List[str]]]:
+        """
+        Flatten metadata to ensure it only contains types supported by Pinecone.
+
+        Args:
+            metadata (Dict[str, Any]): Original metadata.
+
+        Returns:
+            Dict[str, Union[str, int, float, bool, List[str]]]: Flattened metadata.
+        """
+        flattened = {}
+        for key, value in metadata.items():
+            if isinstance(value, (str, int, float, bool)) or (
+                    isinstance(value, list) and all(isinstance(i, str) for i in value)):
+                flattened[key] = value
+            else:
+                flattened[key] = str(value)
+        return flattened
     def __init__(
             self,
             index_name: str,
@@ -59,25 +77,59 @@ class PineconeVectorStore:
 
         self._client = PineconeClient(api_key=pinecone_api_key)
         self._index = self._client.Index(index_name)
-
-    def _flatten_metadata(self, metadata: Dict[str, Any]) -> Dict[str, Union[str, int, float, bool, List[str]]]:
+    @classmethod
+    def create_index(
+        cls,
+        index_name: str,
+        dimension: int,
+        metric: str = "cosine",
+        cloud: str = "aws",
+        region: str = "us-east-1",
+        pinecone_api_key: Optional[str] = None
+    ) -> None:
         """
-        Flatten metadata to ensure it only contains types supported by Pinecone.
+        Creates a new serverless Pinecone index.
+
+        This class method initializes a new serverless Pinecone index with the specified
+        parameters. It uses the Pinecone API to create the index in the specified cloud
+        and region.
 
         Args:
-            metadata (Dict[str, Any]): Original metadata.
+            index_name (str): The name of the index to create.
+            dimension (int): The dimension of the vectors to be stored in the index.
+            metric (str, optional): The distance metric to use for similarity search. Defaults to "cosine".
+            cloud (str, optional): The cloud provider to use. Defaults to "aws".
+            region (str, optional): The region in which to create the index. Defaults to "us-east-1".
+            pinecone_api_key (Optional[str], optional): The Pinecone API key. If not provided,
+                it will be read from the PINECONE_API_KEY environment variable.
 
-        Returns:
-            Dict[str, Union[str, int, float, bool, List[str]]]: Flattened metadata.
+        Raises:
+            ValueError: If the Pinecone API key is not provided and not set in the environment.
+            Exception: If there's an error creating the index.
+
         """
-        flattened = {}
-        for key, value in metadata.items():
-            if isinstance(value, (str, int, float, bool)) or (
-                    isinstance(value, list) and all(isinstance(i, str) for i in value)):
-                flattened[key] = value
-            else:
-                flattened[key] = str(value)
-        return flattened
+        from pinecone import Pinecone, ServerlessSpec
+
+        pinecone_api_key = pinecone_api_key or os.environ.get("PINECONE_API_KEY")
+        if not pinecone_api_key:
+            raise ValueError(
+                "Pinecone API key must be provided as an argument or set as PINECONE_API_KEY environment variable."
+            )
+
+        pc = Pinecone(api_key=pinecone_api_key)
+        try:
+            pc.create_index(
+                name=index_name,
+                dimension=dimension,
+                metric=metric,
+                spec=ServerlessSpec(
+                    cloud=cloud,
+                    region=region
+                )
+            )
+            print(f"Serverless index '{index_name}' created successfully.")
+        except Exception as e:
+            raise Exception(f"Error creating serverless index: {str(e)}")
 
     def _add_texts(
             self,
