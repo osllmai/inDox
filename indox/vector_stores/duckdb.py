@@ -1,6 +1,6 @@
 import json
 import uuid
-from typing import List, Optional, Any, Iterable, Type
+from typing import List, Optional, Any, Iterable, Tuple
 import logging
 from indox.core import Document
 
@@ -162,24 +162,27 @@ class DuckDB:
     #
     #     return instance
 
-    def similarity_search(
+    def _similarity_search_with_score(
             self, query: str, k: int = 4, **kwargs: Any
-    ) -> List[Document]:
+    ) -> List[Tuple[Document, float]]:
         """Performs a similarity search for a given query string.
         Args:
             query: The query string to search for.
             k: The number of similar texts to return.
         Returns:
-            A list of Documents most similar to the query.
+            A list of tuples where each tuple contains a Document object and its similarity score.
         """
+        # Compute the embedding for the query
         embedding = self._embedding_function.embed_query(query)
 
+        # Create a cosine similarity expression in DuckDB
         list_cosine_similarity = self.duckdb.FunctionExpression(
             "list_cosine_similarity",
             self.duckdb.ColumnExpression(self._vector_key),
             self.duckdb.ConstantExpression(embedding),
         )
 
+        # Retrieve the most similar documents from the table
         docs = (
             self._table.select(
                 *[
@@ -192,15 +195,19 @@ class DuckDB:
             .fetchdf()
         )
 
+        # Return a list of tuples (Document, similarity_score)
         return [
-            Document(
-                page_content=docs[self._text_key][idx],
-                metadata={
-                    **json.loads(docs["metadata"][idx]),
-                    "Similarity Score": docs['similarity_score'][idx],
-                }
-                if docs["metadata"][idx]
-                else {"Similarity Score": docs['similarity_score'][idx]},
+            (
+                Document(
+                    page_content=docs[self._text_key][idx],
+                    metadata={
+                        **json.loads(docs["metadata"][idx]),
+                        "Similarity Score": docs['similarity_score'][idx],
+                    }
+                    if docs["metadata"][idx]
+                    else {"Similarity Score": docs['similarity_score'][idx]},
+                ),
+                docs['similarity_score'][idx]  # Include the similarity score in the tuple
             )
             for idx in range(len(docs))
         ]
