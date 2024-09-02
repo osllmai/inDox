@@ -5,4 +5,4 @@ from .indox_api import IndoxApi
 from .huggingface import HuggingFaceModel
 from .googleai import GoogleAi
 from .ollama import Ollama
-from .azure_openai import AzureOpenAi
+# from .azure_openai import AzureOpenAi
