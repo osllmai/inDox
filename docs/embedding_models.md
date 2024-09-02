@@ -216,6 +216,38 @@ To use the Ollama embedding model, follow these steps:
 
    ollama_embeddings = OllamaEmbeddings(base_url="http://localhost:11434", model="llama2")
    ```
+   
+## Using Azure OpenAi Embedding Model
+
+To use the Azure OpenAI embedding model, follow these steps:
+
+1. Install the OpenAI Python package:
+
+   ```bash
+   pip install openai
+   ```
+
+2. Import necessary libraries and load environment variables:
+
+   ```python
+   import os
+   from dotenv import load_dotenv
+
+   load_dotenv()
+
+   OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
+   ```
+
+3. Import Indox modules and set the Azure OpenAI embedding model:
+
+   ```python
+   from indox import IndoxRetrievalAugmentation
+   from indox.embeddings import AzureOpenAIEmbeddings
+
+   Indox = IndoxRetrievalAugmentation()
+   openai_embeddings = AzureOpenAIEmbeddings(api_key=OPENAI_API_KEY,model="text-embedding-3-small")
+   ```
+
 
 ### Future Plans
 
