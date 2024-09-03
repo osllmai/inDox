@@ -13,9 +13,11 @@ logger.add(sys.stdout,
            format="<red>{level}</red>: <level>{message}</level>",
            level="ERROR")
 
+
 class IndoxApi(BaseLLM):
     api_key: str
     prompt_template: str = ""
+
     def __init__(self, api_key, prompt_template=""):
         super().__init__(api_key=api_key, prompt_template=prompt_template)
         """
@@ -49,7 +51,7 @@ class IndoxApi(BaseLLM):
                     "role": "user"
                 }
             ],
-            "model": "gpt-3.5-turbo-0125",
+            "model": "gpt-4o-mini",
             "presence_penalty": 0,
             "stream": True,
             "temperature": 0.3,
@@ -182,8 +184,12 @@ class IndoxApi(BaseLLM):
 
     def assistant(self, system_prompt, user_prompt, role, history):
         try:
-            response = self._send_request(system_prompt=system_prompt, user_prompt=user_prompt, role=role, history=history)
+            response = self._send_request(system_prompt=system_prompt, user_prompt=user_prompt, role=role,
+                                          history=history)
             return response
         except Exception as e:
             logger.error(f"Error generating agent answer: {e}")
             return str(e)
+
+    def chat(self, prompt):
+        return self._send_request(system_prompt="You are a helpful assistant", user_prompt=prompt)
