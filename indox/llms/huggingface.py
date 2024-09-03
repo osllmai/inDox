@@ -14,11 +14,11 @@ logger.add(sys.stdout,
            level="ERROR")
 
 
-
 class HuggingFaceModel(BaseLLM):
     api_key: str
     model: str = "mistralai/Mistral-7B-Instruct-v0.2"
     prompt_template: str = ""
+
     def __init__(self, api_key, model="mistralai/Mistral-7B-Instruct-v0.2", prompt_template=""):
         super().__init__(api_key=api_key, model=model, prompt_template=prompt_template)
         """
@@ -200,3 +200,6 @@ class HuggingFaceModel(BaseLLM):
         except Exception as e:
             logger.error(f"Error generating agent answer: {e}")
             return str(e)
+
+    def chat(self, prompt):
+        return self._send_request(prompt=prompt)

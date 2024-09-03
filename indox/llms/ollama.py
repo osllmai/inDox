@@ -1,3 +1,5 @@
+from typing import Any
+
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 from loguru import logger
 import sys
@@ -16,6 +18,7 @@ logger.add(sys.stdout,
 
 class Ollama(BaseLLM):
     model: str = ""
+
     def __init__(self, model):
         super().__init__(model=model)
         """
@@ -34,7 +37,7 @@ class Ollama(BaseLLM):
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-    def _generate_response(self, messages, max_tokens=250, temperature=0):
+    def _generate_response(self, messages):
         """
         Generates a response from the Ollama model.
 
@@ -166,3 +169,6 @@ class Ollama(BaseLLM):
         except Exception as e:
             logger.error(f"Error checking hallucination: {e}")
             return str(e)
+
+    def chat(self, prompt):
+        return self._generate_response(messages=prompt)

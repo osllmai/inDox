@@ -51,7 +51,6 @@ class GoogleAi(BaseLLM):
         try:
             logger.info("Generating response")
             response = self.model.generate_content(contents=prompt)
-            logger.info("Response in generated successfully")
             return response.text.strip().replace("\n", "")
         except Exception as e:
             logger.error(f"Error generating response: {e}")
@@ -162,3 +161,6 @@ class GoogleAi(BaseLLM):
         except Exception as e:
             logger.error(f"Error checking hallucination: {e}")
             return str(e)
+
+    def chat(self, prompt):
+        return self._generate_response(prompt=prompt)
