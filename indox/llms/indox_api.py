@@ -182,14 +182,14 @@ class IndoxApi(BaseLLM):
             logger.error(f"Error generating agent answer: {e}")
             return str(e)
 
-    def assistant(self, system_prompt, user_prompt, role, history):
-        try:
-            response = self._send_request(system_prompt=system_prompt, user_prompt=user_prompt, role=role,
-                                          history=history)
-            return response
-        except Exception as e:
-            logger.error(f"Error generating agent answer: {e}")
-            return str(e)
+    # def _assistant(self, system_prompt, user_prompt, role, history):
+    #     try:
+    #         response = self._send_request(system_prompt=system_prompt, user_prompt=user_prompt, role=role,
+    #                                       history=history)
+    #         return response
+    #     except Exception as e:
+    #         logger.error(f"Error generating agent answer: {e}")
+    #         return str(e)
 
     def chat(self, prompt, system_prompt="You are a helpful assistant"):
         return self._send_request(system_prompt=system_prompt, user_prompt=prompt)

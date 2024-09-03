@@ -4,7 +4,6 @@ import sys
 from indox.core import BaseLLM
 from pydantic import ConfigDict
 
-
 # Set up logging
 logger.remove()  # Remove the default logger
 logger.add(sys.stdout,
@@ -37,7 +36,7 @@ class OpenAi:
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-    def _generate_response(self, messages, max_tokens=250, temperature=0):
+    def _generate_response(self, messages, max_tokens=250, temperature=0.00001):
         """
         Generates a response from the OpenAI model.
 
@@ -184,3 +183,10 @@ class OpenAi:
         except Exception as e:
             logger.error(f"Error checking hallucination: {e}")
             return str(e)
+
+    def chat(self, prompt, max_tokens=250, temperature=0.00001):
+        messages = [
+            {"role": "system", "content": "You are Question Answering Portal"},
+            {"role": "user", "content": prompt},
+        ]
+        return self._generate_response(messages=messages, max_tokens=max_tokens, temperature=temperature)
