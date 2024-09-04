@@ -75,7 +75,7 @@ class LLMGraphTransformer:
         Returns:
             Tuple[str, str]: The human and system prompts for the LLM.
         """
-        system_prompt = """You are an AI that specializes in transforming text into structured knowledge graphs. Your task is to extract key entities (as nodes) and their relationships from the text provided. Each entity should be identified by a unique ID and categorized by type (e.g., Person, Country, Monarchy, etc.). Relationships between entities should be clearly defined with a type that describes their connection (e.g., REIGNED, PARENT, SIBLING, etc.). The output should be a JSON object with two main lists:
+        system_prompt = """You are an AI that specializes in transforming text into structured knowledge graphs. Your task is to extract key entities (as nodes) and their relationships from the text provided. Each entity should be identified by a unique ID and categorized by type (e.g., Person, Country, Monarchy, etc.). Relationships between entities should be clearly defined with a type that describes their connection (e.g., REIGNED, PARENT, SIBLING, etc.). **Important:** Relationship types should not contain spaces and should be formatted as a single word (e.g., REIGNED, HASPARENT, ISSIBLING). The output should be a JSON object with two main lists:
         1. `nodes`: A list of objects where each object represents an entity with the following structure:
            - `id`: A unique identifier for the entity (usually a name or title).
            - `type`: The category of the entity (e.g., Person, Country, Monarchy).
@@ -85,7 +85,9 @@ class LLMGraphTransformer:
            - `type`: The type of relationship (e.g., REIGNED, PARENT, SIBLING).
         Ensure that the JSON output is properly formatted and free of errors.
         """
-        human_prompt = f"Convert the following text into a knowledge graph by extracting entities and their relationships. Provide the output as a JSON object with 'nodes' and 'relationships' lists as described: {text}"
+
+        human_prompt = f"Convert the following text into a knowledge graph by extracting entities and their relationships. Ensure that relationship types do not contain spaces and are formatted as a single word. Provide the output as a JSON object with 'nodes' and 'relationships' lists as described: {text}"
+
         return human_prompt, system_prompt
 
     def _call_openai_api(self, human_prompt: str, system_prompt: str) -> str:
