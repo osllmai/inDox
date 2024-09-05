@@ -40,7 +40,7 @@ class IndoxRetrievalAugmentation:
             self.top_k = top_k
             self.generate_clustered_prompts = generate_clustered_prompts
             self.vector_database = vector_database
-            self.chat_history = []
+            self.chat_history = {}
             self.context = []
             if self.vector_database is None:
                 logger.error("Vector store database is not initialized.")
@@ -70,8 +70,9 @@ class IndoxRetrievalAugmentation:
                     answer = self.qa_model.answer_question(context=context, query=query)
 
                 retrieve_context = context
+                key = len(self.chat_history)
                 new_entry = {'query': query, 'llm_response': answer, 'retrieval_context': context}
-                self.chat_history.append(new_entry)
+                self.chat_history[key] = new_entry
                 self.context = retrieve_context
                 logger.info("Query answered successfully")
                 return answer
