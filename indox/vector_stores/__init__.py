@@ -9,3 +9,4 @@ from .weaviate import Weaviate
 from .milvus import Milvus
 from .pathway import PathwayVectorClient
 from .duckdb import DuckDB
+from .multi_vector_retriever import MultiVectorRetriever
