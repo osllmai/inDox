@@ -5,7 +5,7 @@ from typing import List, Tuple, Callable
 from indox.core import Document
 
 
-class CouchbaseVectorStore:
+class Couchbase:
 
     def __init__(self, embedding_function: Callable[[str], np.ndarray], bucket_name: str, cluster_url: str = 'couchbase://localhost', username: str = 'Administrator', password: str = 'indoxmain'):
         from couchbase.cluster import Cluster
