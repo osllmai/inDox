@@ -1,1 +1,1 @@
-from .tools import MultiVectorRetriever
+from .multivector import MultiVectorRetriever
