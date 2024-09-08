@@ -18,6 +18,8 @@ logger.add(sys.stdout,
 logger.add(sys.stdout,
            format="<red>{level}</red>: <level>{message}</level>",
            level="ERROR")
+
+
 class MultiQueryRetrieval:
     """
     A class that implements multi-query retrieval for enhanced information gathering.
@@ -26,6 +28,7 @@ class MultiQueryRetrieval:
     information for each generated query, and combines the results to produce a final response.
 
     """
+
     def __init__(self, llm, vector_database, top_k: int = 3):
         """
         Initialize the MultiQueryRetrieval instance.
@@ -110,13 +113,14 @@ class MultiQueryRetrieval:
 
         return response
 
+
 class IndoxRetrievalAugmentation:
     def __init__(self):
         """
         Initialize the IndoxRetrievalAugmentation class
         """
-        from . import __version__
-        self.__version__ = __version__
+        # from . import __version__
+        # self.__version__ = __version__
         self.db = None
         self.multi_query_retrieval = None
         self.qa_history = []
@@ -179,39 +183,7 @@ class IndoxRetrievalAugmentation:
     #     except Exception as e:
     #         logger.error(f"Unexpected error while storing in the vector store: {e}")
     #         return None
-    def initialize_multi_query_retrieval(self, llm, vector_database, top_k: int = 3):
-        """
-        Initialize the multi-query retrieval capability.
 
-        Args:
-            llm: The language model to use for query generation and response synthesis.
-            vector_database: The vector database to use for information retrieval.
-            top_k (int): The number of top results to retrieve for each query. Defaults to 3.
-        """
-        self.multi_query_retrieval = MultiQueryRetrieval(llm, vector_database, top_k)
-        logger.info("Multi-query retrieval initialized")
-
-    def run_multi_query_retrieval(self, query: str) -> str:
-        """
-        Execute a multi-query retrieval task.
-
-        This method runs the multi-query retrieval process using the initialized
-        MultiQueryRetrieval instance.
-
-        Args:
-            query (str): The original user query.
-
-        Returns:
-            str: The final generated response.
-
-        Raises:
-            RuntimeError: If multi-query retrieval is not initialized.
-        """
-        if self.multi_query_retrieval is None:
-            logger.error("Multi-query retrieval is not initialized.")
-            raise RuntimeError("Multi-query retrieval is not initialized.")
-
-        return self.multi_query_retrieval.run(query)
     class QuestionAnswer:
         def __init__(self, llm, vector_database, top_k: int = 5, document_relevancy_filter: bool = False,
                      generate_clustered_prompts: bool = False):
@@ -258,6 +230,25 @@ class IndoxRetrievalAugmentation:
             except Exception as e:
                 logger.error(f"Error while answering query: {e}")
                 raise
+
+        def invoke_multi_query(self, query: str) -> str:
+            """
+            Execute a multi-query retrieval task.
+
+            This method runs the multi-query retrieval process using the initialized
+            MultiQueryRetrieval instance.
+
+            Args:
+                query (str): The original user query.
+
+            Returns:
+                str: The final generated response.
+            """
+            self.multi_query_retrieval = MultiQueryRetrieval(self.qa_model, self.vector_database, self.top_k)
+
+            logger.info("Multi-query retrieval initialized")
+
+            return self.multi_query_retrieval.run(query)
 
     class AgenticRag:
         def __init__(self, llm, vector_database=None, top_k: int = 5):
