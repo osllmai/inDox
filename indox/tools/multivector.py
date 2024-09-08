@@ -1,3 +1,20 @@
+from typing import List, Any, Tuple
+from loguru import logger
+import sys
+import warnings
+from concurrent.futures import ThreadPoolExecutor
+
+# Set up logging
+warnings.filterwarnings("ignore")
+logger.remove()  # Remove the default logger
+logger.add(sys.stdout,
+           format="<green>{level}</green>: <level>{message}</level>",
+           level="INFO")
+
+logger.add(sys.stdout,
+           format="<red>{level}</red>: <level>{message}</level>",
+           level="ERROR")
+
 class MultiVectorRetriever:
     def __init__(self, vector_stores: List[Any]):
         self.vector_stores = vector_stores
@@ -11,16 +28,16 @@ class MultiVectorRetriever:
             k (int): Number of results to return. Defaults to 5.
 
         Returns:
-            List[Tuple[Any, float]]: List of objects (e.g., documents) most similar to 
+            List[Tuple[Any, float]]: List of objects (e.g., documents) most similar to
             the query text and the corresponding similarity score as a float for each.
             Higher score represents more similarity.
-        
+
         Raises:
             Exception: Logs any exception raised during the similarity search process.
 
         Notes:
             The method executes similarity searches in parallel across all vector stores
-            using a thread pool executor and combines results from each store. Results 
+            using a thread pool executor and combines results from each store. Results
             are sorted by similarity score in descending order.
         """
         all_results = []
