@@ -4,6 +4,7 @@ from typing import List, Tuple
 from sklearn.metrics.pairwise import cosine_similarity
 from indox.core import Document
 
+
 class Neo4jVector:
     def __init__(self, uri: str, username: str, password: str, embedding_function, search_type: str = 'vector'):
         """
@@ -25,7 +26,8 @@ class Neo4jVector:
         if self.driver:
             self.driver.close()
 
-    def _similarity_search_with_score(self, query: str, k: int = 4, search_type: str = None, **kwargs) -> List[Tuple[Document, float]]:
+    def _similarity_search_with_score(self, query: str, k: int = 4, search_type: str = None, **kwargs) -> List[
+        Tuple[Document, float]]:
         """
         Run similarity search with scores based on the selected search type.
 
@@ -126,7 +128,8 @@ class Neo4jVector:
                 docs_and_scores.append((document, 1.0))  # Keyword match score is set to 1
         return docs_and_scores
 
-    def _run_hybrid_search(self, query: str, k: int, keyword_weight: float = 0.5, vector_weight: float = 0.5) -> List[Tuple[Document, float]]:
+    def _run_hybrid_search(self, query: str, k: int, keyword_weight: float = 0.5, vector_weight: float = 0.5) -> List[
+        Tuple[Document, float]]:
         """
         Run the hybrid search combining keyword and vector search.
 
@@ -180,3 +183,27 @@ class Neo4jVector:
             List[Document]: List of documents based on the chosen search method.
         """
         return [doc for doc, _ in self._similarity_search_with_score(query, k=k, search_type=search_type, **kwargs)]
+
+        # New method for AgenticRag compatibility
+
+    def retrieve(self, query: str, top_k: int = 5, search_type: str = None, **kwargs) -> Tuple[List[str], List[float]]:
+        """
+        Retrieve relevant documents and their scores for a given query, supporting different search types.
+
+        Args:
+            query (str): The search query.
+            top_k (int): Number of top results to return.
+            search_type (str): The type of search to perform ('vector', 'keyword', 'hybrid').
+            **kwargs: Additional arguments for specific search types (e.g., weights for hybrid search).
+
+        Returns:
+            Tuple[List[str], List[float]]: A tuple containing a list of document contents and their respective scores.
+        """
+        # Run the similarity search with score, using the specified or default search type
+        docs_and_scores = self._similarity_search_with_score(query, k=top_k, search_type=search_type, **kwargs)
+
+        # Extract the document contents and scores
+        context = [doc.page_content for doc, score in docs_and_scores]
+        scores = [score for doc, score in docs_and_scores]
+
+        return context, scores
