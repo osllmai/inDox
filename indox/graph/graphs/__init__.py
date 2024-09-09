@@ -1,5 +1,5 @@
-from .neo4j_graph import CustomNeo4jGraph
+from .neo4j_graph import Neo4jGraph
 
 __all__ = [
-    "CustomNeo4jGraph"
+    "Neo4jGraph"
 ]

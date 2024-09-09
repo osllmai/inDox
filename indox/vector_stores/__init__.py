@@ -9,3 +9,4 @@ from .weaviate import Weaviate
 from .milvus import Milvus
 from .pathway import PathwayVectorClient
 from .duckdb import DuckDB
+from .neo4j_vector import Neo4jVector

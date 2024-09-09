@@ -40,7 +40,7 @@ class IndoxApi(BaseLLM):
 
         data = {
             "frequency_penalty": 0,
-            "max_tokens": 150,
+            "max_tokens": 10000,
             "messages": [
                 {
                     "content": system_prompt,

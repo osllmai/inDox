@@ -1,121 +1,135 @@
 from neo4j import GraphDatabase
 from typing import List, Dict
+from indox.core import Document
 
-class CustomNeo4jGraph:
+# Define the Neo4jGraph class for structured Cypher queries
+class Neo4jGraph:
     def __init__(self, uri: str, username: str, password: str):
         """
-        Initialize the CustomNeo4jGraph with connection details.
+        Initializes the connection to the Neo4j database.
 
         Args:
-            uri (str): The Neo4j connection URI (e.g., "bolt://localhost:7687").
-            username (str): The username for authenticating with the Neo4j database.
-            password (str): The password for authenticating with the Neo4j database.
+            uri (str): URI of the Neo4j instance (e.g., "bolt://localhost:7687").
+            username (str): Username for Neo4j.
+            password (str): Password for Neo4j.
         """
-        try:
-            self.driver = GraphDatabase.driver(uri, auth=(username, password))
-        except Exception as e:
-            raise ConnectionError(f"Failed to connect to Neo4j database: {e}")
+        self.driver = GraphDatabase.driver(uri, auth=(username, password))
 
     def close(self):
-        """
-        Close the connection to the Neo4j database.
-        """
-        try:
+        """Closes the Neo4j connection."""
+        if self.driver:
             self.driver.close()
-        except Exception as e:
-            raise RuntimeError(f"Failed to close Neo4j connection: {e}")
 
-    def _add_node(self, tx, node: Dict[str, str]):
+    def add_graph_documents(self, graph_documents: List['GraphDocument'], base_entity_label: bool = True, include_source: bool = True):
         """
-        Add a single node to the Neo4j database.
+        Adds graph documents to the Neo4j database.
 
         Args:
-            tx: A Neo4j transaction object.
-            node (Dict[str, str]): A dictionary representing the node with 'id' and 'type'.
+            graph_documents (List[GraphDocument]): List of GraphDocument objects to be added to the Neo4j database.
+            base_entity_label (bool): Whether to add a base entity label to the node. Defaults to True.
+            include_source (bool): Whether to include the source document as part of the graph. Defaults to True.
         """
-        query = (
-            "MERGE (n:Entity {id: $id}) "
-            "SET n.type = $type"
-        )
         try:
-            tx.run(query, id=node["id"], type=node["type"])
-        except Exception as e:
-            raise RuntimeError(f"Failed to add node: {e}")
+            with self.driver.session() as session:
+                for graph_doc in graph_documents:
+                    self._add_graph_document(session, graph_doc, base_entity_label, include_source)
+        finally:
+            self.close()
 
-    def _add_relationship(self, tx, relationship: Dict[str, str]):
+    def _add_graph_document(self, session, graph_doc: 'GraphDocument', base_entity_label: bool, include_source: bool):
         """
-        Add a single relationship to the Neo4j database with a dynamic relationship type.
+        Adds a single GraphDocument to the Neo4j database.
 
         Args:
-            tx: A Neo4j transaction object.
-            relationship (Dict[str, str]): A dictionary with 'source', 'target', and 'type' fields.
-
-        Raises:
-            RuntimeError: If adding the relationship to the database fails.
+            session: Neo4j session.
+            graph_doc (GraphDocument): The graph document to be added.
+            base_entity_label (bool): Whether to add a base entity label to the node.
+            include_source (bool): Whether to include the source document as part of the graph.
         """
-        # Ensure relationship type does not contain spaces or invalid characters
-        relationship_type = relationship['type'].replace(" ", "_").upper()
+        for node in graph_doc.nodes:
+            self._add_node(session, node, base_entity_label)
+        for relationship in graph_doc.relationships:
+            self._add_relationship(session, relationship)
+        if include_source:
+            self._add_source(session, graph_doc)
 
-        query = (
-            f"MATCH (a:Entity {{id: $source_id}}), (b:Entity {{id: $target_id}}) "
-            f"MERGE (a)-[r:{relationship_type}]->(b)"
-        )
-        try:
-            tx.run(query, source_id=relationship["source"], target_id=relationship["target"])
-        except Exception as e:
-            raise RuntimeError(f"Failed to add relationship: {e}")
-
-    def add_graph_document(self, graph_document: Dict[str, List[Dict[str, str]]]):
+    def _add_node(self, session, node: 'Node', base_entity_label: bool):
         """
-        Add all nodes and relationships from a graph document to the Neo4j database.
+        Adds a node to the Neo4j database.
 
         Args:
-            graph_document (Dict[str, List[Dict[str, str]]]): A dictionary containing nodes and relationships.
-
-        Raises:
-            RuntimeError: If adding the graph document to the database fails.
+            session: Neo4j session.
+            node (Node): The node object to be added.
+            base_entity_label (bool): Whether to add a base entity label to the node.
         """
-        with self.driver.session() as session:
-            try:
-                # Add nodes
-                for node in graph_document.get("nodes", []):
-                    session.write_transaction(self._add_node, node)
+        labels = f":{node.type}"
+        if base_entity_label:
+            labels += ":Entity"
+        query = f"MERGE (n{labels} {{id: $id}})"
+        params = {"id": node.id}
+        if node.embedding:
+            query += " SET n.embedding = $embedding"
+            params["embedding"] = node.embedding
+        if node.text:
+            query += " SET n.text = $text"
+            params["text"] = node.text
+        session.run(query, params)
 
-                # Add relationships
-                for relationship in graph_document.get("relationships", []):
-                    session.write_transaction(self._add_relationship, relationship)
-            except Exception as e:
-                raise RuntimeError(f"Failed to add graph document: {e}")
-
-    def add_graph_documents(self, graph_documents: List[Dict[str, List[Dict[str, str]]]]):
+    def _add_relationship(self, session, relationship: 'Relationship'):
         """
-        Add multiple graph documents to the Neo4j database.
+        Adds a relationship between two nodes in the Neo4j database.
 
         Args:
-            graph_documents (List[Dict[str, List[Dict[str, str]]]]): A list of graph documents to be added.
-
-        Raises:
-            RuntimeError: If adding any of the graph documents to the database fails.
+            session: Neo4j session.
+            relationship (Relationship): The relationship to be added.
         """
-        for graph_document in graph_documents:
-            self.add_graph_document(graph_document)
-
-    def query_graph(self, query: str) -> List[Dict[str, str]]:
+        relationship_type = relationship.type.replace(" ", "_")
+        query = f"""
+        MATCH (a {{id: $source_id}}), (b {{id: $target_id}})
+        MERGE (a)-[r:{relationship_type}]->(b)
         """
-        Execute a custom Cypher query on the Neo4j database and return the result.
+        session.run(query, {"source_id": relationship.source.id, "target_id": relationship.target.id})
+
+    def _add_source(self, session, graph_doc: 'GraphDocument'):
+        """
+        Adds the source metadata to a special node in the Neo4j database.
 
         Args:
-            query (str): A Cypher query string.
+            session: Neo4j session.
+            graph_doc (GraphDocument): The graph document containing the source information.
+        """
+        source = graph_doc.source
+        query = """
+        MERGE (s:Source {title: $title, page_content: $page_content})
+        """
+        params = {
+            "title": source.metadata.get('metadata', {}).get('title', 'Untitled'),
+            "page_content": source.page_content
+        }
+        session.run(query, params)
+
+        for node in graph_doc.nodes:
+            query = """
+            MATCH (n {id: $node_id}), (s:Source {title: $title})
+            MERGE (n)-[:HAS_SOURCE]->(s)
+            """
+            session.run(query, {"node_id": node.id, "title": source.metadata.get("metadata", {}).get("title", "Untitled")})
+
+    def search_relationships_by_entity(self, entity_id: str, relationship_type: str):
+        """
+        Searches for relationships by entity ID and relationship type.
+
+        Args:
+            entity_id (str): The ID of the entity to search for.
+            relationship_type (str): The type of relationship to search for.
 
         Returns:
-            List[Dict[str, str]]: A list of records returned by the query.
-
-        Raises:
-            RuntimeError: If executing the query fails.
+            List[Dict]: A list of relationships including the source entity, relationship type, and target entity.
+        """
+        query = f"""
+        MATCH (a {{id: $entity_id}})-[r:{relationship_type}]->(b)
+        RETURN a, TYPE(r) AS rel_type, b
         """
         with self.driver.session() as session:
-            try:
-                result = session.run(query)
-                return [record for record in result]
-            except Exception as e:
-                raise RuntimeError(f"Failed to execute query: {e}")
+            result = session.run(query, {"entity_id": entity_id})
+            return [record for record in result]
