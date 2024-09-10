@@ -8,5 +8,5 @@ from .weaviate import Weaviate
 # from .atlas import Atlas
 from .milvus import Milvus
 from .pathway import PathwayVectorClient
-# from .qdrant import Qdrant
 from .duckdb import DuckDB
+from .Couch_base import Couchbase

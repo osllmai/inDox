@@ -16,8 +16,8 @@
 </br>
 
 [![License](https://img.shields.io/github/license/osllmai/inDox)](https://github.com/osllmai/inDox/blob/main/LICENSE)
-[![PyPI](https://badge.fury.io/py/Indox.svg)](https://pypi.org/project/Indox/0.1.25/)
-[![Python](https://img.shields.io/pypi/pyversions/Indox.svg)](https://pypi.org/project/Indox/0.1.8/)
+[![PyPI](https://badge.fury.io/py/Indox.svg)](https://pypi.org/project/Indox/0.1.28/)
+[![Python](https://img.shields.io/pypi/pyversions/Indox.svg)](https://pypi.org/project/Indox/0.1.28/)
 [![Downloads](https://static.pepy.tech/badge/indox)](https://pepy.tech/project/indox)
 
 [![Discord](https://img.shields.io/discord/1223867382460579961?label=Discord&logo=Discord&style=social)](https://discord.com/invite/ossllmai)
@@ -27,7 +27,7 @@
 
 
 <p align="center">
-  <a href="https://osllm.ai">Official Website</a> &bull; <a href="https://github.com/osllmai/inDox/wiki">Documentation</a> &bull; <a href="https://discord.gg/qrCc56ZR">Discord</a>
+  <a href="https://osllm.ai">Official Website</a> &bull; <a href="https://docs.osllm.ai/index.html">Documentation</a> &bull; <a href="https://discord.gg/qrCc56ZR">Discord</a>
 </p>
 
 
@@ -95,6 +95,7 @@ workflow, bringing clarity and organization to your data retrieval needs.
 | OpenAi (Using Clustered Split) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/openai_clusterSplit.ipynb)     |
 | HuggingFace Models(Mistral)    | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/hf_mistral_SimpleReader.ipynb) |
 | Ollama                         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/ollama.ipynb)                  |
+| Evaluate with IndoxJudge | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/indoxJudge_evaluation.ipynb)|
 
 
 
@@ -133,6 +134,42 @@ Install the required Python packages:
 
 ```bash
 pip install -r requirements.txt
+```
+
+## Setting Up the Python Environment
+
+If you are running this project in your local IDE, please create a Python environment to ensure all dependencies are correctly managed. You can follow the steps below to set up a virtual environment named `indox`:
+
+### Windows
+
+1. **Create the virtual environment:**
+```bash
+  python -m venv indox
+```
+
+2. **Activate the virtual environment:**
+```bash
+  indox\Scripts\activate
+```
+
+
+### macOS/Linux
+
+1. **Create the virtual environment:**
+   ```bash
+   python3 -m venv indox
+   
+2. **Activate the virtual environment:**
+```bash
+  source indox/bin/activate
+```
+
+### Install Dependencies
+
+Once the virtual environment is activated, install the required dependencies by running:
+
+```bash
+  pip install -r requirements.txt
 ```
 
 

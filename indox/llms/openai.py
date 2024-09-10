@@ -2,6 +2,7 @@ from tenacity import retry, stop_after_attempt, wait_random_exponential
 from loguru import logger
 import sys
 from indox.core import BaseLLM
+from pydantic import ConfigDict
 
 # Set up logging
 logger.remove()  # Remove the default logger
@@ -14,44 +15,48 @@ logger.add(sys.stdout,
            level="ERROR")
 
 
-class Ollama(BaseLLM):
-    model: str = ""
-    def __init__(self, model):
-        super().__init__(model=model)
+class OpenAi:
+    def __init__(self, api_key, model):
         """
-        Initializes the Ollama model with the specified model version and an optional prompt template.
+        Initializes the GPT-3 model with the specified model version and an optional prompt template.
 
         Args:
-            model (str): Ollama model version.
+            api_key (str): The API key for OpenAI.
+            model (str): The GPT-3 model version.
         """
+        from openai import OpenAI
 
         try:
-            logger.info(f"Initializing Ollama with model: {model}")
+            logger.info(f"Initializing OpenAi with model: {model}")
             self.model = model
-            logger.info("Ollama initialized successfully")
+            self.client = OpenAI(api_key=api_key)
+            logger.info("OpenAi initialized successfully")
         except Exception as e:
-            logger.error(f"Error initializing Ollama: {e}")
+            logger.error(f"Error initializing OpenAi: {e}")
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-    def _generate_response(self, messages, max_tokens=250, temperature=0):
+    def _generate_response(self, messages, max_tokens=250, temperature=0.00001):
         """
-        Generates a response from the Ollama model.
+        Generates a response from the OpenAI model.
 
         Args:
-            messages : The  messages to send to the model.
+            messages (list): The list of messages to send to the model.
             max_tokens (int, optional): The maximum number of tokens in the generated response. Defaults to 250.
             temperature (float, optional): The sampling temperature. Defaults to 0.
 
         Returns:
             str: The generated response.
         """
-        import ollama as ol
-
         try:
             logger.info("Generating response")
-            response = ol.generate(model=self.model, prompt=messages)
-            result = response["response"].strip().replace("\n", "").replace("\t", "")
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+            result = response.choices[0].message.content.strip()
             logger.info("Response generated successfully")
             return result
         except Exception as e:
@@ -86,7 +91,11 @@ class Ollama(BaseLLM):
         try:
             logger.info("Answering question")
             prompt = self._format_prompt(context, question)
-            return self._generate_response(messages=prompt, max_tokens=max_tokens, temperature=0)
+            messages = [
+                {"role": "system", "content": "You are Question Answering Portal"},
+                {"role": "user", "content": prompt},
+            ]
+            return self._generate_response(messages, max_tokens=max_tokens, temperature=0)
         except Exception as e:
             logger.error(f"Error in answer_question: {e}")
             return str(e)
@@ -104,7 +113,10 @@ class Ollama(BaseLLM):
         try:
             logger.info("Generating summary for documentation")
             prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n{documentation}"
-            messages = prompt
+            messages = [
+                {"role": "system", "content": "You are a helpful assistant"},
+                {"role": "user", "content": prompt},
+            ]
             return self._generate_response(messages, max_tokens=150, temperature=0)
         except Exception as e:
             logger.error(f"Error generating summary: {e}")
@@ -126,11 +138,13 @@ class Ollama(BaseLLM):
             Give a binary "yes" or "no" score to indicate whether the document is relevant to the question.
 
             Provide the score with no preamble or explanation.
-                        
         """
         for doc in context:
             prompt = f"Here is the retrieved document:\n{doc}\nHere is the user question:\n{question}"
-            messages = system_prompt + prompt
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ]
             try:
                 grade = self._generate_response(messages, max_tokens=150, temperature=0).lower()
                 if grade == "yes":
@@ -159,10 +173,20 @@ class Ollama(BaseLLM):
             Provide the score with no preamble or explanation.
         """
         prompt = f"Here are the facts:\n{context}\nHere is the answer:\n{answer}"
-        messages = system_prompt + prompt
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt},
+        ]
         try:
             logger.info("Checking hallucination for answer")
             return self._generate_response(messages, max_tokens=150, temperature=0).lower()
         except Exception as e:
             logger.error(f"Error checking hallucination: {e}")
             return str(e)
+
+    def chat(self, prompt, max_tokens=250, temperature=0.00001):
+        messages = [
+            {"role": "system", "content": "You are Question Answering Portal"},
+            {"role": "user", "content": prompt},
+        ]
+        return self._generate_response(messages=messages, max_tokens=max_tokens, temperature=temperature)

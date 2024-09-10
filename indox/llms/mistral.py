@@ -35,7 +35,7 @@ class Mistral:
             logger.error(f"Error initializing MistralAI: {e}")
             raise
 
-    def run_mistral(self, user_message):
+    def _run_mistral(self, user_message):
         """
         Runs the Mistral model to generate a response based on the user message.
 
@@ -91,7 +91,7 @@ class Mistral:
 
         try:
             logger.info("Attempting to generate an answer for the question")
-            return self.run_mistral(prompt)
+            return self._run_mistral(prompt)
         except Exception as e:
             logger.error(f"Error generating answer: {e}")
             raise
@@ -197,3 +197,6 @@ class Mistral:
         except Exception as e:
             logger.error(f"Error generating agent answer: {e}")
             return str(e)
+
+    def chat(self, prompt):
+        return self._run_mistral(prompt)

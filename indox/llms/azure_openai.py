@@ -1,7 +1,8 @@
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 from loguru import logger
 import sys
-from indox.core import BaseLLM
+import requests
+from pydantic import ConfigDict
 
 # Set up logging
 logger.remove()  # Remove the default logger
@@ -14,79 +15,96 @@ logger.add(sys.stdout,
            level="ERROR")
 
 
-class GoogleAi(BaseLLM):
-    api_key: str
-    model: str = "gemini-1.5-flash-latest"
-
-    def __init__(self, api_key, model="gemini-1.5-flash-latest"):
-        super().__init__(api_key=api_key, model=model)
+class AzureOpenAi:
+    def __init__(self, api_key, endpoint, deployment_name):
         """
-        Initializes with the specified model version and an optional prompt template.
+        Initializes the Azure OpenAI model with the specified deployment and endpoint.
 
         Args:
-            api_key (str): The API key for Google Ai.
-            model (str): The Gemini model version.
+            api_key (str): The API key for Azure OpenAI.
+            endpoint (str): The endpoint for the Azure OpenAI instance.
+            deployment_name (str): The deployment name of the Azure OpenAI model.
         """
-        import google.generativeai as genai
+        self.api_key = api_key
+        self.endpoint = endpoint
+        self.deployment_name = deployment_name
+
         try:
-            logger.info(f"Initializing GoogleAi with model: {model}")
-            genai.configure(api_key=api_key)
-            self.model = genai.GenerativeModel(model)
-            logger.info("GoogleAi initialized successfully")
+            logger.info(f"Initializing AzureOpenAi with deployment: {deployment_name}")
+            self.headers = {
+                "Content-Type": "application/json",
+                "api-key": self.api_key
+            }
+            self.url = f"{self.endpoint}/openai/deployments/{self.deployment_name}/chat/completions?api-version=2023-05-15"
+            logger.info("AzureOpenAi initialized successfully")
         except Exception as e:
-            logger.error(f"Error initializing GoogleAi: {e}")
+            logger.error(f"Error initializing AzureOpenAi: {e}")
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-    def _generate_response(self, prompt):
+    def _generate_response(self, messages, max_tokens=250, temperature=0):
         """
-        Generates a response using the model.
+        Generates a response from the Azure OpenAI model.
 
         Args:
-            prompt (str): The prompt to generate a response for.
+            messages (list): The list of messages to send to the model.
+            max_tokens (int, optional): The maximum number of tokens in the generated response. Defaults to 250.
+            temperature (float, optional): The sampling temperature. Defaults to 0.
 
         Returns:
-            str: The generated response text.
+            str: The generated response.
         """
         try:
             logger.info("Generating response")
-            response = self.model.generate_content(contents=prompt)
-            logger.info("Response in generated successfully")
-            return response.text.strip().replace("\n", "")
+            payload = {
+                "messages": messages,
+                "max_tokens": max_tokens,
+                "temperature": temperature
+            }
+
+            response = requests.post(self.url, headers=self.headers, json=payload)
+            response.raise_for_status()
+            result = response.json()
+            generated_text = result['choices'][0]['message']['content'].strip()
+            logger.info("Response generated successfully")
+            return generated_text
         except Exception as e:
             logger.error(f"Error generating response: {e}")
             raise
 
-    def _format_prompt(self, context, question, max_tokens):
+    def _format_prompt(self, context, question):
         """
         Formats the prompt for generating a response.
 
         Args:
             context (str): The context for the prompt.
             question (str): The question for the prompt.
-            max_tokens (int): The maximum number of tokens.
 
         Returns:
             str: The formatted prompt.
         """
-        return f"Given Context: {context} Give the best full answer amongst the option to question {question} in maximum {max_tokens} tokens"
+        return f"Given Context: {context} Give the best full answer amongst the option to question {question}"
 
-    def answer_question(self, context, question, max_tokens=200):
+    def answer_question(self, context, question, max_tokens=350):
         """
         Public method to generate an answer to a question based on the given context.
 
         Args:
             context (str): The text to summarize.
             question (str): The question to answer.
-            max_tokens (int, optional): The maximum number of tokens in the generated answer. Defaults to 200.
+            max_tokens (int, optional): The maximum number of tokens in the generated summary. Defaults to 350.
 
         Returns:
             str: The generated answer.
         """
         try:
             logger.info("Answering question")
-            prompt = self._format_prompt(context, question, max_tokens)
-            return self._generate_response(prompt)
+            prompt = self._format_prompt(context, question)
+            messages = [
+                {"role": "system", "content": "You are Question Answering Portal"},
+                {"role": "user", "content": prompt},
+            ]
+            return self._generate_response(messages, max_tokens=max_tokens, temperature=0)
         except Exception as e:
             logger.error(f"Error in answer_question: {e}")
             return str(e)
@@ -101,10 +119,14 @@ class GoogleAi(BaseLLM):
         Returns:
             str: The generated summary.
         """
-        prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n {documentation} in maximum 150 tokens"
         try:
             logger.info("Generating summary for documentation")
-            return self._generate_response(prompt)
+            prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n{documentation}"
+            messages = [
+                {"role": "system", "content": "You are a helpful assistant"},
+                {"role": "user", "content": prompt},
+            ]
+            return self._generate_response(messages, max_tokens=150, temperature=0)
         except Exception as e:
             logger.error(f"Error generating summary: {e}")
             return str(e)
@@ -127,9 +149,13 @@ class GoogleAi(BaseLLM):
             Provide the score with no preamble or explanation.
         """
         for doc in context:
-            prompt = f"{system_prompt} \n Here is the retrieved document:\n{doc}\nHere is the user question:\n{question}"
+            prompt = f"Here is the retrieved document:\n{doc}\nHere is the user question:\n{question}"
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ]
             try:
-                grade = self._generate_response(prompt).lower()
+                grade = self._generate_response(messages, max_tokens=150, temperature=0).lower()
                 if grade == "yes":
                     logger.info("Relevant doc")
                     filtered_docs.append(doc)
@@ -156,9 +182,20 @@ class GoogleAi(BaseLLM):
             Provide the score with no preamble or explanation.
         """
         prompt = f"Here are the facts:\n{context}\nHere is the answer:\n{answer}"
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt},
+        ]
         try:
             logger.info("Checking hallucination for answer")
-            return self._generate_response(prompt).lower()
+            return self._generate_response(messages, max_tokens=150, temperature=0).lower()
         except Exception as e:
             logger.error(f"Error checking hallucination: {e}")
             return str(e)
+
+    def chat(self,prompt):
+        messages = [
+            {"role": "system", "content": "You are Question Answering Portal"},
+            {"role": "user", "content": prompt},
+        ]
+        return self._generate_response(messages=messages)

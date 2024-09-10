@@ -3,30 +3,7 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING, List, Optional
 from indox.core import Embeddings
-
-def get_from_env(key: str, env_key: str, default: Optional[str] = None) -> str:
-    """Get a value from an environment variable or return a default value.
-
-    Args:
-        key: The key to look up.
-        env_key: The environment variable to look up if the key is not found.
-        default: The default value to return if the key is not found.
-
-    Returns:
-        str: The value of the key or default value.
-
-    Raises:
-        ValueError: If the key is not found and no default value is provided.
-    """
-    value = os.environ.get(env_key)
-    if value:
-        return value
-    if default is not None:
-        return default
-    raise ValueError(
-        f"Did not find {key}, please add an environment variable `{env_key}` "
-        f"which contains it, or pass `{key}` as a named parameter."
-    )
+from indox.embeddings.utils import get_from_env
 
 
 class ElasticsearchEmbeddings(Embeddings):

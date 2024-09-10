@@ -1,7 +1,8 @@
-from .Mistral import Mistral
-from .OpenAi import OpenAi
-# from .Dspy_Cot import DspyCot
-from .IndoxApi import IndoxApi
-from .HuggingFace import HuggingFaceModel
-from .GoogleAi import GoogleAi
-from .Ollama import Ollama
+from .mistral import Mistral
+from .openai import OpenAi
+# from .dspy import DspyCot
+from .indox_api import IndoxApi
+from .huggingface import HuggingFaceModel
+from .googleai import GoogleAi
+from .ollama import Ollama
+# from .azure_openai import AzureOpenAi
