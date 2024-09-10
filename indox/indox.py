@@ -122,7 +122,9 @@ class IndoxRetrievalAugmentation:
         from . import __version__
         self.__version__ = __version__
         self.db = None
+
         self.multi_query_retrieval = None
+
 
         logger.info("IndoxRetrievalAugmentation initialized")
         show_indox_logo()
