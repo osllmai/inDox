@@ -119,9 +119,12 @@ class IndoxRetrievalAugmentation:
         """
         Initialize the IndoxRetrievalAugmentation class
         """
-        # from . import __version__
-        # self.__version__ = __version__
+        from . import __version__
+        self.__version__ = __version__
         self.db = None
+
+        self.multi_query_retrieval = None
+
 
         logger.info("IndoxRetrievalAugmentation initialized")
         show_indox_logo()
@@ -141,12 +144,19 @@ class IndoxRetrievalAugmentation:
                 logger.error("Vector store database is not initialized.")
                 raise RuntimeError("Vector store database is not initialized.")
 
-        def invoke(self, query):
+        def invoke(self, query,multi_query:bool=False):
             if not query:
                 logger.error("Query string cannot be empty.")
                 raise ValueError("Query string cannot be empty.")
 
             try:
+              if multi_query:
+                 self.multi_query_retrieval = MultiQueryRetrieval(self.qa_model, self.vector_database, self.top_k)
+
+                 logger.info("Multi-query retrieval initialized")
+
+                 return self.multi_query_retrieval.run(query)
+              else:
                 logger.info("Retrieving context and scores from the vector database")
                 retrieved = self.vector_database._similarity_search_with_score(query, k=self.top_k)
                 context = [d[0].page_content for d in retrieved]
@@ -174,6 +184,7 @@ class IndoxRetrievalAugmentation:
             except Exception as e:
                 logger.error(f"Error while answering query: {e}")
                 raise
+
 
     class AgenticRag:
         def __init__(self, llm, vector_database=None, top_k: int = 5):
