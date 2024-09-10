@@ -15,6 +15,7 @@ logger.add(sys.stdout,
            format="<red>{level}</red>: <level>{message}</level>",
            level="ERROR")
 
+
 class MultiVectorRetriever:
     def __init__(self, vector_stores: List[Any]):
         self.vector_stores = vector_stores
@@ -56,5 +57,5 @@ class MultiVectorRetriever:
                 all_results.extend(future.result())
 
         combined_results = sorted(all_results, key=lambda x: x[1], reverse=True)
-        #logger.info(f"Combined sorted results from all vector stores: {combined_results}")
+        # logger.info(f"Combined sorted results from all vector stores: {combined_results}")
         return combined_results[:k]

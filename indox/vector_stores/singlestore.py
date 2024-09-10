@@ -294,4 +294,3 @@ class SingleStoreVectorDB:
             raise
         finally:
             conn.close()
-
