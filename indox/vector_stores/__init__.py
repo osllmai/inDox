@@ -11,3 +11,4 @@ from .pathway import PathwayVectorClient
 from .duckdb import DuckDB
 from .redis import RedisDB
 from .qdrant import Qdrant
+from .Couch_base import Couchbase
