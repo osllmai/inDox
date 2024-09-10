@@ -1,4 +1,4 @@
-# from typing import List, Any, Tuple
+from typing import List
 import warnings
 
 # from .core import Document
@@ -20,14 +20,111 @@ logger.add(sys.stdout,
            level="ERROR")
 
 
+class MultiQueryRetrieval:
+    """
+    A class that implements multi-query retrieval for enhanced information gathering.
+
+    This class generates multiple queries from an original query, retrieves relevant
+    information for each generated query, and combines the results to produce a final response.
+
+    """
+
+    def __init__(self, llm, vector_database, top_k: int = 3):
+        """
+        Initialize the MultiQueryRetrieval instance.
+
+        Args:
+            llm: The language model to use for query generation and response synthesis.
+            vector_database: The vector database to use for information retrieval.
+            top_k (int): The number of top results to retrieve for each query. Defaults to 3.
+        """
+        self.llm = llm
+        self.vector_database = vector_database
+        self.top_k = top_k
+
+    def generate_queries(self, original_query: str) -> List[str]:
+        """
+        Generate multiple queries from the original query.
+
+        Args:
+            original_query (str): The original user query.
+
+        Returns:
+            List[str]: A list of generated queries.
+        """
+        prompt = f"Generate 3 different queries to gather information for answering the following question: {original_query}"
+        response = self.llm.chat(prompt=prompt)
+        return [q.strip() for q in response.split('\n') if q.strip()]
+
+    def retrieve_information(self, queries: List[str]) -> List[str]:
+        """
+        Retrieve relevant information for each generated query.
+
+        Args:
+            queries (List[str]): A list of queries to use for information retrieval.
+
+        Returns:
+            List[str]: A list of relevant passages retrieved from the vector database.
+        """
+        all_relevants = []
+        for query in queries:
+            retrieved = self.vector_database._similarity_search_with_score(query, k=self.top_k)
+            relevants = [d[0].page_content for d in retrieved]
+            all_relevants.extend(relevants)
+        return all_relevants
+
+    def generate_response(self, original_query: str, context: List[str]) -> str:
+        """
+        Generate a final response based on the original query and retrieved context.
+
+        Args:
+            original_query (str): The original user query.
+            context (List[str]): A list of relevant passages to use as context.
+
+        Returns:
+            str: The generated response.
+        """
+        combined_context = "\n".join(context)
+        prompt = f"Based on the following information, answer the question: {original_query}\n\nContext: {combined_context}"
+        return self.llm.chat(prompt=prompt)
+
+    def run(self, query: str) -> str:
+        """
+        Execute the full multi-query retrieval process.
+
+        This method orchestrates the entire process of query generation, information retrieval,
+        and response generation.
+
+        Args:
+            query (str): The original user query.
+
+        Returns:
+            str: The final generated response.
+        """
+        logger.info(f"Running multi-query retrieval for: {query}")
+        generated_queries = self.generate_queries(query)
+        logger.info(f"Generated queries: {generated_queries}")
+
+        relevants = self.retrieve_information(generated_queries)
+        logger.info(f"Retrieved {len(relevants)} relevant passages")
+
+        response = self.generate_response(query, relevants)
+        logger.info("Generated final response")
+
+        return response
+
+
 class IndoxRetrievalAugmentation:
     def __init__(self):
         """
         Initialize the IndoxRetrievalAugmentation class
         """
-        from . import __version__
-        self.__version__ = __version__
+        # from . import __version__
+        # self.__version__ = __version__
         self.db = None
+        self.multi_query_retrieval = None
+        self.qa_history = []
+
         logger.info("IndoxRetrievalAugmentation initialized")
         show_indox_logo()
 
@@ -80,6 +177,24 @@ class IndoxRetrievalAugmentation:
                 logger.error(f"Error while answering query: {e}")
                 raise
 
+        def invoke_multi_query(self, query: str) -> str:
+            """
+            Execute a multi-query retrieval task.
+
+            This method runs the multi-query retrieval process using the initialized
+            MultiQueryRetrieval instance.
+
+            Args:
+                query (str): The original user query.
+
+            Returns:
+                str: The final generated response.
+            """
+            self.multi_query_retrieval = MultiQueryRetrieval(self.qa_model, self.vector_database, self.top_k)
+
+            logger.info("Multi-query retrieval initialized")
+
+            return self.multi_query_retrieval.run(query)
 
 
     class AgenticRag:
