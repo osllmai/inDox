@@ -9,5 +9,6 @@ from .weaviate import Weaviate
 from .milvus import Milvus
 from .pathway import PathwayVectorClient
 from .duckdb import DuckDB
+from .lantern import LanternDB
 from .singlestore import SingleStoreVectorDB
 from .Couch_base import Couchbase
