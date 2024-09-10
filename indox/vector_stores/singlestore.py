@@ -1,4 +1,3 @@
-import singlestoredb as s2
 import json
 from typing import List, Tuple, Optional, Any
 import numpy as np
@@ -35,6 +34,7 @@ class SingleStoreVectorDB:
             use_full_text_search (bool, optional): Whether to enable full-text search. Defaults to False.
             vector_index_options (dict, optional): Additional options for vector indexing. Defaults to None.
         """
+        import singlestoredb as s2
         try:
             self.conn = s2.connect(**connection_params)
             self.table_name = table_name
@@ -63,6 +63,7 @@ class SingleStoreVectorDB:
         """
         Create the table if it doesn't exist, or update it if it does.
         """
+        import singlestoredb as s2
         try:
             with self.conn.cursor() as cur:
                 cur.execute(f"SHOW TABLES LIKE '{self.table_name}'")
@@ -83,6 +84,8 @@ class SingleStoreVectorDB:
         Args:
             cur: Database cursor.
         """
+        import singlestoredb as s2
+
         try:
             full_text_index = ""
             if self.use_full_text_search:
@@ -110,6 +113,8 @@ class SingleStoreVectorDB:
         Args:
             cur: Database cursor.
         """
+        import singlestoredb as s2
+
         try:
             cur.execute(f"SHOW COLUMNS FROM {self.table_name} LIKE '{self.vector_field}'")
             vector_column_exists = cur.fetchone() is not None
@@ -130,6 +135,8 @@ class SingleStoreVectorDB:
         Args:
             cur: Database cursor.
         """
+        import singlestoredb as s2
+
         if self.use_vector_index:
             try:
                 index_options = ""
@@ -167,6 +174,8 @@ class SingleStoreVectorDB:
             ValueError: If the lengths of texts and metadatas (if provided) don't match.
             s2.Error: If there's an error inserting data into the database.
         """
+        import singlestoredb as s2
+
         if metadatas is None:
             metadatas = [{} for _ in texts]
 
@@ -210,6 +219,7 @@ class SingleStoreVectorDB:
         embedding = self.embedding_function.embed_query(query)
         query_vector_array = np.array(embedding, dtype=np.float32)
         query_vector_norm = np.linalg.norm(query_vector_array)
+        import singlestoredb as s2
 
         try:
             with self.conn.cursor() as cur:
@@ -271,6 +281,8 @@ class SingleStoreVectorDB:
         Raises:
             s2.Error: If there's an error deleting the table.
         """
+        import singlestoredb as s2
+
         try:
             conn = s2.connect(**connection_params)
             with conn.cursor() as cur:

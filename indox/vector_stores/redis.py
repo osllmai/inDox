@@ -1,7 +1,6 @@
 from indox.core import Document
 from loguru import logger
 import sys
-import redis
 import numpy as np
 from typing import List, Tuple, Union
 import json
@@ -37,6 +36,8 @@ class RedisDB:
             embedding (callable): The embedding function to use.
             prefix (str, optional): The prefix for Redis keys. Defaults to "doc".
         """
+        import redis
+
         self.redis_client = redis.Redis(
             host=host,
             port=port,

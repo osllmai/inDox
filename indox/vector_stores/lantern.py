@@ -1,5 +1,3 @@
-import psycopg2
-import psycopg2.extras
 import uuid
 import json
 from typing import Optional, List, Dict, Any, Tuple
@@ -25,6 +23,9 @@ class LanternDB:
             connection_params: Dictionary containing connection parameters for LanternDB.
             dimension: The dimensionality of the vector embeddings.
         """
+        import psycopg2
+        import psycopg2.extras
+
         self._collection_name = collection_name
         self._embedding_function = embedding_function
         self._dimension = dimension
