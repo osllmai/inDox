@@ -66,11 +66,11 @@ ira = IndoxRetrievalAugmentation()
 ```
 2. Create a `QuestionAnswer` instance:
 ```python
-qa = ira.QuestionAnswer(llm=your_llm, vector_database=your_vector_db, top_k=5)
+qa = ira.QuestionAnswer(llm=lm, vector_database=vector_db, top_k=5)
 ```
-3. Use the `invoke_multi_query` method to perform multi-query retrieval:
+3. Use the `invoke` method to perform multi-query retrieval:
 ```python
-response = qa.invoke_multi_query("Your complex query here")
+response = qa.invoke("Your complex query here",multi_query=True)
 ```
 ### Example
 ```python
@@ -81,14 +81,14 @@ ira = IndoxRetrievalAugmentation()
 
 # Create a QuestionAnswer instance
 qa = ira.QuestionAnswer(
-    llm=your_llm,
-    vector_database=your_vector_db,
+    llm=llm,
+    vector_database=vector_db,
     top_k=5
 )
 
 # Perform multi-query retrieval
 query = "What are the main differences between renewable and non-renewable energy sources?"
-response = qa.invoke_multi_query(query)
+response = qa.invoke(query,multi_query=True)
 
 print(f"Query: {query}")
 print(f"Response: {response}")
