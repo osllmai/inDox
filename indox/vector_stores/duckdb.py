@@ -1,5 +1,6 @@
 import json
 import uuid
+
 from typing import List, Optional, Any, Iterable, Tuple
 import logging
 from indox.core import Document
@@ -162,6 +163,7 @@ class DuckDB:
     #
     #     return instance
 
+
     def _similarity_search_with_score(
             self, query: str, k: int = 4, **kwargs: Any
     ) -> List[Tuple[Document, float]]:
@@ -170,6 +172,7 @@ class DuckDB:
             query: The query string to search for.
             k: The number of similar texts to return.
         Returns:
+
             A list of tuples where each tuple contains a Document object and its similarity score.
         """
         # Compute the embedding for the query
@@ -181,6 +184,7 @@ class DuckDB:
             self.duckdb.ColumnExpression(self._vector_key),
             self.duckdb.ConstantExpression(embedding),
         )
+
 
         # Retrieve the most similar documents from the table
         docs = (
@@ -194,6 +198,8 @@ class DuckDB:
             .limit(k)
             .fetchdf()
         )
+
+
 
         # Return a list of tuples (Document, similarity_score)
         return [
