@@ -14,4 +14,7 @@ from .duckdb import DuckDB
 from .qdrant import Qdrant
 # from .lantern import LanternDB
 # from .singlestore import SingleStoreVectorDB
-from .Couch_base import Couchbase
+from .couchBase import Couchbase
+from .vespa import VESPA
+from .deeplake import Deeplake
+from .apache_cassandra import ApacheCassandra
