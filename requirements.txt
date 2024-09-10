@@ -1,6 +1,5 @@
 latex2markdown==0.2.1
 loguru==0.7.2
-spacy==3.7.5
 numpy==2.0.0
 pandas==2.0.3
 protobuf==5.27.2

@@ -10,3 +10,4 @@ from .milvus import Milvus
 from .pathway import PathwayVectorClient
 from .duckdb import DuckDB
 from .redis import RedisDB
+from .Couch_base import Couchbase
