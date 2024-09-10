@@ -28,66 +28,9 @@ class IndoxRetrievalAugmentation:
         from . import __version__
         self.__version__ = __version__
         self.db = None
-        self.qa_history = []
         logger.info("IndoxRetrievalAugmentation initialized")
         show_indox_logo()
 
-    # def connect_to_vectorstore(self, vectorstore_database):
-    #     """
-    #     Establish a connection to the vector store database using configuration parameters.
-    #     """
-    #     try:
-    #         self.db = vectorstore_database
-    #
-    #         if self.db is None:
-    #             raise RuntimeError('Failed to connect to the vector store database.')
-    #
-    #         logger.info("Connection to the vector store database established successfully")
-    #         return self.db
-    #     except ValueError as ve:
-    #         logger.error(f"Invalid input: {ve}")
-    #         raise ValueError(f"Invalid input: {ve}")
-    #     except RuntimeError as re:
-    #         logger.error(f"Runtime error: {re}")
-    #         raise RuntimeError(f"Runtime error: {re}")
-    #     except Exception as e:
-    #         logger.error(f"Failed to connect to the database due to an unexpected error: {e}")
-    #         raise RuntimeError(f"Failed to connect to the database due to an unexpected error: {e}")
-
-    # def store_in_vectorstore(self, docs: List[str]) -> Any:
-    #     """
-    #     Store text chunks into a vector store database.
-    #     """
-    #     if not docs or not isinstance(docs, list):
-    #         logger.error("The `docs` parameter must be a non-empty list.")
-    #         raise ValueError("The `docs` parameter must be a non-empty list.")
-    #
-    #     try:
-    #         logger.info("Storing documents in the vector store")
-    #         if self.db is not None:
-    #             try:
-    #                 if isinstance(docs[0], Document):
-    #                     self.db.add_documents(documents=docs)
-    #                 elif not isinstance(docs[0], Document):
-    #                     self.db.add_texts(texts=docs)
-    #                 logger.info("Document added successfully to the vector store.")
-    #             except Exception as e:
-    #                 logger.error(f"Failed to add document: {e}")
-    #                 raise RuntimeError(f"Can't add document to the vector store: {e}")
-    #         else:
-    #             raise RuntimeError("The vector store database is not initialized.")
-    #
-    #         logger.info("Documents stored successfully")
-    #         return self.db
-    #     except ValueError as ve:
-    #         logger.error(f"Invalid input data: {ve}")
-    #         raise ValueError(f"Invalid input data: {ve}")
-    #     except RuntimeError as re:
-    #         logger.error(f"Runtime error while storing in the vector store: {re}")
-    #         return None
-    #     except Exception as e:
-    #         logger.error(f"Unexpected error while storing in the vector store: {e}")
-    #         return None
 
     class QuestionAnswer:
         def __init__(self, llm, vector_database, top_k: int = 5, document_relevancy_filter: bool = False,
@@ -97,7 +40,7 @@ class IndoxRetrievalAugmentation:
             self.top_k = top_k
             self.generate_clustered_prompts = generate_clustered_prompts
             self.vector_database = vector_database
-            self.qa_history = []
+            self.chat_history = {}
             self.context = []
             if self.vector_database is None:
                 logger.error("Vector store database is not initialized.")
@@ -127,8 +70,9 @@ class IndoxRetrievalAugmentation:
                     answer = self.qa_model.answer_question(context=context, query=query)
 
                 retrieve_context = context
-                new_entry = {'query': query, 'answer': answer, 'context': context}
-                self.qa_history.append(new_entry)
+                key = len(self.chat_history)
+                new_entry = {'query': query, 'llm_response': answer, 'retrieval_context': context}
+                self.chat_history[key] = new_entry
                 self.context = retrieve_context
                 logger.info("Query answered successfully")
                 return answer
@@ -136,12 +80,14 @@ class IndoxRetrievalAugmentation:
                 logger.error(f"Error while answering query: {e}")
                 raise
 
+
+
     class AgenticRag:
         def __init__(self, llm, vector_database=None, top_k: int = 5):
             self.llm = llm
             self.top_k = top_k
             self.vector_database = vector_database
-            self.qa_history = []
+            self.chat_history = []
             self.context = []
 
         def run(self, query):
