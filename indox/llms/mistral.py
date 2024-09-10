@@ -136,7 +136,7 @@ class Mistral:
         try:
             logger.info("Generating summary for documentation")
             prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided in maximum 100 token.\n\nDocumentation:\n{documentation}"
-            return self.run_mistral(prompt)
+            return self._run_mistral(prompt)
         except Exception as e:
             logger.error(f"Error generating summary: {e}")
             return str(e)
@@ -168,7 +168,7 @@ class Mistral:
                     {context[i]}
                     Here is the user question:
                     {question}"""
-                grade = self.run_mistral(system_prompt + prompt).strip()
+                grade = self._run_mistral(system_prompt + prompt).strip()
                 if grade.lower() == "yes":
                     logger.info("Relevant doc")
                     filtered_docs.append(context[i])
@@ -193,7 +193,7 @@ class Mistral:
                 \n -------- \n
                 Here is the answer : {answer}
                 """
-            return self.run_mistral(system_prompt + prompt).strip()
+            return self._run_mistral(system_prompt + prompt).strip()
         except Exception as e:
             logger.error(f"Error generating agent answer: {e}")
             return str(e)
