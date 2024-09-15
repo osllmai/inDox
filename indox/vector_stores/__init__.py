@@ -10,7 +10,7 @@ from .milvus import Milvus
 from .pathway import PathwayVectorClient
 from .duckdb import DuckDB
 from .neo4j_vector import Neo4jVector
-from .redis import RedisDB
+# from .redis import RedisDB
 from .qdrant import Qdrant
 from .lantern import LanternDB
 from .singlestore import SingleStoreVectorDB

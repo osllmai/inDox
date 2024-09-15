@@ -64,27 +64,40 @@ class GraphDocument:
 
 # LLMGraphTransformer class to interact with any LLM API and convert text into a graph document
 class LLMGraphTransformer:
-    def __init__(self, llm_transformer: Any, embeddings_model: Any):
+    def __init__(self, llm_transformer: Any, embeddings_model: Any, min_tokens: int = 1000):
         """
-        Initializes the LLMGraphTransformer with an LLM transformer and embedding model.
+        Initializes the LLMGraphTransformer with an API client and embedding model.
 
         Args:
-            llm_transformer (Any): An instance of the LLM transformer (e.g., IndoxApi, OpenAI).
+            llm_transformer (Any): An instance of the LLM transformer (e.g., IndoxApi, OpenAI) which must have a `chat` method.
             embeddings_model (Any): An instance of the embedding model to generate text embeddings.
+            min_tokens (int): The minimum acceptable token limit for generating valid responses.
         """
-        self.llm_transformer = llm_transformer  # The transformer must have a `chat` method
+        # Check if the LLM transformer has max_tokens attribute and ensure it's set properly
+        if hasattr(llm_transformer, "max_tokens"):
+            if llm_transformer.max_tokens < min_tokens:
+                raise ValueError(
+                    f"`max_tokens` is set to {llm_transformer.max_tokens}, which is less than the recommended minimum "
+                    f"of {min_tokens} tokens. Please increase the `max_tokens` value.")
+        else:
+            print("Warning: The LLM transformer does not have a `max_tokens` parameter. Default behavior will apply.")
+
+        self.llm_transformer = llm_transformer  # The client must have a `chat` method
         self.embeddings_model = embeddings_model
 
         self.system_prompt_template = (
             "You are an AI that specializes in transforming text into structured knowledge graphs. "
             "Your task is to extract key entities (as nodes) and their relationships from the text provided. "
-            "Each entity should be identified by a unique ID and categorized by type (e.g., Person, Country, Monarchy, etc.). "
-            "Relationships between entities should be clearly defined with a type that describes their connection (e.g., REIGNED, PARENT, SIBLING, etc.). "
+            "Each entity should be identified by a unique ID and categorized by type (e.g., Person, Country, "
+            "Monarchy, etc.)."
+            "Relationships between entities should be clearly defined with a type that describes their connection ("
+            "e.g., REIGNED, PARENT, SIBLING, etc.)."
             "The output should be a JSON object with two main lists: "
             "1. 'nodes': A list of objects where each object represents an entity with the following structure: "
             "- 'id': A unique identifier for the entity (usually a name or title). "
             "- 'type': The category of the entity (e.g., Person, Country, Monarchy). "
-            "2. 'relationships': A list of objects where each object represents a relationship between two entities with the following structure: "
+            "2. 'relationships': A list of objects where each object represents a relationship between two entities "
+            "with the following structure:"
             "- 'source': The 'id' of the source entity. "
             "- 'target': The 'id' of the target entity. "
             "- 'type': The type of relationship (e.g., REIGNED, PARENT, SIBLING). "

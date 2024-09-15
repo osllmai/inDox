@@ -13,6 +13,14 @@ class Neo4jGraph:
             username (str): Username for Neo4j.
             password (str): Password for Neo4j.
         """
+        try:
+            # Import neo4j GraphDatabase dynamically to handle environments where it might not be installed.
+            from neo4j import GraphDatabase
+        except ImportError:
+            raise ImportError(
+                "Could not import the neo4j package. Please install it with `pip install neo4j`."
+            )
+
         self.driver = GraphDatabase.driver(uri, auth=(username, password))
 
     def close(self):
