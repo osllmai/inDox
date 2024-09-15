@@ -1,7 +1,6 @@
 import pandas as pd
 from typing import List, Dict, Any, Tuple
 from indox.core import Document
-import json
 import uuid
 
 
@@ -52,7 +51,7 @@ def process_docs(input_list: List[str], embedding_function: Any) -> List[Dict[st
         for text in input_list:
             doc_id = generate_id()
             embedding = embedding_function.embed_query(text)
-            
+
             print(f"Embedding shape for document {doc_id}: {len(embedding)}")
 
             output_dict = {
@@ -69,7 +68,6 @@ def process_docs(input_list: List[str], embedding_function: Any) -> List[Dict[st
         print(f"Error processing documents: {e}")
     return docs
 
-from typing import Any
 
 class VESPA:
 
@@ -307,5 +305,3 @@ class VESPA:
         except Exception as e:
             print(f"Error in similarity search: {e}")
             return []
-
-

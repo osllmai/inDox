@@ -1,9 +1,9 @@
-
 import uuid
 import json
 import numpy as np
 from typing import List, Tuple, Callable
 from indox.core import Document
+
 
 class ApacheCassandra:
     """
@@ -71,7 +71,8 @@ class ApacheCassandra:
             """)
             self.session.set_keyspace(self.keyspace)
             self.session.execute("DROP TABLE IF EXISTS embeddings_table")
-            self.session.execute("""CREATE TABLE IF NOT EXISTS embeddings_table (id UUID PRIMARY KEY, embedding text, chunk_text text)""")
+            self.session.execute(
+                """CREATE TABLE IF NOT EXISTS embeddings_table (id UUID PRIMARY KEY, embedding text, chunk_text text)""")
         except Exception as e:
             raise RuntimeError(f"Failed to set up keyspace or table: {e}")
 
@@ -108,4 +109,3 @@ class ApacheCassandra:
             self.cluster.shutdown()
         except Exception as e:
             raise RuntimeError(f"Failed to shutdown Cassandra cluster: {e}")
-
