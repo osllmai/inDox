@@ -64,15 +64,15 @@ class GraphDocument:
 
 # LLMGraphTransformer class to interact with any LLM API and convert text into a graph document
 class LLMGraphTransformer:
-    def __init__(self, api_client: Any, embeddings_model: Any):
+    def __init__(self, llm_transformer: Any, embeddings_model: Any):
         """
-        Initializes the LLMGraphTransformer with an API client and embedding model.
+        Initializes the LLMGraphTransformer with an LLM transformer and embedding model.
 
         Args:
-            api_client (Any): An instance of the API client (e.g., IndoxApi, OpenAI).
+            llm_transformer (Any): An instance of the LLM transformer (e.g., IndoxApi, OpenAI).
             embeddings_model (Any): An instance of the embedding model to generate text embeddings.
         """
-        self.api_client = api_client  # The client must have a `chat` method
+        self.llm_transformer = llm_transformer  # The transformer must have a `chat` method
         self.embeddings_model = embeddings_model
 
         self.system_prompt_template = (
@@ -113,7 +113,7 @@ class LLMGraphTransformer:
         while attempts < retries:
             try:
                 prompts = self.create_prompts(text)
-                response = self.api_client.chat(
+                response = self.llm_transformer.chat(
                     prompt=prompts["human_prompt"],
                     system_prompt=prompts["system_prompt"]
                 )
