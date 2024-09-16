@@ -36,7 +36,7 @@ class OpenAi:
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-    def _generate_response(self, messages, max_tokens=250, temperature=0.00001):
+    def _generate_response(self, messages, max_tokens, temperature):
         """
         Generates a response from the OpenAI model.
 
@@ -54,7 +54,7 @@ class OpenAi:
                 model=self.model,
                 messages=messages,
                 temperature=temperature,
-                max_tokens=max_tokens,
+                max_tokens=max_tokens
             )
             result = response.choices[0].message.content.strip()
             logger.info("Response generated successfully")
@@ -76,14 +76,15 @@ class OpenAi:
         """
         return f"Given Context: {context} Give the best full answer amongst the option to question {question}"
 
-    def answer_question(self, context, question, max_tokens=350):
+    def answer_question(self, context, question, max_tokens=350, temperature=0.3):
         """
         Public method to generate an answer to a question based on the given context.
 
         Args:
             context (str): The text to summarize.
             question (str): The question to answer.
-            max_tokens (int, optional): The maximum number of tokens in the generated summary. Defaults to 350.
+            max_tokens (int, optional): The maximum number of tokens in the generated response. Defaults to 350.
+            temperature (float, optional): The temperature of the generated response. Defaults to 0.3.
 
         Returns:
             str: The generated answer.
@@ -95,18 +96,19 @@ class OpenAi:
                 {"role": "system", "content": "You are Question Answering Portal"},
                 {"role": "user", "content": prompt},
             ]
-            return self._generate_response(messages, max_tokens=max_tokens, temperature=0)
+            return self._generate_response(messages, max_tokens=max_tokens, temperature=temperature)
         except Exception as e:
             logger.error(f"Error in answer_question: {e}")
             return str(e)
 
-    def get_summary(self, documentation):
+    def get_summary(self, documentation, max_tokens=350, temperature=0.3):
         """
         Generates a detailed summary of the provided documentation.
 
         Args:
             documentation (str): The documentation to summarize.
-
+            max_tokens (int, optional): The maximum number of tokens in the generated response. Defaults to 350.
+            temperature (float, optional): The temperature of the generated response. Defaults to 0.3.
         Returns:
             str: The generated summary.
         """
@@ -117,7 +119,7 @@ class OpenAi:
                 {"role": "system", "content": "You are a helpful assistant"},
                 {"role": "user", "content": prompt},
             ]
-            return self._generate_response(messages, max_tokens=150, temperature=0)
+            return self._generate_response(messages, max_tokens=max_tokens, temperature=temperature)
         except Exception as e:
             logger.error(f"Error generating summary: {e}")
             return str(e)
@@ -146,7 +148,7 @@ class OpenAi:
                 {"role": "user", "content": prompt},
             ]
             try:
-                grade = self._generate_response(messages, max_tokens=150, temperature=0).lower()
+                grade = self._generate_response(messages, max_tokens=150, temperature=0.0000001).lower()
                 if grade == "yes":
                     logger.info("Relevant doc")
                     filtered_docs.append(doc)
@@ -179,7 +181,7 @@ class OpenAi:
         ]
         try:
             logger.info("Checking hallucination for answer")
-            return self._generate_response(messages, max_tokens=150, temperature=0).lower()
+            return self._generate_response(messages, max_tokens=150, temperature=0.00001).lower()
         except Exception as e:
             logger.error(f"Error checking hallucination: {e}")
             return str(e)

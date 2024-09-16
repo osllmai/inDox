@@ -74,22 +74,22 @@ class Ollama(BaseLLM):
         """
         return f"Given Context: {context} Give the best full answer amongst the option to question {question}"
 
-    def answer_question(self, context, question, max_tokens=350):
+    def answer_question(self, context, question, max_tokens=None, temperature=None):
         """
         Public method to generate an answer to a question based on the given context.
 
         Args:
             context (str): The text to summarize.
             question (str): The question to answer.
-            max_tokens (int, optional): The maximum number of tokens in the generated summary. Defaults to 350.
-
+            max_tokens (int, optional): The maximum number of tokens
+            temperature (int, optional): The temperature
         Returns:
             str: The generated answer.
         """
         try:
             logger.info("Answering question")
             prompt = self._format_prompt(context, question)
-            return self._generate_response(messages=prompt, max_tokens=max_tokens, temperature=0)
+            return self._generate_response(messages=prompt)
         except Exception as e:
             logger.error(f"Error in answer_question: {e}")
             return str(e)
@@ -108,7 +108,7 @@ class Ollama(BaseLLM):
             logger.info("Generating summary for documentation")
             prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n{documentation}"
             messages = prompt
-            return self._generate_response(messages, max_tokens=150, temperature=0)
+            return self._generate_response(messages)
         except Exception as e:
             logger.error(f"Error generating summary: {e}")
             return str(e)
@@ -120,6 +120,7 @@ class Ollama(BaseLLM):
         Args:
             context (str): The context in which the question is asked.
             question (str): The question to answer.
+
         """
         filtered_docs = []
         system_prompt = """
@@ -135,7 +136,7 @@ class Ollama(BaseLLM):
             prompt = f"Here is the retrieved document:\n{doc}\nHere is the user question:\n{question}"
             messages = system_prompt + prompt
             try:
-                grade = self._generate_response(messages, max_tokens=150, temperature=0).lower()
+                grade = self._generate_response(messages).lower()
                 if grade == "yes":
                     logger.info("Relevant doc")
                     filtered_docs.append(doc)
@@ -165,7 +166,7 @@ class Ollama(BaseLLM):
         messages = system_prompt + prompt
         try:
             logger.info("Checking hallucination for answer")
-            return self._generate_response(messages, max_tokens=150, temperature=0).lower()
+            return self._generate_response(messages).lower()
         except Exception as e:
             logger.error(f"Error checking hallucination: {e}")
             return str(e)

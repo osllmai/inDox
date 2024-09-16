@@ -14,13 +14,10 @@ logger.add(sys.stdout,
            level="ERROR")
 
 
-class IndoxApi(BaseLLM):
+class IndoxApi:
     api_key: str
-    prompt_template: str = ""
 
-    max_tokens: int = 150
-    def __init__(self, api_key, prompt_template="", max_tokens=150):
-        super().__init__(api_key=api_key, prompt_template=prompt_template, max_token=max_tokens)
+    def __init__(self, api_key, prompt_template=""):
         """
         Initializes the IndoxApi with the specified API key and an optional prompt template.
 
@@ -30,9 +27,9 @@ class IndoxApi(BaseLLM):
         """
         self.api_key = api_key
         self.prompt_template = prompt_template or "Context: {context}\nQuestion: {question}\nAnswer:"
-        self.max_tokens = max_tokens
 
-    def _send_request(self, system_prompt, user_prompt):
+    def _send_request(self, system_prompt, user_prompt, max_tokens, temperature, stream, model,
+                      presence_penalty, frequency_penalty, top_p):
         url = 'http://5.78.55.161/api/chat_completion/generate/'
         headers = {
             'accept': '*/*',
@@ -41,9 +38,9 @@ class IndoxApi(BaseLLM):
         }
 
         data = {
-            "frequency_penalty": 0,
+            "frequency_penalty": frequency_penalty,
 
-            "max_tokens": self.max_tokens,
+            "max_tokens": max_tokens,
 
             "messages": [
                 {
@@ -55,11 +52,11 @@ class IndoxApi(BaseLLM):
                     "role": "user"
                 }
             ],
-            "model": "gpt-4o-mini",
-            "presence_penalty": 0,
-            "stream": True,
-            "temperature": 0.3,
-            "top_p": 1
+            "model": model,
+            "presence_penalty": presence_penalty,
+            "stream": stream,
+            "temperature": temperature,
+            "top_p": top_p
         }
 
         response = requests.post(url, headers=headers, json=data)
@@ -70,7 +67,8 @@ class IndoxApi(BaseLLM):
         else:
             raise Exception(f"Error From Indox API: {response.status_code}, {response.text}")
 
-    def _attempt_answer_question(self, context, question):
+    def _attempt_answer_question(self, context, question, max_tokens, temperature, stream, model,
+                                 presence_penalty, frequency_penalty, top_p):
         """
         Generates an answer to a question based on the given context using the Indox API.
 
@@ -82,34 +80,37 @@ class IndoxApi(BaseLLM):
             str: The generated answer.
         """
         system_prompt = "You are a helpful assistant."
-        user_prompt = self.prompt_template.format(context=context, question=question)
-        return self._send_request(system_prompt, user_prompt)
+        user_prompt = self.prompt_template.format(context=context, question=question, )
+        return self._send_request(system_prompt, user_prompt, max_tokens=max_tokens,
+                                  temperature=temperature, stream=stream,
+                                  model=model, presence_penalty=presence_penalty,
+                                  frequency_penalty=frequency_penalty,
+                                  top_p=top_p)
 
-    def answer_question(self, context, question, prompt_template=None):
+    def answer_question(self, context, question, max_tokens=350, temperature=0.3, stream=True,
+                        model="gpt-4o-mini", presence_penalty=0, frequency_penalty=0, top_p=1):
         """
         Answer a question based on the given context using the Indox API.
-
-        Args:
-            context (str): The context in which the question is asked.
-            question (str): The question to answer.
-            prompt_template (str, optional): The template for the prompt. Defaults to None.
 
         Returns:
             str: The generated answer.
         """
         try:
             # prompt_template = prompt_template or self.prompt_template
-            return self._attempt_answer_question(context, question)
+            return self._attempt_answer_question(context, question, max_tokens=max_tokens,
+                                                 temperature=temperature, stream=stream,
+                                                 model=model, presence_penalty=presence_penalty,
+                                                 frequency_penalty=frequency_penalty,
+                                                 top_p=top_p)
         except Exception as e:
             logger.error(e)
             return str(e)
 
-    def get_summary(self, documentation):
+    def get_summary(self, documentation, max_tokens=350, temperature=0.3, stream=True,
+                    model="gpt-4o-mini", presence_penalty=0, frequency_penalty=0, top_p=1):
         """
         Generates a detailed summary of the provided documentation.
 
-        Args:
-            documentation (str): The documentation to summarize.
 
         Returns:
             str: The generated summary.
@@ -117,18 +118,20 @@ class IndoxApi(BaseLLM):
         try:
             system_prompt = "You are a helpful assistant."
             user_prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n {documentation}"
-            return self._send_request(system_prompt, user_prompt)
+            return self._send_request(system_prompt=system_prompt, user_prompt=user_prompt,
+                                      max_tokens=max_tokens,
+                                      temperature=temperature, stream=stream,
+                                      model=model, presence_penalty=presence_penalty,
+                                      frequency_penalty=frequency_penalty,
+                                      top_p=top_p)
         except Exception as e:
             logger.error(e)
             return str(e)
 
-    def grade_docs(self, context, question):
+    def grade_docs(self, context, question, max_tokens=350, temperature=0.3, stream=True,
+                   model="gpt-4o-mini", presence_penalty=0, frequency_penalty=0, top_p=1):
         """
         Answers a question using an agent-based approach with access to tools.
-
-        Args:
-            context (list): A list of documents to grade.
-            question (str): The question to answer.
 
         Returns:
             list: Filtered list of relevant documents.
@@ -147,7 +150,12 @@ class IndoxApi(BaseLLM):
                 Here is the user question:
                 {question}
                 """
-                response = self._send_request(system_prompt, user_prompt)
+                response = self._send_request(system_prompt=system_prompt, user_prompt=user_prompt,
+                                              max_tokens=max_tokens,
+                                              temperature=temperature, stream=stream,
+                                              model=model, presence_penalty=presence_penalty,
+                                              frequency_penalty=frequency_penalty,
+                                              top_p=top_p)
                 if response.lower() == "yes":
                     logger.info("Relevant doc")
                     filtered_docs.append(context[i])
@@ -158,7 +166,8 @@ class IndoxApi(BaseLLM):
             logger.error(f"Error generating agent answer: {e}")
             return str(e)
 
-    def check_hallucination(self, context, answer):
+    def check_hallucination(self, context, answer, max_tokens=350, temperature=0.3, stream=True,
+                            model="gpt-4o-mini", presence_penalty=0, frequency_penalty=0, top_p=1):
         """
         Checks if an answer is grounded in the provided context.
 
@@ -180,7 +189,11 @@ class IndoxApi(BaseLLM):
             \n -------- \n
             Here is the answer: {answer}
             """
-            response = self._send_request(system_prompt, user_prompt)
+            response = self._send_request(system_prompt=system_prompt, user_prompt=user_prompt, max_tokens=max_tokens,
+                                          temperature=temperature, stream=stream,
+                                          model=model, presence_penalty=presence_penalty,
+                                          frequency_penalty=frequency_penalty,
+                                          top_p=top_p)
             return response
         except Exception as e:
             logger.error(f"Error generating agent answer: {e}")
@@ -195,5 +208,9 @@ class IndoxApi(BaseLLM):
     #         logger.error(f"Error generating agent answer: {e}")
     #         return str(e)
 
-    def chat(self, prompt, system_prompt="You are a helpful assistant"):
-        return self._send_request(system_prompt=system_prompt, user_prompt=prompt)
+    def chat(self, prompt, system_prompt="You are a helpful assistant", max_tokens=350, temperature=0.3, stream=True,
+             model="gpt-4o-mini", presence_penalty=0, frequency_penalty=0, top_p=1):
+        return self._send_request(system_prompt=system_prompt, user_prompt=prompt, max_tokens=max_tokens,
+                                  temperature=temperature, stream=stream,
+                                  model=model, presence_penalty=presence_penalty, frequency_penalty=frequency_penalty,
+                                  top_p=top_p)
