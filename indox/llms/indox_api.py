@@ -17,15 +17,10 @@ logger.add(sys.stdout,
 class IndoxApi(BaseLLM):
     api_key: str
     prompt_template: str = ""
-<<<<<<< HEAD
+
     max_tokens: int = 150
     def __init__(self, api_key, prompt_template="", max_tokens=150):
         super().__init__(api_key=api_key, prompt_template=prompt_template, max_token=max_tokens)
-=======
-    max_token: int = 150
-    def __init__(self, api_key, prompt_template="", max_token=150):
-        super().__init__(api_key=api_key, prompt_template=prompt_template, max_token=max_token)
->>>>>>> 6113bd2e98aaf1fc4efdd710cce4a68b756dbd42
         """
         Initializes the IndoxApi with the specified API key and an optional prompt template.
 
@@ -35,11 +30,7 @@ class IndoxApi(BaseLLM):
         """
         self.api_key = api_key
         self.prompt_template = prompt_template or "Context: {context}\nQuestion: {question}\nAnswer:"
-<<<<<<< HEAD
         self.max_tokens = max_tokens
-=======
-        self.max_token = max_token
->>>>>>> 6113bd2e98aaf1fc4efdd710cce4a68b756dbd42
 
     def _send_request(self, system_prompt, user_prompt):
         url = 'http://5.78.55.161/api/chat_completion/generate/'
@@ -51,11 +42,9 @@ class IndoxApi(BaseLLM):
 
         data = {
             "frequency_penalty": 0,
-<<<<<<< HEAD
+
             "max_tokens": self.max_tokens,
-=======
-            "max_tokens": self.max_token,
->>>>>>> 6113bd2e98aaf1fc4efdd710cce4a68b756dbd42
+
             "messages": [
                 {
                     "content": system_prompt,
