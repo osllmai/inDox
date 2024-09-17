@@ -186,7 +186,7 @@ class OpenAi:
             logger.error(f"Error checking hallucination: {e}")
             return str(e)
 
-    def chat(self, prompt, max_tokens=250, temperature=0.00001):
+    def chat(self, prompt, max_tokens=None, temperature=0.00001):
         messages = [
             {"role": "system", "content": "You are Question Answering Portal"},
             {"role": "user", "content": prompt},

@@ -39,9 +39,7 @@ class IndoxApi:
 
         data = {
             "frequency_penalty": frequency_penalty,
-
-            "max_tokens": max_tokens,
-
+            "max_tokens" : max_tokens,
             "messages": [
                 {
                     "content": system_prompt,
@@ -208,7 +206,7 @@ class IndoxApi:
     #         logger.error(f"Error generating agent answer: {e}")
     #         return str(e)
 
-    def chat(self, prompt, system_prompt="You are a helpful assistant", max_tokens=350, temperature=0.3, stream=True,
+    def chat(self, prompt, system_prompt="You are a helpful assistant", max_tokens=16384, temperature=0.3, stream=True,
              model="gpt-4o-mini", presence_penalty=0, frequency_penalty=0, top_p=1):
         return self._send_request(system_prompt=system_prompt, user_prompt=prompt, max_tokens=max_tokens,
                                   temperature=temperature, stream=stream,
