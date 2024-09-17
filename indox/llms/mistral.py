@@ -65,16 +65,13 @@ class Mistral:
             return str(e)
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-    def _attempt_answer_question(self, context, question, max_tokens=150, stop_sequence=None, temperature=0):
+    def _attempt_answer_question(self, context, question):
         """
         Generates an answer to the given question using the Mistral AI model.
 
         Args:
             context (str): The text to summarize.
             question (str): The question to answer.
-            max_tokens (int, optional): The maximum number of tokens in the generated summary. Defaults to 150.
-            stop_sequence (str, optional): The sequence at which to stop summarization. Defaults to None.
-            temperature (float, optional): The sampling temperature. Defaults to 0.
 
         Returns:
             str: The generated summary.
@@ -97,14 +94,13 @@ class Mistral:
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-    def answer_question(self, context, question, max_tokens=150, stop_sequence=None):
+    def answer_question(self, context, question, stop_sequence=None):
         """
         Public method to generate an answer to a question based on the given context.
 
         Args:
             context (str): The text to summarize.
             question (str): The question to answer.
-            max_tokens (int, optional): The maximum number of tokens in the generated summary. Defaults to 150.
             stop_sequence (str, optional): The sequence at which to stop summarization. Defaults to None.
 
         Returns:
@@ -115,9 +111,7 @@ class Mistral:
             return self._attempt_answer_question(
                 context,
                 question,
-                max_tokens=max_tokens,
                 stop_sequence=stop_sequence,
-                temperature=0,
             )
         except Exception as e:
             logger.error(f"Error in answer_question: {e}")
