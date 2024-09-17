@@ -192,5 +192,6 @@ class Mistral:
             logger.error(f"Error generating agent answer: {e}")
             return str(e)
 
-    def chat(self, prompt):
-        return self._run_mistral(prompt)
+    def chat(self, prompt, system_prompt):
+        message = system_prompt + "\n" + prompt
+        return self._run_mistral(message)

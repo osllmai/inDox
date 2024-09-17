@@ -201,5 +201,6 @@ class HuggingFaceModel(BaseLLM):
             logger.error(f"Error generating agent answer: {e}")
             return str(e)
 
-    def chat(self, prompt):
-        return self._send_request(prompt=prompt)
+    def chat(self, prompt,system_prompt):
+        message = system_prompt + "\n" + prompt
+        return self._send_request(prompt=message)

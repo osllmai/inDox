@@ -39,7 +39,7 @@ class IndoxApi:
 
         data = {
             "frequency_penalty": frequency_penalty,
-            "max_tokens" : max_tokens,
+            "max_tokens": max_tokens,
             "messages": [
                 {
                     "content": system_prompt,

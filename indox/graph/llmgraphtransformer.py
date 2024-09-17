@@ -130,14 +130,8 @@ class LLMGraphTransformer:
                 #     prompt=prompts["human_prompt"],
                 #     system_prompt=prompts["system_prompt"]
                 # )
-                if 'max_tokens' in self.llm_transformer.chat.__code__.co_varnames:
-                    response = self.llm_transformer.chat(
-                        prompt=prompts["human_prompt"],
-                        system_prompt=prompts["system_prompt"],
-                        max_tokens=2000
-                    )
-                else:
-                    response = self.llm_transformer.chat(
+
+                response = self.llm_transformer.chat(
                         prompt=prompts["human_prompt"],
                         system_prompt=prompts["system_prompt"]
                     )
