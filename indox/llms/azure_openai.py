@@ -42,14 +42,14 @@ class AzureOpenAi:
             raise
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-    def _generate_response(self, messages, max_tokens=250, temperature=0):
+    def _generate_response(self, messages, max_tokens, temperature):
         """
         Generates a response from the Azure OpenAI model.
 
         Args:
             messages (list): The list of messages to send to the model.
-            max_tokens (int, optional): The maximum number of tokens in the generated response. Defaults to 250.
-            temperature (float, optional): The sampling temperature. Defaults to 0.
+            max_tokens (int, optional): The maximum number of tokens in the generated response.
+            temperature (float, optional): The sampling temperature.
 
         Returns:
             str: The generated response.
@@ -85,15 +85,15 @@ class AzureOpenAi:
         """
         return f"Given Context: {context} Give the best full answer amongst the option to question {question}"
 
-    def answer_question(self, context, question, max_tokens=350):
+    def answer_question(self, context, question, max_tokens=350, temperature=0.3):
         """
         Public method to generate an answer to a question based on the given context.
 
         Args:
             context (str): The text to summarize.
             question (str): The question to answer.
-            max_tokens (int, optional): The maximum number of tokens in the generated summary. Defaults to 350.
-
+            max_tokens (int, optional): The maximum number of tokens in the generated response. Defaults to 350.
+            temperature (float, optional): The sampling temperature.
         Returns:
             str: The generated answer.
         """
@@ -104,17 +104,19 @@ class AzureOpenAi:
                 {"role": "system", "content": "You are Question Answering Portal"},
                 {"role": "user", "content": prompt},
             ]
-            return self._generate_response(messages, max_tokens=max_tokens, temperature=0)
+            return self._generate_response(messages, max_tokens=max_tokens, temperature=temperature)
         except Exception as e:
             logger.error(f"Error in answer_question: {e}")
             return str(e)
 
-    def get_summary(self, documentation):
+    def get_summary(self, documentation,max_tokens=350, temperature=0):
         """
         Generates a detailed summary of the provided documentation.
 
         Args:
             documentation (str): The documentation to summarize.
+            max_tokens (int, optional): The maximum number of tokens in the generated response. Defaults to 350.
+            temperature (float, optional): The sampling temperature.
 
         Returns:
             str: The generated summary.
@@ -126,7 +128,7 @@ class AzureOpenAi:
                 {"role": "system", "content": "You are a helpful assistant"},
                 {"role": "user", "content": prompt},
             ]
-            return self._generate_response(messages, max_tokens=150, temperature=0)
+            return self._generate_response(messages, max_tokens=max_tokens, temperature=temperature)
         except Exception as e:
             logger.error(f"Error generating summary: {e}")
             return str(e)
@@ -193,9 +195,9 @@ class AzureOpenAi:
             logger.error(f"Error checking hallucination: {e}")
             return str(e)
 
-    def chat(self,prompt):
+    def chat(self,prompt,system_prompt):
         messages = [
-            {"role": "system", "content": "You are Question Answering Portal"},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt},
         ]
-        return self._generate_response(messages=messages)
+        return self._generate_response(messages=messages,max_tokens=350, temperature=0.3)

@@ -73,14 +73,14 @@ class LLMGraphTransformer:
             embeddings_model (Any): An instance of the embedding model to generate text embeddings.
             min_tokens (int): The minimum acceptable token limit for generating valid responses.
         """
-        # Check if the LLM transformer has max_tokens attribute and ensure it's set properly
-        if hasattr(llm_transformer, "max_tokens"):
-            if llm_transformer.max_tokens < min_tokens:
-                raise ValueError(
-                    f"`max_tokens` is set to {llm_transformer.max_tokens}, which is less than the recommended minimum "
-                    f"of {min_tokens} tokens. Please increase the `max_tokens` value.")
-        else:
-            print("Warning: The LLM transformer does not have a `max_tokens` parameter. Default behavior will apply.")
+        # # Check if the LLM transformer has max_tokens attribute and ensure it's set properly
+        # if hasattr(llm_transformer, "max_tokens"):
+        #     if llm_transformer.max_tokens < min_tokens:
+        #         raise ValueError(
+        #             f"`max_tokens` is set to {llm_transformer.max_tokens}, which is less than the recommended minimum "
+        #             f"of {min_tokens} tokens. Please increase the `max_tokens` value.")
+        # else:
+        #     print("Warning: The LLM transformer does not have a `max_tokens` parameter. Default behavior will apply.")
 
         self.llm_transformer = llm_transformer  # The client must have a `chat` method
         self.embeddings_model = embeddings_model
@@ -126,10 +126,15 @@ class LLMGraphTransformer:
         while attempts < retries:
             try:
                 prompts = self.create_prompts(text)
+                # response = self.llm_transformer.chat(
+                #     prompt=prompts["human_prompt"],
+                #     system_prompt=prompts["system_prompt"]
+                # )
+
                 response = self.llm_transformer.chat(
-                    prompt=prompts["human_prompt"],
-                    system_prompt=prompts["system_prompt"]
-                )
+                        prompt=prompts["human_prompt"],
+                        system_prompt=prompts["system_prompt"]
+                    )
                 return response
             except Exception as e:
                 print(f"Attempt {attempts + 1} failed: {e}")
