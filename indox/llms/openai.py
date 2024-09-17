@@ -99,13 +99,14 @@ class OpenAi:
             logger.error(f"Error generating response: {e}")
             raise
 
-    def chat(self, prompt, max_tokens=None, temperature=0.2, frequency_penalty=None,
-             presence_penalty=None, top_p=None,stream=None):
+    def chat(self, prompt, system_prompt="You are a helpful assistant", max_tokens=None, temperature=0.2,
+             frequency_penalty=None, presence_penalty=None, top_p=None, stream=None):
         """
         Public method to interact with the model using chat messages.
 
         Args:
             prompt (str): The prompt to generate a response for.
+            system_prompt (str): The system prompt.
             max_tokens (int, optional): The maximum number of tokens in the generated response. Defaults to None.
             temperature (float, optional): The temperature of the generated response.
             frequency_penalty (float, optional): The frequency penalty.
@@ -116,7 +117,9 @@ class OpenAi:
         Returns:
             str: The generated response.
         """
+
         messages = [
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt},
         ]
         return self._generate_response(

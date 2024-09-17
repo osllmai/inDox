@@ -171,5 +171,6 @@ class Ollama(BaseLLM):
             logger.error(f"Error checking hallucination: {e}")
             return str(e)
 
-    def chat(self, prompt):
-        return self._generate_response(messages=prompt)
+    def chat(self, prompt, system_prompt):
+        message = system_prompt + "\n" + prompt
+        return self._generate_response(messages=message)

@@ -195,9 +195,9 @@ class AzureOpenAi:
             logger.error(f"Error checking hallucination: {e}")
             return str(e)
 
-    def chat(self,prompt):
+    def chat(self,prompt,system_prompt):
         messages = [
-            {"role": "system", "content": "You are Question Answering Portal"},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt},
         ]
         return self._generate_response(messages=messages,max_tokens=350, temperature=0.3)
