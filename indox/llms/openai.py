@@ -133,7 +133,7 @@ class OpenAi:
         )
 
     def answer_question(self, context, question, max_tokens=350, temperature=0.3, frequency_penalty=None,
-                        presence_penalty=None, top_p=None):
+                        presence_penalty=None, top_p=None,stream=False):
         """
         Public method to generate an answer to a question based on the given context.
 
@@ -156,14 +156,16 @@ class OpenAi:
                 {"role": "system", "content": "You are Question Answering Portal"},
                 {"role": "user", "content": prompt},
             ]
-            return self._generate_response(
+            response =  self._generate_response(
                 messages=messages,
                 max_tokens=max_tokens,
                 temperature=temperature,
                 frequency_penalty=frequency_penalty,
                 presence_penalty=presence_penalty,
-                top_p=top_p
+                top_p=top_p,
+                stream=stream
             )
+            return response
         except Exception as e:
             logger.error(f"Error in answer_question: {e}")
             return str(e)
