@@ -53,8 +53,8 @@ class IndoxRetrievalAugmentation:
                 raise ValueError("Query string cannot be empty.")
 
             try:
-                from indox.tools import MultiQueryRetrieval
                 if multi_query:
+                    from indox.tools import MultiQueryRetrieval
                     self.multi_query_retrieval = MultiQueryRetrieval(self.qa_model, self.vector_database, self.top_k)
 
                     logger.info("Multi-query retrieval initialized")
