@@ -1,8 +1,5 @@
 from typing import List, Tuple, Callable, Optional
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
 from indox.core import Document
-from neo4j import GraphDatabase
 
 
 class MemgraphVector:
@@ -17,6 +14,8 @@ class MemgraphVector:
             embedding_function (Callable): The embedding function (e.g., OpenAI, custom model) to convert query text to embeddings.
             search_type (str): Default search type ('vector', 'keyword', or 'hybrid'). Defaults to 'vector'.
         """
+        from neo4j import GraphDatabase
+
         self.driver = GraphDatabase.driver(uri, auth=(username, password))
         self._embedding_function = embedding_function
         self.default_search_type = search_type
@@ -61,6 +60,9 @@ class MemgraphVector:
         Returns:
             List[Tuple[Document, float]]: A list of Documents and their similarity scores.
         """
+        from sklearn.metrics.pairwise import cosine_similarity
+        import numpy as np
+
         query_embedding = self._embedding_function.embed_query(query)
         query_embedding = np.array(query_embedding).reshape(1, -1)
 

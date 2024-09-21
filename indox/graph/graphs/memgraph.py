@@ -1,4 +1,3 @@
-from neo4j import GraphDatabase
 from typing import List, Dict, Optional
 from indox.graph import GraphDocument, Node, Relationship
 
@@ -12,6 +11,7 @@ class MemgraphDB:
             username (Optional[str]): Username for Memgraph (optional, defaults to an empty string).
             password (Optional[str]): Password for Memgraph (optional, defaults to an empty string).
         """
+        from neo4j import GraphDatabase
         self.driver = GraphDatabase.driver(uri, auth=(username, password))
 
     def close(self):
