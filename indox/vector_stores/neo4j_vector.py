@@ -1,6 +1,4 @@
-import numpy as np
 from typing import List, Tuple
-from sklearn.metrics.pairwise import cosine_similarity
 from indox.core import Document
 
 
@@ -68,6 +66,9 @@ class Neo4jVector:
         Returns:
             List[Tuple[Document, float]]: A list of Documents and their similarity scores.
         """
+        from sklearn.metrics.pairwise import cosine_similarity
+        import numpy as np
+
         query_embedding = self._embedding_function.embed_query(query)
         query_embedding = np.array(query_embedding).reshape(1, -1)
 
