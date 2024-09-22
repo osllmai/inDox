@@ -19,3 +19,4 @@ from .vespa import VESPA
 from .deeplake import Deeplake
 from .apache_cassandra import ApacheCassandra
 from .vearch import Vearch
+from .memgraph_vector import MemgraphVector

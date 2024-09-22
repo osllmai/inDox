@@ -3,3 +3,4 @@
 # __all__ = [
 #     "Neo4jGraph"
 # ]
+from .memgraph import MemgraphDB
