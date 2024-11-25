@@ -1,0 +1,184 @@
+site_name: OSLLM.ai
+site_url: https://docs.osllm.ai
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.instant
+    - navigation.tracking
+    - toc.integrate
+    - toc.follow
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  logo: assets/images/logo.png
+extra_css:
+  - assets/css/custom.css
+ 
+markdown_extensions:
+  - toc:
+      permalink: true
+      toc_depth: 3
+      baselevel: 1
+      separator: "_"
+      title: On this page
+      permalink_title: Anchor link to this section for reference
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+nav:
+  - Home: index.md
+  - Indox:
+      - Data Connectors:
+          - Discord: Indox/data_connectors/discord.md
+          - Document: Indox/data_connectors/document.md
+          - GitHub: Indox/data_connectors/github.md
+          - Google Chat: Indox/data_connectors/google_chat.md
+          - Google Doc: Indox/data_connectors/google_doc.md
+          - Google Drive: Indox/data_connectors/google_drive.md
+          - Google Sheet: Indox/data_connectors/google_sheet.md
+          - Guten: Indox/data_connectors/guten.md
+          - Maps Search: Indox/data_connectors/maps_search.md
+          - README: Indox/data_connectors/README.md
+          - Twitter: Indox/data_connectors/twitter.md
+          - Wikipedia: Indox/data_connectors/wikipedia.md
+          - YouTube: Indox/data_connectors/youtube.md
+          - Arxiv: Indox/data_connectors/arxiv.md
+      - Data Loader:
+          - Joblib: Indox/data_loader/Joblib.md
+          - Json: Indox/data_loader/Json.md
+          - MD: Indox/data_loader/MD.md
+          - Openpyxl: Indox/data_loader/Openpyxl.md
+          - Pdfminer: Indox/data_loader/Pdfminer.md
+          - Pdfplumber: Indox/data_loader/Pdfplumber.md
+          - Pptx: Indox/data_loader/Pptx.md
+          - Pypdf2: Indox/data_loader/Pypdf2.md
+          - Pypdf4: Indox/data_loader/Pypdf4.md
+          - README: Indox/data_loader/README.md
+          - Rtf: Indox/data_loader/Rtf.md
+          - Scipy: Indox/data_loader/Scipy.md
+          - Sql: Indox/data_loader/Sql.md
+          - Txt: Indox/data_loader/Txt.md
+          - Bs4: Indox/data_loader/Bs4.md
+          - Csv: Indox/data_loader/Csv.md
+          - Docx: Indox/data_loader/Docx.md
+      - Splitters:
+          - AI21 Semantic Splitter: Indox/splitters/AI21semantic_splitter.md
+          - Character Splitter: Indox/splitters/Charachter_splitter.md
+          - Markdown Text Splitter: Indox/splitters/Markdown_text_splitter.md
+          - README: Indox/splitters/README.md
+          - Recursively Splitter: Indox/splitters/Recursively_splitter.md
+          - Semantic Splitter: Indox/splitters/Semantic_splitter.md
+      - Data Loader and Splitter:
+          - Unstructured Load and Split: Indox/data_loader_and_splitter/unstructured_load_and_split.md
+          - Clustered Split: Indox/data_loader_and_splitter/clustered_split.md
+          - README: Indox/data_loader_and_splitter/README.md
+          - Simple Load Split: Indox/data_loader_and_splitter/simple_load_split.md
+      - Vectorstores:
+          - Milvus: Indox/vectorstores/milvus.md
+          - MongoDB: Indox/vectorstores/mongodb.md
+          - Neo4j Graph: Indox/vectorstores/neo4j_graph.md
+          - Pathway: Indox/vectorstores/pathway.md
+          - Pinecone: Indox/vectorstores/pinecone.md
+          - Postgres: Indox/vectorstores/postgres.md
+          - Qdrant: Indox/vectorstores/qdrant.md
+          - README: Indox/vectorstores/README.md
+          - Redis: Indox/vectorstores/redis.md
+          - SingleStore: Indox/vectorstores/singlestore.md
+          - Vearch: Indox/vectorstores/vearch.md
+          - Vespa: Indox/vectorstores/Vespa.md
+          - Weaviate: Indox/vectorstores/weaviate.md
+          - Apache Cassandra: Indox/vectorstores/ApachCassandra.md
+          - Chroma: Indox/vectorstores/chroma.md
+          - Couchbase: Indox/vectorstores/Couchbase.md
+          - Deeplake: Indox/vectorstores/Deeplake.md
+          - DuckDB: Indox/vectorstores/duckdb.md
+          - Faiss: Indox/vectorstores/Faiss.md
+          - Lantern: Indox/vectorstores/lantern.md
+          - Memgraph Vector: Indox/vectorstores/memgraphvector.md
+      - Graphs:
+          - Memgraph: Indox/graphs/memgraph.md
+      - Tools:
+          - MultiQuery: Indox/tools/multiquery.md
+          - MultiVector: Indox/tools/multivector.md
+      - Agentic Rag: Indox/agenticRag.md
+      - Embedding Models: Indox/embedding_models.md
+      - LLMs: Indox/llms.md
+      - Quick Start: Indox/quick_start.md
+  - IndoxJudge:
+      - Home: IndoxJudge/index.md
+      - Metrics:
+          - Answer Relevancy: IndoxJudge/metrics/AnswerRelevancy.md
+          - Bertscore: IndoxJudge/metrics/Bertscore.md
+          - Bias: IndoxJudge/metrics/Bias.md
+          - BLEU: IndoxJudge/metrics/BLEU.md
+          - Contextual Relevancy: IndoxJudge/metrics/ContextualRelevancy.md
+          - Fairness: IndoxJudge/metrics/Fairness.md
+          - Faithfulness: IndoxJudge/metrics/Faithfulness.md
+          - GEval: IndoxJudge/metrics/GEval.md
+          - Gruen: IndoxJudge/metrics/Gruen.md
+          - Hallucination: IndoxJudge/metrics/Hallucination.md
+          - Harmfulness: IndoxJudge/metrics/Harmfulness.md
+          - Knowledge Retention: IndoxJudge/metrics/KnowledgeRetention.md
+          - Machine Ethics: IndoxJudge/metrics/MachineEthics.md
+          - METEOR: IndoxJudge/metrics/METEOR.md
+          - Misinformation: IndoxJudge/metrics/Misinformation.md
+          - Out Of Distribution Robustness: IndoxJudge/metrics/OutOfDistributionRobustness.md
+          - Privacy: IndoxJudge/metrics/Privacy.md
+          - Robustness to Adversarial Demonstrations: IndoxJudge/metrics/RobustnesstoAdversarialDemonstrations.md
+          - ROUGE: IndoxJudge/metrics/ROUGE.md
+          - Safety Toxicity: IndoxJudge/metrics/SafetyToxicity.md
+          - Stereotype and Bias: IndoxJudge/metrics/Stereotype and Bias.md
+          - Toxicity: IndoxJudge/metrics/Toxicity.md
+          - Toxicity Discriminative: IndoxJudge/metrics/ToxicityDiscriminative.md
+          - Adversarial Robustness: IndoxJudge/metrics/AdversarialRobustness.md
+      - Pipelines:
+          - Evaluator: IndoxJudge/pipelines/Evaluator.md
+          - LLM Evaluator: IndoxJudge/pipelines/LLMEvaluator.md
+          - RAG Evaluator: IndoxJudge/pipelines/RagEvaluator.md
+          - Safety Evaluator: IndoxJudge/pipelines/SafetyEvaluator.md
+          - Evaluation Analyzer: IndoxJudge/pipelines/EvaluationAnalyzer.md
+  - IndoxGen:
+      - Home: IndoxGen/index.md
+      - Generative Data Synth: IndoxGen/GenerativeDataSynth.md
+      - Hybrid GAN + LLM: IndoxGen/HybridGAN+LLM.md
+      - Interactive Feedback Synth: IndoxGen/InteractiveFeedbackSynth.md
+      - Prompt Based Synth: IndoxGen/PromptBasedSynth.md
+      - Attribute Prompt Synth: IndoxGen/AttributePromptSynth.md
+      - Few Shot Prompt Synth: IndoxGen/FewShotPromptSynth.md
+      - GAN-Torch-Tensor: IndoxGen/GAN-Torch-Tensor.md
+  - IndoxMiner:
+      - Home: IndoxMiner/index.md
+      - Automatic Schema Detection: IndoxMiner/Automatic Schema Detection.md
+      - Document Type Support: IndoxMiner/Document Type Support.md
+      - Extracting Structured Data from Images: IndoxMiner/Extracting Structured Data from Images.md
+      - LLM Support: IndoxMiner/LLM Support in Indox Miner.md
+      - Output Types: IndoxMiner/Output Types in Indox Miner.md
+      - Predefined Schema Support: IndoxMiner/Predefined Schema Support in Indox Miner.md
+  - About:
+    - License: license.md
+
