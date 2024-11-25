@@ -1,0 +1,18 @@
+/* Ensure the main container takes the full width */
+.md-container {
+    max-width: 100% !important; /* Set to full width */
+    padding-left: 0 !important; /* Remove left padding */
+    padding-right: 0 !important; /* Remove right padding */
+}
+
+/* Ensure the main content area spans the full width */
+.md-main__inner {
+    max-width: 75% !important; /* Set to full width */
+    margin-left: 5% !important; /* Remove left margin */
+    margin-right: 0 !important; /* Remove right margin */
+}
+
+/* Adjust the navigation area */
+.md-sidebar {
+    margin-left: 0 !important;
+}
