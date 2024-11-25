@@ -1,5 +1,5 @@
 site_name: OSLLM.ai
-site_url: https://docs.osllm.ai
+site_url: https://docs.osllm.ai/
 
 theme:
   name: material
