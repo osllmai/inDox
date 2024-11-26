@@ -3,6 +3,7 @@ site_url: https://docs.osllm.ai
 
 theme:
   name: material
+  favicon: assets/images/logo.png
   features:
     - navigation.tabs
     - navigation.sections
@@ -10,6 +11,7 @@ theme:
     - navigation.path
     - navigation.instant
     - navigation.tracking
+    - navigation.footer
     - toc.integrate
     - toc.follow
     - search.highlight
@@ -101,7 +103,6 @@ nav:
       - Vectorstores:
           - Milvus: Indox/vectorstores/milvus.md
           - MongoDB: Indox/vectorstores/mongodb.md
-          - Neo4j Graph: Indox/vectorstores/neo4j_graph.md
           - Pathway: Indox/vectorstores/pathway.md
           - Pinecone: Indox/vectorstores/pinecone.md
           - Postgres: Indox/vectorstores/postgres.md
@@ -122,6 +123,7 @@ nav:
           - Memgraph Vector: Indox/vectorstores/memgraphvector.md
       - Graphs:
           - Memgraph: Indox/graphs/memgraph.md
+          - Neo4j Graph: Indox/vectorstores/neo4j_graph.md
       - Tools:
           - MultiQuery: Indox/tools/multiquery.md
           - MultiVector: Indox/tools/multivector.md

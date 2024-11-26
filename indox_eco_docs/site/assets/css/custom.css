@@ -1,0 +1,54 @@
+/* Ensure the main container takes the full width */
+.md-container {
+    max-width: 100% !important; /* Set to full width */
+    padding-left: 0 !important; /* Remove left padding */
+    padding-right: 0 !important; /* Remove right padding */
+}
+
+/* Ensure the main content area spans the full width */
+.md-main__inner {
+    max-width: 75% !important; /* Set to full width */
+    margin-left: 5% !important; /* Remove left margin */
+    margin-right: 0 !important; /* Remove right margin */
+}
+
+/* Adjust the navigation area */
+.md-sidebar {
+    margin-left: 0 !important;
+}
+/* Style the footer navigation as arrows */
+.md-footer-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.md-footer-nav a {
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    color: #3f51b5; /* Indigo color for links */
+    transition: color 0.2s ease-in-out;
+}
+
+.md-footer-nav a:hover {
+    color: #303f9f; /* Darker indigo on hover */
+}
+
+/* Add left arrow to Previous link */
+.md-footer-nav__link--prev::before {
+    content: "← "; /* Left arrow */
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+}
+
+/* Add right arrow to Next link */
+.md-footer-nav__link--next::after {
+    content: " →"; /* Right arrow */
+    font-size: 1.5rem;
+    margin-left: 0.5rem;
+}
+
