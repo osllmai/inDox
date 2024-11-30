@@ -1,7 +1,11 @@
 site_name: OSLLM.ai
 site_url: https://docs.osllm.ai
+repo_url: https://github.com/osllmai
+repo_name: osllmai
 
 theme:
+  icon:
+    repo: fontawesome/brands/git-alt
   name: material
   favicon: assets/images/logo.png
   features:
@@ -32,6 +36,7 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   logo: assets/images/logo.png
+
 extra_css:
   - assets/css/custom.css
  
@@ -50,7 +55,16 @@ markdown_extensions:
       anchor_linenums: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+
+plugins:
+  - search
+  - mermaid2
 
 nav:
   - Home: index.md
@@ -136,6 +150,7 @@ nav:
       - Metrics:
           - Answer Relevancy: IndoxJudge/metrics/AnswerRelevancy.md
           - Bertscore: IndoxJudge/metrics/Bertscore.md
+          - BertScoreSummary: IndoxJudge\metrics\BertScoreSummary.md
           - Bias: IndoxJudge/metrics/Bias.md
           - BLEU: IndoxJudge/metrics/BLEU.md
           - Contextual Relevancy: IndoxJudge/metrics/ContextualRelevancy.md
