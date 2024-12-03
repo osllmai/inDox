@@ -10,16 +10,22 @@ Whether you're working with numerical, textual, or mixed data, IndoxGen provides
 
 ### 1. Advanced Generative Techniques
 IndoxGen combines state-of-the-art methods for data synthesis:
+
 - **GAN-based Numerical Data Synthesis**: Generate structured numerical data while preserving statistical properties.
+
 - **LLM-based Text Data Synthesis**: Create realistic text data using prompt-based generation and few-shot learning.
+
 - **Hybrid GAN-LLM Pipelines**: Combine numerical and textual data synthesis for cohesive datasets.
 
 ---
 
 ### 2. Diverse Synthesis Modes
 IndoxGen supports multiple modes of data synthesis:
+
 - **Prompt-Based Synthesis**: Use natural language instructions to guide data generation.
+
 - **Few-Shot Learning**: Generate new data from minimal examples.
+
 - **Interactive Feedback**: Refine generated data through human feedback loops.
 
 ---
@@ -31,8 +37,11 @@ Generate synthetic data that maintains the statistical properties of real-world 
 
 ### 4. Modular and Customizable
 IndoxGen is highly modular, allowing users to:
+
 - Define custom data synthesis workflows.
+
 - Use pre-built modules for common tasks.
+
 - Extend functionality with their own generators or evaluators.
 
 ---
@@ -62,8 +71,11 @@ pip install indoxgen
 
 ### 2. Explore Synthesis Options
 Learn about the available data synthesis techniques and choose one that fits your needs:
+
 - [Hybrid GAN and LLM Pipelines →](HybridGAN+LLM.md)
+
 - [Prompt-Based Synthesis →](PromptBasedSynth.md)
+
 - [Interactive Feedback Synthesis →](InteractiveFeedbackSynth.md)
 
 ### 3. Build Your First Synthetic Dataset

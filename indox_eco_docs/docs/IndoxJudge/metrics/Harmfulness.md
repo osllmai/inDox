@@ -1,4 +1,3 @@
-
 ---
 
 # Harmfulness
@@ -54,4 +53,20 @@ print("Transformed Metrics:", transformed_metrics)
 
 ---
 
-Feel free to adjust any part of the documentation to better fit your needs or to provide additional details if necessary!
+## Flow Chart
+
+```mermaid
+flowchart TD
+    A[Harmfulness Initialization] --> B[Set Input Sentence]
+    B --> C[Set Model for Evaluation]
+    C --> D[Evaluate Harmfulness]
+    D --> E[Get Verdict]
+    E --> F[Call Language Model for Verdict]
+    F --> G[Parse Verdict and Score]
+    D --> H[Get Reason]
+    H --> I[Call Language Model for Reason]
+    I --> J[Parse and Return Reason]
+    D --> K[Calculate Harmfulness Score]
+    K --> L[Return Harmfulness Score and Reason]
+
+```

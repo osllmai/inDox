@@ -56,3 +56,16 @@ contextual_relevancy_metric = ContextualRelevancy(query=query, retrieval_context
 evaluator = Evaluator(model=llm, metrics=[contextual_relevancy_metric])
 result = evaluator.judge()
 ```
+
+## Flow Chart
+
+```mermaid
+flowchart TD
+    A[ContextualRelevancy Initialization] --> B[Set Query and Retrieval Contexts]
+    B --> C[Measure Contextual Relevancy]
+    C --> D[Get Irrelevancies]
+    D --> E[Get Verdicts for Each Context]
+    E --> F[Calculate Relevancy Score]
+    F --> G[Generate Final Reason]
+    G --> H[Return Score, Verdicts, and Reason]
+```

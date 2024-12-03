@@ -9,13 +9,12 @@ These tools extend the capabilities of the IndoxGen project by offering easy-to-
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
-  - [IndoxGen-Torch Example](#indoxgen-torch-example)
-  - [IndoxGen-Tensor Example](#indoxgen-tensor-example)
+  - [IndoxGen-Torch Example](#indoxgen_torch_example)
+  - [IndoxGen-Tensor Example](#indoxgen_tensor_example)
 - [Configuration](#configuration)
-- [Evaluation Methods](#evaluation-methods)
-- [API Reference](#api-reference)
+- [Evaluation Methods](#evaluation_methods)
+- [API Reference](#api_reference)
 - [Contributing](#contributing)
-- [License](#license)
 
 
 ---
@@ -38,7 +37,7 @@ Both libraries require dependencies like PyTorch or TensorFlow, depending on the
 
 ## Usage
 
-### IndoxGen-Torch Example
+### IndoxGen Torch Example
 
 ```python
 from indoxGen_torch import TabularGANConfig, TabularGANTrainer
@@ -79,7 +78,7 @@ synthetic_data = trainer.generate_samples(50000)
 print(synthetic_data.head())
 ```
 
-### IndoxGen-Tensor Example
+### IndoxGen Tensor Example
 
 ```python
 from indoxGen_tensor import TabularGANConfig, TabularGANTrainer

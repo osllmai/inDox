@@ -103,3 +103,17 @@ geval_metric = GEval(
 evaluator = Evaluator(model=llm, metrics=[geval_metric])
 result = evaluator.judge()
 ```
+
+## Flow Chart
+
+```mermaid
+flowchart TD
+    A[GEval Initialization] --> B[Set Query, LLM Response, and Contexts]
+    B --> C[Set Model for Evaluation]
+    C --> D[Generate Evaluation Steps]
+    D --> E[Call Language Model for Steps]
+    E --> F[Extract Evaluation Steps]
+    F --> G[Generate Evaluation Results]
+    G --> H[Call Language Model for Results]
+    H --> I[Return Evaluation Scores and Reasons]
+```

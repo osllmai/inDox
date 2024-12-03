@@ -64,7 +64,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 # Initialize the language model
 # it can be any OpenAI model, please refer to the [OpenAI Models documentation](https://platform.openai.com/docs/models) such as GPT-4o.
 
-llm = OpenAi(api_key=OPENAI_API_KEY, model="Open AI Model") 
+llm = OpenAi(api_key=OPENAI_API_KEY, model="Open AI Model")
 
 # Define the query and the response to be evaluated
 query = "What is the capital of France?"
@@ -88,3 +88,19 @@ result = evaluator.judge()
 - **query**: A string representing the query for which the contextual relevancy is being evaluated.
 
 - **retrieval_context**: A list of strings, each representing a context retrieved in response to the query.
+
+## Flow Chart
+
+```mermaid
+flowchart TD
+    A[AnswerRelevancy Initialization] --> B[Judge Model]
+    B --> C[Measure Relevancy]
+    C --> D[Generate Statements]
+    D --> E[Judge Model Evaluates Statements]
+    E --> F[Generate Verdicts]
+    F --> G[Calculate Relevancy Score]
+    G --> H[Check for Irrelevant Statements]
+    H --> I[Generate Reason for Irrelevant Statements]
+    I --> J[Return Final Score and Verdict]
+
+```

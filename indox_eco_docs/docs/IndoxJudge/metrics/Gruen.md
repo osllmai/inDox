@@ -23,6 +23,7 @@ class Gruen:
         self.stop_words = set(stopwords.words('english'))
         self.lemmatizer = WordNetLemmatizer()
 ```
+
 ## Parameters Explanation
 
 - **candidates**: The actual texts to be evaluated. Can be a single string or a list of strings.
@@ -49,4 +50,24 @@ gruen = Gruen(
 # Calculate the GRUEN scores
 evaluator = Evaluator(model=None, metrics=[gruen])
 result = evaluator.judge()
+```
+
+## Flow Chart
+
+```mermaid
+flowchart TD
+    A[Gruen Initialization] --> B[Set Candidates and Preprocess]
+    B --> C[Preprocess Candidates]
+    C --> D[Measure GRUEN Scores]
+    D --> E[Calculate Grammaticality Scores]
+    D --> F[Calculate Redundancy Scores]
+    D --> G[Calculate Focus Scores]
+    E --> H[Use LM and CoLA Models]
+    F --> I[Check Sentence Redundancy]
+    G --> J[Check Sentence Similarity]
+    H --> K[Combine All Scores]
+    I --> K
+    J --> K
+    K --> L[Return GRUEN Scores]
+
 ```

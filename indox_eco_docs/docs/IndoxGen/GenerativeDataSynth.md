@@ -7,12 +7,11 @@
 ## Table of Contents
 
 - [Installation](#installation)
-- [Language Model Setup](#language-model-setup)
+- [Language Model Setup](#language_model_setup)
 - [Usage](#usage)
-- [API Reference](#api-reference)
+- [API Reference](#api_reference)
 - [Examples](#examples)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Installation
 

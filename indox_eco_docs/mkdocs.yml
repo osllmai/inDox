@@ -1,8 +1,13 @@
 site_name: OSLLM.ai
 site_url: https://docs.osllm.ai
+repo_url: https://github.com/osllmai
+repo_name: osllmai
 
 theme:
+  icon:
+    repo: fontawesome/brands/git-alt
   name: material
+  favicon: assets/images/logo.png
   features:
     - navigation.tabs
     - navigation.sections
@@ -10,6 +15,7 @@ theme:
     - navigation.path
     - navigation.instant
     - navigation.tracking
+    - navigation.footer
     - toc.integrate
     - toc.follow
     - search.highlight
@@ -30,6 +36,7 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   logo: assets/images/logo.png
+
 extra_css:
   - assets/css/custom.css
  
@@ -48,11 +55,21 @@ markdown_extensions:
       anchor_linenums: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+
+plugins:
+  - search
+  - mermaid2
 
 nav:
   - Home: index.md
   - Indox:
+      - Home: Indox/index.md
       - Data Connectors:
           - Discord: Indox/data_connectors/discord.md
           - Document: Indox/data_connectors/document.md
@@ -101,7 +118,6 @@ nav:
       - Vectorstores:
           - Milvus: Indox/vectorstores/milvus.md
           - MongoDB: Indox/vectorstores/mongodb.md
-          - Neo4j Graph: Indox/vectorstores/neo4j_graph.md
           - Pathway: Indox/vectorstores/pathway.md
           - Pinecone: Indox/vectorstores/pinecone.md
           - Postgres: Indox/vectorstores/postgres.md
@@ -122,6 +138,7 @@ nav:
           - Memgraph Vector: Indox/vectorstores/memgraphvector.md
       - Graphs:
           - Memgraph: Indox/graphs/memgraph.md
+          - Neo4j Graph: Indox/vectorstores/neo4j_graph.md
       - Tools:
           - MultiQuery: Indox/tools/multiquery.md
           - MultiVector: Indox/tools/multivector.md
@@ -129,11 +146,22 @@ nav:
       - Embedding Models: Indox/embedding_models.md
       - LLMs: Indox/llms.md
       - Quick Start: Indox/quick_start.md
+      - Examples:
+          - Home: Indox/examples/README.md
+          - clusterSplit: Indox/examples/clusterSplit.md
+          - google AI: Indox/examples/googleai.md
+          - HF mistral SimpleReader: Indox/examples/hf_mistral_SimpleReader.md
+          - Mistral Unstructured: Indox/examples/mistral_unstructured.md
+          - open AI clusterSplit: Indox/examples/openai_clusterSplit.md
+          - Unstructured Split: Indox/examples/unstructuredSplit.md
+
+
   - IndoxJudge:
       - Home: IndoxJudge/index.md
       - Metrics:
           - Answer Relevancy: IndoxJudge/metrics/AnswerRelevancy.md
           - Bertscore: IndoxJudge/metrics/Bertscore.md
+          - BertScoreSummary: IndoxJudge/metrics/BertScoreSummary.md
           - Bias: IndoxJudge/metrics/Bias.md
           - BLEU: IndoxJudge/metrics/BLEU.md
           - Contextual Relevancy: IndoxJudge/metrics/ContextualRelevancy.md
@@ -156,6 +184,16 @@ nav:
           - Toxicity: IndoxJudge/metrics/Toxicity.md
           - Toxicity Discriminative: IndoxJudge/metrics/ToxicityDiscriminative.md
           - Adversarial Robustness: IndoxJudge/metrics/AdversarialRobustness.md
+          - BleuSummary: IndoxJudge/metrics/BleuSummary.md
+          - Conciseness: IndoxJudge/metrics/Conciseness.md
+          - FactualConsistency: IndoxJudge/metrics/FactualConsistency.md
+          - GEvalSummary: IndoxJudge/metrics/GEvalSummary.md
+          - InformationCoverage: IndoxJudge/metrics/InformationCoverage.md
+          - MeteorSummary: IndoxJudge/metrics/MeteorSummary.md
+          - Relevance: IndoxJudge/metrics/Relevance.md
+          - RougeSummary: IndoxJudge/metrics/RougeSummary.md
+          - StructureQuality: IndoxJudge/metrics/StructureQuality.md
+          - ToxicitySummary: IndoxJudge/metrics/ToxicitySummary.md
       - Pipelines:
           - Evaluator: IndoxJudge/pipelines/Evaluator.md
           - LLM Evaluator: IndoxJudge/pipelines/LLMEvaluator.md

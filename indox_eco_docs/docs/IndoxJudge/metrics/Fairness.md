@@ -63,6 +63,26 @@ The class implements comprehensive error handling for:
 - Template rendering issues
 - Invalid input formats
 
+## Flow Chart
+
+```mermaid
+flowchart TD
+    A[Fairness Initialization] --> B[Set Input Sentence]
+    B --> C[Calculate Fairness Score]
+    C --> D[Get Verdict]
+    D --> E[Call Language Model]
+    E --> F[Parse JSON Response]
+    F --> G[Determine Verdict and Score]
+    C --> H[Get Reason]
+    H --> E
+    H --> I[Return Reason for Verdict]
+    C --> J[Get Unfairness Reasons]
+    J --> E
+    J --> K[Return Unfairness Reasons]
+    G --> L[Return Final Verdict and Score]
+
+```
+
 ## Notes
 
 - The fairness evaluation examines various aspects including gender bias, age discrimination, racial bias, and other forms of prejudice.

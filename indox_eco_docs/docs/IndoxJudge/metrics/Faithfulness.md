@@ -60,3 +60,18 @@ faithfulness_metric = Faithfulness(llm_response=llm_response, retrieval_context=
 evaluator = Evaluator(model=llm, metrics=[faithfulness_metric])
 result = evaluator.judge()
 ```
+
+## Flow Chart
+
+```mermaid
+flowchart TD
+    A[Faithfulness Initialization] --> B[Set LLM Response and Retrieval Context]
+    B --> C[Calculate Faithfulness Score]
+    C --> D[Evaluate Claims]
+    D --> E[Evaluate Truths]
+    E --> F[Evaluate Verdicts for Claims]
+    F --> G[Calculate Faithfulness Score]
+    G --> H[Identify Contradictions]
+    H --> I[Generate Final Reason]
+    I --> J[Return Score, Claims, Truths, and Verdicts]
+```
