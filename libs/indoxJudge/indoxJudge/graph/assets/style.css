@@ -1,0 +1,188 @@
+/* Light Theme */
+.bg-light-custom {
+    background: rgb(246, 246, 246) !important;
+    color: black !important;
+    transition: all 0.2s;
+}
+
+.header {
+    position: relative;
+    top: 10px;
+    padding: 15px 63px;
+}
+
+.navbar-custom {
+    justify-content: center;
+    margin: 20px 0 50px 0;
+    background-color: rgb(255, 255, 255);
+    color: black;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link {
+    color: black !important;
+}
+
+.nav-link:hover {
+    color: rgb(255, 255, 255) !important;
+    background-color: rgb(53, 92, 125);
+}
+
+.col-12 {
+    padding: 0;
+}
+
+.card-header {
+    background-color: transparent;
+    border: none;
+    padding: 0 20px;
+    margin-bottom: 10px;
+}
+
+.cart-title {
+    font-size: 26px;
+    font-family: 'Roboto', sans-serif;
+    color: rgb(53, 92, 125);
+    text-align: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(53, 92, 125, 0.3);
+}
+
+.card-text {
+    height: 100%;
+    color: black;
+    backdrop-filter: blur(80px);
+}
+
+.card-body {
+    border: none;
+    box-shadow: 0 1px 3px 2px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    border-radius: 8px;
+    padding: 40px;
+    background-color: aliceblue;
+}
+
+.btn-gtt {
+    background-color: rgba(215, 215, 215, 0.891);
+    border: none;
+    outline: none;
+}
+
+.btn-gtt:hover {
+    background-color: rgb(181, 181, 181);
+}
+
+.change-bg {
+    display: flex;
+    align-items: center;
+}
+
+.modebtn {
+    margin: 0 14px;
+}
+
+/* sun icon */
+.bi-brightness-high-fill {
+    font-size: 24px;
+    color: rgb(255, 165, 0); /* Orange color */
+}
+
+/* moon icon */
+.bi-moon-fill {
+    font-size: 24px;
+    color: rgb(72, 61, 139); /* Dark Slate Blue color */
+}
+
+.form-check-input {
+    background-color: rgb(233, 233, 233);
+}
+
+/* toggle body */
+.sc-bxivhb {
+    background-color: rgb(233, 233, 233);
+    margin: 0 5px;
+    border: 1px solid rgb(218, 218, 218);
+    width: 52px;
+}
+
+/* toggle circle */
+.sc-ifAKCX {
+    background-color: rgb(133, 133, 133);
+}
+
+/* toggle body */
+.daq-toggleswitch--light__indicator--off {
+    background-color: rgb(217, 217, 217);
+}
+
+.daq-toggleswitch--light__indicator--on {
+    background-color: rgb(33, 33, 33);
+}
+
+/* Dark Theme */
+.bg-dark-custom {
+    background-color: rgb(48, 48, 48);
+    color: white;
+}
+
+.navbar-custom-dark {
+    justify-content: center;
+    margin: 20px 0 50px 0;
+    background-color: rgb(64, 64, 64);
+    color: rgb(217, 217, 217);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+}
+
+.nav-link-dark {
+    color: white !important;
+}
+
+.card-header-dark {
+    border: none;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    padding: 0 20px;
+}
+
+.cart-title-dark {
+    font-size: 26px;
+    font-family: 'Roboto', sans-serif;
+    color: rgb(255, 215, 0); /* Gold color */
+    text-align: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.card-text-dark {
+    height: 100%;
+    color: white;
+    backdrop-filter: blur(80px);
+}
+
+.card-body-dark {
+    border: none;
+    box-shadow: 0 1px 3px 2px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    border-radius: 8px;
+    padding: 40px;
+    background-color: rgb(64, 64, 64);
+}
+
+/* button */
+.btn-gtt-dark {
+    background-color: rgba(105, 105, 105, 0.891);
+    border: none;
+    outline: none;
+}
+
+.btn-gtt-dark:hover {
+    background-color: rgb(85, 85, 85);
+}

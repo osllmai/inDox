@@ -1,0 +1,62 @@
+stateDiagram-v2
+    direction TB
+    
+    [*] --> InputSummary : Start Analysis
+    
+    state InputSummary {
+        text : Receive Summary Text
+    }
+    
+    state StructureEvaluation {
+        direction TB
+        discourse : Discourse Coherence Analysis
+        logic : Logical Flow Evaluation
+        topic : Topic Consistency Check
+        temporal : Temporal Sequence Assessment
+        
+        discourse --> logic
+        logic --> topic 
+        topic --> temporal
+    }
+    
+    state ScoreComputation {
+        direction TB
+        compute : Calculate Individual Aspect Scores
+        normalize : Normalize Scores (0.0 - 1.0)
+        weight : Apply Weighted Scoring
+    }
+    
+    state VerdictGeneration {
+        direction TB
+        aggregate : Aggregate Scores
+        interpret : Generate Textual Interpretation
+        jsonformat : Convert to JSON Format
+    }
+    
+    InputSummary --> StructureEvaluation : Analyze Structure
+    StructureEvaluation --> ScoreComputation : Generate Numerical Scores
+    ScoreComputation --> VerdictGeneration : Prepare Final Assessment
+    
+    state FinalOutput {
+        json : Structured JSON Result
+        verdict : Overall Quality Assessment
+    }
+    
+    VerdictGeneration --> FinalOutput : Produce Result
+    
+    note right of StructureEvaluation
+        Evaluates 4 Key Aspects:
+        • Discourse Coherence
+        • Logical Flow
+        • Topic Consistency
+        • Temporal Consistency
+    end note
+    
+    note right of ScoreComputation
+        Score Computation Steps:
+        1. Individual Aspect Scoring
+        2. Score Normalization
+        3. Weighted Aggregation
+    end note
+    
+    FinalOutput --> [*] : Analysis Complete
