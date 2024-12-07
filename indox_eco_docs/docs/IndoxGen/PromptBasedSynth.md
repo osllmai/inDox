@@ -5,9 +5,9 @@
 
 ## Table of Contents
 1. [Installation](#installation)
-2. [LLM Setup](#llm-setup)
+2. [LLM Setup](#llm_setup)
 3. [Usage](#usage)
-4. [API Reference](#api-reference)
+4. [API Reference](#api_reference)
 5. [Examples](#examples)
 6. [Contributing](#contributing)
 

@@ -10,9 +10,13 @@ Whether you're testing a new language model or validating the output of a genera
 
 ### 1. Advanced Metrics
 Evaluate models on various dimensions, including:
+
 - **Relevance**: How well does the model's output align with the input query?
+
 - **Faithfulness**: Does the output stay true to the input data or reasoning process?
+
 - **Bias and Fairness**: Assess for harmful biases, stereotypes, or discriminatory patterns.
+
 - **Toxicity and Safety**: Identify toxic or harmful outputs to ensure safety and compliance.
 
 [Learn more about Metrics →](metrics/AdversarialRobustness.md)
@@ -21,8 +25,11 @@ Evaluate models on various dimensions, including:
 
 ### 2. Modular Pipelines
 IndoxJudge provides a flexible pipeline system for building and customizing evaluation workflows:
+
 - Pre-built pipelines for common evaluation tasks.
+
 - Easy integration with custom metrics and evaluators.
+
 - Support for automated and manual review processes.
 
 [Learn more about Pipelines →](pipelines/EvaluationAnalyzer.md)
@@ -31,16 +38,22 @@ IndoxJudge provides a flexible pipeline system for building and customizing eval
 
 ### 3. Integration with LLMs
 Leverage the power of large language models (LLMs) for:
+
 - Advanced text understanding in evaluations.
+
 - Robust scoring of generated content.
+
 - Context-aware assessments for more nuanced evaluations.
 
 ---
 
 ### 4. Comprehensive Reporting
 Generate detailed evaluation reports, including:
+
 - Visual summaries of model performance.
+
 - Metrics comparison across datasets or models.
+
 - Recommendations for improving model reliability.
 
 ---

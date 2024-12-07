@@ -63,6 +63,26 @@ The class implements comprehensive error handling for:
 - Template rendering issues
 - Invalid input formats
 
+## Flow Chart
+
+```mermaid
+flowchart TD
+    A[AdversarialRobustness Initialization] --> B[Judge Model]
+    B --> C[get_robustness]
+    B --> D[get_reason]
+    B --> E[get_verdict]
+    C --> F[Generate Prompt]
+    D --> F
+    E --> F
+    F --> G[Call Judge Model]
+    G --> H{Parse JSON Response}
+    H -- Valid --> I[Return Verdict or Reason]
+    H -- Invalid --> J[Return Default Verdict or Reason]
+    I --> K[Update Robustness Score]
+    K --> L[Return Final Score]
+
+```
+
 ## Notes
 
 - The robustness evaluation considers multiple factors including semantic preservation, grammatical correctness, and logical consistency.

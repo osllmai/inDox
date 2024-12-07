@@ -78,3 +78,21 @@ hallucination_metric = Hallucination(
 evaluator = Evaluator(model=llm, metrics=[hallucination_metric])
 result = evaluator.judge()
 ```
+
+## Flow Chart
+
+```mermaid
+flowchart TD
+    A[Hallucination Initialization] --> B[Set LLM Response and Retrieval Context]
+    B --> C[Set Model for Evaluation]
+    C --> D[Measure Hallucination Score]
+    D --> E[Generate Verdicts]
+    E --> F[Call Language Model for Verdicts]
+    F --> G[Parse Verdicts]
+    D --> H[Calculate Hallucination Score]
+    H --> I[Generate Reason]
+    I --> J[Call Language Model for Reason]
+    J --> K[Parse and Return Reason]
+    D --> L[Return Final Hallucination Score and Reason]
+
+```

@@ -67,3 +67,19 @@ bias_metric = Bias(llm_response=llm_response, threshold=0.5, include_reason=True
 evaluator = Evaluator(model=llm, metrics=[bias_metric])
 result = evaluator.judge()
 ```
+
+## Flow Chart
+
+```mermaid
+flowchart TD
+    A[Bias Initialization] --> B[Set Threshold and Include Reason]
+    B --> C[Measure Bias]
+    C --> D[Generate Opinions]
+    D --> E[Call Language Model to Extract Opinions]
+    E --> F[Generate Verdicts for Opinions]
+    F --> G[Calculate Bias Score]
+    G --> H[Check Against Threshold]
+    H --> I[Optional: Generate Reason for Bias]
+    I --> J[Return Final Bias Score and Verdict]
+
+```
