@@ -1,4 +1,3 @@
-
 ---
 
 # GoogleDrive 
@@ -27,7 +26,7 @@ pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-pyt
 2. **Initialize the `GoogleDrive` Class**
 
    ```python
-   from google_drive import GoogleDrive
+   from indoxRag.data_connectors import GoogleDrive
 
    # Initialize GoogleDrive object
    drive = GoogleDrive(creds_file='tokenGoogleDrive.json', credentials_json='credentials.json')
@@ -86,7 +85,7 @@ Errors during file reading or processing are caught and reported. Temporary cred
 ## Example Usage
 
 ```python
-from google_drive import GoogleDrive
+from indoxRag.data_connectors import GoogleDrive
 
 # Initialize GoogleDrive object
 drive = GoogleDrive(creds_file='tokenGoogleDrive.json', credentials_json='credentials.json')
@@ -102,4 +101,3 @@ drive.read(file_id)
 - The `tokenGoogleDrive.json` file is automatically created and managed to store the user's access and refresh tokens.
 
 ---
-

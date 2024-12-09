@@ -1,5 +1,6 @@
-from indox.data_connectors.utils import Document
+from indoxRag.data_connectors.utils import Document
 from typing import Any, List, Optional
+
 
 class DiscordChannelReader:
     """Reads messages from a specified Discord channel using a Discord bot.
@@ -50,7 +51,7 @@ class DiscordChannelReader:
         self,
         channel_ids: List[str],
         num_messages: Optional[int] = None,
-        **load_kwargs: Any
+        **load_kwargs: Any,
     ) -> List[Document]:
         """Loads messages from specified Discord channels.
 
@@ -68,6 +69,7 @@ class DiscordChannelReader:
             ValueError: If a channel ID is not found in the Discord server.
         """
         import discord
+
         client = discord.Client(intents=discord.Intents.default())
         documents = []
 
@@ -77,7 +79,9 @@ class DiscordChannelReader:
                 channel = client.get_channel(int(channel_id))
                 if channel:
                     messages = []
-                    async for message in channel.history(limit=num_messages or self.num_messages):
+                    async for message in channel.history(
+                        limit=num_messages or self.num_messages
+                    ):
                         messages.append(message.content)
                     response = "\n".join(messages)
                     metadata = {
@@ -85,21 +89,26 @@ class DiscordChannelReader:
                         "channel_name": channel.name,
                         "num_messages": len(messages),
                     }
-                    documents.append(Document(source="Discord", content=response, metadata=metadata))
+                    documents.append(
+                        Document(source="Discord", content=response, metadata=metadata)
+                    )
                 else:
-                    raise ValueError(f"Channel ID '{channel_id}' not found in Discord server.")
+                    raise ValueError(
+                        f"Channel ID '{channel_id}' not found in Discord server."
+                    )
 
             await client.close()
+
         if len(documents) == 1:
             return documents[0]
         client.run(self.bot_token)
         return documents
 
     def load_content(
-            self,
-            channel_ids: List[str],
-            num_messages: Optional[int] = None,
-            **load_kwargs: Any
+        self,
+        channel_ids: List[str],
+        num_messages: Optional[int] = None,
+        **load_kwargs: Any,
     ) -> List[str]:
         """Loads messages from specified Discord channels.
 
@@ -116,6 +125,7 @@ class DiscordChannelReader:
             ValueError: If a channel ID is not found in the Discord server.
         """
         import discord
+
         client = discord.Client(intents=discord.Intents.default())
         channel_contents = []
 
@@ -125,14 +135,19 @@ class DiscordChannelReader:
                 channel = client.get_channel(int(channel_id))
                 if channel:
                     messages = []
-                    async for message in channel.history(limit=num_messages or self.num_messages):
+                    async for message in channel.history(
+                        limit=num_messages or self.num_messages
+                    ):
                         messages.append(message.content)
                     response = "\n".join(messages)
                     channel_contents.append(response)
                 else:
-                    raise ValueError(f"Channel ID '{channel_id}' not found in Discord server.")
+                    raise ValueError(
+                        f"Channel ID '{channel_id}' not found in Discord server."
+                    )
 
             await client.close()
+
         client.run(self.bot_token)
         if len(channel_contents) == 1:
             return channel_contents[0]

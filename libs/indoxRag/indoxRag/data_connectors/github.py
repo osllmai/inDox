@@ -1,7 +1,7 @@
 import base64
 import os
 from typing import List, Optional, Tuple, Dict, Any
-from indox.data_connectors.utils import Document
+from indoxRag.data_connectors.utils import Document
 
 
 class GithubClient:
@@ -16,7 +16,9 @@ class GithubClient:
         from github import Github
 
         self.github = Github(github_token)
-        self.verbose = verbose #prints detailed processing an d error messages if set to True.
+        self.verbose = (
+            verbose  # prints detailed processing an d error messages if set to True.
+        )
 
 
 class GithubRepositoryReader:
@@ -32,7 +34,7 @@ class GithubRepositoryReader:
         use_parser: bool = False,
         verbose: bool = True,
         filter_directories: Optional[Tuple[List[str], str]] = None,
-        filter_file_extensions: Optional[Tuple[List[str], str]] = None
+        filter_file_extensions: Optional[Tuple[List[str], str]] = None,
     ) -> None:
         """
         Initializes the GithubRepositoryReader with the specified parameters.
@@ -51,7 +53,10 @@ class GithubRepositoryReader:
         self.use_parser = use_parser
         self.verbose = verbose
         self.filter_directories = filter_directories or ([], self.FilterType.INCLUDE)
-        self.filter_file_extensions = filter_file_extensions or ([], self.FilterType.INCLUDE)
+        self.filter_file_extensions = filter_file_extensions or (
+            [],
+            self.FilterType.INCLUDE,
+        )
 
     def load_data(self, branch: str = "main") -> List[Document] | Document:
         """
@@ -69,7 +74,9 @@ class GithubRepositoryReader:
                 file_content = contents.pop(0)
                 if file_content.type == "dir":
                     if self._should_process_directory(file_content.path):
-                        contents.extend(repo.get_contents(file_content.path, ref=branch))
+                        contents.extend(
+                            repo.get_contents(file_content.path, ref=branch)
+                        )
                 else:
                     if self._should_process_file(file_content.name):
                         document = self._process_file(file_content)
@@ -81,7 +88,9 @@ class GithubRepositoryReader:
             return documents
         except Exception as e:
             if self.verbose:
-                print(f"Error loading data from repository '{self.owner}/{self.repo}' on branch '{branch}': {str(e)}")
+                print(
+                    f"Error loading data from repository '{self.owner}/{self.repo}' on branch '{branch}': {str(e)}"
+                )
             return []
 
     def load_content(self, branch: str = "main") -> List[str] | str:
@@ -100,7 +109,9 @@ class GithubRepositoryReader:
                 file_content = contents.pop(0)
                 if file_content.type == "dir":
                     if self._should_process_directory(file_content.path):
-                        contents.extend(repo.get_contents(file_content.path, ref=branch))
+                        contents.extend(
+                            repo.get_contents(file_content.path, ref=branch)
+                        )
                 else:
                     if self._should_process_file(file_content.name):
                         content = self._process_file_content(file_content)
@@ -113,7 +124,9 @@ class GithubRepositoryReader:
             return file_contents
         except Exception as e:
             if self.verbose:
-                print(f"Error loading data from repository '{self.owner}/{self.repo}' on branch '{branch}': {str(e)}")
+                print(
+                    f"Error loading data from repository '{self.owner}/{self.repo}' on branch '{branch}': {str(e)}"
+                )
             return []
 
     def _should_process_directory(self, directory: str) -> bool:
@@ -154,7 +167,7 @@ class GithubRepositoryReader:
             print(f"Processing file: {file_content.path}")
 
         try:
-            content = base64.b64decode(file_content.content).decode('utf-8')
+            content = base64.b64decode(file_content.content).decode("utf-8")
             return Document(
                 source="GitHub",
                 content=content,
@@ -163,7 +176,7 @@ class GithubRepositoryReader:
                     "file_path": file_content.path,
                     "file_size": file_content.size,
                     "file_sha": file_content.sha,
-                }
+                },
             )
         except Exception as e:
             if self.verbose:
@@ -179,9 +192,8 @@ class GithubRepositoryReader:
         """
         try:
             # Assuming the file content is text-based, otherwise adjust accordingly.
-            return file_content.decoded_content.decode('utf-8')
+            return file_content.decoded_content.decode("utf-8")
         except Exception as e:
             if self.verbose:
                 print(f"Error processing file '{file_content.path}': {str(e)}")
             return None
-

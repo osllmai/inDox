@@ -7,10 +7,11 @@ CharacterTextSplitter is a Python class designed for splitting text into chunks 
 To use CharacterTextSplitter:
 
 ```python
-from indox.splitter import CharacterTextSplitter
+from indoxRag.splitter import CharacterTextSplitter
 
 splitter = CharacterTextSplitter(chunk_size=400, chunk_overlap=50)
 ```
+
 ## Hyperparameters
 
 - **separator** [str]: The string used to split the text (default: "\n\n").
@@ -19,37 +20,51 @@ splitter = CharacterTextSplitter(chunk_size=400, chunk_overlap=50)
 - **length_function** [callable]: A function used to calculate the length of text (default: len).
 
 ## Usage
+
 ### Setting Up the Python Environment
+
 ### Windows
 
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2**Activate the virtual environment:**
+
 ```bash
-indox\Scripts\activate
+indoxRag\Scripts\activate
 ```
+
 ### macOS/Linux
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-source indox/bin/activate
+source indoxRag/bin/activate
 ```
 
 ### Import the CharacterTextSplitter
+
 ```python
-from indox.splitter import CharacterTextSplitter
+from indoxRag.splitter import CharacterTextSplitter
 ```
 
 ### Initialize CharacterTextSplitter
+
 ```python
 splitter = CharacterTextSplitter(chunk_size=400, chunk_overlap=50)
 ```
+
 ### Split And Processing Chunks
+
 ```python
 text = """
 This is a long piece of text that needs to be split into smaller chunks.

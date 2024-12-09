@@ -1,4 +1,3 @@
-
 ---
 
 # HTML Loader
@@ -20,7 +19,7 @@ pip install beautifulsoup4 indox
 1. **Import the `Bs4` Function**
 
    ```python
-   from your_module import Bs4
+   from indoxRag.data_loaders import Bs4
    ```
 
 2. **Load and Parse an HTML File**
@@ -66,7 +65,7 @@ pip install beautifulsoup4 indox
 ### Example Usage
 
 ```python
-from your_module import Bs4
+from indoxRag.data_loaders import Bs4
 
 # Load and parse the HTML file
 file_path = 'elements.html'
@@ -84,4 +83,3 @@ print(document.page_content)  # Prints the text content of the HTML file
 - The `page` metadata is set to `1` by default and may need adjustment based on your specific use case.
 
 ---
-

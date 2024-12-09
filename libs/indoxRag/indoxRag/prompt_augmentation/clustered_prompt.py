@@ -5,13 +5,13 @@ import sys
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 
 def generate_clustered_prompts(context, embeddings, summary_model):
@@ -34,12 +34,18 @@ def generate_clustered_prompts(context, embeddings, summary_model):
         # use_openai_summary = os.getenv("OPENAI_API_KEY") is not None
         # logger.info(f"OpenAI API key is {'set' if use_openai_summary else 'not set'}")
 
-        texts = ' '.join(context)
-        from indox.data_loader_splitter import ClusteredSplit
+        texts = " ".join(context)
+        from indoxRag.data_loader_splitter import ClusteredSplit
 
         logger.info("Initializing ClusteredSplit")
-        loader_splitter = ClusteredSplit(file_path=texts, embeddings=embeddings, chunk_size=50, threshold=0.1, dim=30,
-                                         summary_model=summary_model)
+        loader_splitter = ClusteredSplit(
+            file_path=texts,
+            embeddings=embeddings,
+            chunk_size=50,
+            threshold=0.1,
+            dim=30,
+            summary_model=summary_model,
+        )
         loader_splitter.cluster_prompt = True
 
         logger.info("Retrieving all documents")

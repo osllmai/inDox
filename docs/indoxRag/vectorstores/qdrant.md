@@ -1,4 +1,5 @@
 # Qdrant
+
 Qdrant is a high-performance vector database designed for large-scale similarity search. This implementation uses Qdrant as a vector store, supporting cosine similarity for vector searches when an embedding function is provided.
 
 **Note**: To use Qdrant as the vector store, users need to install `qdrant-client` and have access to a running Qdrant service. The Qdrant service URL, API key, and collection name must be provided when initializing the Qdrant vector store.
@@ -6,7 +7,7 @@ Qdrant is a high-performance vector database designed for large-scale similarity
 To use Qdrant as the vector store:
 
 ```python
-from indox.vector_stores import Qdrant
+from indoxRag.vector_stores import Qdrant
 
 qdrant_db = Qdrant(
     collection_name="your_collection",
@@ -15,7 +16,9 @@ qdrant_db = Qdrant(
     api_key="your_api_key"
 )
 ```
+
 ## Hyperparameters
+
 - **collection_name** [str]: Name of the Qdrant collection to use.
 - **embedding_function** [Optional[Embeddings]]: Function to generate embeddings for documents.
 - **url** [str]: URL of the Qdrant service (e.g., "https://qdrant-api-url").
@@ -27,28 +30,41 @@ qdrant_db = Qdrant(
 - **filter** [Optional[Dict[str, Any]]]: Filters to apply for search (default: None).
 
 ## Usage
+
 ### Setting Up the Python Environment
+
 ### Windows
 
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2**Activate the virtual environment:**
+
 ```bash
-indox\Scripts\activate
+indoxRag\Scripts\activate
 ```
+
 ### macOS/Linux
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-source indox/bin/activate
+source indoxRag/bin/activate
 ```
+
 ### Get Started
+
 **Import HuggingFace API Key And Qdrant API KEY**
+
 ```python
 import os
 from dotenv import load_dotenv
@@ -58,47 +74,57 @@ HUGGINGFACE_API_KEY = os.environ['HUGGINGFACE_API_KEY']
 QDRANT_API_KEY = os.environ['Qdrant_API_KEY']
 
 ```
-**Import Essential Libraries**
-```python
-from indox import IndoxRetrievalAugmentation
-from indox.llms import HuggingFaceModel
-from indox.embeddings import HuggingFaceEmbedding
 
-indox = IndoxRetrievalAugmentation()
+**Import Essential Libraries**
+
+```python
+from indoxRag import IndoxRetrievalAugmentation
+from indoxRag.llms import HuggingFaceModel
+from indoxRag.embeddings import HuggingFaceEmbedding
+
+indoxRag = IndoxRetrievalAugmentation()
 mistral_qa = HuggingFaceModel(api_key=HUGGINGFACE_API_KEY,model="mistralai/Mistral-7B-Instruct-v0.2")
 embed = HuggingFaceEmbedding(model="multi-qa-mpnet-base-cos-v1",api_key=HUGGINGFACE_API_KEY)
 ```
+
 **Setting Up Reference Directory and File Path**
+
 ```python
-from indox.splitter import RecursiveCharacterTextSplitter
+from indoxRag.splitter import RecursiveCharacterTextSplitter
 
 file_path = "sample.txt"
 with open(file_path, "r") as file:
     text = file.read()
-    
+
 splitter = RecursiveCharacterTextSplitter(400,20)
 content_chunks = splitter.split_text(text)
 ```
-**Initialize Qdrant**
-```python
-from indox.vector_stores import Qdrant
 
-url = "url" 
+**Initialize Qdrant**
+
+```python
+from indoxRag.vector_stores import Qdrant
+
+url = "url"
 qdrant = Qdrant(
-    collection_name="IndoxTest", 
-    embedding_function=embed, 
-    url=url, 
+    collection_name="IndoxRagTest",
+    embedding_function=embed,
+    url=url,
     api_key=QDRANT_API_KEY
 
 )
 ```
+
 **Add Texts to VectorStore**
+
 ```python
 qdrant.add(texts=content_chunks)
 ```
+
 **Querying the Database**
+
 ```python
-retriever = indox.QuestionAnswer(vector_database=qdrant,llm=mistral_qa,top_k=5)
+retriever = indoxRag.QuestionAnswer(vector_database=qdrant,llm=mistral_qa,top_k=5)
 query = "How cinderella reach her happy ending?"
 answer = retriever.invoke(query=query)
 ```

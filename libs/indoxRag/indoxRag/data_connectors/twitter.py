@@ -1,4 +1,4 @@
-from indox.data_connectors.utils import Document
+from indoxRag.data_connectors.utils import Document
 from typing import Any, List, Optional
 
 
@@ -21,9 +21,9 @@ class TwitterTweetReader:
     num_tweets: Optional[int]
 
     def __init__(
-            self,
-            bearer_token: str,
-            num_tweets: Optional[int] = 100,
+        self,
+        bearer_token: str,
+        num_tweets: Optional[int] = 100,
     ) -> None:
         """Initialize TwitterTweetReader with the given parameters.
 
@@ -45,10 +45,10 @@ class TwitterTweetReader:
         return "TwitterTweetReader"
 
     def load_data(
-            self,
-            twitterhandles: List[str],
-            num_tweets: Optional[int] = None,
-            **load_kwargs: Any
+        self,
+        twitterhandles: List[str],
+        num_tweets: Optional[int] = None,
+        **load_kwargs: Any,
     ) -> List[Document] | Document:
         """Load tweets for specified Twitter handles.
 
@@ -95,7 +95,9 @@ class TwitterTweetReader:
                     "num_tweets": len(tweets.data),
                 }
 
-                documents.append(Document(source="Twitter", content=response, metadata=metadata))
+                documents.append(
+                    Document(source="Twitter", content=response, metadata=metadata)
+                )
             if len(documents) == 1:
                 return documents[0]
             return documents
@@ -104,10 +106,10 @@ class TwitterTweetReader:
             raise tweepy.TweepyException(f"An error occurred with the Twitter API: {e}")
 
     def load_content(
-            self,
-            twitterhandles: List[str],
-            num_tweets: Optional[int] = None,
-            **load_kwargs: Any
+        self,
+        twitterhandles: List[str],
+        num_tweets: Optional[int] = None,
+        **load_kwargs: Any,
     ) -> List[str] | str:
         """Load tweets for specified Twitter handles.
 

@@ -1,4 +1,4 @@
-###  `ApacheCassandra` Vector store
+### `ApacheCassandra` Vector store
 
 #### Overview
 
@@ -18,6 +18,7 @@ The `ApacheCassandra` class provides an interface to store, manage, and search t
 Initializes the `ApacheCassandra` instance.
 
 - **Parameters**:
+
   - `embedding_function`: A callable that computes embedding vectors from text (used for both adding documents and queries).
   - `keyspace`: The Cassandra keyspace where the data is stored.
 
@@ -36,6 +37,7 @@ Private method to set up the Cassandra keyspace and create the required table fo
 Adds a list of documents to the Cassandra vector store by embedding the documents and storing the embeddings.
 
 - **Parameters**:
+
   - `docs`: A list of text documents to be embedded and stored in the Cassandra database.
 
 - **Raises**:
@@ -47,10 +49,12 @@ Adds a list of documents to the Cassandra vector store by embedding the document
 Performs a similarity search on the Cassandra vector store using the provided query. The method returns the most similar documents along with their cosine similarity scores.
 
 - **Parameters**:
+
   - `query`: A string query text for which similar documents are to be found.
   - `k`: An integer specifying the number of top results to return (default: `5`).
 
 - **Returns**:
+
   - A list of tuples where each tuple contains:
     - `Document`: The document object corresponding to the retrieved text.
     - `float`: The similarity score (cosine similarity) between the query and the document.
@@ -70,19 +74,19 @@ Shuts down the Cassandra cluster connection.
 ### Example Usage
 
 ```python
-from indox.vector_stores import ApacheCassandra
-from indox.embeddings import embed_openai_indox
-from indox.llms import openai_qa_indox
-from indox.core import Document
+from indoxRag.vector_stores import ApacheCassandra
+from indoxRag.embeddings import OpenAiEmbedding
+from indoxRag.llms import OpenAi
+from indoxRag.core import Document
 
 # Initialize Apache Cassandra vector store with OpenAI embedding function
-db = ApacheCassandra(embedding_function=embed_openai_indox, keyspace="sample")
+db = ApacheCassandra(embedding_function=embed_openai_indoxRag, keyspace="sample")
 
 db.add(docs=docs)
 
 # Perform a similarity search with a query
 query = "How did Cinderella reach her happy ending?"
-retriever = indox.QuestionAnswer(vector_database=db, llm=openai_qa_indox, top_k=5)
+retriever = indoxRag.QuestionAnswer(vector_database=db, llm=openai_qa_indoxRag, top_k=5)
 
 retriever.invoke(query)
 
@@ -92,8 +96,7 @@ db.shutdown()
 
 ### Explanation:
 
-1. **Initialization**: The `ApacheCassandra` instance is created by passing an embedding function (`embed_openai_indox`) and specifying a keyspace (`"sample"`).
-   
+1. **Initialization**: The `ApacheCassandra` instance is created by passing an embedding function (`embed_openai_indoxRag`) and specifying a keyspace (`"sample"`).
 2. **Adding Documents**: A list of documents (`docs`) is embedded and stored in the Cassandra vector store via the `add` method.
 
 3. **Similarity Search**: A query is provided (`"How did Cinderella reach her happy ending?"`), and a `QuestionAnswer` retriever is used to perform a similarity search with the top 5 most relevant documents.
@@ -101,4 +104,3 @@ db.shutdown()
 4. **Retrieval**: After invoking the retriever with the query, the relevant context is extracted from the results and printed.
 
 5. **Shutdown**: The Cassandra connection is gracefully closed using the `shutdown` method.
-

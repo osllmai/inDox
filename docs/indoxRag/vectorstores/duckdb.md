@@ -1,4 +1,5 @@
 # DuckDB
+
 `DuckDB` is a lightweight, in-memory database solution designed for storing text documents and their vector embeddings. It supports adding documents, performing similarity searches using cosine similarity, and managing data within an in-memory DuckDB instance.
 
 **Note**: To use `DuckDB`, users need to have the `duckdb` package installed and provide an embedding function for generating vector embeddings.
@@ -6,14 +7,15 @@
 To use `DuckDB` as the vector store:
 
 ```python
-from indox.vector_stores import DuckDB
-from indox.embeddings import HuggingFaceEmbedding
+from indoxRag.vector_stores import DuckDB
+from indoxRag.embeddings import HuggingFaceEmbedding
 
 db = DuckDB(
     embedding_function=HuggingFaceEmbedding(),
     table_name="your_table"
 )
 ```
+
 ## Hyperparameters
 
 - **embedding_function** [Any]: Function to generate embeddings for the documents (must be provided).
@@ -23,28 +25,41 @@ db = DuckDB(
 - **table_name** [str]: Name of the DuckDB table to store embeddings (default: "embeddings").
 
 ## Usage
+
 ### Setting Up the Python Environment
+
 ### Windows
 
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2**Activate the virtual environment:**
+
 ```bash
-indox\Scripts\activate
+indoxRag\Scripts\activate
 ```
+
 ### macOS/Linux
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-source indox/bin/activate
+source indoxRag/bin/activate
 ```
+
 ### Get Started
+
 **Import HuggingFace API Key**
+
 ```python
 import os
 from dotenv import load_dotenv
@@ -55,43 +70,52 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 ```
 
 **Import Essential Libraries**
-```python
-from indox.llms import HuggingFaceModel
-from indox.embeddings import AzureOpenAIEmbeddings
-from indox import IndoxRetrievalAugmentation
 
-indox = IndoxRetrievalAugmentation()
+```python
+from indoxRag.llms import HuggingFaceModel
+from indoxRag.embeddings import AzureOpenAIEmbeddings
+from indoxRag import IndoxRetrievalAugmentation
+
+indoxRag = IndoxRetrievalAugmentation()
 mistral_qa = HuggingFaceModel(api_key=HUGGINGFACE_API_KEY,model="mistralai/Mistral-7B-Instruct-v0.2")
 azure_embed = AzureOpenAIEmbeddings(api_key=OPENAI_API_KEY,model="text-embedding-3-small")
 ```
+
 **Setting Up Reference Directory and File Path**
+
 ```python
-from indox.splitter import RecursiveCharacterTextSplitter
-!wget https://raw.githubusercontent.com/osllmai/inDox/master/Demo/sample.txt
+from indoxRag.splitter import RecursiveCharacterTextSplitter
+!wget https://raw.githubusercontent.com/osllmai/inDoxRag/master/Demo/sample.txt
 file_path = "sample.txt"
 with open(file_path, "r") as file:
     text = file.read()
 splitter = RecursiveCharacterTextSplitter(400,20)
 content_chunks = splitter.split_text(text)
 ```
+
 **Initialize DuckDB**
+
 ```python
-from indox.vector_stores import DuckDB
+from indoxRag.vector_stores import DuckDB
 vector_store = DuckDB(
     embedding_function=azure_embed,
-    vector_key="embedding",   
-    id_key="id",              
-    text_key="text",          
+    vector_key="embedding",
+    id_key="id",
+    text_key="text",
     table_name="embeddings"
 )
 ```
-**Connecting VectorStore to Indox**
+
+**Connecting VectorStore to IndoxRag**
+
 ```python
 vector_store.add(texts=content_chunks)
 ```
+
 **Querying the Database**
+
 ```python
 query = "How cinderella reach her happy ending?"
-retriever = indox.QuestionAnswer(vector_database=vector_store, llm=mistral_qa, top_k=5, document_relevancy_filter=True)
+retriever = indoxRag.QuestionAnswer(vector_database=vector_store, llm=mistral_qa, top_k=5, document_relevancy_filter=True)
 answer = retriever.invoke(query=query)
 ```

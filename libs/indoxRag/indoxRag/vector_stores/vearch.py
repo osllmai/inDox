@@ -1,6 +1,6 @@
 from typing import List, Any, Dict, Tuple
 import numpy as np
-from indox.core import Document
+from indoxRag.core import Document
 
 
 class Vearch:

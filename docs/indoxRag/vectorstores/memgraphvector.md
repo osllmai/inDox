@@ -21,12 +21,13 @@ pip install neo4j
 Refer to the official Memgraph documentation for setting up a Memgraph instance.
 
 # Example Usage
+
 ## Initialize MemgraphVector
 
 You can initialize the `MemgraphVector` class by passing the necessary connection details and the embedding function.
 
 ```python
-from indox.vector_stores import MemgraphVector
+from indoxRag.vector_stores import MemgraphVector
 
 # Initialize MemgraphVector with connection details and an embedding function
 memgraph_vector = MemgraphVector(
@@ -39,6 +40,7 @@ memgraph_vector = MemgraphVector(
 ```
 
 ## Perform a Similarity Search
+
 To perform a similarity search, use the `search` method, which supports vector, keyword, or hybrid search types.
 
 ```python
@@ -55,6 +57,7 @@ for document in results:
 - **k** (int, optional): The number of top results to return. Defaults to 4.
 
 ## Retrieve Documents with Scores
+
 You can also retrieve documents along with their similarity scores using the `retrieve` method.
 
 ```python
@@ -70,6 +73,7 @@ for context, score in zip(contexts, scores):
 - **search_type** (str, optional): The type of search to perform ('vector', 'keyword', or 'hybrid'). Defaults to the class-level search type.
 
 ## Close the Connection
+
 After performing your operations, remember to close the Memgraph connection:
 
 ```python
@@ -77,16 +81,17 @@ memgraph_vector.close()
 ```
 
 # Search Methods
+
 The `MemgraphVector` class supports the following search methods:
 
-- **_run_vector_search**: Searches for similar embeddings based on cosine similarity.
-- **_run_keyword_search**: Searches for documents containing the keyword query.
-- **_run_hybrid_search**: Combines vector and keyword search with weighted scores.
+- **\_run_vector_search**: Searches for similar embeddings based on cosine similarity.
+- **\_run_keyword_search**: Searches for documents containing the keyword query.
+- **\_run_hybrid_search**: Combines vector and keyword search with weighted scores.
 
 # Example Workflow
 
 ```python
-from indox.vector_stores import MemgraphVector
+from indoxRag.vector_stores import MemgraphVector
 
 # Initialize MemgraphVector
 memgraph_vector = MemgraphVector(

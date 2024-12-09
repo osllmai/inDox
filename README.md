@@ -7,6 +7,11 @@
 
 <div align="center">
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/osllmai/inDox/blob/master/docs/indoxRag/assets/lite-logo%201.png" alt="inDox Lite Logo">
+</p>
+</br>
+
 [![License](https://img.shields.io/github/license/osllmai/indoxRag)](https://github.com/osllmai/indoxRag/blob/main/LICENSE)
 [![Discord](https://img.shields.io/discord/1223867382460579961?label=Discord&logo=Discord&style=social)](https://discord.com/invite/ossllmai)
 [![GitHub stars](https://img.shields.io/github/stars/osllmai/indoxRag?style=social)](https://github.com/osllmai/indoxRag)

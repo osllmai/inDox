@@ -19,16 +19,19 @@ pip install neo4j
 You will also need a running Memgraph instance. Refer to the official Memgraph installation guide for instructions on setting up a Memgraph instance locally or in the cloud.
 
 # Example Usage
+
 ## Initialize the MemgraphDB
+
 You can initialize the `MemgraphDB` class by passing the Memgraph connection details.
 
 ```python
-from indox.graph import MemgraphDB
+from indoxRag.graph import MemgraphDB
 
 memgraph_db = MemgraphDB(uri="bolt://localhost:7687", username="username", password="password")
 ```
 
 ## Add Graph Documents to Memgraph
+
 To add graph documents (which contain nodes and relationships) to the Memgraph database, you can use the `add_graph_documents` method. This method allows you to store a list of graph documents with options to include source metadata and entity labels.
 
 ```python
@@ -41,6 +44,7 @@ memgraph_db.add_graph_documents(graph_documents, base_entity_label=True, include
 - **include_source** (bool, optional): If True, includes the source document as part of the graph. Defaults to True.
 
 ## Query Relationships by Entity
+
 To query relationships in Memgraph, you can use the `search_relationships_by_entity` method. This method allows you to search for relationships by specifying the entity ID and the relationship type.
 
 ```python
@@ -56,6 +60,7 @@ for rel in relationships:
 - **relationship_type** (str): The type of relationship to search for (e.g., "PARENT").
 
 ## Close the Connection
+
 After performing your operations, always remember to close the Memgraph connection:
 
 ```python
@@ -67,7 +72,7 @@ memgraph_db.close()
 Here's an example of how to use `MemgraphDB` to store and query relationships in Memgraph:
 
 ```python
-from indox.graph import MemgraphDB
+from indoxRag.graph import MemgraphDB
 
 # Initialize MemgraphDB
 memgraph_db = MemgraphDB(uri="bolt://localhost:7687", username="username", password="password")

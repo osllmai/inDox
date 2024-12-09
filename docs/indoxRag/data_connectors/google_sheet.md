@@ -1,4 +1,3 @@
-
 ---
 
 # GoogleSheet 
@@ -27,7 +26,7 @@ pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-pyt
 2. **Initialize the `GoogleSheet` Class**
 
    ```python
-   from google_sheet import GoogleSheet
+   from indoxRag.data_connectors import GoogleSheet
 
    # Initialize GoogleSheet object
    sheet = GoogleSheet(creds_file='tokenGoogleSheet.json', credentials_json='credentials.json')
@@ -77,7 +76,7 @@ Reads data from a Google Sheet by its spreadsheet ID and range.
 ## Example Usage
 
 ```python
-from google_sheet import GoogleSheet
+from indoxRag.data_connectors import GoogleSheet
 
 # Initialize GoogleSheet object
 sheet = GoogleSheet(credentials_json='credentials.json')
@@ -94,4 +93,3 @@ sheet.read(spreadsheet_id, 'Sheet1!A1:Z')
 - The `read` method prints the content of the specified range to the console. Adjust the range as needed for your specific use case.
 
 ---
-

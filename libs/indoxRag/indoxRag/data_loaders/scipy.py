@@ -1,4 +1,4 @@
-from indox.core.document_object import Document
+from indoxRag.core.document_object import Document
 from typing import List
 
 
@@ -26,21 +26,19 @@ class Scipy:
 
     def load(self) -> List[Document]:
         from scipy.io import loadmat
+
         try:
             mat_data = loadmat(self.file_path)
 
             # Remove MATLAB-specific metadata
-            mat_data.pop('__header__', None)
-            mat_data.pop('__version__', None)
-            mat_data.pop('__globals__', None)
+            mat_data.pop("__header__", None)
+            mat_data.pop("__version__", None)
+            mat_data.pop("__globals__", None)
 
             documents = []
 
             for i, (var_name, var_data) in enumerate(mat_data.items()):
-                metadata_dict = {
-                    'source': self.file_path,
-                    'page': i
-                }
+                metadata_dict = {"source": self.file_path, "page": i}
                 document = Document(page_content=str(var_data), metadata=metadata_dict)
                 documents.append(document)
 
@@ -51,4 +49,7 @@ class Scipy:
 
     def load_and_split(self, splitter, remove_stopwords=False):
         from indox.data_loader.utils import load_and_process_input
-        return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)
+
+        return load_and_process_input(
+            loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords
+        )

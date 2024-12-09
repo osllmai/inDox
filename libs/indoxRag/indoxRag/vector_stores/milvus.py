@@ -1,27 +1,27 @@
 import json
 from typing import Any, Dict, List, Optional, Tuple, Union, Callable, Literal, Iterable
 import uuid
-from indox.core import Embeddings, VectorStore, Document
+from indoxRag.core import Embeddings, VectorStore, Document
 from loguru import logger
 import sys
 
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
-
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 
 class Milvus:
     """
     A wrapper class for interacting with the Milvus vector database.
     """
+
     def __init__(self, collection_name, embedding_model):
         """
         Initialize the MilvusWrapper with collection name, embedding model, and QA model.
@@ -35,8 +35,7 @@ class Milvus:
         self.collection_name = collection_name
         self.embedding_model = embedding_model
         self.embedding_dim = None
-        self.milvus_client = MilvusClient(host='127.0.0.1', port='19530')
-
+        self.milvus_client = MilvusClient(host="127.0.0.1", port="19530")
 
     def _embed_query(self, query: str) -> List[float]:
         """
@@ -50,7 +49,9 @@ class Milvus:
         """
         return self.embedding_model.embed_query(query)
 
-    def _similarity_search_with_score(self, query: str, k: int = 3) -> List[Tuple[Document, float]]:
+    def _similarity_search_with_score(
+        self, query: str, k: int = 3
+    ) -> List[Tuple[Document, float]]:
         """
         Return docs most similar to the query.
 
@@ -76,6 +77,7 @@ class Milvus:
             for res in search_res[0]
         ]
         return documents_with_scores
+
     def _similarity_search(
         self,
         query: str,
@@ -103,9 +105,7 @@ class Milvus:
         if self.col is None:
             logger.debug("No existing collection to search.")
             return []
-        res = self._similarity_search_with_score(
-            query=query, k=k
-        )
+        res = self._similarity_search_with_score(query=query, k=k)
         return [doc for doc, _ in res]
 
     def _process_question(self, question: str):
@@ -115,15 +115,27 @@ class Milvus:
         Args:
             question (str): The question to process.
         """
-        retrieved_lines_with_distances = self._similarity_search_with_score(question, k=5)
+        retrieved_lines_with_distances = self._similarity_search_with_score(
+            question, k=5
+        )
         # Convert Document objects to dictionaries
-        context = "\n".join([self._to_dict(doc)['page_content'] for doc, _ in retrieved_lines_with_distances])
+        context = "\n".join(
+            [
+                self._to_dict(doc)["page_content"]
+                for doc, _ in retrieved_lines_with_distances
+            ]
+        )
         # answer = self.generate_answer(context, question)
         # print(f"Answer: {answer}")
-        print(json.dumps(
-            [{"document": self._to_dict(doc), "score": score} for doc, score in retrieved_lines_with_distances],
-            indent=4
-        ))
+        print(
+            json.dumps(
+                [
+                    {"document": self._to_dict(doc), "score": score}
+                    for doc, score in retrieved_lines_with_distances
+                ],
+                indent=4,
+            )
+        )
 
     # def store_in_vectorstore(self, docs: List[Document]):
     #     """
@@ -173,16 +185,18 @@ class Milvus:
         """
         from tqdm import tqdm
 
-        data = [{"id": i, "vector": self.emb_text(line), "text": line} for i, line in
-                enumerate(tqdm(text_lines, desc="Creating embeddings"))]
+        data = [
+            {"id": i, "vector": self.emb_text(line), "text": line}
+            for i, line in enumerate(tqdm(text_lines, desc="Creating embeddings"))
+        ]
         self.milvus_client.insert(collection_name=self.collection_name, data=data)
 
     def _add(
-            self,
-            texts: Iterable[str],
-            embeddings: Iterable[List[float]],
-            metadatas: Optional[Iterable[dict]] = None,
-            ids: Optional[List[str]] = None,
+        self,
+        texts: Iterable[str],
+        embeddings: Iterable[List[float]],
+        metadatas: Optional[Iterable[dict]] = None,
+        ids: Optional[List[str]] = None,
     ) -> List[str]:
         """
         Add documents with embeddings to the vector store.
@@ -227,11 +241,11 @@ class Milvus:
             raise RuntimeError(f"Can't add document to the vector store: {e}")
 
     def _add_texts(
-            self,
-            texts: Iterable[str],
-            metadatas: Optional[List[dict]] = None,
-            ids: Optional[List[str]] = None,
-            **kwargs: Any,
+        self,
+        texts: Iterable[str],
+        metadatas: Optional[List[dict]] = None,
+        ids: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> List[str]:
         """
         Add texts with embeddings to the vector store.
@@ -249,11 +263,11 @@ class Milvus:
         return self._add(texts, embeddings, metadatas=metadatas, ids=ids)
 
     def add_embeddings(
-            self,
-            text_embeddings: Iterable[Tuple[str, List[float]]],
-            metadatas: Optional[List[dict]] = None,
-            ids: Optional[List[str]] = None,
-            **kwargs: Any,
+        self,
+        text_embeddings: Iterable[Tuple[str, List[float]]],
+        metadatas: Optional[List[dict]] = None,
+        ids: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> List[str]:
         """
         Add embeddings with corresponding texts to the vector store.
@@ -292,7 +306,4 @@ class Milvus:
         Returns:
             dict: Dictionary containing the page content and metadata.
         """
-        return {
-            "page_content": document.page_content,
-            "metadata": document.metadata
-        }
+        return {"page_content": document.page_content, "metadata": document.metadata}

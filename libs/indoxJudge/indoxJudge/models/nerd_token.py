@@ -102,10 +102,10 @@ class NerdTokenApi:
                     f"Error from Indox API: {response.status_code}, {response.text}"
                 )
                 logger.error(error_message)
-                raise Exception(error_message)  # This will trigger a retry
+                raise Exception(error_message)
         except requests.exceptions.RequestException as e:
             logger.error(f"Request error: {e}")
-            raise  # This will trigger a retry
+            raise
 
     def generate_evaluation_response(self, prompt: str) -> str:
         """

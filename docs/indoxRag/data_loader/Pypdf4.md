@@ -1,4 +1,3 @@
-
 ---
 
 # PyPdf4 PDF Loader
@@ -12,7 +11,7 @@ The `PyPdf4` function uses the `PyPDF4` library to read and extract text from a 
 Ensure you have the necessary libraries installed:
 
 ```bash
-pip install PyPDF4 indox
+pip install PyPDF4 indoxRag
 ```
 
 ## Quick Start
@@ -20,7 +19,7 @@ pip install PyPDF4 indox
 1. **Import the `PyPdf4` Function**
 
    ```python
-   from your_module import PyPdf4
+   from indoxRag.data_loaders import PyPdf4
    ```
 
 2. **Load and Extract Content from a PDF File**
@@ -67,7 +66,7 @@ pip install PyPDF4 indox
 ### Example Usage
 
 ```python
-from your_module import PyPdf4
+from indoxRag.data_loaders import PyPdf4
 
 # Load and extract content from the PDF file
 file_path = 'document.pdf'
@@ -85,4 +84,3 @@ for document in documents:
 - The `PyPdf4` function handles the extraction of text from each page of the PDF and collects metadata related to the page and source file.
 
 ---
-

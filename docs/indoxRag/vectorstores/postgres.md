@@ -1,14 +1,17 @@
 # Postgres Using PgVector
 
 First you should install pgvector and set the database address.
+
 ```python
 pip install pgvector
 pip install psycopg2
 ```
+
 To use pgvector as the vector store, users need to install pgvector and
 set the database address.
 
 ### Hyperparameters
+
 - host (str): The host of the PostgreSQL database.
 - port (int): The port of the PostgreSQL database.
 - dbname (str): The name of the database.
@@ -22,8 +25,8 @@ set the database address.
 For instructions on installing pgvector, refer to the pgvector
 installation guide.
 
-``` python
-from indox.vector_stores import PGVectorStore
+```python
+from indoxRag.vector_stores import PGVectorStore
 db = PGVectorStore(host="host",port=port,dbname="dbname",user="username",password="password",collection_name="sample",embedding=embed)
 ```
 
@@ -31,13 +34,12 @@ db = PGVectorStore(host="host",port=port,dbname="dbname",user="username",passwor
 
 Store documents in the vector store:
 
-``` python
+```python
 db.add(docs=docs)
 ```
 
-``` python
+```python
 query = "How cinderella reach her happy ending?"
-retriever = indox.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5, document_relevancy_filter=True)
+retriever = indoxRag.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5, document_relevancy_filter=True)
 answer = retriever.invoke(query=query)
 ```
-

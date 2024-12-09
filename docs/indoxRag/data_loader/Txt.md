@@ -1,4 +1,3 @@
-
 ---
 
 # Text File Loader
@@ -12,7 +11,7 @@ The `Txt` function reads a text file, extracts its content, and stores it in a `
 Ensure you have the necessary libraries installed:
 
 ```bash
-pip install indox
+pip install indoxRag
 ```
 
 ## Quick Start
@@ -20,7 +19,7 @@ pip install indox
 1. **Import the `Txt` Function**
 
    ```python
-   from your_module import Txt
+   from indoxRag.data_loaders import Txt
    ```
 
 2. **Load and Extract Content from a Text File**
@@ -64,7 +63,7 @@ pip install indox
 ### Example Usage
 
 ```python
-from your_module import Txt
+from indoxRag.data_loaders import Txt
 
 # Load and extract content from the text file
 file_path = 'file.txt'
@@ -81,4 +80,3 @@ for document in documents:
 - Raises `RuntimeError` if there is an issue loading the text file or processing its contents.
 
 ---
-

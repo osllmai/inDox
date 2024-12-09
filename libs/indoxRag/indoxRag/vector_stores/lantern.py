@@ -1,18 +1,18 @@
 import uuid
 import json
 from typing import Optional, List, Dict, Any, Tuple
-from indox.core import Document
+from indoxRag.core import Document
+
 
 class LanternDB:
     DEFAULT_K = 4
 
-
     def __init__(
-            self,
-            collection_name: str,
-            embedding_function: Optional[Any] = None,
-            connection_params: Dict[str, str] = None,
-            dimension: int = 768
+        self,
+        collection_name: str,
+        embedding_function: Optional[Any] = None,
+        connection_params: Dict[str, str] = None,
+        dimension: int = 768,
     ) -> None:
         """
         Initialize the LanternDBClient class, connecting to LanternDB.
@@ -43,14 +43,16 @@ class LanternDB:
         Ensure the collection exists in LanternDB.
         """
         try:
-            self._cursor.execute(f"""
+            self._cursor.execute(
+                f"""
                 CREATE TABLE IF NOT EXISTS {self._collection_name} (
                     id TEXT PRIMARY KEY,
                     {self._text_key} TEXT,
                     {self._vector_key} VECTOR({self._dimension}),
                     metadata JSONB
                 )
-            """)
+            """
+            )
             self._conn.commit()
             print(f"Collection '{self._collection_name}' created successfully.")
         except Exception as e:
@@ -58,10 +60,10 @@ class LanternDB:
             raise RuntimeError(f"Error ensuring collection: {e}")
 
     def add_texts(
-            self,
-            texts: List[str],
-            metadatas: Optional[List[dict]] = None,
-            ids: Optional[List[str]] = None
+        self,
+        texts: List[str],
+        metadatas: Optional[List[dict]] = None,
+        ids: Optional[List[str]] = None,
     ) -> List[str]:
         """
         Add texts and their embeddings to LanternDB.
@@ -77,13 +79,18 @@ class LanternDB:
         try:
             for i, text in enumerate(texts):
                 metadata = metadatas[i] if metadatas else {}
-                self._cursor.execute(f"""
+                self._cursor.execute(
+                    f"""
                     INSERT INTO {self._collection_name} (id, {self._text_key}, {self._vector_key}, metadata)
                     VALUES (%s, %s, %s, %s)
-                """, (ids[i], text, embeddings[i], json.dumps(metadata)))
+                """,
+                    (ids[i], text, embeddings[i], json.dumps(metadata)),
+                )
 
             self._conn.commit()
-            print(f"Inserted {len(texts)} documents into collection '{self._collection_name}'.")
+            print(
+                f"Inserted {len(texts)} documents into collection '{self._collection_name}'."
+            )
         except Exception as e:
             self._conn.rollback()
             print(f"Error inserting documents: {e}")
@@ -91,10 +98,7 @@ class LanternDB:
         return ids
 
     def _similarity_search_with_score(
-            self,
-            query: str,
-            k: int = DEFAULT_K,
-            **kwargs: Any
+        self, query: str, k: int = DEFAULT_K, **kwargs: Any
     ) -> List[Tuple[Document, float]]:
         """
         Perform a similarity search in LanternDB and return documents with their scores.
@@ -112,12 +116,15 @@ class LanternDB:
         query_embedding = self._embedding_function.embed_query(query)
 
         try:
-            self._cursor.execute(f"""
+            self._cursor.execute(
+                f"""
                 SELECT {self._text_key}, metadata, 1 - ({self._vector_key} <-> %s) AS similarity_score
                 FROM {self._collection_name}
                 ORDER BY similarity_score DESC
                 LIMIT %s
-            """, (query_embedding, k))
+            """,
+                (query_embedding, k),
+            )
 
             results = self._cursor.fetchall()
 
@@ -125,12 +132,16 @@ class LanternDB:
                 (
                     Document(
                         page_content=row[self._text_key],
-                        metadata={
-                            **json.loads(row['metadata']),
-                            "Similarity Score": row['similarity_score'],
-                        } if row['metadata'] else {"Similarity Score": row['similarity_score']},
+                        metadata=(
+                            {
+                                **json.loads(row["metadata"]),
+                                "Similarity Score": row["similarity_score"],
+                            }
+                            if row["metadata"]
+                            else {"Similarity Score": row["similarity_score"]}
+                        ),
                     ),
-                    row['similarity_score']
+                    row["similarity_score"],
                 )
                 for row in results
             ]
@@ -142,12 +153,17 @@ class LanternDB:
         """Delete documents from the LanternDB collection."""
         try:
             if ids:
-                self._cursor.execute(f"""
+                self._cursor.execute(
+                    f"""
                     DELETE FROM {self._collection_name}
                     WHERE id = ANY(%s)
-                """, (ids,))
+                """,
+                    (ids,),
+                )
                 self._conn.commit()
-                print(f"Deleted {len(ids)} documents from collection '{self._collection_name}'.")
+                print(
+                    f"Deleted {len(ids)} documents from collection '{self._collection_name}'."
+                )
             else:
                 self._cursor.execute(f"DROP TABLE IF EXISTS {self._collection_name}")
                 self._conn.commit()
@@ -168,7 +184,7 @@ class LanternDB:
 
     def __del__(self):
         """Close the database connection when the object is destroyed."""
-        if hasattr(self, '_cursor'):
+        if hasattr(self, "_cursor"):
             self._cursor.close()
-        if hasattr(self, '_conn'):
+        if hasattr(self, "_conn"):
             self._conn.close()

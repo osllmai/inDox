@@ -1,4 +1,3 @@
-
 ---
 
 # SQL File Loader
@@ -12,7 +11,7 @@ The `Sql` function reads an SQL file, extracts its text content, and stores it i
 Ensure you have the necessary libraries installed:
 
 ```bash
-pip install indox
+pip install indoxRag
 ```
 
 ## Quick Start
@@ -20,7 +19,7 @@ pip install indox
 1. **Import the `Sql` Function**
 
    ```python
-   from your_module import Sql
+   from indoxRag.data_loaders import Sql
    ```
 
 2. **Load and Extract Content from an SQL File**
@@ -64,7 +63,7 @@ pip install indox
 ### Example Usage
 
 ```python
-from your_module import Sql
+from indoxRag.data_loaders import Sql
 
 # Load and extract content from the SQL file
 file_path = 'file.sql'
@@ -81,4 +80,3 @@ for document in documents:
 - Raises `RuntimeError` if there is an issue loading the SQL file or processing its contents.
 
 ---
-

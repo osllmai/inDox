@@ -7,50 +7,68 @@ SemanticTextSplitter is a Python class designed for splitting text into semantic
 To use SemanticTextSplitter:
 
 ```python
-from indox.splitter import SemanticTextSplitter
+from indoxRag.splitter import SemanticTextSplitter
 
 splitter = SemanticTextSplitter(chunk_size=400, model_name="bert-base-uncased")
 ```
+
 ## Hyperparameters
 
 - **chunk_size** [int]: The maximum number of tokens allowed in each chunk (default: 400).
 - **model_name** [str]: The name of the pre-trained model to use for the tokenizer (default: "bert-base-uncased").
 
 ## Usage
+
 ### Setting Up the Python Environment
+
 ### Windows
 
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2**Activate the virtual environment:**
+
 ```bash
-indox\Scripts\activate
+indoxRag\Scripts\activate
 ```
+
 ### macOS/Linux
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-source indox/bin/activate
+source indoxRag/bin/activate
 ```
+
 ### Install Required Libraries
+
 ```bash
 pip install semantic-text-splitter tokenizers
 ```
+
 ### Import the SemanticTextSplitter
+
 ```python
-from indox.splitter import SemanticTextSplitter
+from indoxRag.splitter import SemanticTextSplitter
 ```
 
 ### Initialize SemanticTextSplitter
+
 ```python
 splitter = SemanticTextSplitter(chunk_size=400, model_name="bert-base-uncased")
 ```
+
 ### Split And Processing Chunks
+
 ```python
 text = """
 This is a long piece of text that needs to be split into smaller chunks.

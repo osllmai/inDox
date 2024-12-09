@@ -8,6 +8,7 @@ pip install chromadb
 ```
 
 ### Hyperparameters
+
 - collection_name (str): The name of the collection in the database.
 - embedding (Embedding): The embedding to be used.
 
@@ -16,8 +17,8 @@ pip install chromadb
 For instructions on installing chroma, refer to the chroma
 installation guide.
 
-``` python
-from indox.vector_stores import ChromaVectorStore
+```python
+from indoxRag.vector_stores import ChromaVectorStore
 db = ChromaVectorStore(collection_name="name",embedding=embed)
 ```
 
@@ -25,13 +26,12 @@ db = ChromaVectorStore(collection_name="name",embedding=embed)
 
 Store documents in the vector store:
 
-``` python
+```python
 db.add(docs=docs)
 ```
 
-``` python
+```python
 query = "How cinderella reach her happy ending?"
-retriever = indox.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5, document_relevancy_filter=True)
+retriever = indoxRag.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5, document_relevancy_filter=True)
 answer = retriever.invoke(query=query)
 ```
-

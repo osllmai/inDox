@@ -1,5 +1,5 @@
 from typing import Optional, Dict, Any, List, Tuple, Iterable, Union
-from indox.core import Embeddings, Document
+from indoxRag.core import Embeddings, Document
 import uuid
 import os
 
@@ -28,7 +28,9 @@ class PineconeVectorStore:
         ValueError: If the embedding function is not provided or if the Pinecone API key is missing.
     """
 
-    def _flatten_metadata(self, metadata: Dict[str, Any]) -> Dict[str, Union[str, int, float, bool, List[str]]]:
+    def _flatten_metadata(
+        self, metadata: Dict[str, Any]
+    ) -> Dict[str, Union[str, int, float, bool, List[str]]]:
         """
         Flatten metadata to ensure it only contains types supported by Pinecone.
 
@@ -41,18 +43,20 @@ class PineconeVectorStore:
         flattened = {}
         for key, value in metadata.items():
             if isinstance(value, (str, int, float, bool)) or (
-                    isinstance(value, list) and all(isinstance(i, str) for i in value)):
+                isinstance(value, list) and all(isinstance(i, str) for i in value)
+            ):
                 flattened[key] = value
             else:
                 flattened[key] = str(value)
         return flattened
+
     def __init__(
-            self,
-            index_name: str,
-            embedding_function: Optional[Embeddings] = None,
-            text_key: str = "content",
-            namespace: Optional[str] = None,
-            pinecone_api_key: Optional[str] = None,
+        self,
+        index_name: str,
+        embedding_function: Optional[Embeddings] = None,
+        text_key: str = "content",
+        namespace: Optional[str] = None,
+        pinecone_api_key: Optional[str] = None,
     ) -> None:
         try:
             from pinecone import Pinecone as PineconeClient
@@ -77,6 +81,7 @@ class PineconeVectorStore:
 
         self._client = PineconeClient(api_key=pinecone_api_key)
         self._index = self._client.Index(index_name)
+
     @classmethod
     def create_index(
         cls,
@@ -85,7 +90,7 @@ class PineconeVectorStore:
         metric: str = "cosine",
         cloud: str = "aws",
         region: str = "us-east-1",
-        pinecone_api_key: Optional[str] = None
+        pinecone_api_key: Optional[str] = None,
     ) -> None:
         """
         Creates a new serverless Pinecone index.
@@ -122,21 +127,18 @@ class PineconeVectorStore:
                 name=index_name,
                 dimension=dimension,
                 metric=metric,
-                spec=ServerlessSpec(
-                    cloud=cloud,
-                    region=region
-                )
+                spec=ServerlessSpec(cloud=cloud, region=region),
             )
             print(f"Serverless index '{index_name}' created successfully.")
         except Exception as e:
             raise Exception(f"Error creating serverless index: {str(e)}")
 
     def _add_texts(
-            self,
-            texts: Iterable[str],
-            metadatas: Optional[List[dict]] = None,
-            ids: Optional[List[str]] = None,
-            **kwargs: Any,
+        self,
+        texts: Iterable[str],
+        metadatas: Optional[List[dict]] = None,
+        ids: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> List[str]:
         """
         Add texts to the vector store.
@@ -169,7 +171,7 @@ class PineconeVectorStore:
         for i, (id, text, embedding) in enumerate(zip(ids, texts, embeddings)):
             metadata = self._flatten_metadata(metadatas[i] if metadatas else {})
             metadata[self._text_key] = text
-            metadata['id'] = id
+            metadata["id"] = id
             to_upsert.append((id, embedding, metadata))
 
         try:
@@ -203,7 +205,9 @@ class PineconeVectorStore:
                 texts.append(doc)
                 metadatas.append({})
             else:
-                raise ValueError(f"Invalid document type: {type(doc)}. Expected str or Document.")
+                raise ValueError(
+                    f"Invalid document type: {type(doc)}. Expected str or Document."
+                )
 
         try:
             return self._add_texts(texts=texts, metadatas=metadatas)
@@ -211,11 +215,11 @@ class PineconeVectorStore:
             raise RuntimeError(f"Can't add document to the vector store: {e}")
 
     def similarity_search(
-            self,
-            query: str,
-            k: int = DEFAULT_K,
-            filter: Optional[Dict[str, Any]] = None,
-            **kwargs: Any,
+        self,
+        query: str,
+        k: int = DEFAULT_K,
+        filter: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
     ) -> List[Document]:
         """
         Perform a similarity search.
@@ -229,15 +233,17 @@ class PineconeVectorStore:
         Returns:
             List[Document]: List of similar documents.
         """
-        docs_and_scores = self._similarity_search_with_score(query, k=k, filter=filter, **kwargs)
+        docs_and_scores = self._similarity_search_with_score(
+            query, k=k, filter=filter, **kwargs
+        )
         return [doc for doc, _ in docs_and_scores]
 
     def _similarity_search_with_score(
-            self,
-            query: str,
-            k: int = DEFAULT_K,
-            filter: Optional[Dict[str, Any]] = None,
-            **kwargs: Any,
+        self,
+        query: str,
+        k: int = DEFAULT_K,
+        filter: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
     ) -> List[Tuple[Document, float]]:
         """
         Perform a similarity search and return documents with scores.
@@ -275,11 +281,11 @@ class PineconeVectorStore:
             raise RuntimeError(f"Error querying Pinecone: {str(e)}")
 
         docs_and_scores = []
-        for match in results['matches']:
-            metadata = match['metadata']
+        for match in results["matches"]:
+            metadata = match["metadata"]
             text = metadata.pop(self._text_key)
             doc = Document(page_content=text, **metadata)
-            docs_and_scores.append((doc, match['score']))
+            docs_and_scores.append((doc, match["score"]))
 
         return docs_and_scores
 
@@ -311,4 +317,4 @@ class PineconeVectorStore:
             int: Total number of vectors in the index.
         """
         stats = self._index.describe_index_stats()
-        return stats['total_vector_count']
+        return stats["total_vector_count"]

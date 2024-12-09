@@ -1,4 +1,4 @@
-from indox.core import Document
+from indoxRag.core import Document
 from loguru import logger
 import sys
 import numpy as np
@@ -7,12 +7,12 @@ import json
 import uuid
 
 logger.remove()
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 
 class RedisDB:
@@ -25,7 +25,14 @@ class RedisDB:
         prefix (str): The prefix for Redis keys.
     """
 
-    def __init__(self, host: str, port: int, password: str, embedding: callable, prefix: str = "doc"):
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        password: str,
+        embedding: callable,
+        prefix: str = "doc",
+    ):
         """
         Initializes the RedisVector.
 
@@ -38,15 +45,13 @@ class RedisDB:
         """
         import redis
 
-        self.redis_client = redis.Redis(
-            host=host,
-            port=port,
-            password=password
-        )
+        self.redis_client = redis.Redis(host=host, port=port, password=password)
         self.embedding = embedding
         self.prefix = prefix
 
-    def add(self, texts: List[str], metadatas: Union[List[dict], None] = None) -> List[str]:
+    def add(
+        self, texts: List[str], metadatas: Union[List[dict], None] = None
+    ) -> List[str]:
         """
         Adds texts to the Redis vector store.
 
@@ -67,11 +72,14 @@ class RedisDB:
                 metadata = json.dumps(metadatas[i] if metadatas else {})
 
                 # Store the text and its embedding
-                pipe.hset(key, mapping={
-                    "content": text,
-                    "embedding": json.dumps(embedding),
-                    "metadata": metadata
-                })
+                pipe.hset(
+                    key,
+                    mapping={
+                        "content": text,
+                        "embedding": json.dumps(embedding),
+                        "metadata": metadata,
+                    },
+                )
 
                 pipe.sadd(f"{self.prefix}:keys", key)
 
@@ -82,7 +90,9 @@ class RedisDB:
             logger.error(f"Failed to add texts: {e}")
             raise RuntimeError(f"Can't add texts to the vector store: {e}")
 
-    def _similarity_search_with_score(self, query: str, k: int = 5) -> List[Tuple[Document, float]]:
+    def _similarity_search_with_score(
+        self, query: str, k: int = 5
+    ) -> List[Tuple[Document, float]]:
         """
         Retrieves documents similar to the given query from the Redis vector store.
 
@@ -109,13 +119,23 @@ class RedisDB:
 
                 # Calculate cosine similarity
                 similarity = np.dot(query_embedding, doc_embedding) / (
-                            np.linalg.norm(query_embedding) * np.linalg.norm(doc_embedding))
+                    np.linalg.norm(query_embedding) * np.linalg.norm(doc_embedding)
+                )
 
-                metadata = json.loads(doc_data[b"metadata"].decode()) if b"metadata" in doc_data else {}
-                results.append((
-                    Document(page_content=doc_data[b"content"].decode(), metadata=metadata),
-                    similarity
-                ))
+                metadata = (
+                    json.loads(doc_data[b"metadata"].decode())
+                    if b"metadata" in doc_data
+                    else {}
+                )
+                results.append(
+                    (
+                        Document(
+                            page_content=doc_data[b"content"].decode(),
+                            metadata=metadata,
+                        ),
+                        similarity,
+                    )
+                )
 
             # Sort results by similarity score (descending) and return top k
             return sorted(results, key=lambda x: x[1], reverse=True)[:k]

@@ -1,4 +1,4 @@
-from indox.splitter import RecursiveCharacterTextSplitter
+from indoxRag.splitter import RecursiveCharacterTextSplitter
 from typing import List, Any
 
 
@@ -26,9 +26,19 @@ class MarkdownTextSplitter(RecursiveCharacterTextSplitter):
         parent class initializer.
         """
         separators = [
-            "\n## ", "\n### ", "\n#### ", "\n##### ", "\n###### ",
-            "\n```\n", "\n\n***\n\n", "\n\n---\n\n", "\n\n___\n\n",
-            "\n\n", "\n", " ", ""
+            "\n## ",
+            "\n### ",
+            "\n#### ",
+            "\n##### ",
+            "\n###### ",
+            "\n```\n",
+            "\n\n***\n\n",
+            "\n\n---\n\n",
+            "\n\n___\n\n",
+            "\n\n",
+            "\n",
+            " ",
+            "",
         ]
         super().__init__(separators=separators, **kwargs)
 
@@ -61,12 +71,12 @@ class MarkdownTextSplitter(RecursiveCharacterTextSplitter):
         Returns:
             str: The preprocessed Markdown text with standardized heading formats.
         """
-        lines = text.split('\n')
+        lines = text.split("\n")
         for i in range(len(lines) - 1):
-            if set(lines[i + 1]) == {'='}:
-                lines[i] = '# ' + lines[i]
-                lines[i + 1] = ''
-            elif set(lines[i + 1]) == {'-'}:
-                lines[i] = '## ' + lines[i]
-                lines[i + 1] = ''
-        return '\n'.join(lines)
+            if set(lines[i + 1]) == {"="}:
+                lines[i] = "# " + lines[i]
+                lines[i + 1] = ""
+            elif set(lines[i + 1]) == {"-"}:
+                lines[i] = "## " + lines[i]
+                lines[i + 1] = ""
+        return "\n".join(lines)

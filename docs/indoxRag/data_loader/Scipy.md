@@ -1,4 +1,3 @@
-
 ---
 
 # Scipy File Loader
@@ -12,7 +11,7 @@ The `Scipy` function reads a MATLAB `.mat` file, extracts its data, and stores i
 Ensure you have the necessary libraries installed:
 
 ```bash
-pip install scipy indox
+pip install scipy indoxRag
 ```
 
 ## Quick Start
@@ -20,7 +19,7 @@ pip install scipy indox
 1. **Import the `Scipy` Function**
 
    ```python
-   from your_module import Scipy
+   from indoxRag.data_loaders import Scipy
    ```
 
 2. **Load and Extract Content from a `.mat` File**
@@ -67,7 +66,7 @@ pip install scipy indox
 ### Example Usage
 
 ```python
-from your_module import Scipy
+from indoxRag.data_loaders import Scipy
 
 # Load and extract content from the .mat file
 file_path = 'document.mat'
@@ -84,4 +83,3 @@ for document in documents:
 - Raises `RuntimeError` if there is an issue loading the `.mat` file or processing its contents.
 
 ---
-

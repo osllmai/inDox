@@ -7,7 +7,7 @@ GutenbergReader is a data connector for fetching and searching books from Projec
 To use GutenbergReader:
 
 ```python
-from indox.data_connectors import GutenbergReader
+from indoxRag.data_connectors import GutenbergReader
 
 reader = GutenbergReader()
 
@@ -17,10 +17,13 @@ book = reader.get_book("11")
 # Search for books
 search_results = reader.search_gutenberg("Alice in Wonderland")
 ```
+
 # Class Attributes
 
-- **BASE_URL** [str]:  The base URL for Project Gutenberg files.
-## Methods 
+- **BASE_URL** [str]: The base URL for Project Gutenberg files.
+
+## Methods
+
 **init()**
 Initializes the `GutenbergReader` and creates a requests session.
 
@@ -29,10 +32,12 @@ Initializes the `GutenbergReader` and creates a requests session.
 Fetches a book from Project Gutenberg by its ID.
 
 **Parameters:**
+
 - **book_id** [str]: The ID of the book on Project Gutenberg.
 
 **Returns:**
-  - **Optional[Document]**: A Document instance containing the book's title, text content, and metadata, or None if the fetch fails.
+
+- **Optional[Document]**: A Document instance containing the book's title, text content, and metadata, or None if the fetch fails.
 
 **search_gutenberg(query: str) -> List[Document]**
 Searches for books on Project Gutenberg based on a query string.
@@ -45,35 +50,50 @@ Searches for books on Project Gutenberg based on a query string.
 - **List[Document]**: List of Document instances containing book info (id, title, author) for search results.
 
 ## Private Methods
-**_extract_title(content: str) -> str**
+
+**\_extract_title(content: str) -> str**
 Extracts the title of the book from its content.
-**_extract_text(content: str) -> str**
+**\_extract_text(content: str) -> str**
 Extracts the main text content of the book.
+
 ## Usage
+
 ### Setting Up the Python Environment
+
 **Windows**
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-indox\Scripts\activate
+indoxRag\Scripts\activate
 ```
+
 ### macOS/Linux
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-source indox/bin/activate
+source indoxRag/bin/activate
 ```
+
 ## Get started
+
 ### Import Essential Libraries
 
 ```python
-from indox.data_connectors import GutenbergReader
+from indoxRag.data_connectors import GutenbergReader
 
 # Initialize the reader
 reader = GutenbergReader()
@@ -97,4 +117,5 @@ for result in search_results[:5]:  # Print first 5 results
     print(f"Author: {result.metadata['author']}")
     print("---")
 ```
+
 This example demonstrates how to use GutenbergReader to fetch a specific book and search for books on Project Gutenberg.

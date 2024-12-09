@@ -1,4 +1,3 @@
-
 ---
 
 # OpenPyXl Excel File Loader
@@ -12,7 +11,7 @@ The `OpenPyXl` function loads an Excel file and extracts its data from each shee
 Ensure you have the necessary libraries installed:
 
 ```bash
-pip install pandas openpyxl indox
+pip install pandas openpyxl indoxRag
 ```
 
 ## Quick Start
@@ -20,7 +19,7 @@ pip install pandas openpyxl indox
 1. **Import the `OpenPyXl` Function**
 
    ```python
-   from your_module import OpenPyXl
+   from indoxRag.data_loaders import OpenPyXl
    ```
 
 2. **Load and Extract Content from an Excel File**
@@ -68,7 +67,7 @@ pip install pandas openpyxl indox
 ### Example Usage
 
 ```python
-from your_module import OpenPyXl
+from indoxRag.data_loaders import OpenPyXl
 
 # Load and extract content from the Excel file
 file_path = 'data.xlsx'
@@ -86,4 +85,3 @@ for document in documents:
 - The metadata `page` is set to `1` for all documents, and you might want to modify this if different handling for pages is needed.
 
 ---
-

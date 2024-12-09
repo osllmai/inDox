@@ -7,15 +7,15 @@ WikipediaReader is a data connector for loading content from Wikipedia pages. It
 To use WikipediaReader:
 
 ```python
-from indox.data_connectors import WikipediaReader
+from indoxRag.data_connectors import WikipediaReader
 
 reader = WikipediaReader()
 documents = reader.load_data(pages=["Python (programming language)", "Artificial intelligence"])
 ```
 
-## Methods 
+## Methods
 
-**__init__()**
+****init**()**
 
 Initializes the WikipediaReader and checks if the `wikipedia` package is installed.
 
@@ -28,38 +28,52 @@ Returns the name of the class as a string.
 Loads data from the specified Wikipedia pages.
 
 **Parameters:**
+
 - **pages** [List[str]]: List of Wikipedia page titles to retrieve.
 - **load_kwargs** [Any]: Additional keyword arguments passed to `wikipedia.page()`.
 
 **Returns:**
+
 - **List[Document]**: List of Document objects containing page content and metadata.
 
 ## Usage
+
 ### Setting Up the Python Environment
+
 **Windows**
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-indox\Scripts\activate
+indoxRag\Scripts\activate
 ```
+
 ### macOS/Linux
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-source indox/bin/activate
+source indoxRag/bin/activate
 ```
 
 ## Get Started
+
 ### Import Essential Libraries and Use WikipediaReader
 
 ```python
-from indox.data_connectors import WikipediaReader
+from indoxRag.data_connectors import WikipediaReader
 
 # Initialize the reader
 reader = WikipediaReader()
@@ -76,4 +90,5 @@ for doc in documents:
     print(f"Content preview: {doc.content[:200]}...")
     print("---")
 ```
-This example demonstrates how to use WikipediaReader to retrieve content from specific Wikipedia pages and access their content and metadata.   
+
+This example demonstrates how to use WikipediaReader to retrieve content from specific Wikipedia pages and access their content and metadata.

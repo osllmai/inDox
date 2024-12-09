@@ -1,4 +1,4 @@
-from indox.core.document_object import Document
+from indoxRag.core.document_object import Document
 from typing import List
 import os
 
@@ -29,7 +29,7 @@ class Rtf:
         import pyth.plugins.plaintext.writer as plaintext_writer
 
         try:
-            with open(self.file_path, 'rb') as f:
+            with open(self.file_path, "rb") as f:
                 doc = rtf_reader.read(f)
                 text = plaintext_writer.write(doc).getvalue()
 
@@ -45,4 +45,7 @@ class Rtf:
 
     def load_and_split(self, splitter, remove_stopwords=False):
         from indox.data_loader.utils import load_and_process_input
-        return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)
+
+        return load_and_process_input(
+            loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords
+        )

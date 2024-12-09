@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import os
 from typing import TYPE_CHECKING, List, Optional
-from indox.core import Embeddings
-from indox.embeddings.utils import get_from_env
+from indoxRag.core import Embeddings
+from indoxRag.embeddings.utils import get_from_env
 
 
 class ElasticsearchEmbeddings(Embeddings):
@@ -17,6 +17,7 @@ class ElasticsearchEmbeddings(Embeddings):
     - https://www.elastic.co/guide/en/elasticsearch/reference/current/infer-trained-model.html
     - https://www.elastic.co/guide/en/machine-learning/current/ml-nlp-deploy-models.html
     """
+
     if TYPE_CHECKING:
         from elasticsearch import Elasticsearch
         from elasticsearch.client import MlClient

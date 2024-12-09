@@ -15,19 +15,24 @@ To use Neo4j with this package, you first need to install the `Neo4j` driver. Yo
 ```python
 pip install neo4j
 ```
+
 You will also need a running Neo4j instance. Refer to the official Neo4j installation guide for instructions on setting up a Neo4j instance locally or in the cloud.
 
 # Example Usage
+
 ## Initialize the Neo4jGraph
+
 You can initialize the Neo4jGraph class by passing the Neo4j connection details.
 
 ```python
-from indox.vector_stores import Neo4jGraph
+from indoxRag.vector_stores import Neo4jGraph
 
 # Initialize the Neo4jGraph with connection details
 neo4j_graph = Neo4jGraph(uri="bolt://localhost:7687", username="neo4j", password="your_password")
 ```
+
 ## Add Graph Documents to Neo4j
+
 To add graph documents (which contain nodes and relationships) to the Neo4j database, you can use the `add_graph_documents` method. This method allows you to store a list of graph documents with options to include source metadata and entity labels.
 
 ```python
@@ -55,6 +60,7 @@ for rel in relationships:
 - **relationship_type** (str): The type of relationship to search for (e.g., "PARENT").
 
 ## Close the Connection
+
 After performing your operations, always remember to close the Neo4j connection:
 
 ```python
@@ -92,8 +98,8 @@ neo4j_graph.close()
 
 **Q : What do I need to use `Neo4jGraph`?**
 
-*  You need a running Neo4j database and the Neo4j Python driver installed.
+- You need a running Neo4j database and the Neo4j Python driver installed.
 
 **Q: Can I use this with an existing Neo4j database?**
 
-* Yes, you can connect to any Neo4j instance by providing the correct URI, username, and password.
+- Yes, you can connect to any Neo4j instance by providing the correct URI, username, and password.

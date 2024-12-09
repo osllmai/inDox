@@ -4,19 +4,19 @@ from typing import List
 from loguru import logger
 import sys
 
-from indox.core import Document
-from indox.data_loaders.utils import convert_latex_to_md
-from indox.vector_stores.utils import filter_complex_metadata
+from indoxRag.core import Document
+from indoxRag.data_loaders.utils import convert_latex_to_md
+from indoxRag.vector_stores.utils import filter_complex_metadata
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 
 def import_unstructured_partition(content_type):
@@ -33,6 +33,7 @@ def create_documents_unstructured(file_path):
         if file_path.lower().endswith(".pdf"):
             # Partition PDF with a high-resolution strategy
             from unstructured.partition.pdf import partition_pdf
+
             elements = partition_pdf(
                 filename=file_path,
                 strategy="hi_res",
@@ -40,7 +41,8 @@ def create_documents_unstructured(file_path):
             )
             # Remove "References" and header elements
             reference_title = [
-                el for el in elements
+                el
+                for el in elements
                 if el.text == "References" and el.category == "Title"
             ][0]
             references_id = reference_title.id
@@ -48,10 +50,14 @@ def create_documents_unstructured(file_path):
             elements = [el for el in elements if el.category != "Header"]
         elif file_path.lower().endswith(".xlsx"):
             from unstructured.partition.xlsx import partition_xlsx
+
             elements_ = partition_xlsx(filename=file_path)
             elements = [el for el in elements_ if el.metadata.text_as_html is not None]
-        elif file_path.lower().startswith("www") or file_path.lower().startswith("http"):
+        elif file_path.lower().startswith("www") or file_path.lower().startswith(
+            "http"
+        ):
             from unstructured.partition.html import partition_html
+
             elements = partition_html(url=file_path)
         else:
             if file_path.lower().endswith(".tex"):
@@ -123,11 +129,16 @@ def get_chunks_unstructured(file_path, chunk_size, remove_sword, splitter):
                     metadata[key] = value
 
                 if remove_sword:
-                    from indox.data_loader_splitter.utils.clean import remove_stopwords
+                    from indoxRag.data_loader_splitter.utils.clean import (
+                        remove_stopwords,
+                    )
+
                     element.text = remove_stopwords(element.text)
 
                 # documents.append(Document(page_content=element.text, metadata=**metadata))
-                documents.append(Document(page_content=element.text.replace("\n", ""), **metadata))
+                documents.append(
+                    Document(page_content=element.text.replace("\n", ""), **metadata)
+                )
 
             # Filter and sanitize complex metadata
             documents = filter_complex_metadata(documents=documents)
@@ -160,8 +171,9 @@ class Unstructured:
         elements = create_documents_unstructured(file_path=self.file_path)
         return elements
 
-    def load_and_split(self, remove_stopwords: bool = False, max_chunk_size: int = 500, splitter=None) -> (
-            List)['Document']:
+    def load_and_split(
+        self, remove_stopwords: bool = False, max_chunk_size: int = 500, splitter=None
+    ) -> (List)["Document"]:
         """
         Split an unstructured document into chunks.
 
@@ -170,7 +182,9 @@ class Unstructured:
         """
         try:
             logger.info("Getting all documents")
-            docs = get_chunks_unstructured(self.file_path, max_chunk_size, remove_stopwords, splitter)
+            docs = get_chunks_unstructured(
+                self.file_path, max_chunk_size, remove_stopwords, splitter
+            )
             logger.info("Successfully obtained all documents")
             return docs
         except Exception as e:

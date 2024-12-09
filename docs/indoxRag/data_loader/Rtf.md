@@ -1,4 +1,3 @@
-
 ---
 
 # Rtf File Loader
@@ -12,7 +11,7 @@ The `Rtf` function utilizes the `pyth` library to process and extract text from 
 Ensure you have the necessary libraries installed:
 
 ```bash
-pip install pyth indox
+pip install pyth indoxRag
 ```
 
 ## Quick Start
@@ -20,7 +19,7 @@ pip install pyth indox
 1. **Import the `Rtf` Function**
 
    ```python
-   from your_module import Rtf
+   from indoxRag.data_loaders import Rtf
    ```
 
 2. **Load and Extract Content from an RTF File**
@@ -62,7 +61,7 @@ pip install pyth indox
 ### Example Usage
 
 ```python
-from your_module import Rtf
+from indoxRag.data_loaders import Rtf
 
 # Load and extract content from the RTF file
 file_path = 'document.rtf'
@@ -79,4 +78,3 @@ for document in documents:
 - Raises `RuntimeError` if there is an issue reading the RTF file or extracting text from it.
 
 ---
-

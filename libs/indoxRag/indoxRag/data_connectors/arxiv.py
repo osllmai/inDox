@@ -1,5 +1,6 @@
-from indox.data_connectors.utils import Document
+from indoxRag.data_connectors.utils import Document
 from typing import Any, List, Optional
+
 
 class ArxivReader:
     """
@@ -24,7 +25,9 @@ class ArxivReader:
         """Returns the class name ("ArxivReader")."""
         return "ArxivReader"
 
-    def load_data(self, paper_ids: List[str], **load_kwargs: Any) -> List[Document] | Document:
+    def load_data(
+        self, paper_ids: List[str], **load_kwargs: Any
+    ) -> List[Document] | Document:
         """Loads data from arXiv for the provided paper IDs.
 
         Args:
@@ -44,12 +47,14 @@ class ArxivReader:
                 search = arxiv.Search(id_list=[paper_id])
                 paper = next(search.results())
             except StopIteration:
-                raise ValueError(f"Paper ID '{paper_id}' not found in arXiv search results.")
+                raise ValueError(
+                    f"Paper ID '{paper_id}' not found in arXiv search results."
+                )
 
             # Extract paper information
             title = paper.title
             abstract = paper.summary
-            authors = ', '.join(author.name for author in paper.authors)
+            authors = ", ".join(author.name for author in paper.authors)
 
             # Combine information into content
             content = f"Title: {title}\n\nAuthors: {authors}\n\nAbstract: {abstract}"
@@ -64,12 +69,13 @@ class ArxivReader:
             }
 
             # Create Document instance
-            documents.append(Document(source="arXiv", content=content, metadata=metadata))
+            documents.append(
+                Document(source="arXiv", content=content, metadata=metadata)
+            )
         if len(documents) == 1:
             return documents[0]
 
         return documents
-
 
     def load_content(self, paper_ids: List[str], **load_kwargs: Any) -> List[str] | str:
         """Loads paper content from arXiv for the provided paper IDs.
@@ -91,12 +97,14 @@ class ArxivReader:
                 search = arxiv.Search(id_list=[paper_id])
                 paper = next(search.results())
             except StopIteration:
-                raise ValueError(f"Paper ID '{paper_id}' not found in arXiv search results.")
+                raise ValueError(
+                    f"Paper ID '{paper_id}' not found in arXiv search results."
+                )
 
             # Extract paper information
             title = paper.title
             abstract = paper.summary
-            authors = ', '.join(author.name for author in paper.authors)
+            authors = ", ".join(author.name for author in paper.authors)
 
             # Combine information into content
             content = f"Title: {title}\n\nAuthors: {authors}\n\nAbstract: {abstract}"

@@ -2,7 +2,7 @@ from typing import List, cast
 from loguru import logger
 import sys
 
-from indox.core import Embeddings
+from indoxRag.core import Embeddings
 
 # Set up logging
 logger.remove()  # Remove the default logger

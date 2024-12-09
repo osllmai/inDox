@@ -1,4 +1,3 @@
-
 ---
 
 # Json File Loader
@@ -12,7 +11,7 @@ The `Json` function loads a JSON file and converts its key-value pairs into a li
 Ensure you have the necessary libraries installed:
 
 ```bash
-pip install indox
+pip install indoxRag
 ```
 
 ## Quick Start
@@ -20,7 +19,7 @@ pip install indox
 1. **Import the `Json` Function**
 
    ```python
-   from your_module import Json
+   from indoxRag.data_loaders import Json
    ```
 
 2. **Load and Parse a JSON File**
@@ -65,7 +64,7 @@ pip install indox
 ### Example Usage
 
 ```python
-from your_module import Json
+from indoxRag.data_loaders import Json
 
 # Load and parse the JSON file
 file_path = 'data.json'
@@ -83,4 +82,3 @@ for document in documents:
 - The `page_content` in each `Document` object is a string representation of the JSON key-value pair.
 
 ---
-

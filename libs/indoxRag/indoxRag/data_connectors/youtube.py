@@ -1,4 +1,4 @@
-from indox.data_connectors.utils import Document
+from indoxRag.data_connectors.utils import Document
 from typing import Any, List
 
 
@@ -23,7 +23,9 @@ class YoutubeTranscriptReader:
         """
         return "YoutubeTranscriptReader"
 
-    def load_data(self, ytlinks: List[str], **load_kwargs: Any) -> List[Document] | Document:
+    def load_data(
+        self, ytlinks: List[str], **load_kwargs: Any
+    ) -> List[Document] | Document:
         """Load transcripts from the provided YouTube video links.
 
         Args:
@@ -50,14 +52,18 @@ class YoutubeTranscriptReader:
         for link in ytlinks:
             try:
                 video_id = self._extract_video_id(link)
-                srt = YouTubeTranscriptApi.get_transcript(video_id, languages=self.languages, **load_kwargs)
+                srt = YouTubeTranscriptApi.get_transcript(
+                    video_id, languages=self.languages, **load_kwargs
+                )
                 transcript = "\n".join(chunk["text"] for chunk in srt)
                 metadata = {
                     "video_id": video_id,
                     "link": link,
                     "language": self.languages,
                 }
-                documents.append(Document(source="YouTube", content=transcript, metadata=metadata))
+                documents.append(
+                    Document(source="YouTube", content=transcript, metadata=metadata)
+                )
             except ValueError as e:
                 print(f"ValueError: {e}")
             except Exception as e:
@@ -93,7 +99,9 @@ class YoutubeTranscriptReader:
         for link in ytlinks:
             try:
                 video_id = self._extract_video_id(link)
-                srt = YouTubeTranscriptApi.get_transcript(video_id, languages=self.languages, **load_kwargs)
+                srt = YouTubeTranscriptApi.get_transcript(
+                    video_id, languages=self.languages, **load_kwargs
+                )
                 transcript = "\n".join(chunk["text"] for chunk in srt)
                 transcripts.append(transcript)
             except ValueError as e:
@@ -120,7 +128,9 @@ class YoutubeTranscriptReader:
         try:
             video_id = link.split("?v=")[-1]
             if not video_id:
-                raise ValueError("Invalid YouTube link format. Unable to extract video ID.")
+                raise ValueError(
+                    "Invalid YouTube link format. Unable to extract video ID."
+                )
             return video_id
         except IndexError:
             raise ValueError("Invalid YouTube link format. Unable to extract video ID.")

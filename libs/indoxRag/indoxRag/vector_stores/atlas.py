@@ -4,7 +4,7 @@ import warnings
 from typing import Any, Iterable, List, Optional, Type, Dict
 
 import numpy as np
-from indox.core import Document, Embeddings, VectorStore
+from indoxRag.core import Document, Embeddings, VectorStore
 from loguru import logger
 import sys
 
@@ -12,13 +12,13 @@ warnings.filterwarnings("ignore")
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 
 class Atlas:
@@ -33,13 +33,13 @@ class Atlas:
     _ATLAS_DEFAULT_ID_FIELD: str = "atlas_id"
 
     def __init__(
-            self,
-            name: str,
-            embedding_function: Optional[Embeddings] = None,
-            api_key: Optional[str] = None,
-            description: str = "A description for your project",
-            is_public: bool = True,
-            reset_project_if_exists: bool = False,
+        self,
+        name: str,
+        embedding_function: Optional[Embeddings] = None,
+        api_key: Optional[str] = None,
+        description: str = "A description for your project",
+        is_public: bool = True,
+        reset_project_if_exists: bool = False,
     ) -> None:
         """
         Initialize the Atlas Client
@@ -92,12 +92,12 @@ class Atlas:
         return self._embedding_function
 
     def _add_documents(
-            self,
-            documents: Iterable[Dict[str, Any]],
-            metadatas: Optional[List[dict]] = None,
-            ids: Optional[List[str]] = None,
-            refresh: bool = True,
-            **kwargs: Any,
+        self,
+        documents: Iterable[Dict[str, Any]],
+        metadatas: Optional[List[dict]] = None,
+        ids: Optional[List[str]] = None,
+        refresh: bool = True,
+        **kwargs: Any,
     ) -> List[str]:
         """
         Run more documents through the embeddings and add them to the vectorstore.
@@ -113,9 +113,9 @@ class Atlas:
         """
 
         if (
-                metadatas is not None
-                and len(metadatas) > 0
-                and "text" in metadatas[0].keys()
+            metadatas is not None
+            and len(metadatas) > 0
+            and "text" in metadatas[0].keys()
         ):
             raise ValueError("Cannot accept key 'text' in metadata!")
 
@@ -174,12 +174,12 @@ class Atlas:
         return ids
 
     def _add_texts(
-            self,
-            texts: Iterable[str],
-            metadatas: Optional[List[dict]] = None,
-            ids: Optional[List[str]] = None,
-            refresh: bool = True,
-            **kwargs: Any,
+        self,
+        texts: Iterable[str],
+        metadatas: Optional[List[dict]] = None,
+        ids: Optional[List[str]] = None,
+        refresh: bool = True,
+        **kwargs: Any,
     ) -> List[str]:
         """Run more texts through the embeddings and add to the vectorstore.
 
@@ -194,9 +194,9 @@ class Atlas:
         """
 
         if (
-                metadatas is not None
-                and len(metadatas) > 0
-                and "text" in metadatas[0].keys()
+            metadatas is not None
+            and len(metadatas) > 0
+            and "text" in metadatas[0].keys()
         ):
             raise ValueError("Cannot accept key text in metadata!")
 
@@ -262,10 +262,10 @@ class Atlas:
             return self.project.create_index(**kwargs)
 
     def _similarity_search(
-            self,
-            query: str,
-            k: int = 4,
-            **kwargs: Any,
+        self,
+        query: str,
+        k: int = 4,
+        **kwargs: Any,
     ) -> List[Document]:
         """Run similarity search with AtlasDB
 
@@ -304,18 +304,18 @@ class Atlas:
 
     @classmethod
     def from_texts(
-            cls: Type[Atlas],
-            texts: List[str],
-            embedding: Optional[Embeddings] = None,
-            metadatas: Optional[List[dict]] = None,
-            ids: Optional[List[str]] = None,
-            name: Optional[str] = None,
-            api_key: Optional[str] = None,
-            description: str = "A description for your project",
-            is_public: bool = True,
-            reset_project_if_exists: bool = False,
-            index_kwargs: Optional[dict] = None,
-            **kwargs: Any,
+        cls: Type[Atlas],
+        texts: List[str],
+        embedding: Optional[Embeddings] = None,
+        metadatas: Optional[List[dict]] = None,
+        ids: Optional[List[str]] = None,
+        name: Optional[str] = None,
+        api_key: Optional[str] = None,
+        description: str = "A description for your project",
+        is_public: bool = True,
+        reset_project_if_exists: bool = False,
+        index_kwargs: Optional[dict] = None,
+        **kwargs: Any,
     ) -> Atlas:
         """Create an AtlasDB vectorstore from a raw documents.
 
@@ -381,18 +381,18 @@ class Atlas:
 
     @classmethod
     def from_documents(
-            cls: Type[Atlas],
-            documents: List[Document],
-            embedding: Optional[Embeddings] = None,
-            ids: Optional[List[str]] = None,
-            name: Optional[str] = None,
-            api_key: Optional[str] = None,
-            persist_directory: Optional[str] = None,
-            description: str = "A description for your project",
-            is_public: bool = True,
-            reset_project_if_exists: bool = False,
-            index_kwargs: Optional[dict] = None,
-            **kwargs: Any,
+        cls: Type[Atlas],
+        documents: List[Document],
+        embedding: Optional[Embeddings] = None,
+        ids: Optional[List[str]] = None,
+        name: Optional[str] = None,
+        api_key: Optional[str] = None,
+        persist_directory: Optional[str] = None,
+        description: str = "A description for your project",
+        is_public: bool = True,
+        reset_project_if_exists: bool = False,
+        index_kwargs: Optional[dict] = None,
+        **kwargs: Any,
     ) -> Atlas:
         """Create an AtlasDB vectorstore from a list of documents.
 

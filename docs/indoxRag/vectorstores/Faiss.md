@@ -7,8 +7,8 @@ set the embedding model.
 pip install faiss-cpu
 ```
 
-
 ### Hyperparameters
+
 - embedding (Embedding): The embedding to be used.
 
 ### Installation
@@ -16,8 +16,8 @@ pip install faiss-cpu
 For instructions on installing faiss, refer to the FAISS
 installation guide.
 
-``` python
-from indox.vector_stores import FAISSVectorStore
+```python
+from indoxRag.vector_stores import FAISSVectorStore
 db = FAISSVectorStore(embedding=embed)
 ```
 
@@ -25,12 +25,12 @@ db = FAISSVectorStore(embedding=embed)
 
 Store documents in the vector store:
 
-``` python
+```python
 db.add(docs=docs)
 ```
 
-``` python
+```python
 query = "How cinderella reach her happy ending?"
-retriever = indox.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5, document_relevancy_filter=True)
+retriever = indoxRag.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5, document_relevancy_filter=True)
 answer = retriever.invoke(query=query)
 ```

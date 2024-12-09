@@ -1,4 +1,3 @@
-
 ---
 
 # Md File Loader
@@ -12,7 +11,7 @@ The `Md` function loads a Markdown file, extracts its text content, and returns 
 Ensure you have the necessary libraries installed:
 
 ```bash
-pip install indox
+pip install indoxRag
 ```
 
 ## Quick Start
@@ -20,7 +19,7 @@ pip install indox
 1. **Import the `Md` Function**
 
    ```python
-   from your_module import Md
+   from indoxRag.data_loaders import Md
    ```
 
 2. **Load and Extract Content from a Markdown File**
@@ -64,7 +63,7 @@ pip install indox
 ### Example Usage
 
 ```python
-from your_module import Md
+from indoxRag.data_loaders import Md
 
 # Load and extract content from the Markdown file
 file_path = 'document.md'
@@ -82,4 +81,3 @@ print(document.page_content)  # Prints the text content of the Markdown file
 - The `page` metadata is set to `1` by default and may be adjusted if necessary.
 
 ---
-

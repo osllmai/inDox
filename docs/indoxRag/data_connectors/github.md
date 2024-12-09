@@ -7,7 +7,7 @@ GithubRepositoryReader is a data connector for loading file content from GitHub 
 To use GithubRepositoryReader:
 
 ```python
-from indox.data_connectors import GithubClient, GithubRepositoryReader
+from indoxRag.data_connectors import GithubClient, GithubRepositoryReader
 
 github_client = GithubClient(github_token="your_github_token")
 reader = GithubRepositoryReader(
@@ -17,12 +17,15 @@ reader = GithubRepositoryReader(
 )
 documents = reader.load_data(branch="main")
 ```
+
 # Class Attributes
 
-- **FilterType**  [Enum-like class]:
+- **FilterType** [Enum-like class]:
   - **INCLUDE:** Used to include specified directories or file extensions.
   - **EXCLUDE:** Used to exclude specified directories or file extensions.
-## Methods 
+
+## Methods
+
 **init(github_client: GithubClient, owner: str, repo: str, use_parser: bool = False, verbose: bool = True, filter_directories: Optional[Tuple[List[str], str]] = None, filter_file_extensions: Optional[Tuple[List[str], str]] = None)**
 
 Initializes the `GithubRepositoryReader` with the specified parameters.
@@ -36,6 +39,7 @@ Returns the name of the class as a string.
 Loads paper data from arXiv for the given paper IDs.
 
 **Parameters:**
+
 - **github_client** [GithubClient]: Authenticated GitHub client.
 - **owner** [str]: Owner of the GitHub repository.
 - **repo** [str]: Name of the GitHub repository.
@@ -49,35 +53,51 @@ Loads paper data from arXiv for the given paper IDs.
 Loads file data from the specified GitHub repository.
 
 **Parameters:**
+
 - **branch** [str]: The branch to load data from (default is "main").
 
 **Returns:**
-  - **List[Document]**:  List of Document objects containing file content and metadata.
+
+- **List[Document]**: List of Document objects containing file content and metadata.
+
 ## Usage
+
 ### Setting Up the Python Environment
+
 **Windows**
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-indox\Scripts\activate
+indoxRag\Scripts\activate
 ```
+
 ### macOS/Linux
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-source indox/bin/activate
+source indoxRag/bin/activate
 ```
+
 ## Get started
+
 ### Import Essential Libraries and Set Up Client
 
 ```python
-from indox.data_connectors import GithubClient, GithubRepositoryReader
+from indoxRag.data_connectors import GithubClient, GithubRepositoryReader
 from dotenv import load_dotenv
 import os
 
@@ -89,7 +109,7 @@ github_client = GithubClient(github_token=github_token)
 repo_reader = GithubRepositoryReader(
     github_client=github_client,
     owner="osllmai",
-    repo="indoxjudge",
+    repo="indoxRagjudge",
     filter_directories=(["docs"], GithubRepositoryReader.FilterType.INCLUDE),
     filter_file_extensions=([".md"], GithubRepositoryReader.FilterType.INCLUDE)
 )
@@ -105,4 +125,5 @@ for doc in documents:
     print(f"Content preview: {doc.content[:200]}...")
     print("---")
 ```
+
 This example demonstrates how to use GithubRepositoryReader to retrieve information about specific files from a GitHub repository and access their content and metadata.

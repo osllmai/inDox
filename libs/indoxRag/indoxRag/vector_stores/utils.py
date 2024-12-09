@@ -1,9 +1,11 @@
 from typing import List, Optional, Tuple, Union, Type
-from indox.core import Document,Embeddings
+from indoxRag.core import Document, Embeddings
 import numpy as np
+
 #
 #
 Matrix = Union[List[List[float]], List[np.ndarray], np.ndarray]
+
 
 def cosine_similarity(X: Matrix, Y: Matrix) -> np.ndarray:
     """Row-wise cosine similarity between two equal-width matrices."""
@@ -32,6 +34,8 @@ def cosine_similarity(X: Matrix, Y: Matrix) -> np.ndarray:
             similarity = np.dot(X, Y.T) / np.outer(X_norm, Y_norm)
         similarity[np.isnan(similarity) | np.isinf(similarity)] = 0.0
         return similarity
+
+
 def maximal_marginal_relevance(
     query_embedding: np.ndarray,
     embedding_list: list,

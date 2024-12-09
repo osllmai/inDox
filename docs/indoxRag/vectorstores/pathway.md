@@ -13,7 +13,7 @@ To use Pathway Vector Store, you can create a client instance by specifying the 
 You can connect to the Pathway Vector Store by creating an instance of the `PathwayVectorClient`:
 
 ```python
-from indox.vector_stores import PathwayVectorClient
+from indoxRag.vector_stores import PathwayVectorClient
 client = PathwayVectorClient(host="localhost", port=8080)
 ```
 
@@ -37,6 +37,6 @@ Query the vector store:
 
 ```python
 query = "How can Cinderella reach her happy ending?"
-retriever = indox.QuestionAnswer(vector_database=client, llm=mistral_qa, top_k=5, document_relevancy_filter=True)
+retriever = indoxRag.QuestionAnswer(vector_database=client, llm=mistral_qa, top_k=5, document_relevancy_filter=True)
 answer = retriever.invoke(query=query)
 ```

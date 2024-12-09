@@ -1,5 +1,6 @@
 from typing import List, Dict
-from indox.core import Document
+from indoxRag.core import Document
+
 
 # Define the Neo4jGraph class for structured Cypher queries
 class Neo4jGraph:
@@ -27,7 +28,12 @@ class Neo4jGraph:
         if self.driver:
             self.driver.close()
 
-    def add_graph_documents(self, graph_documents: List['GraphDocument'], base_entity_label: bool = True, include_source: bool = True):
+    def add_graph_documents(
+        self,
+        graph_documents: List["GraphDocument"],
+        base_entity_label: bool = True,
+        include_source: bool = True,
+    ):
         """
         Adds graph documents to the Neo4j database.
 
@@ -39,11 +45,19 @@ class Neo4jGraph:
         try:
             with self.driver.session() as session:
                 for graph_doc in graph_documents:
-                    self._add_graph_document(session, graph_doc, base_entity_label, include_source)
+                    self._add_graph_document(
+                        session, graph_doc, base_entity_label, include_source
+                    )
         finally:
             self.close()
 
-    def _add_graph_document(self, session, graph_doc: 'GraphDocument', base_entity_label: bool, include_source: bool):
+    def _add_graph_document(
+        self,
+        session,
+        graph_doc: "GraphDocument",
+        base_entity_label: bool,
+        include_source: bool,
+    ):
         """
         Adds a single GraphDocument to the Neo4j database.
 
@@ -60,7 +74,7 @@ class Neo4jGraph:
         if include_source:
             self._add_source(session, graph_doc)
 
-    def _add_node(self, session, node: 'Node', base_entity_label: bool):
+    def _add_node(self, session, node: "Node", base_entity_label: bool):
         """
         Adds a node to the Neo4j database.
 
@@ -82,7 +96,7 @@ class Neo4jGraph:
             params["text"] = node.text
         session.run(query, params)
 
-    def _add_relationship(self, session, relationship: 'Relationship'):
+    def _add_relationship(self, session, relationship: "Relationship"):
         """
         Adds a relationship between two nodes in the Neo4j database.
 
@@ -95,9 +109,12 @@ class Neo4jGraph:
         MATCH (a {{id: $source_id}}), (b {{id: $target_id}})
         MERGE (a)-[r:{relationship_type}]->(b)
         """
-        session.run(query, {"source_id": relationship.source.id, "target_id": relationship.target.id})
+        session.run(
+            query,
+            {"source_id": relationship.source.id, "target_id": relationship.target.id},
+        )
 
-    def _add_source(self, session, graph_doc: 'GraphDocument'):
+    def _add_source(self, session, graph_doc: "GraphDocument"):
         """
         Adds the source metadata to a special node in the Neo4j database.
 
@@ -110,8 +127,8 @@ class Neo4jGraph:
         MERGE (s:Source {title: $title, page_content: $page_content})
         """
         params = {
-            "title": source.metadata.get('metadata', {}).get('title', 'Untitled'),
-            "page_content": source.page_content
+            "title": source.metadata.get("metadata", {}).get("title", "Untitled"),
+            "page_content": source.page_content,
         }
         session.run(query, params)
 
@@ -120,7 +137,15 @@ class Neo4jGraph:
             MATCH (n {id: $node_id}), (s:Source {title: $title})
             MERGE (n)-[:HAS_SOURCE]->(s)
             """
-            session.run(query, {"node_id": node.id, "title": source.metadata.get("metadata", {}).get("title", "Untitled")})
+            session.run(
+                query,
+                {
+                    "node_id": node.id,
+                    "title": source.metadata.get("metadata", {}).get(
+                        "title", "Untitled"
+                    ),
+                },
+            )
 
     def search_relationships_by_entity(self, entity_id: str, relationship_type: str):
         """

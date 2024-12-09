@@ -7,7 +7,7 @@ ArxivReader is a data connector for loading paper information from the arXiv rep
 To use ArxivReader:
 
 ```python
-from indox.data_connectors import ArxivReader
+from indoxRag.data_connectors import ArxivReader
 
 reader = ArxivReader()
 documents = reader.load_data(paper_ids=["1234.56789"])
@@ -32,26 +32,26 @@ Loads paper data from arXiv for the given paper IDs.
 **Windows**
 1. **Create the virtual environment:**
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
 2. **Activate the virtual environment:**
 ```bash
-indox\Scripts\activate
+indoxRag\Scripts\activate
 ```
 ### macOS/Linux
 1. **Create the virtual environment:**
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
 2. **Activate the virtual environment:**
 ```bash
-source indox/bin/activate
+source indoxRag/bin/activate
 ```
 ## Get started
 ### Import Essential Libraries
 
 ```python
-from indox.data_connectors import ArxivReader
+from indoxRag.data_connectors import ArxivReader
 
 reader = ArxivReader()
 
