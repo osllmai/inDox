@@ -1,17 +1,17 @@
 import requests
 from loguru import logger
 import sys
-from indox.core import BaseLLM
+from indoxRag.core import BaseLLM
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 
 class HuggingFaceModel(BaseLLM):
@@ -19,7 +19,9 @@ class HuggingFaceModel(BaseLLM):
     model: str = "mistralai/Mistral-7B-Instruct-v0.2"
     prompt_template: str = ""
 
-    def __init__(self, api_key, model="mistralai/Mistral-7B-Instruct-v0.2", prompt_template=""):
+    def __init__(
+        self, api_key, model="mistralai/Mistral-7B-Instruct-v0.2", prompt_template=""
+    ):
         super().__init__(api_key=api_key, model=model, prompt_template=prompt_template)
         """
         Initializes the specified model via the Hugging Face Inference API.
@@ -33,7 +35,9 @@ class HuggingFaceModel(BaseLLM):
             logger.info(f"Initializing HuggingFaceModel with model: {model}")
             self.model = model
             self.api_key = api_key
-            self.prompt_template = prompt_template or "Context: {context}\nQuestion: {question}\nAnswer:"
+            self.prompt_template = (
+                prompt_template or "Context: {context}\nQuestion: {question}\nAnswer:"
+            )
             if not self.api_key:
                 raise ValueError("A valid Hugging Face API key is required.")
             logger.info("HuggingFaceModel initialized successfully")
@@ -45,9 +49,7 @@ class HuggingFaceModel(BaseLLM):
             raise
 
     def _send_request(self, prompt):
-        headers = {
-            "Authorization": f"Bearer {self.api_key}"
-        }
+        headers = {"Authorization": f"Bearer {self.api_key}"}
         payload = {
             "inputs": prompt,
         }
@@ -125,7 +127,10 @@ class HuggingFaceModel(BaseLLM):
         """
         try:
             logger.info("Generating summary for documentation")
-            prompt = "You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n" + documentation
+            prompt = (
+                "You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n"
+                + documentation
+            )
             return self._send_request(prompt)
         except Exception as e:
             logger.error(f"Error in get_summary: {e}")
@@ -201,6 +206,6 @@ class HuggingFaceModel(BaseLLM):
             logger.error(f"Error generating agent answer: {e}")
             return str(e)
 
-    def chat(self, prompt,system_prompt):
+    def chat(self, prompt, system_prompt):
         message = system_prompt + "\n" + prompt
         return self._send_request(prompt=message)

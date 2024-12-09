@@ -1,20 +1,20 @@
 from typing import Any, Dict, List, Optional
 
 from pydantic import Field, root_validator
-from indox.core import Embeddings
+from indoxRag.core import Embeddings
 from loguru import logger
 import sys
 
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 
 class ClarifaiEmbeddings(Embeddings):
@@ -50,7 +50,7 @@ class ClarifaiEmbeddings(Embeddings):
                 "Please install it with `pip install clarifai`."
             )
 
-        required_fields = ['model_id', 'pat']
+        required_fields = ["model_id", "pat"]
         for field in required_fields:
             if not values.get(field):
                 raise ValueError(f"{field} is required for ClarifaiEmbeddings.")
@@ -89,7 +89,7 @@ class ClarifaiEmbeddings(Embeddings):
 
         try:
             for i in range(0, len(texts), batch_size):
-                batch = texts[i: i + batch_size]
+                batch = texts[i : i + batch_size]
                 input_batch = [
                     input_obj.get_text_input(input_id=str(id), raw_text=inp)
                     for id, inp in enumerate(batch)

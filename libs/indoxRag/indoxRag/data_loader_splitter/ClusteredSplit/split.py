@@ -1,21 +1,38 @@
-from indox.data_loader_splitter.ClusteredSplit.EmbedClusterSummarize import recursive_embed_cluster_summarize
-from indox.data_loader_splitter.ClusteredSplit.cs_utils import get_all_texts, split_text, create_document
+from indoxRag.data_loader_splitter.ClusteredSplit.EmbedClusterSummarize import (
+    recursive_embed_cluster_summarize,
+)
+from indoxRag.data_loader_splitter.ClusteredSplit.cs_utils import (
+    get_all_texts,
+    split_text,
+    create_document,
+)
 from typing import Optional, List, Tuple
 from loguru import logger
 import sys
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
-def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
-               re_chunk, remove_sword, cluster_prompt, summary_model):
+
+def get_chunks(
+    docs,
+    embeddings,
+    threshold,
+    dim,
+    chunk_size,
+    overlap,
+    re_chunk,
+    remove_sword,
+    cluster_prompt,
+    summary_model,
+):
     """
     Extract chunks from the provided documents using an embedding function. Optionally, recursively cluster
     and summarize the chunks.
@@ -58,13 +75,21 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
 
         # Optionally remove stopwords from the chunks
         if remove_sword:
-            from indox.data_loader_splitter.utils.clean import remove_stopwords_chunk
+            from indoxRag.data_loader_splitter.utils.clean import remove_stopwords_chunk
+
             leaf_chunks = remove_stopwords_chunk(leaf_chunks)
 
         results = recursive_embed_cluster_summarize(
-            texts=leaf_chunks, embeddings=embeddings, dim=dim, threshold=threshold, level=1, n_levels=3,
-            re_chunk=re_chunk, max_chunk=int(chunk_size / 2), remove_sword=remove_sword,
-            summary_model=summary_model
+            texts=leaf_chunks,
+            embeddings=embeddings,
+            dim=dim,
+            threshold=threshold,
+            level=1,
+            n_levels=3,
+            re_chunk=re_chunk,
+            max_chunk=int(chunk_size / 2),
+            remove_sword=remove_sword,
+            summary_model=summary_model,
         )
         all_chunks = get_all_texts(results=results, texts=leaf_chunks)
 
@@ -77,9 +102,18 @@ def get_chunks(docs, embeddings, threshold, dim, chunk_size, overlap,
 
 
 class ClusteredSplit:
-    def __init__(self, file_path: str, summary_model, embeddings, re_chunk: bool = False, remove_sword: bool = False,
-                 chunk_size: Optional[int] = 100, overlap: Optional[int] = 0, threshold: float = 0.1, dim: int = 10,
-                ):
+    def __init__(
+        self,
+        file_path: str,
+        summary_model,
+        embeddings,
+        re_chunk: bool = False,
+        remove_sword: bool = False,
+        chunk_size: Optional[int] = 100,
+        overlap: Optional[int] = 0,
+        threshold: float = 0.1,
+        dim: int = 10,
+    ):
         """
         Initialize the ClusteredSplit class.
 
@@ -118,16 +152,18 @@ class ClusteredSplit:
         - List[Document]: A list of `Document` objects, each containing a portion of the original content with relevant metadata.
         """
         try:
-            docs = get_chunks(docs=self.file_path,
-                              chunk_size=self.chunk_size,
-                              overlap=self.overlap,
-                              re_chunk=self.re_chunk,
-                              remove_sword=self.remove_sword,
-                              embeddings=self.embeddings,
-                              threshold=self.threshold,
-                              dim=self.dim,
-                              cluster_prompt=self.cluster_prompt,
-                              summary_model=self.summary_model)
+            docs = get_chunks(
+                docs=self.file_path,
+                chunk_size=self.chunk_size,
+                overlap=self.overlap,
+                re_chunk=self.re_chunk,
+                remove_sword=self.remove_sword,
+                embeddings=self.embeddings,
+                threshold=self.threshold,
+                dim=self.dim,
+                cluster_prompt=self.cluster_prompt,
+                summary_model=self.summary_model,
+            )
             logger.info("Successfully obtained all documents")
             return docs
         except Exception as e:

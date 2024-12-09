@@ -1,21 +1,29 @@
 import os
 from typing import Any, Dict, List, Optional, Union, Callable
-from tenacity import retry_if_exception_type, stop_after_attempt, wait_exponential, before_sleep_log, retry
-from indox.core import Embeddings
+from tenacity import (
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+    before_sleep_log,
+    retry,
+)
+from indoxRag.core import Embeddings
 from loguru import logger
 import sys
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
-_ALLOW_REUSE_WARNING_MESSAGE = '`allow_reuse` is deprecated and will be ignored; it should no longer be necessary'
+_ALLOW_REUSE_WARNING_MESSAGE = (
+    "`allow_reuse` is deprecated and will be ignored; it should no longer be necessary"
+)
 
 
 def _create_retry_decorator(max_retries: int) -> Callable[[Any], Any]:
@@ -38,9 +46,6 @@ def _create_retry_decorator(max_retries: int) -> Callable[[Any], Any]:
         wait=wait_exponential(multiplier=1, min=min_seconds, max=max_seconds),
         retry=retry_conditions,
     )
-
-
-
 
 
 class CohereEmbeddings(Embeddings):
@@ -73,7 +78,9 @@ class CohereEmbeddings(Embeddings):
 
         return _embed_with_retry(**kwargs)
 
-    def embed(self, texts: List[str], *, input_type: Optional[str] = None) -> List[List[float]]:
+    def embed(
+        self, texts: List[str], *, input_type: Optional[str] = None
+    ) -> List[List[float]]:
         """Embed a list of texts using the Cohere model.
 
         Args:

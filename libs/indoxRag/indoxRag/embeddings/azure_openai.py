@@ -5,8 +5,9 @@ from importlib.metadata import version
 from packaging.version import parse
 from pydantic.v1 import Field, root_validator
 
-from indox.embeddings import OpenAiEmbedding
-from indox.embeddings.utils import get_from_dict_or_env
+from indoxRag.embeddings import OpenAiEmbedding
+from indoxRag.embeddings.utils import get_from_dict_or_env
+
 
 def is_openai_v1() -> bool:
     """Return whether OpenAI API is v1 or more."""
@@ -56,9 +57,9 @@ class AzureOpenAIEmbeddings(OpenAiEmbedding):
         # TODO: Remove OPENAI_API_KEY support to avoid possible conflict when using
         # other forms of azure credentials.
         values["openai_api_key"] = (
-                values.get("openai_api_key")
-                or os.getenv("AZURE_OPENAI_API_KEY")
-                or os.getenv("OPENAI_API_KEY")
+            values.get("openai_api_key")
+            or os.getenv("AZURE_OPENAI_API_KEY")
+            or os.getenv("OPENAI_API_KEY")
         )
         values["openai_api_base"] = values.get("openai_api_base") or os.getenv(
             "OPENAI_API_BASE"
@@ -70,9 +71,9 @@ class AzureOpenAIEmbeddings(OpenAiEmbedding):
             values, "openai_api_type", "OPENAI_API_TYPE", default="azure"
         )
         values["openai_organization"] = (
-                values.get("openai_organization")
-                or os.getenv("OPENAI_ORG_ID")
-                or os.getenv("OPENAI_ORGANIZATION")
+            values.get("openai_organization")
+            or os.getenv("OPENAI_ORG_ID")
+            or os.getenv("OPENAI_ORGANIZATION")
         )
         values["openai_proxy"] = get_from_dict_or_env(
             values,
@@ -128,7 +129,7 @@ class AzureOpenAIEmbeddings(OpenAiEmbedding):
                             f"{values['openai_api_base']}."
                         )
                         values["openai_api_base"] += (
-                                "/deployments/" + values["deployment"]
+                            "/deployments/" + values["deployment"]
                         )
                     values["deployment"] = None
         return values

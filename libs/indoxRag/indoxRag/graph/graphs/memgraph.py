@@ -1,8 +1,11 @@
 from typing import List, Dict, Optional
-from indox.graph import GraphDocument, Node, Relationship
+from indoxRag.graph import GraphDocument, Node, Relationship
+
 
 class MemgraphDB:
-    def __init__(self, uri: str, username: Optional[str] = "", password: Optional[str] = ""):
+    def __init__(
+        self, uri: str, username: Optional[str] = "", password: Optional[str] = ""
+    ):
         """
         Initializes the connection to the Memgraph database.
 
@@ -12,6 +15,7 @@ class MemgraphDB:
             password (Optional[str]): Password for Memgraph (optional, defaults to an empty string).
         """
         from neo4j import GraphDatabase
+
         self.driver = GraphDatabase.driver(uri, auth=(username, password))
 
     def close(self):
@@ -19,7 +23,12 @@ class MemgraphDB:
         if self.driver:
             self.driver.close()
 
-    def add_graph_documents(self, graph_documents: List[GraphDocument], base_entity_label: bool = True, include_source: bool = True):
+    def add_graph_documents(
+        self,
+        graph_documents: List[GraphDocument],
+        base_entity_label: bool = True,
+        include_source: bool = True,
+    ):
         """
         Adds a list of graph documents to the Memgraph database.
 
@@ -31,11 +40,19 @@ class MemgraphDB:
         try:
             with self.driver.session() as session:
                 for graph_doc in graph_documents:
-                    self._add_graph_document(session, graph_doc, base_entity_label, include_source)
+                    self._add_graph_document(
+                        session, graph_doc, base_entity_label, include_source
+                    )
         finally:
             self.close()
 
-    def _add_graph_document(self, session, graph_doc: GraphDocument, base_entity_label: bool, include_source: bool):
+    def _add_graph_document(
+        self,
+        session,
+        graph_doc: GraphDocument,
+        base_entity_label: bool,
+        include_source: bool,
+    ):
         """
         Adds a single GraphDocument to the Memgraph database.
 
@@ -86,7 +103,10 @@ class MemgraphDB:
         MATCH (a {{id: $source_id}}), (b {{id: $target_id}})
         MERGE (a)-[r:{relationship_type}]->(b)
         """
-        session.run(query, {"source_id": relationship.source.id, "target_id": relationship.target.id})
+        session.run(
+            query,
+            {"source_id": relationship.source.id, "target_id": relationship.target.id},
+        )
 
     def _add_source(self, session, graph_doc: GraphDocument):
         """
@@ -102,8 +122,8 @@ class MemgraphDB:
         SET s.page_content = $page_content
         """
         params = {
-            "title": source.metadata.get('title', 'Untitled'),
-            "page_content": source.page_content
+            "title": source.metadata.get("title", "Untitled"),
+            "page_content": source.page_content,
         }
         session.run(query, params)
 
@@ -112,9 +132,14 @@ class MemgraphDB:
             MATCH (n {id: $node_id}), (s:Source {title: $title})
             MERGE (n)-[:HAS_SOURCE]->(s)
             """
-            session.run(query, {"node_id": node.id, "title": source.metadata.get("title", "Untitled")})
+            session.run(
+                query,
+                {"node_id": node.id, "title": source.metadata.get("title", "Untitled")},
+            )
 
-    def search_relationships_by_entity(self, entity_id: str, relationship_type: str) -> List[Dict]:
+    def search_relationships_by_entity(
+        self, entity_id: str, relationship_type: str
+    ) -> List[Dict]:
         """
         Searches for relationships by entity ID and relationship type.
 

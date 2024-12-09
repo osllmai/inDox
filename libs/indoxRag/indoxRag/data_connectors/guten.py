@@ -2,7 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from typing import List, Optional
-from indox.data_connectors.utils import Document
+from indoxRag.data_connectors.utils import Document
+
 
 class GutenbergReader:
     BASE_URL = "https://www.gutenberg.org/files"
@@ -38,7 +39,7 @@ class GutenbergReader:
             metadata={
                 "book_id": book_id,
                 "title": title,
-            }
+            },
         )
 
     def get_content(self, book_id: str) -> Optional[str]:
@@ -88,7 +89,7 @@ class GutenbergReader:
 
         if start_index != -1 and end_index != -1:
             text = content[start_index:end_index].strip()
-            text = text.split('\n', 1)[1] if '\n' in text else text
+            text = text.split("\n", 1)[1] if "\n" in text else text
             return text
         else:
             return content
@@ -108,28 +109,30 @@ class GutenbergReader:
             print(f"Search failed. Error: {str(e)}")
             return []
 
-        soup = BeautifulSoup(response.content, 'html.parser')
+        soup = BeautifulSoup(response.content, "html.parser")
         documents = []
-        for book in soup.select('li.booklink'):
-            link = book.select_one('a')
-            if not link or 'href' not in link.attrs:
+        for book in soup.select("li.booklink"):
+            link = book.select_one("a")
+            if not link or "href" not in link.attrs:
                 continue
 
-            book_id = link['href'].split('/')[-1]
-            title_elem = book.select_one('span.title')
+            book_id = link["href"].split("/")[-1]
+            title_elem = book.select_one("span.title")
             title = title_elem.text.strip() if title_elem else "Unknown Title"
-            author_elem = book.select_one('span.subtitle')
+            author_elem = book.select_one("span.subtitle")
             author = author_elem.text.strip() if author_elem else "Unknown Author"
 
             # Create a Document object for each search result
-            documents.append(Document(
-                source="Project Gutenberg",
-                content=f"Title: {title}\nAuthor: {author}",
-                metadata={
-                    "book_id": book_id,
-                    "title": title,
-                    "author": author,
-                }
-            ))
+            documents.append(
+                Document(
+                    source="Project Gutenberg",
+                    content=f"Title: {title}\nAuthor: {author}",
+                    metadata={
+                        "book_id": book_id,
+                        "title": title,
+                        "author": author,
+                    },
+                )
+            )
 
         return documents

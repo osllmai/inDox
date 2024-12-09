@@ -1,24 +1,31 @@
 import pandas as pd
 import numpy as np
 from .Embed import embed_cluster_texts
-from indox.data_loader_splitter.ClusteredSplit.cs_utils import rechunk
+from indoxRag.data_loader_splitter.ClusteredSplit.cs_utils import rechunk
 from loguru import logger
 import sys
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 
 def embed_cluster_summarize_texts(
-        texts, embeddings, dim: int, threshold: float, level: int,
-        summary_model, re_chunk: bool = False, max_chunk: int = 100):
+    texts,
+    embeddings,
+    dim: int,
+    threshold: float,
+    level: int,
+    summary_model,
+    re_chunk: bool = False,
+    max_chunk: int = 100,
+):
     """
     Embeds, clusters, and summarizes a list of texts. This function first generates embeddings for the texts,
     clusters them based on similarity, expands the cluster assignments for easier processing, and then summarizes
@@ -80,10 +87,18 @@ def embed_cluster_summarize_texts(
     return df_clusters, df_summary
 
 
-def recursive_embed_cluster_summarize(texts, embeddings, dim: int, threshold: float,
-                                      summary_model, max_chunk: int = 100,
-                                      level: int = 1, n_levels: int = 3,
-                                      re_chunk: bool = False, remove_sword: bool = False):
+def recursive_embed_cluster_summarize(
+    texts,
+    embeddings,
+    dim: int,
+    threshold: float,
+    summary_model,
+    max_chunk: int = 100,
+    level: int = 1,
+    n_levels: int = 3,
+    re_chunk: bool = False,
+    remove_sword: bool = False,
+):
     """
     Recursively embeds, clusters, and summarizes texts up to a specified level or until
     the number of unique clusters becomes 1, storing the results at each level using a specified embeddings object.
@@ -103,16 +118,23 @@ def recursive_embed_cluster_summarize(texts, embeddings, dim: int, threshold: fl
     - A tuple containing the results, input tokens, and output tokens.
     """
     if remove_sword:
-        from indox.data_loader_splitter.utils.clean import remove_stopwords_chunk
+        from indoxRag.data_loader_splitter.utils.clean import remove_stopwords_chunk
+
         texts = remove_stopwords_chunk(texts)
 
     results = {}
 
     # Perform embedding, clustering, and summarization for the current level
-    df_clusters, df_summary = embed_cluster_summarize_texts(texts, embeddings, dim, threshold, level,
-                                                            summary_model=summary_model,
-                                                            re_chunk=re_chunk,
-                                                            max_chunk=max_chunk)
+    df_clusters, df_summary = embed_cluster_summarize_texts(
+        texts,
+        embeddings,
+        dim,
+        threshold,
+        level,
+        summary_model=summary_model,
+        re_chunk=re_chunk,
+        max_chunk=max_chunk,
+    )
 
     # Store the results of the current level
     results[level] = (df_clusters, df_summary)
@@ -122,10 +144,16 @@ def recursive_embed_cluster_summarize(texts, embeddings, dim: int, threshold: fl
     if level < n_levels and unique_clusters > 1:
         new_texts = df_summary["summaries"].tolist()
         next_level_results = recursive_embed_cluster_summarize(
-            texts=new_texts, summary_model=summary_model,
-            embeddings=embeddings, dim=dim, threshold=threshold,
-            max_chunk=max_chunk, level=level + 1, n_levels=n_levels,
-            re_chunk=re_chunk, remove_sword=remove_sword
+            texts=new_texts,
+            summary_model=summary_model,
+            embeddings=embeddings,
+            dim=dim,
+            threshold=threshold,
+            max_chunk=max_chunk,
+            level=level + 1,
+            n_levels=n_levels,
+            re_chunk=re_chunk,
+            remove_sword=remove_sword,
         )
 
         results.update(next_level_results)

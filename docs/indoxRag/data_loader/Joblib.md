@@ -1,4 +1,3 @@
-
 ---
 
 # Joblib PKL Loader
@@ -20,7 +19,7 @@ pip install joblib indox
 1. **Import the `Joblib` Function**
 
    ```python
-   from your_module import Joblib
+   from indoxRag.data_loaders import Joblib
    ```
 
 2. **Load and Extract Content from a Pickle or Joblib File**
@@ -64,7 +63,7 @@ pip install joblib indox
 ### Example Usage
 
 ```python
-from your_module import Joblib
+from indoxRag.data_loaders import Joblib
 
 # Load and extract content from the Pickle or Joblib file
 file_path = 'data.pkl'
@@ -82,4 +81,3 @@ print(document.page_content)  # Prints the unpickled content of the file
 - The content is converted to a string representation, which may affect data types depending on the original content.
 
 ---
-

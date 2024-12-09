@@ -1,23 +1,30 @@
 from loguru import logger
 import sys
 from typing import List, Tuple, Optional, Any, Dict
-from indox.core import Document
-from indox.data_loader_splitter.utils.unstructured_utills import get_chunks_unstructured
+from indoxRag.core import Document
+from indoxRag.data_loader_splitter.utils.unstructured_utills import (
+    get_chunks_unstructured,
+)
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
-
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 
 class UnstructuredLoadAndSplit:
-    def __init__(self, file_path: str, remove_sword: bool = False, max_chunk_size: int = 500, splitter=None):
+    def __init__(
+        self,
+        file_path: str,
+        remove_sword: bool = False,
+        max_chunk_size: int = 500,
+        splitter=None,
+    ):
         """
         Initialize the UnstructuredLoadAndSplit class.
 
@@ -37,7 +44,7 @@ class UnstructuredLoadAndSplit:
             logger.error(f"Error initializing UnstructuredLoadAndSplit: {e}")
             raise
 
-    def load_and_chunk(self) -> List['Document']:
+    def load_and_chunk(self) -> List["Document"]:
         """
         Split an unstructured document into chunks.
 
@@ -46,7 +53,9 @@ class UnstructuredLoadAndSplit:
         """
         try:
             logger.info("Getting all documents")
-            docs = get_chunks_unstructured(self.file_path, self.max_chunk_size, self.remove_sword, self.splitter)
+            docs = get_chunks_unstructured(
+                self.file_path, self.max_chunk_size, self.remove_sword, self.splitter
+            )
             logger.info("Successfully obtained all documents")
             return docs
         except Exception as e:

@@ -1,4 +1,3 @@
-
 ---
 
 # PdfPlumber PDF File Loader
@@ -12,7 +11,7 @@ The `PdfPlumber` function loads a PDF file and extracts its text content from ea
 Ensure you have the necessary libraries installed:
 
 ```bash
-pip install pdfplumber indox
+pip install pdfplumber indoxRag
 ```
 
 ## Quick Start
@@ -20,7 +19,7 @@ pip install pdfplumber indox
 1. **Import the `PdfPlumber` Function**
 
    ```python
-   from your_module import PdfPlumber
+   from indoxRag.data_loaders import PdfPlumber
    ```
 
 2. **Load and Extract Content from a PDF File**
@@ -68,7 +67,7 @@ pip install pdfplumber indox
 ### Example Usage
 
 ```python
-from your_module import PdfPlumber
+from indoxRag.data_loaders import PdfPlumber
 
 # Load and extract content from the PDF file
 file_path = 'document.pdf'
@@ -86,4 +85,3 @@ for document in documents:
 - The `page` metadata is set according to the page number in the PDF.
 
 ---
-

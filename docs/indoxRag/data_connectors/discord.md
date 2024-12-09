@@ -7,11 +7,12 @@ DiscordChannelReader is a data connector for loading messages from specified Dis
 To use DiscordChannelReader:
 
 ```python
-from indox.data_connectors import DiscordChannelReader
+from indoxRag.data_connectors import DiscordChannelReader
 
 reader = DiscordChannelReader(bot_token="your_bot_token")
 documents = reader.load_data(channel_ids=["channel_id1", "channel_id2"])
 ```
+
 # Class Attributes
 
 - **bot_token** [str]: The bot token for your Discord bot.
@@ -29,39 +30,53 @@ Returns the name of the class as a string ("DiscordChannelReader").
 Loads messages from specified Discord channels.
 
 **Parameters:**
+
 - **channel_ids** [List[str]]: List of Twitter usernames to fetch tweets from.
 - **num_messages** [Optional[int]]: The maximum number of messages to retrieve from each channel (overrides the default if specified).
-- **load_kwargs**  [Any]: Additional keyword arguments (not used in current implementation).
+- **load_kwargs** [Any]: Additional keyword arguments (not used in current implementation).
 
 **Returns:**
+
 - **List[Document]**: List of Document objects containing channel messages and metadata.
 
 ## Usage
+
 ### Setting Up the Python Environment
+
 **Windows**
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-indox\Scripts\activate
+indoxRag\Scripts\activate
 ```
+
 ### macOS/Linux
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-source indox/bin/activate
+source indoxRag/bin/activate
 ```
 
 ## Get Started
+
 ### Import Essential Libraries and Use DiscordChannelReader
 
 ```python
-from indox.data_connectors import DiscordChannelReader
+from indoxRag.data_connectors import DiscordChannelReader
 import os
 from dotenv import load_dotenv
 import nest_asyncio
@@ -86,4 +101,5 @@ for doc in documents:
     print(f"Messages preview: {doc.content[:200]}...")
     print("---")
 ```
+
 This example demonstrates how to use DiscordChannelReader to retrieve messages from specific Discord channels and access their content and metadata.

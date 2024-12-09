@@ -1,6 +1,6 @@
 import pandas as pd
 from typing import List, Dict, Any, Tuple
-from indox.core import Document
+from indoxRag.core import Document
 import uuid
 
 
@@ -15,8 +15,8 @@ def extract_title(text: str) -> str:
         str: Title extracted from the text, which is the first sentence.
     """
     try:
-        if '.' in text:
-            title = text.split('.')[0] + '.'
+        if "." in text:
+            title = text.split(".")[0] + "."
         else:
             title = "Not mentioned"
         return title
@@ -35,7 +35,9 @@ def generate_id() -> str:
     return str(uuid.uuid4())
 
 
-def process_docs(input_list: List[str], embedding_function: Any) -> List[Dict[str, Any]]:
+def process_docs(
+    input_list: List[str], embedding_function: Any
+) -> List[Dict[str, Any]]:
     """
     Process the list of input texts, extract titles, and generate embeddings.
 
@@ -60,8 +62,8 @@ def process_docs(input_list: List[str], embedding_function: Any) -> List[Dict[st
                     "title": extract_title(text),
                     "body": text,
                     "embedding": embedding,
-                    "id": doc_id
-                }
+                    "id": doc_id,
+                },
             }
             docs.append(output_dict)
     except Exception as e:
@@ -139,21 +141,32 @@ class VESPA:
                             RankProfile(
                                 name="bm25",
                                 functions=[
-                                    Function(name="bm25sum", expression="bm25(title) + bm25(body)")
+                                    Function(
+                                        name="bm25sum",
+                                        expression="bm25(title) + bm25(body)",
+                                    )
                                 ],
                                 first_phase="bm25sum",
                             ),
                             RankProfile(
                                 name="semantic",
                                 inputs=[
-                                    ("query(q)", f"tensor<float>(x[{self.embedding_dim}])"),
+                                    (
+                                        "query(q)",
+                                        f"tensor<float>(x[{self.embedding_dim}])",
+                                    ),
                                 ],
                                 first_phase="closeness(field, embedding)",
                             ),
                             RankProfile(
                                 name="fusion",
                                 inherits="bm25",
-                                inputs=[("query(q)", f"tensor<float>(x[{self.embedding_dim}])")],
+                                inputs=[
+                                    (
+                                        "query(q)",
+                                        f"tensor<float>(x[{self.embedding_dim}])",
+                                    )
+                                ],
                                 first_phase="closeness(field, embedding)",
                                 global_phase=GlobalPhaseRanking(
                                     expression="reciprocal_rank_fusion(bm25sum, closeness(field, embedding))",
@@ -162,7 +175,7 @@ class VESPA:
                             ),
                         ],
                     )
-                ]
+                ],
             )
             self.vespa_docker = VespaDocker()
             self.app = None
@@ -191,13 +204,16 @@ class VESPA:
         """
         try:
             from vespa.io import VespaResponse
+
             docs = process_docs(docs, self.embedding_function)
 
             def callback(response: VespaResponse, id: str):
                 if not response.is_successful():
                     print(f"Error when feeding document {id}: {response.get_json()}")
 
-            self.app.feed_iterable(docs, schema="doc", namespace=self.app_name, callback=callback)
+            self.app.feed_iterable(
+                docs, schema="doc", namespace=self.app_name, callback=callback
+            )
         except Exception as e:
             print(f"Error adding documents to VESPA: {e}")
 
@@ -243,13 +259,15 @@ class VESPA:
         """
         try:
             documents: List[Document] = []
-            hits = response.get('root', {}).get('children', [])
+            hits = response.get("root", {}).get("children", [])
             for hit in hits:
-                fields = hit.get('fields', {})
-                documents.append(Document(
-                    page_content=fields.get('body', ''),
-                    relevance=hit.get('relevance', 0)
-                ))
+                fields = hit.get("fields", {})
+                documents.append(
+                    Document(
+                        page_content=fields.get("body", ""),
+                        relevance=hit.get("relevance", 0),
+                    )
+                )
             return documents
         except Exception as e:
             print(f"Error parsing response: {e}")
@@ -270,7 +288,7 @@ class VESPA:
             for doc in documents:
                 hit_data = {
                     "body": doc.page_content,
-                    "score": doc.metadata.get("relevance", 0)
+                    "score": doc.metadata.get("relevance", 0),
                 }
                 hits_data.append(hit_data)
 
@@ -280,7 +298,9 @@ class VESPA:
             print(f"Error displaying hits as DataFrame: {e}")
             return pd.DataFrame()
 
-    def similarity_search_with_score(self, query: str, k: int) -> List[Tuple[Document, float]]:
+    def similarity_search_with_score(
+        self, query: str, k: int
+    ) -> List[Tuple[Document, float]]:
         """
         Perform a similarity search with score, retrieving the top k documents.
 

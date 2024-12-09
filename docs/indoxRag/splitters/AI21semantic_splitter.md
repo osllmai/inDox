@@ -7,7 +7,7 @@ AI21SemanticTextSplitter is a Python class that utilizes the AI21 API for semant
 To use AI21SemanticTextSplitter:
 
 ```python
-from indox.splitter import AI21SemanticTextSplitter
+from indoxRag.splitter import AI21SemanticTextSplitter
 
 splitter = AI21SemanticTextSplitter(
     chunk_size=400,
@@ -26,29 +26,43 @@ splitter = AI21SemanticTextSplitter(
 - **num_retries** [int]: Number of times to retry failed API calls (default: 3).
 
 ## Usage
+
 ### Setting Up the Python Environment
+
 ### Windows
 
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2**Activate the virtual environment:**
+
 ```bash
-indox\Scripts\activate
+indoxRag\Scripts\activate
 ```
+
 ### macOS/Linux
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-source indox/bin/activate
+source indoxRag/bin/activate
 ```
+
 ### Get Started
+
 ### Set AI21 API Key as Environment Variable
+
 **Import HuggingFace API Key**
+
 ```python
 import os
 from dotenv import load_dotenv
@@ -56,18 +70,24 @@ from dotenv import load_dotenv
 load_dotenv('api.env')
 AI21_API_KEY = os.getenv('AI21_API_KEY')
 ```
+
 ### Import Essential Libraries
+
 ```python
-from indox.splitter import AI21SemanticTextSplitter
+from indoxRag.splitter import AI21SemanticTextSplitter
 ```
+
 ### Initialize AI21SemanticTextSplitter
+
 ```python
 splitter = AI21SemanticTextSplitter(
     chunk_size=400,
     chunk_overlap=50
 )
 ```
+
 ### Split And Processing Chunks
+
 ```python
 TEXT = (
     "We’ve all experienced reading long, tedious, and boring pieces of text - financial reports, "

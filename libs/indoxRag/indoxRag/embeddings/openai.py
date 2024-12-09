@@ -1,12 +1,16 @@
 from typing import List, cast
 from loguru import logger
 import sys
-from indox.core import Embeddings
+from indoxRag.core import Embeddings
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO")
-logger.add(sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 
 class OpenAiEmbedding(Embeddings):
@@ -16,9 +20,11 @@ class OpenAiEmbedding(Embeddings):
         self.api_key = api_key
         self.model = model
         self.client = OpenAI(api_key=api_key)
-        logger.info(f'Initialized OpenAiEmbedding with model: {model}')
+        logger.info(f"Initialized OpenAiEmbedding with model: {model}")
 
-    def _get_len_safe_embeddings(self, texts: List[str], engine: str) -> List[List[float]]:
+    def _get_len_safe_embeddings(
+        self, texts: List[str], engine: str
+    ) -> List[List[float]]:
         """
         Fetch embeddings from OpenAI, ensuring text length safety.
 
@@ -30,23 +36,20 @@ class OpenAiEmbedding(Embeddings):
             List of embeddings, one for each text.
         """
         embeddings = []
-        logger.info(f'Starting to fetch embeddings for texts using engine: {engine}')
+        logger.info(f"Starting to fetch embeddings for texts using engine: {engine}")
 
         for text in texts:
             try:
                 # client.embeddings.create(input=[text], model=engine).data[0].embedding
 
-                response = self.client.embeddings.create(
-                    model=engine,
-                    input=[text]
-                )
-                logger.debug(f'Response: {response}')
+                response = self.client.embeddings.create(model=engine, input=[text])
+                logger.debug(f"Response: {response}")
 
                 embedding = response.data[0].embedding
                 embeddings.append(embedding)
 
             except Exception as e:
-                logger.error(f'Failed to fetch embeddings: {e}')
+                logger.error(f"Failed to fetch embeddings: {e}")
                 raise
 
         return embeddings
@@ -62,7 +65,7 @@ class OpenAiEmbedding(Embeddings):
             List of embeddings, one for each text.
         """
         engine = cast(str, self.model)
-        logger.info('Embedding documents')
+        logger.info("Embedding documents")
         return self._get_len_safe_embeddings(texts, engine=engine)
 
     def embed_query(self, text: str) -> List[float]:

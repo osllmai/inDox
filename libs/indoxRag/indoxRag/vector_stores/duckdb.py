@@ -3,31 +3,36 @@ import uuid
 
 from typing import List, Optional, Any, Iterable, Tuple
 import logging
-from indox.core import Document
+from indoxRag.core import Document
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
+
 class DuckDB:
 
-    def __init__(self,
-                 embedding_function: Any = None,
-                 vector_key: str = "embedding",
-                 id_key: str = "id",
-                 text_key: str = "text",
-                 table_name: str = "embeddings",
-                 ):
+    def __init__(
+        self,
+        embedding_function: Any = None,
+        vector_key: str = "embedding",
+        id_key: str = "id",
+        text_key: str = "text",
+        table_name: str = "embeddings",
+    ):
 
         try:
             import duckdb
         except ImportError:
-            raise ImportError("Could not import duckdb package. Please install it with `pip install duckdb`.")
+            raise ImportError(
+                "Could not import duckdb package. Please install it with `pip install duckdb`."
+            )
         self.duckdb = duckdb
-        self._connection = self.duckdb.connect(database=":memory:",
-                                                             config={"enable_external_access": "false"})
+        self._connection = self.duckdb.connect(
+            database=":memory:", config={"enable_external_access": "false"}
+        )
         self._embedding_function = embedding_function
         self._vector_key = vector_key
         self._id_key = id_key
@@ -52,10 +57,10 @@ class DuckDB:
         self._connection.execute(create_table_sql)
 
     def add(
-            self,
-            texts: Iterable[str],
-            metadatas: Optional[List[dict]] = None,
-            **kwargs: Any,
+        self,
+        texts: Iterable[str],
+        metadatas: Optional[List[dict]] = None,
+        **kwargs: Any,
     ) -> List[str]:
         """Turn texts into embeddings and add them to the database using Pandas DataFrame.
 
@@ -70,6 +75,7 @@ class DuckDB:
         have_pandas = False
         try:
             import pandas as pd
+
             have_pandas = True
         except ImportError:
             logger.info(
@@ -84,27 +90,31 @@ class DuckDB:
 
         data = []
         for idx, (text, embedding) in enumerate(zip(texts, embeddings)):
-            metadata = json.dumps(metadatas[idx]) if metadatas and idx < len(metadatas) else None
+            metadata = (
+                json.dumps(metadatas[idx])
+                if metadatas and idx < len(metadatas)
+                else None
+            )
 
             if have_pandas:
-                data.append({
-                    self._id_key: ids[idx],
-                    self._text_key: text,
-                    self._vector_key: embedding,
-                    "metadata": metadata,
-                })
+                data.append(
+                    {
+                        self._id_key: ids[idx],
+                        self._text_key: text,
+                        self._vector_key: embedding,
+                        "metadata": metadata,
+                    }
+                )
             else:
                 self._connection.execute(
                     f"INSERT INTO {self._table_name} VALUES (?, ?, ?, ?)",
-                    [ids[idx], text, embedding, metadata]
+                    [ids[idx], text, embedding, metadata],
                 )
 
         if have_pandas:
             df = pd.DataFrame(data)
             self._connection.register("df", df)
-            self._connection.execute(
-                f"INSERT INTO {self._table_name} SELECT * FROM df"
-            )
+            self._connection.execute(f"INSERT INTO {self._table_name} SELECT * FROM df")
 
         return ids
 
@@ -163,9 +173,8 @@ class DuckDB:
     #
     #     return instance
 
-
     def _similarity_search_with_score(
-            self, query: str, k: int = 4, **kwargs: Any
+        self, query: str, k: int = 4, **kwargs: Any
     ) -> List[Tuple[Document, float]]:
         """Performs a similarity search for a given query string.
         Args:
@@ -185,7 +194,6 @@ class DuckDB:
             self.duckdb.ConstantExpression(embedding),
         )
 
-
         # Retrieve the most similar documents from the table
         docs = (
             self._table.select(
@@ -199,21 +207,23 @@ class DuckDB:
             .fetchdf()
         )
 
-
-
         # Return a list of tuples (Document, similarity_score)
         return [
             (
                 Document(
                     page_content=docs[self._text_key][idx],
-                    metadata={
-                        **json.loads(docs["metadata"][idx]),
-                        "Similarity Score": docs['similarity_score'][idx],
-                    }
-                    if docs["metadata"][idx]
-                    else {"Similarity Score": docs['similarity_score'][idx]},
+                    metadata=(
+                        {
+                            **json.loads(docs["metadata"][idx]),
+                            "Similarity Score": docs["similarity_score"][idx],
+                        }
+                        if docs["metadata"][idx]
+                        else {"Similarity Score": docs["similarity_score"][idx]}
+                    ),
                 ),
-                docs['similarity_score'][idx]  # Include the similarity score in the tuple
+                docs["similarity_score"][
+                    idx
+                ],  # Include the similarity score in the tuple
             )
             for idx in range(len(docs))
         ]
@@ -228,8 +238,10 @@ class DuckDB:
             logger.warning("No IDs provided for deletion.")
             return
 
-        placeholders = ','.join(['?'] * len(ids))
-        delete_sql = f"DELETE FROM {self._table_name} WHERE {self._id_key} IN ({placeholders})"
+        placeholders = ",".join(["?"] * len(ids))
+        delete_sql = (
+            f"DELETE FROM {self._table_name} WHERE {self._id_key} IN ({placeholders})"
+        )
 
         try:
             self._connection.execute(delete_sql, ids)

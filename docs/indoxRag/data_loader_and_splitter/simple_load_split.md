@@ -27,20 +27,20 @@ load_dotenv()
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 ```
 
-Initialize Indox and QA models:
+Initialize IndoxRag and QA models:
 
 ```python
-from indox import IndoxRetrievalAugmentation
-Indox = IndoxRetrievalAugmentation()
+from indoxRag import IndoxRetrievalAugmentation
+IndoxRag = IndoxRagRetrievalAugmentation()
 
-from Indox.llms import OpenAiQA
+from IndoxRag.llms import OpenAiQA
 openai_qa = OpenAiQA(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo-0125")
 ```
 
 Perform the clustered split on the text file or PDF file:
 
 ```python
-from indox.data_loader_splitter import SimpleLoadAndSplit
+from indoxRag.data_loader_splitter import SimpleLoadAndSplit
 
 file_path = "path/to/your/file.txt"  # Specify the file path
 loader_splitter = SimpleLoadAndSplit(file_path=file_path)
@@ -59,13 +59,13 @@ from dotenv import load_dotenv
 load_dotenv()
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 
-from indox import IndoxRetrievalAugmentation
-Indox = IndoxRetrievalAugmentation()
+from indoxRag import IndoxRagRetrievalAugmentation
+IndoxRag = IndoxRagRetrievalAugmentation()
 
-from indox.llms import OpenAiQA
+from indoxRag.llms import OpenAiQA
 openai_qa = OpenAiQA(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo-0125")
 
-from indox.data_loader_splitter import ClusteredSplit
+from indoxRag.data_loader_splitter import ClusteredSplit
 
 file_path = "path/to/your/file.txt"  # Specify the file path
 loader_splitter = ClusteredSplit(file_path=file_path)

@@ -2,7 +2,7 @@ import uuid
 import json
 import numpy as np
 from typing import List, Tuple, Callable
-from indox.core import Document
+from indoxRag.core import Document
 
 
 class ApacheCassandra:
@@ -49,12 +49,13 @@ class ApacheCassandra:
     def __init__(self, embedding_function: Callable[[str], np.ndarray], keyspace: str):
         from cassandra.cluster import Cluster
         from cassandra.policies import DCAwareRoundRobinPolicy
+
         try:
             self.cluster = Cluster(
-                contact_points=['127.0.0.1'],
+                contact_points=["127.0.0.1"],
                 port=9042,
-                load_balancing_policy=DCAwareRoundRobinPolicy(local_dc='datacenter1'),
-                protocol_version=4
+                load_balancing_policy=DCAwareRoundRobinPolicy(local_dc="datacenter1"),
+                protocol_version=4,
             )
             self.session = self.cluster.connect()
             self.keyspace = keyspace
@@ -65,14 +66,17 @@ class ApacheCassandra:
 
     def _setup_keyspace(self):
         try:
-            self.session.execute(f"""
+            self.session.execute(
+                f"""
                 CREATE KEYSPACE IF NOT EXISTS {self.keyspace}
                 WITH REPLICATION = {{ 'class' : 'SimpleStrategy', 'replication_factor' : 1 }}
-            """)
+            """
+            )
             self.session.set_keyspace(self.keyspace)
             self.session.execute("DROP TABLE IF EXISTS embeddings_table")
             self.session.execute(
-                """CREATE TABLE IF NOT EXISTS embeddings_table (id UUID PRIMARY KEY, embedding text, chunk_text text)""")
+                """CREATE TABLE IF NOT EXISTS embeddings_table (id UUID PRIMARY KEY, embedding text, chunk_text text)"""
+            )
         except Exception as e:
             raise RuntimeError(f"Failed to set up keyspace or table: {e}")
 
@@ -83,20 +87,29 @@ class ApacheCassandra:
             chunk_embeddings = self.embedding_function.embed_documents(docs)
             for chunk, embedding in zip(docs, chunk_embeddings):
                 embedding_str = json.dumps(embedding)
-                self.session.execute("""INSERT INTO embeddings_table (id, embedding, chunk_text) VALUES (%s, %s, %s)""",
-                                     (uuid.uuid4(), embedding_str, chunk))
+                self.session.execute(
+                    """INSERT INTO embeddings_table (id, embedding, chunk_text) VALUES (%s, %s, %s)""",
+                    (uuid.uuid4(), embedding_str, chunk),
+                )
         except Exception as e:
             raise RuntimeError(f"Failed to add documents to Cassandra: {e}")
 
-    def similarity_search_with_score(self, query: str, k: int = 5) -> List[Tuple[Document, float]]:
+    def similarity_search_with_score(
+        self, query: str, k: int = 5
+    ) -> List[Tuple[Document, float]]:
         from sklearn.metrics.pairwise import cosine_similarity
+
         try:
             query_embedding = np.array(self.embedding_function.embed_query(query))
-            rows = self.session.execute('SELECT id, embedding, chunk_text FROM embeddings_table')
+            rows = self.session.execute(
+                "SELECT id, embedding, chunk_text FROM embeddings_table"
+            )
             similarity_scores = []
             for row in rows:
                 stored_embedding = np.array(json.loads(row.embedding))
-                similarity = cosine_similarity(stored_embedding.reshape(1, -1), query_embedding.reshape(1, -1))[0][0]
+                similarity = cosine_similarity(
+                    stored_embedding.reshape(1, -1), query_embedding.reshape(1, -1)
+                )[0][0]
                 document = Document(page_content=row.chunk_text, id=str(row.id))
                 similarity_scores.append((document, similarity))
             similarity_scores.sort(reverse=True, key=lambda x: x[1])

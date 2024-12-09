@@ -5,7 +5,7 @@ Document is a class that represents a data document from various sources. It pro
 To use the Document class:
 
 ```python
-from indox.data_connectors import Document
+from indoxRag.data_connectors import Document
 
 # Create a new document
 doc = Document(source="Wikipedia", content="Wikipedia is a free online encyclopedia.")
@@ -22,9 +22,10 @@ doc_dict = doc.to_dict()
 # Create from dictionary
 new_doc = Document.from_dict(doc_dict)
 ```
+
 # Class Attributes
 
-- **id_**  [str]: A unique identifier for the document (automatically generated).
+- **id\_** [str]: A unique identifier for the document (automatically generated).
 - **source** [str]: The source of the document (e.g., YouTube, Wikipedia).
 - **content** [str]: The actual content of the document.
 - **metadata** [Dict[str, Any]]: Additional metadata associated with the document.
@@ -34,16 +35,17 @@ new_doc = Document.from_dict(doc_dict)
 Initializes a new Document object.
 
 **Parameters:**
+
 - **source** [str]: The source of the document.
 - - **content** [str]: The content of the document.
 - **metadata** [Optional[Dict[str, Any]]]: Optional metadata associated with the document.
 
-
 **Raises:**
-  - **TypeError:** If the source or content is not a string.
-  - **ValueError:** If the source or content is empty.
 
-**__str__() -> str:**
+- **TypeError:** If the source or content is not a string.
+- **ValueError:** If the source or content is empty.
+
+****str**() -> str:**
 
 Returns a string representation of the document.
 
@@ -52,6 +54,7 @@ Returns a string representation of the document.
 Converts the document to a dictionary representation.
 
 **Returns:**
+
 - **Dict[str, Any]**: A dictionary containing the document's attributes.
 
 **from_dict(cls, data: Dict[str, Any]) -> Document:**
@@ -59,19 +62,23 @@ Converts the document to a dictionary representation.
 Creates a Document object from a dictionary.
 
 **Parameters:**
+
 - **data** [Dict[str, Any]]: A dictionary containing the document's attributes.
 
 **Returns:**
+
 - **Document**: A new Document object.
 
 **Raises:**
+
 - **KeyError**: If the dictionary is missing required keys.
 - **TypeError**: If the dictionary values are not of the expected types.
 - **ValueError**: If the source or content is empty.
+
 ## Usage
 
 ```python
-from indox.data_connectors import Document
+from indoxRag.data_connectors import Document
 
 # Create a new document
 doc = Document(
@@ -97,4 +104,5 @@ print("New document:", new_doc)
 # String representation
 print(str(doc))
 ```
+
 This example demonstrates how to create Document objects, access their attributes, convert them to and from dictionaries, and get their string representations.

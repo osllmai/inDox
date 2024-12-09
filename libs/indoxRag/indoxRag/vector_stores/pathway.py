@@ -19,29 +19,29 @@ import logging
 from typing import Any, Callable, Iterable, List, Optional, Tuple
 
 import requests
-from indox.core import Embeddings, VectorStore, Document
+from indoxRag.core import Embeddings, VectorStore, Document
 from loguru import logger
 import sys
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 
 # Copied from https://github.com/pathwaycom/pathway/blob/main/python/pathway/xpacks/llm/vector_store.py
 # to remove dependency on Pathway library.
 class _VectorStoreClient:
     def __init__(
-            self,
-            host: Optional[str] = None,
-            port: Optional[int] = None,
-            url: Optional[str] = None,
+        self,
+        host: Optional[str] = None,
+        port: Optional[int] = None,
+        url: Optional[str] = None,
     ):
         """
         A client you can use to query :py:class:`VectorStoreServer`.
@@ -65,7 +65,7 @@ class _VectorStoreClient:
             self.url = f"http://{host}:{port}"
 
     def query(
-            self, query: str, k: int = 3, metadata_filter: Optional[str] = None
+        self, query: str, k: int = 3, metadata_filter: Optional[str] = None
     ) -> List[dict]:
         """
         Perform a query to the vector store and fetch results.
@@ -107,9 +107,9 @@ class _VectorStoreClient:
         return responses
 
     def get_input_files(
-            self,
-            metadata_filter: Optional[str] = None,
-            filepath_globpattern: Optional[str] = None,
+        self,
+        metadata_filter: Optional[str] = None,
+        filepath_globpattern: Optional[str] = None,
     ) -> list:
         """
         Fetch information on documents in the vector store.
@@ -140,10 +140,10 @@ class PathwayVectorClient:
     """
 
     def __init__(
-            self,
-            host: Optional[str] = None,
-            port: Optional[int] = None,
-            url: Optional[str] = None,
+        self,
+        host: Optional[str] = None,
+        port: Optional[int] = None,
+        url: Optional[str] = None,
     ) -> None:
         """
         A client you can use to query Pathway Vector Store.
@@ -158,10 +158,10 @@ class PathwayVectorClient:
         self.client = _VectorStoreClient(host, port, url)
 
     def _add_texts(
-            self,
-            texts: Iterable[str],
-            metadatas: Optional[List[dict]] = None,
-            **kwargs: Any,
+        self,
+        texts: Iterable[str],
+        metadatas: Optional[List[dict]] = None,
+        **kwargs: Any,
     ) -> List[str]:
         """Pathway is not suitable for this method."""
         raise NotImplementedError(
@@ -201,18 +201,18 @@ class PathwayVectorClient:
 
     @classmethod
     def _from_texts(
-            cls,
-            texts: List[str],
-            embedding: Embeddings,
-            metadatas: Optional[List[dict]] = None,
-            **kwargs: Any,
+        cls,
+        texts: List[str],
+        embedding: Embeddings,
+        metadatas: Optional[List[dict]] = None,
+        **kwargs: Any,
     ) -> "PathwayVectorClient":
         raise NotImplementedError(
             "Pathway vector store does not support initializing from_texts."
         )
 
     def _similarity_search(
-            self, query: str, k: int = 4, **kwargs: Any
+        self, query: str, k: int = 4, **kwargs: Any
     ) -> List[Document]:
         metadata_filter = kwargs.pop("metadata_filter", None)
         if kwargs:
@@ -227,10 +227,10 @@ class PathwayVectorClient:
         ]
 
     def _similarity_search_with_score(
-            self,
-            query: str,
-            k: int = 4,
-            metadata_filter: Optional[str] = None,
+        self,
+        query: str,
+        k: int = 4,
+        metadata_filter: Optional[str] = None,
     ) -> List[Tuple[Document, float]]:
         """Run similarity search with Pathway with distance.
 
@@ -260,9 +260,9 @@ class PathwayVectorClient:
         return self.client.get_vectorstore_statistics()
 
     def get_input_files(
-            self,
-            metadata_filter: Optional[str] = None,
-            filepath_globpattern: Optional[str] = None,
+        self,
+        metadata_filter: Optional[str] = None,
+        filepath_globpattern: Optional[str] = None,
     ) -> list:
         """List files indexed by the Vector Store."""
         return self.client.get_input_files(metadata_filter, filepath_globpattern)

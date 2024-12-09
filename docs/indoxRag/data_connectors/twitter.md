@@ -9,17 +9,18 @@ For API access, follow the instructions at 'https://developer.twitter.com/en/doc
 To use TwitterTweetReader:
 
 ```python
-from indox.data_connectors import TwitterTweetReader
+from indoxRag.data_connectors import TwitterTweetReader
 
 reader = TwitterTweetReader(bearer_token="your_bearer_token")
 documents = reader.load_data(twitterhandles=["username1", "username2"])
 ```
+
 # Class Attributes
 
 - **bearer_token** [str]: Bearer token for Twitter API authentication.
 - **num_tweets** [Optional[int]]: Default number of tweets to fetch per user.
 
-**__init__(bearer_token: str, num_tweets: Optional[int] = 100):**
+****init**(bearer_token: str, num_tweets: Optional[int] = 100):**
 
 Initializes the TwitterTweetReader with the given bearer token and optional number of tweets.
 
@@ -32,39 +33,53 @@ Returns the name of the class as a string.
 Loads tweets from the specified Twitter handles.
 
 **Parameters:**
+
 - **twitterhandles** [List[str]]: List of Twitter usernames to fetch tweets from.
 - **num_tweets** [Optional[int]]: Number of tweets to fetch per user (overrides the default if specified).
 - **load_kwargs** [Any]: Additional keyword arguments (not used in current implementation).
 
 **Returns:**
+
 - **List[Document]**: List of Document objects containing tweets and metadata.
 
 ## Usage
+
 ### Setting Up the Python Environment
+
 **Windows**
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-indox\Scripts\activate
+indoxRag\Scripts\activate
 ```
+
 ### macOS/Linux
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-source indox/bin/activate
+source indoxRag/bin/activate
 ```
 
 ## Get Started
+
 ### Import Essential Libraries and Use TwitterTweetReader
 
 ```python
-from indox.data_connectors import TwitterTweetReader
+from indoxRag.data_connectors import TwitterTweetReader
 import os
 from dotenv import load_dotenv
 
@@ -85,4 +100,5 @@ for doc in documents:
     print(f"Tweets preview: {doc.content[:200]}...")
     print("---")
 ```
+
 This example demonstrates how to use TwitterTweetReader to retrieve tweets from specific Twitter handles and access their content and metadata.

@@ -1,4 +1,4 @@
-from indox.core.document_object import Document
+from indoxRag.core.document_object import Document
 from typing import List, Dict
 import os
 
@@ -27,14 +27,15 @@ class Pptx:
 
     def load(self) -> List[Document]:
         from pptx import Presentation
+
         try:
             presentation = Presentation(self.file_path)
             documents = []
 
             # Create metadata
             metadata_dict = {
-                'source': self.file_path,
-                'num_slides': len(presentation.slides),
+                "source": self.file_path,
+                "num_slides": len(presentation.slides),
             }
 
             for i, slide in enumerate(presentation.slides):
@@ -44,7 +45,9 @@ class Pptx:
                         text.append(shape.text)
 
                 # Create a Document for each slide
-                document = Document(page_content='\n'.join(text), slide_number=i + 1, **metadata_dict)
+                document = Document(
+                    page_content="\n".join(text), slide_number=i + 1, **metadata_dict
+                )
                 documents.append(document)
 
             return documents
@@ -52,5 +55,8 @@ class Pptx:
             raise RuntimeError(f"Error loading PowerPoint file: {e}")
 
     def load_and_split(self, splitter, remove_stopwords=False):
-        from indox.data_loader.utils import load_and_process_input
-        return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)
+        from indoxRag.data_loader.utils import load_and_process_input
+
+        return load_and_process_input(
+            loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords
+        )

@@ -1,4 +1,3 @@
-
 ---
 
 # PdfMiner PDF File Loader
@@ -12,7 +11,7 @@ The `PdfMiner` function loads a PDF file and extracts its text content from each
 Ensure you have the necessary libraries installed:
 
 ```bash
-pip install pdfminer.six indox
+pip install pdfminer.six indoxRag
 ```
 
 ## Quick Start
@@ -20,7 +19,7 @@ pip install pdfminer.six indox
 1. **Import the `PdfMiner` Function**
 
    ```python
-   from your_module import PdfMiner
+   from indoxRag.data_loaders import PdfMiner
    ```
 
 2. **Load and Extract Content from a PDF File**
@@ -69,7 +68,7 @@ pip install pdfminer.six indox
 ### Example Usage
 
 ```python
-from your_module import PdfMiner
+from indoxRag.data_loaders import PdfMiner
 
 # Load and extract content from the PDF file
 file_path = 'document.pdf'
@@ -87,4 +86,3 @@ for document in documents:
 - The `page` metadata is set according to the page number in the PDF.
 
 ---
-

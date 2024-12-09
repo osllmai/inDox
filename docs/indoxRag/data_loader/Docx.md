@@ -1,4 +1,3 @@
-
 ---
 
 # Docx Loader
@@ -20,7 +19,7 @@ pip install python-docx indox
 1. **Import the `Docx` Function**
 
    ```python
-   from your_module import Docx
+   from indoxRag.data_loaders import Docx
    ```
 
 2. **Load and Parse a DOCX File**
@@ -64,7 +63,7 @@ pip install python-docx indox
 ### Example Usage
 
 ```python
-from your_module import Docx
+from indoxRag.data_loaders import Docx
 
 # Load and parse the DOCX file
 file_path = 'document.docx'
@@ -81,5 +80,4 @@ print(document.page_content)  # Prints the text content of the page
 - Ensure the DOCX file exists and is accessible at the provided `file_path`.
 - The estimated page numbers are based on paragraph counts and may not reflect actual pagination.
 
---- 
-
+---

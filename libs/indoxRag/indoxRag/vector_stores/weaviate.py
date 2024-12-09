@@ -16,7 +16,7 @@ from typing import (
 from uuid import uuid4
 
 import numpy as np
-from indox.core import Document, Embeddings, VectorStore
+from indoxRag.core import Document, Embeddings, VectorStore
 
 if TYPE_CHECKING:
     import weaviate
@@ -27,13 +27,13 @@ warnings.filterwarnings("ignore")
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 
 def _default_schema(index_name: str, text_key: str) -> Dict:
@@ -49,9 +49,9 @@ def _default_schema(index_name: str, text_key: str) -> Dict:
 
 
 def _create_weaviate_client(
-        url: Optional[str] = None,
-        api_key: Optional[str] = None,
-        **kwargs: Any,
+    url: Optional[str] = None,
+    api_key: Optional[str] = None,
+    **kwargs: Any,
 ) -> weaviate.Client:
     try:
         import weaviate
@@ -84,16 +84,16 @@ class Weaviate:
     """
 
     def __init__(
-            self,
-            client: Any,
-            index_name: str,
-            text_key: str,
-            embedding: Optional[Embeddings] = None,
-            attributes: Optional[List[str]] = None,
-            relevance_score_fn: Optional[
-                Callable[[float], float]
-            ] = _default_score_normalizer,
-            by_text: bool = True,
+        self,
+        client: Any,
+        index_name: str,
+        text_key: str,
+        embedding: Optional[Embeddings] = None,
+        attributes: Optional[List[str]] = None,
+        relevance_score_fn: Optional[
+            Callable[[float], float]
+        ] = _default_score_normalizer,
+        by_text: bool = True,
     ):
         """Initialize with Weaviate client."""
         try:
@@ -165,10 +165,10 @@ class Weaviate:
         return ids
 
     def _add_texts(
-            self,
-            texts: Iterable[str],
-            metadatas: Optional[List[dict]] = None,
-            **kwargs: Any,
+        self,
+        texts: Iterable[str],
+        metadatas: Optional[List[dict]] = None,
+        **kwargs: Any,
     ) -> List[str]:
         """Upload texts with metadata (properties) to Weaviate."""
         from weaviate.util import get_valid_uuid
@@ -205,11 +205,11 @@ class Weaviate:
 
     def add(self, docs):
         """
-               Adds documents to the Weaviate vector store.
+        Adds documents to the Weaviate vector store.
 
-               Args:
-                   docs: The documents to be added to the vector store.
-               """
+        Args:
+            docs: The documents to be added to the vector store.
+        """
         try:
             if isinstance(docs[0], Document):
                 self._add_documents(documents=docs)
@@ -221,7 +221,7 @@ class Weaviate:
             raise RuntimeError(f"Can't add document to the vector store: {e}")
 
     def _similarity_search_with_score(
-            self, query: str, k: int = 4, **kwargs: Any
+        self, query: str, k: int = 4, **kwargs: Any
     ) -> List[Tuple[Document, float]]:
         """
         Return list of documents most similar to the query
@@ -263,22 +263,22 @@ class Weaviate:
 
     @classmethod
     def from_texts(
-            cls,
-            texts: List[str],
-            embedding: Embeddings,
-            metadatas: Optional[List[dict]] = None,
-            *,
-            client: Optional[weaviate.Client] = None,
-            weaviate_url: Optional[str] = None,
-            weaviate_api_key: Optional[str] = None,
-            batch_size: Optional[int] = None,
-            index_name: Optional[str] = None,
-            text_key: str = "text",
-            by_text: bool = False,
-            relevance_score_fn: Optional[
-                Callable[[float], float]
-            ] = _default_score_normalizer,
-            **kwargs: Any,
+        cls,
+        texts: List[str],
+        embedding: Embeddings,
+        metadatas: Optional[List[dict]] = None,
+        *,
+        client: Optional[weaviate.Client] = None,
+        weaviate_url: Optional[str] = None,
+        weaviate_api_key: Optional[str] = None,
+        batch_size: Optional[int] = None,
+        index_name: Optional[str] = None,
+        text_key: str = "text",
+        by_text: bool = False,
+        relevance_score_fn: Optional[
+            Callable[[float], float]
+        ] = _default_score_normalizer,
+        **kwargs: Any,
     ) -> Weaviate:
         """Construct Weaviate wrapper from raw documents.
 
@@ -378,7 +378,7 @@ class Weaviate:
         )
 
     def _similarity_search_by_vector(
-            self, embedding: List[float], k: int = 4, **kwargs: Any
+        self, embedding: List[float], k: int = 4, **kwargs: Any
     ) -> List[Document]:
         """Look up similar documents by embedding vector in Weaviate."""
         vector = {"vector": embedding}
@@ -397,6 +397,7 @@ class Weaviate:
             text = res.pop(self._text_key)
             docs.append(Document(page_content=text, metadata=res))
         return docs
+
     def _similarity_search(
         self, query: str, k: int = 4, **kwargs: Any
     ) -> List[Document]:
@@ -419,6 +420,7 @@ class Weaviate:
                 )
             embedding = self._embedding.embed_query(query)
             return self._similarity_search_by_vector(embedding, k, **kwargs)
+
     def _similarity_search_by_text(
         self, query: str, k: int = 4, **kwargs: Any
     ) -> List[Document]:
@@ -449,6 +451,7 @@ class Weaviate:
             text = res.pop(self._text_key)
             docs.append(Document(page_content=text, metadata=res))
         return docs
+
     def delete(self, ids: Optional[List[str]] = None, **kwargs: Any) -> None:
         """Delete by vector IDs.
 

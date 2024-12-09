@@ -1,6 +1,7 @@
 from typing import List, Dict
-from indox.vector_stores.utils import filter_complex_metadata
-from indox.core import Document
+from indoxRag.vector_stores.utils import filter_complex_metadata
+from indoxRag.core import Document
+
 
 class Docx:
     """
@@ -34,9 +35,12 @@ class Docx:
             text_content = "\n".join([para.text for para in doc.paragraphs])
 
             core_properties = doc.core_properties
-            self.metadata = {prop: getattr(core_properties, prop)
-                             for prop in dir(core_properties)
-                             if not prop.startswith('_') and not callable(getattr(core_properties, prop))}
+            self.metadata = {
+                prop: getattr(core_properties, prop)
+                for prop in dir(core_properties)
+                if not prop.startswith("_")
+                and not callable(getattr(core_properties, prop))
+            }
 
             filtered_docx = filter_complex_metadata([self])[0]
             self.metadata = filtered_docx.metadata
@@ -45,13 +49,16 @@ class Docx:
 
             return self.content
 
-
         except FileNotFoundError:
-            raise FileNotFoundError(f"The specified file '{self.docx_path}' does not exist.")
+            raise FileNotFoundError(
+                f"The specified file '{self.docx_path}' does not exist."
+            )
         except Exception as e:
             raise RuntimeError(f"An error occurred while processing the DOCX file: {e}")
 
     def load_and_split(self, splitter, remove_stopwords=False):
-        from indox.data_loaders.utils import load_and_process_input
-        return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)
+        from indoxRag.data_loaders.utils import load_and_process_input
 
+        return load_and_process_input(
+            loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords
+        )

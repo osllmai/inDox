@@ -1,4 +1,3 @@
-
 ---
 
 # GoogleDoc 
@@ -20,7 +19,7 @@ pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-pyt
 1. **Initialize the `GoogleDoc` Class**
 
    ```python
-   from google_doc import GoogleDoc
+   from indoxRag.data_connectors import GoogleDoc
 
    # Initialize GoogleDoc with custom paths for credentials files
    doc = GoogleDoc(creds_file='tokenGoogleDoc.json', credentials_json='./credentials.json')
@@ -78,7 +77,7 @@ Reads the content of a Google Doc by its document ID.
 ## Example Usage
 
 ```python
-from google_doc import GoogleDoc
+from indoxRag.data_connectors import GoogleDoc
 
 # Initialize GoogleDoc object
 doc = GoogleDoc(credentials_json='./credentials.json')
@@ -94,4 +93,3 @@ doc.read(document_id)
 - The `document_id` must be a valid Google Document ID that you have access to.
 
 ---
-

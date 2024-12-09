@@ -1,4 +1,3 @@
-
 ---
 
 # GoogleChat 
@@ -24,7 +23,7 @@ pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-pyt
    **Initialize the Class:**
 
    ```python
-   from google_chat import GoogleChat
+   from indoxRag.data_connectors import GoogleChat
 
    # Initialize GoogleChat class
    chat = GoogleChat()
@@ -87,7 +86,7 @@ Lists the spaces in Google Chat and prints the details of each space.
 ## Example Usage
 
 ```python
-from google_chat import GoogleChat
+from indoxRag.data_connectors import GoogleChat
 
 # Initialize GoogleChat class
 chat = GoogleChat()
@@ -102,4 +101,3 @@ spaces = chat.list_spaces()
 - The `token.json` file is created after successful authentication and is used to store credentials for future runs.
 
 ---
-

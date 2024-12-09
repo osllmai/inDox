@@ -1,7 +1,6 @@
-
 ---
 
-# MapsTextSearch 
+# MapsTextSearch
 
 ## Overview
 
@@ -22,18 +21,19 @@ pip install geopy
    To use the Nominatim API, you need to provide a user agent string. The user agent should be a meaningful name or identifier that helps Nominatim understand the source of the requests.
 
    **Creating a User Agent:**
-   
+
    - **Purpose:** The user agent helps identify your application to the Nominatim service. It should be unique to your application or project.
    - **Format:** The user agent string should ideally include your application name and a contact email or website for any potential follow-up.
 
    **Example User Agents:**
+
    - `"my_application/1.0 (contact@example.com)"`
    - `"my_project_name (http://myprojectwebsite.com)"`
 
    **Initialize the Class:**
 
    ```python
-   from maps_text_search import MapsTextSearch
+   from indoxRag.data_connectors import MapsTextSearch
 
    # Initialize MapsTextSearch with a custom user agent
    searcher = MapsTextSearch(user_agent="my_application/1.0 (contact@example.com)")
@@ -57,9 +57,11 @@ pip install geopy
 Initializes the `MapsTextSearch` object with the specified user agent.
 
 **Parameters:**
+
 - `user_agent` (str): The user agent for the Nominatim geolocator. Default is `"osm_search"`. It should be a unique identifier for your application or project.
 
 **Notes:**
+
 - Configures logging to capture and format log messages.
 - Handles logging configuration errors by printing a message.
 
@@ -68,9 +70,11 @@ Initializes the `MapsTextSearch` object with the specified user agent.
 Searches for the given address and prints and logs the details.
 
 **Parameters:**
+
 - `address` (str): The address to search for.
 
 **Notes:**
+
 - If the address is found, it prints and logs the full address, latitude, and longitude.
 - If the address is not found, it prints and logs a "Address not found" message.
 - If an error occurs during the search process, it prints and logs the error message, and attempts to log it to a fallback location.
@@ -83,7 +87,7 @@ Searches for the given address and prints and logs the details.
 ## Example Usage
 
 ```python
-from maps_text_search import MapsTextSearch
+from indoxRag.data_connectors import MapsTextSearch
 
 # Initialize MapsTextSearch object with a user agent
 searcher = MapsTextSearch(user_agent="my_application/1.0 (contact@example.com)")
@@ -92,5 +96,3 @@ searcher = MapsTextSearch(user_agent="my_application/1.0 (contact@example.com)")
 address = "Pizza Tower, Via Lecco, 20124 Milan, Italy"
 searcher.search_address(address)
 ```
-
-

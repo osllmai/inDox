@@ -1,4 +1,4 @@
-from indox.core.document_object import Document
+from indoxRag.core.document_object import Document
 from typing import List
 
 import os
@@ -33,21 +33,30 @@ class Bs4:
             raise FileNotFoundError(f"File not found: {self.file_path}")
 
         try:
-            with open(self.file_path, 'r', encoding='utf-8') as f:
+            with open(self.file_path, "r", encoding="utf-8") as f:
                 html_content = f.read()
         except UnicodeDecodeError as e:
-            raise UnicodeDecodeError(f"Error decoding HTML file: {self.file_path}. Details: {e}")
+            raise UnicodeDecodeError(
+                f"Error decoding HTML file: {self.file_path}. Details: {e}"
+            )
         except Exception as e:
-            raise RuntimeError(f"Unexpected error while reading the HTML file: {self.file_path}. Details: {e}")
+            raise RuntimeError(
+                f"Unexpected error while reading the HTML file: {self.file_path}. Details: {e}"
+            )
 
         try:
-            soup = BeautifulSoup(html_content, 'html.parser')
+            soup = BeautifulSoup(html_content, "html.parser")
             text = soup.get_text()
         except Exception as e:
-            raise RuntimeError(f"Error parsing HTML content: {self.file_path}. Details: {e}")
+            raise RuntimeError(
+                f"Error parsing HTML content: {self.file_path}. Details: {e}"
+            )
 
         return text
 
     def load_and_split(self, splitter, remove_stopwords=False):
         from indox.data_loader.utils import load_and_process_input
-        return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)
+
+        return load_and_process_input(
+            loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords
+        )

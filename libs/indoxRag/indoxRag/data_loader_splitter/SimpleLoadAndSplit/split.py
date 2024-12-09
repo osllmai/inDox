@@ -1,20 +1,19 @@
 from typing import Optional, List, Tuple
-from indox.core import Document
-from indox.data_loader_splitter.SimpleLoadAndSplit.loader import create_document
+from indoxRag.core import Document
+from indoxRag.data_loader_splitter.SimpleLoadAndSplit.loader import create_document
 from loguru import logger
 import sys
-from indox.splitter import semantic_text_splitter
+from indoxRag.splitter import semantic_text_splitter
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
-
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 
 def get_chunks(file_path, chunk_size, remove_sword):
@@ -52,8 +51,8 @@ def get_chunks(file_path, chunk_size, remove_sword):
         # Optionally remove stopwords from the chunks
         if remove_sword:
             from indox.data_loader_splitter.utils.clean import remove_stopwords_chunk
-            texts = remove_stopwords_chunk(texts)
 
+            texts = remove_stopwords_chunk(texts)
 
         logger.info("Completed chunking process")
         return texts
@@ -62,8 +61,11 @@ def get_chunks(file_path, chunk_size, remove_sword):
         logger.error("Failed at step with error: %s", e)
         raise
 
+
 class SimpleLoadAndSplit:
-    def __init__(self, file_path: str, remove_sword: bool = False, max_chunk_size: int = 500):
+    def __init__(
+        self, file_path: str, remove_sword: bool = False, max_chunk_size: int = 500
+    ):
         try:
             self.file_path = file_path
             self.remove_sword = remove_sword
@@ -73,7 +75,7 @@ class SimpleLoadAndSplit:
             logger.error("Error initializing UnstructuredLoadAndSplit: %s", e)
             raise
 
-    def load_and_chunk(self) -> List['Document']:
+    def load_and_chunk(self) -> List["Document"]:
         """
         Split an unstructured document into chunks.
 

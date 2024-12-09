@@ -7,6 +7,7 @@ pip install weaviate-client
 ```
 
 ### Hyperparameters
+
 - `client` (Any): The Weaviate client instance.
 - `index_name` (str): The name of the index in the Weaviate database.
 - `text_key` (str): The key of the text field in the objects.
@@ -20,7 +21,7 @@ pip install weaviate-client
 For instructions on installing Weaviate, refer to the Weaviate installation guide.
 
 ```python
-from indox.vector_stores import WeaviateVectorStore
+from indoxRag.vector_stores import WeaviateVectorStore
 db = WeaviateVectorStore(client=weaviate_client, index_name="index_name", text_key="text_key", embedding=embed)
 ```
 
@@ -36,7 +37,7 @@ Query the vector store:
 
 ```python
 query = "How cinderella reach her happy ending?"
-retriever = indox.QuestionAnswer(vector_database=db, llm=mistral_qa, top_k=5, document_relevancy_filter=True)
+retriever = indoxRag.QuestionAnswer(vector_database=db, llm=mistral_qa, top_k=5, document_relevancy_filter=True)
 answer = retriever.invoke(query=query)
 ```
 

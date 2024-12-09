@@ -2,12 +2,12 @@
 
 RecursiveCharacterTextSplitter is a Python class designed for splitting text into chunks recursively based on specified separators. It implements a recursive algorithm to split text into chunks of a specified size, with an optional overlap between chunks.
 
-**Note**: This class is part of the `indox.splitter` module. Ensure you have the necessary dependencies installed before using this class.
+**Note**: This class is part of the `indoxRag.splitter` module. Ensure you have the necessary dependencies installed before using this class.
 
 To use RecursiveCharacterTextSplitter:
 
 ```python
-from indox.splitter import RecursiveCharacterTextSplitter
+from indoxRag.splitter import RecursiveCharacterTextSplitter
 
 splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=50)
 ```
@@ -19,36 +19,51 @@ splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=50)
 - **separators** [Optional[List[str]]]: A list of separators to use for splitting the text (default: ["\n\n", "\n", ". ", " ", ""]).
 
 ## Usage
+
 ### Setting Up the Python Environment
+
 ### Windows
 
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2**Activate the virtual environment:**
+
 ```bash
-indox\Scripts\activate
+indoxRag\Scripts\activate
 ```
+
 ### macOS/Linux
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-source indox/bin/activate
+source indoxRag/bin/activate
 ```
 
 ### Import the RecursiveCharacterTextSplitter
+
 ```python
-from indox.splitter import RecursiveCharacterTextSplitter
+from indoxRag.splitter import RecursiveCharacterTextSplitter
 ```
+
 ### Initialize RecursiveCharacterTextSplitter
+
 ```python
 splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=50)
 ```
+
 ### Split And Processing Chunks
+
 ```python
 text = """
 This is a long piece of text that needs to be split into smaller chunks.

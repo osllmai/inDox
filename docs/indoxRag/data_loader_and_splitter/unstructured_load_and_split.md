@@ -38,21 +38,21 @@ load_dotenv()
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 ```
 
-Initialize Indox and QA models:
+Initialize IndoxRag and QA models:
 
 ```python
-from indox import IndoxRetrievalAugmentation
-Indox = IndoxRetrievalAugmentation()
+from indoxRag import IndoxRetrievalAugmentation
+IndoxRag = IndoxRagRetrievalAugmentation()
 
-from Indox.llms import OpenAiQA
+from IndoxRag.llms import OpenAiQA
 openai_qa = OpenAiQA(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo-0125")
 ```
 
 Perform the unstructured load and split on the file:
 
 ```python
-from indox.data_loader_splitter import UnstructuredLoadAndSplit
-from Indox.splitter import semantic_text_splitter
+from indoxRag.data_loader_splitter import UnstructuredLoadAndSplit
+from IndoxRag.splitter import semantic_text_splitter
 
 file_path = "path/to/your/file.pdf"  # Specify the file path
 loader_splitter = UnstructuredLoadAndSplit(file_path=file_path,
@@ -74,14 +74,14 @@ from dotenv import load_dotenv
 load_dotenv()
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 
-from indox import IndoxRetrievalAugmentation
-Indox = IndoxRetrievalAugmentation()
+from indoxRag import IndoxRagRetrievalAugmentation
+IndoxRag = IndoxRagRetrievalAugmentation()
 
-from Indox.llms import OpenAiQA
+from IndoxRag.llms import OpenAiQA
 openai_qa = OpenAiQA(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo-0125")
 
-from indox.data_loader_splitter import UnstructuredLoadAndSplit
-from indox.splitter import semantic_text_splitter
+from indoxRag.data_loader_splitter import UnstructuredLoadAndSplit
+from indoxRag.splitter import semantic_text_splitter
 
 file_path = "path/to/your/file.pdf"  # Specify the file path
 loader_splitter = UnstructuredLoadAndSplit(file_path=file_path,

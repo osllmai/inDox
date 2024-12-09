@@ -20,7 +20,7 @@ from typing import (
 from abc import ABC, abstractmethod
 import numpy as np
 from enum import Enum
-from indox.core import Embeddings, VectorStore, Document
+from indoxRag.core import Embeddings, VectorStore, Document
 
 
 class DistanceStrategy(str, Enum):
@@ -148,17 +148,18 @@ class FAISS(ABC):
     """
 
     def __init__(
-            self,
-            embedding_function: Union[
-                Callable[[str], List[float]],
-                Embeddings,
-            ],
-            relevance_score_fn: Optional[Callable[[float], float]] = None,
-            normalize_L2: bool = False,
-            distance_strategy: DistanceStrategy = DistanceStrategy.EUCLIDEAN_DISTANCE,
+        self,
+        embedding_function: Union[
+            Callable[[str], List[float]],
+            Embeddings,
+        ],
+        relevance_score_fn: Optional[Callable[[float], float]] = None,
+        normalize_L2: bool = False,
+        distance_strategy: DistanceStrategy = DistanceStrategy.EUCLIDEAN_DISTANCE,
     ):
         """Initialize with necessary components."""
         import faiss
+
         if not isinstance(embedding_function, Embeddings):
             logger.warning(
                 "`embedding_function` is expected to be an Embeddings object, support "
@@ -174,8 +175,8 @@ class FAISS(ABC):
         self.override_relevance_score_fn = relevance_score_fn
         self._normalize_L2 = normalize_L2
         if (
-                self.distance_strategy != DistanceStrategy.EUCLIDEAN_DISTANCE
-                and self._normalize_L2
+            self.distance_strategy != DistanceStrategy.EUCLIDEAN_DISTANCE
+            and self._normalize_L2
         ):
             warnings.warn(
                 "Normalizing L2 is not applicable for "
@@ -203,11 +204,11 @@ class FAISS(ABC):
             return self.embedding_function(text)
 
     def __add(
-            self,
-            texts: Iterable[str],
-            embeddings: Iterable[List[float]],
-            metadatas: Optional[Iterable[dict]] = None,
-            ids: Optional[List[str]] = None,
+        self,
+        texts: Iterable[str],
+        embeddings: Iterable[List[float]],
+        metadatas: Optional[Iterable[dict]] = None,
+        ids: Optional[List[str]] = None,
     ) -> List[str]:
         faiss = dependable_faiss_import()
 
@@ -244,11 +245,11 @@ class FAISS(ABC):
         return ids
 
     def add_texts(
-            self,
-            texts: Iterable[str],
-            metadatas: Optional[List[dict]] = None,
-            ids: Optional[List[str]] = None,
-            **kwargs: Any,
+        self,
+        texts: Iterable[str],
+        metadatas: Optional[List[dict]] = None,
+        ids: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> List[str]:
         """Run more texts through the embeddings and add to the vectorstore.
 
@@ -265,11 +266,11 @@ class FAISS(ABC):
         return self.__add(texts, embeddings, metadatas=metadatas, ids=ids)
 
     def add_embeddings(
-            self,
-            text_embeddings: Iterable[Tuple[str, List[float]]],
-            metadatas: Optional[List[dict]] = None,
-            ids: Optional[List[str]] = None,
-            **kwargs: Any,
+        self,
+        text_embeddings: Iterable[Tuple[str, List[float]]],
+        metadatas: Optional[List[dict]] = None,
+        ids: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> List[str]:
         """Add the given texts and embeddings to the vectorstore.
 
@@ -287,12 +288,12 @@ class FAISS(ABC):
         return self.__add(texts, embeddings, metadatas=metadatas, ids=ids)
 
     def _similarity_search_with_score(
-            self,
-            query: str,
-            k: int = 4,
-            filter: Optional[Union[Callable, Dict[str, Any]]] = None,
-            fetch_k: int = 20,
-            **kwargs: Any,
+        self,
+        query: str,
+        k: int = 4,
+        filter: Optional[Union[Callable, Dict[str, Any]]] = None,
+        fetch_k: int = 20,
+        **kwargs: Any,
     ) -> List[Tuple[Document, float]]:
         """Return docs most similar to query.
 
@@ -321,12 +322,12 @@ class FAISS(ABC):
         return docs
 
     def _similarity_search_with_score_by_vector(
-            self,
-            embedding: List[float],
-            k: int = 4,
-            filter: Optional[Union[Callable, Dict[str, Any]]] = None,
-            fetch_k: int = 20,
-            **kwargs: Any,
+        self,
+        embedding: List[float],
+        k: int = 4,
+        filter: Optional[Union[Callable, Dict[str, Any]]] = None,
+        fetch_k: int = 20,
+        **kwargs: Any,
     ) -> List[Tuple[Document, float]]:
         """Return docs most similar to query.
 
@@ -375,7 +376,7 @@ class FAISS(ABC):
             cmp = (
                 operator.ge
                 if self.distance_strategy
-                   in (DistanceStrategy.MAX_INNER_PRODUCT, DistanceStrategy.JACCARD)
+                in (DistanceStrategy.MAX_INNER_PRODUCT, DistanceStrategy.JACCARD)
                 else operator.le
             )
             docs = [
@@ -384,6 +385,7 @@ class FAISS(ABC):
                 if cmp(similarity, score_threshold)
             ]
         return docs[:k]
+
     def _similarity_search(
         self,
         query: str,
@@ -408,6 +410,7 @@ class FAISS(ABC):
             query, k, filter=filter, fetch_k=fetch_k, **kwargs
         )
         return [doc for doc, _ in docs_and_scores]
+
     def delete(self, ids: Optional[List[str]] = None, **kwargs: Any) -> Optional[bool]:
         """Delete by ID. These are the IDs in the vectorstore.
 
@@ -476,15 +479,15 @@ class FAISS(ABC):
 
     @classmethod
     def __from(
-            cls,
-            texts: Iterable[str],
-            embeddings: List[List[float]],
-            embedding: Embeddings,
-            metadatas: Optional[Iterable[dict]] = None,
-            ids: Optional[List[str]] = None,
-            normalize_L2: bool = False,
-            distance_strategy: DistanceStrategy = DistanceStrategy.EUCLIDEAN_DISTANCE,
-            **kwargs: Any,
+        cls,
+        texts: Iterable[str],
+        embeddings: List[List[float]],
+        embedding: Embeddings,
+        metadatas: Optional[Iterable[dict]] = None,
+        ids: Optional[List[str]] = None,
+        normalize_L2: bool = False,
+        distance_strategy: DistanceStrategy = DistanceStrategy.EUCLIDEAN_DISTANCE,
+        **kwargs: Any,
     ) -> FAISS:
         faiss = dependable_faiss_import()
         if distance_strategy == DistanceStrategy.MAX_INNER_PRODUCT:
@@ -508,12 +511,12 @@ class FAISS(ABC):
 
     @classmethod
     def from_texts(
-            cls,
-            texts: List[str],
-            embedding: Embeddings,
-            metadatas: Optional[List[dict]] = None,
-            ids: Optional[List[str]] = None,
-            **kwargs: Any,
+        cls,
+        texts: List[str],
+        embedding: Embeddings,
+        metadatas: Optional[List[dict]] = None,
+        ids: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> FAISS:
         """Construct FAISS wrapper from raw documents.
 
@@ -538,12 +541,12 @@ class FAISS(ABC):
 
     @classmethod
     async def afrom_texts(
-            cls,
-            texts: list[str],
-            embedding: Embeddings,
-            metadatas: Optional[List[dict]] = None,
-            ids: Optional[List[str]] = None,
-            **kwargs: Any,
+        cls,
+        texts: list[str],
+        embedding: Embeddings,
+        metadatas: Optional[List[dict]] = None,
+        ids: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> FAISS:
         """Construct FAISS wrapper from raw documents asynchronously.
 
@@ -566,12 +569,12 @@ class FAISS(ABC):
 
     @classmethod
     def from_embeddings(
-            cls,
-            text_embeddings: Iterable[Tuple[str, List[float]]],
-            embedding: Embeddings,
-            metadatas: Optional[Iterable[dict]] = None,
-            ids: Optional[List[str]] = None,
-            **kwargs: Any,
+        cls,
+        text_embeddings: Iterable[Tuple[str, List[float]]],
+        embedding: Embeddings,
+        metadatas: Optional[Iterable[dict]] = None,
+        ids: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> FAISS:
         """Construct FAISS wrapper from raw documents.
 
@@ -592,12 +595,12 @@ class FAISS(ABC):
 
     @classmethod
     async def afrom_embeddings(
-            cls,
-            text_embeddings: Iterable[Tuple[str, List[float]]],
-            embedding: Embeddings,
-            metadatas: Optional[Iterable[dict]] = None,
-            ids: Optional[List[str]] = None,
-            **kwargs: Any,
+        cls,
+        text_embeddings: Iterable[Tuple[str, List[float]]],
+        embedding: Embeddings,
+        metadatas: Optional[Iterable[dict]] = None,
+        ids: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> FAISS:
         """Construct FAISS wrapper from raw documents asynchronously."""
         return cls.from_embeddings(
@@ -629,13 +632,13 @@ class FAISS(ABC):
 
     @classmethod
     def load_local(
-            cls,
-            folder_path: str,
-            embeddings: Embeddings,
-            index_name: str = "index",
-            *,
-            allow_dangerous_deserialization: bool = False,
-            **kwargs: Any,
+        cls,
+        folder_path: str,
+        embeddings: Embeddings,
+        index_name: str = "index",
+        *,
+        allow_dangerous_deserialization: bool = False,
+        **kwargs: Any,
     ) -> FAISS:
         """Load FAISS index, docstore, and index_to_docstore_id from disk.
 
@@ -685,12 +688,12 @@ class FAISS(ABC):
 
     @classmethod
     def deserialize_from_bytes(
-            cls,
-            serialized: bytes,
-            embeddings: Embeddings,
-            *,
-            allow_dangerous_deserialization: bool = False,
-            **kwargs: Any,
+        cls,
+        serialized: bytes,
+        embeddings: Embeddings,
+        *,
+        allow_dangerous_deserialization: bool = False,
+        **kwargs: Any,
     ) -> FAISS:
         """Deserialize FAISS index, docstore, and index_to_docstore_id from bytes."""
         if not allow_dangerous_deserialization:
@@ -744,7 +747,7 @@ class FAISS(ABC):
 
     @staticmethod
     def _create_filter_func(
-            filter: Optional[Union[Callable, Dict[str, Any]]],
+        filter: Optional[Union[Callable, Dict[str, Any]]],
     ) -> Callable[[Dict[str, Any]], bool]:
         """
         Create a filter function based on the provided filter.
@@ -767,9 +770,11 @@ class FAISS(ABC):
 
         def filter_func(metadata: Dict[str, Any]) -> bool:
             return all(
-                metadata.get(key) in value
-                if isinstance(value, list)
-                else metadata.get(key) == value
+                (
+                    metadata.get(key) in value
+                    if isinstance(value, list)
+                    else metadata.get(key) == value
+                )
                 for key, value in filter.items()  # type: ignore
             )
 

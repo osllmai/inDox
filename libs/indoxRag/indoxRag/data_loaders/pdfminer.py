@@ -1,6 +1,6 @@
 from typing import List
-from indox.vector_stores.utils import filter_complex_metadata
-from indox.core import Document
+from indoxRag.vector_stores.utils import filter_complex_metadata
+from indoxRag.core import Document
 
 
 class PdfMiner:
@@ -36,9 +36,9 @@ class PdfMiner:
 
     def load(self) -> List[Document]:
         try:
-            page_texts = self.extract_text(self.pdf_path).split('\f')
+            page_texts = self.extract_text(self.pdf_path).split("\f")
 
-            with open(self.pdf_path, 'rb') as file:
+            with open(self.pdf_path, "rb") as file:
                 parser = self.PDFParser(file)
                 document = self.PDFDocument(parser)
                 self.metadata = document.info[0] if document.info else {}
@@ -54,12 +54,15 @@ class PdfMiner:
             return self.pages
 
         except FileNotFoundError:
-            raise FileNotFoundError(f"The specified file '{self.pdf_path}' does not exist.")
+            raise FileNotFoundError(
+                f"The specified file '{self.pdf_path}' does not exist."
+            )
         except Exception as e:
             raise RuntimeError(f"An error occurred while processing the PDF file: {e}")
 
-
     def load_and_split(self, splitter, remove_stopwords=False):
-        from indox.data_loaders.utils import load_and_process_input
-        return load_and_process_input(loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords)
+        from indoxRag.data_loaders.utils import load_and_process_input
 
+        return load_and_process_input(
+            loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords
+        )

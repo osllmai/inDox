@@ -12,15 +12,15 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="IndoxRag",
-    version="0.1.31",
+    name="indoxRag",
+    version="0.0.2",
     license="AGPL-3.0",
     packages=find_packages(),
     include_package_data=True,
     description="Indox Retrieval Augmentation",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author="nerdstudio",
+    author="osllm.ai",
     author_email="ashkan@nematifamilyfundation.onmicrosoft.com",
     url="https://github.com/osllmai/inDox/libs/indoxRag",
     keywords=[

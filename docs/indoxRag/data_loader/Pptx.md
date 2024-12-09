@@ -1,4 +1,3 @@
-
 ---
 
 # Pptx PowerPoint File Loader
@@ -12,7 +11,7 @@ The `Pptx` function loads a PowerPoint (.pptx) file and extracts its text conten
 Ensure you have the necessary libraries installed:
 
 ```bash
-pip install python-pptx indox
+pip install python-pptx indoxRag
 ```
 
 ## Quick Start
@@ -20,7 +19,7 @@ pip install python-pptx indox
 1. **Import the `Pptx` Function**
 
    ```python
-   from your_module import Pptx
+   from indoxRag.data_loaders import Pptx
    ```
 
 2. **Load and Extract Content from a PowerPoint File**
@@ -67,7 +66,7 @@ pip install python-pptx indox
 ### Example Usage
 
 ```python
-from your_module import Pptx
+from indoxRag.data_loaders import Pptx
 
 # Load and extract content from the PowerPoint file
 file_path = 'presentation.pptx'
@@ -85,4 +84,3 @@ for document in documents:
 - Metadata is generated for each slide, including the slide number and total number of slides.
 
 ---
-

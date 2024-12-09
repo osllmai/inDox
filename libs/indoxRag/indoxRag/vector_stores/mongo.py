@@ -1,5 +1,5 @@
 from typing import Optional, Dict, Any, List, Tuple, Iterable, Union
-from indox.core import VectorStore, Embeddings, Document
+from indoxRag.core import VectorStore, Embeddings, Document
 import uuid
 
 
@@ -26,14 +26,14 @@ class MongoDB:
     """
 
     def __init__(
-            self,
-            collection_name: str,
-            embedding_function: Optional[Embeddings] = None,
-            connection_string: str = "mongodb://localhost:27017/",
-            database_name: str = "vector_db",
-            index_name: str = "default",
-            text_key: str = "text",
-            embedding_key: str = "embedding",
+        self,
+        collection_name: str,
+        embedding_function: Optional[Embeddings] = None,
+        connection_string: str = "mongodb://localhost:27017/",
+        database_name: str = "vector_db",
+        index_name: str = "default",
+        text_key: str = "text",
+        embedding_key: str = "embedding",
     ) -> None:
         """
         Initialize the MongoDB vector store.
@@ -48,13 +48,17 @@ class MongoDB:
             embedding_key: Key used to store document embeddings in the collection.
         """
         from pymongo.errors import ConnectionFailure, ConfigurationError
+
         try:
             from pymongo import MongoClient
+
             self._client = MongoClient(connection_string)
             self._db = self._client[database_name]
             self._collection = self._db[collection_name]
         except ConnectionFailure:
-            raise ConnectionFailure(f"Failed to connect to MongoDB server at {connection_string}")
+            raise ConnectionFailure(
+                f"Failed to connect to MongoDB server at {connection_string}"
+            )
         except ConfigurationError as e:
             raise ConfigurationError(f"MongoDB configuration error: {str(e)}")
 
@@ -70,11 +74,11 @@ class MongoDB:
         return self._embedding_function
 
     def _add_texts(
-            self,
-            texts: Iterable[str],
-            metadatas: Optional[List[dict]] = None,
-            ids: Optional[List[str]] = None,
-            **kwargs: Any,
+        self,
+        texts: Iterable[str],
+        metadatas: Optional[List[dict]] = None,
+        ids: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> List[str]:
         """
         Add texts to the vector store.
@@ -153,11 +157,11 @@ class MongoDB:
             raise RuntimeError(f"Can't add document to the vector store: {e}")
 
     def _similarity_search_with_score(
-            self,
-            query: str,
-            k: int = DEFAULT_K,
-            filter: Optional[Dict[str, Any]] = None,
-            **kwargs: Any,
+        self,
+        query: str,
+        k: int = DEFAULT_K,
+        filter: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
     ) -> List[Tuple[Document, float]]:
         """
         Perform a similarity search and return documents with scores.
@@ -172,6 +176,7 @@ class MongoDB:
             List of tuples containing Document objects and their similarity scores.
         """
         from sklearn.metrics.pairwise import cosine_similarity
+
         if not self._embedding_function:
             raise ValueError("Embedding function is not set")
 
@@ -182,9 +187,18 @@ class MongoDB:
 
         try:
             if filter:
-                docs = list(self._collection.find(filter, {self._embedding_key: 1, self._text_key: 1, "metadata": 1}))
+                docs = list(
+                    self._collection.find(
+                        filter,
+                        {self._embedding_key: 1, self._text_key: 1, "metadata": 1},
+                    )
+                )
             else:
-                docs = list(self._collection.find({}, {self._embedding_key: 1, self._text_key: 1, "metadata": 1}))
+                docs = list(
+                    self._collection.find(
+                        {}, {self._embedding_key: 1, self._text_key: 1, "metadata": 1}
+                    )
+                )
         except Exception as e:
             raise RuntimeError(f"Error querying MongoDB: {str(e)}")
 
@@ -199,8 +213,16 @@ class MongoDB:
         scored_docs.sort(key=lambda x: x[1], reverse=True)
         top_k = scored_docs[:k]
 
-        return [(Document(page_content=doc[self._text_key], metadata=doc.get("metadata", {})), score) for doc, score in
-                top_k]
+        return [
+            (
+                Document(
+                    page_content=doc[self._text_key], metadata=doc.get("metadata", {})
+                ),
+                score,
+            )
+            for doc, score in top_k
+        ]
+
     def _similarity_search(
         self,
         query: str,
@@ -237,6 +259,7 @@ class MongoDB:
             for doc, score in docs_and_scores:
                 doc.metadata["score"] = score
         return [doc for doc, _ in docs_and_scores]
+
     def delete(self, ids: Optional[List[str]] = None, **kwargs: Any) -> None:
         """
         Delete documents from the vector store.
@@ -258,13 +281,13 @@ class MongoDB:
         return self._collection.count_documents({})
 
     def get(
-            self,
-            ids: Optional[Union[str, List[str]]] = None,
-            filter: Optional[Dict[str, Any]] = None,
-            limit: Optional[int] = None,
-            skip: Optional[int] = None,
-            text_search: Optional[str] = None,
-            include: Optional[List[str]] = None,
+        self,
+        ids: Optional[Union[str, List[str]]] = None,
+        filter: Optional[Dict[str, Any]] = None,
+        limit: Optional[int] = None,
+        skip: Optional[int] = None,
+        text_search: Optional[str] = None,
+        include: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         Retrieve documents from the vector store.
@@ -315,8 +338,11 @@ class MongoDB:
         results = list(cursor)
         return {
             "ids": [str(doc["_id"]) for doc in results],
-            "embeddings": [doc.get(self._embedding_key) for doc in results] if "embeddings" in (
-                    include or []) else None,
+            "embeddings": (
+                [doc.get(self._embedding_key) for doc in results]
+                if "embeddings" in (include or [])
+                else None
+            ),
             "metadata": [doc.get("metadata") for doc in results],
             "documents": [doc.get(self._text_key) for doc in results],
         }
@@ -340,7 +366,9 @@ class MongoDB:
             documents: List of new Document objects to replace the existing ones.
         """
         if self._embedding_function is None:
-            raise ValueError("For update, you must specify an embedding function on creation.")
+            raise ValueError(
+                "For update, you must specify an embedding function on creation."
+            )
 
         if len(ids) != len(documents):
             raise ValueError("Number of ids must match number of documents")
@@ -356,10 +384,12 @@ class MongoDB:
             update_data = {
                 self._text_key: text[i],
                 self._embedding_key: embeddings[i],
-                "metadata": metadata[i]
+                "metadata": metadata[i],
             }
             try:
-                result = self._collection.update_one({"_id": doc_id}, {"$set": update_data})
+                result = self._collection.update_one(
+                    {"_id": doc_id}, {"$set": update_data}
+                )
                 if result.modified_count == 0:
                     raise ValueError(f"No document found with id {doc_id}")
             except Exception as e:

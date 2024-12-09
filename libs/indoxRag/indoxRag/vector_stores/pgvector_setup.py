@@ -15,7 +15,8 @@ from typing import (
     List,
     Optional,
     Tuple,
-    Type, Union,
+    Type,
+    Union,
 )
 
 import numpy as np
@@ -24,7 +25,7 @@ from sqlalchemy import delete, func
 from sqlalchemy.dialects.postgresql import JSON, JSONB, UUID
 from sqlalchemy.orm import Session, relationship
 
-from indox.vector_stores.pgvector import PGVector
+from indoxRag.vector_stores.pgvector import PGVector
 
 try:
     from sqlalchemy.orm import declarative_base
@@ -36,9 +37,10 @@ try:
 except ImportError:
     # for sqlalchemy < 2
     SQLColumnExpression = Any  # type: ignore
-from indox.core import Document,Embeddings,VectorStore
+from indoxRag.core import Document, Embeddings, VectorStore
 
-from indox.vector_stores.utils import maximal_marginal_relevance
+from indoxRag.vector_stores.utils import maximal_marginal_relevance
+
 
 class DistanceStrategy:
     """Enumerator of the Distance strategies for calculating distances
@@ -97,6 +99,7 @@ SUPPORTED_OPERATORS = (
     .union(SPECIAL_CASED_OPERATORS)
 )
 
+
 def get_from_env(key: str, env_key: str, default: Optional[str] = None) -> str:
     """Get a value from a dictionary or an environment variable.
 
@@ -124,6 +127,7 @@ def get_from_env(key: str, env_key: str, default: Optional[str] = None) -> str:
             f" `{env_key}` which contains it, or pass"
             f" `{key}` as a named parameter."
         )
+
 
 def get_from_dict_or_env(
     data: Dict[str, Any],
@@ -157,6 +161,7 @@ def get_from_dict_or_env(
         key_for_err = key
 
     return get_from_env(key_for_err, env_key, default=default)
+
 
 def _get_embedding_collection_store(
     vector_dimension: Optional[int] = None, *, use_jsonb: bool = True
@@ -240,6 +245,7 @@ def _get_embedding_collection_store(
                     postgresql_ops={"cmetadata": "jsonb_path_ops"},
                 ),
             )
+
     else:
         # For backwards comaptibilty with older versions of pgvector
         # This should be removed in the future (remove during migration)
@@ -1351,4 +1357,3 @@ class PGVectorSetup(VectorStore):
         )
 
         return _results_to_docs(docs_and_scores)
-

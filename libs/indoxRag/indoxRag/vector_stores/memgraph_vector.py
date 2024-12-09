@@ -1,9 +1,16 @@
 from typing import List, Tuple, Callable, Optional
-from indox.core import Document
+from indoxRag.core import Document
 
 
 class MemgraphVector:
-    def __init__(self, uri: str, username: str, password: str, embedding_function: Callable, search_type: str = 'vector'):
+    def __init__(
+        self,
+        uri: str,
+        username: str,
+        password: str,
+        embedding_function: Callable,
+        search_type: str = "vector",
+    ):
         """
         Initializes the connection to the Memgraph database and sets up the embedding function.
 
@@ -25,7 +32,9 @@ class MemgraphVector:
         if self.driver:
             self.driver.close()
 
-    def _similarity_search_with_score(self, query: str, k: int = 4, search_type: Optional[str] = None, **kwargs) -> List[Tuple[Document, float]]:
+    def _similarity_search_with_score(
+        self, query: str, k: int = 4, search_type: Optional[str] = None, **kwargs
+    ) -> List[Tuple[Document, float]]:
         """
         Run similarity search with scores based on the selected search type.
 
@@ -40,14 +49,16 @@ class MemgraphVector:
         """
         search_type = search_type or self.default_search_type
 
-        if search_type == 'vector':
+        if search_type == "vector":
             return self._run_vector_search(query, k)
-        elif search_type == 'keyword':
+        elif search_type == "keyword":
             return self._run_keyword_search(query, k)
-        elif search_type == 'hybrid':
+        elif search_type == "hybrid":
             return self._run_hybrid_search(query, k, **kwargs)
         else:
-            raise ValueError("Invalid search type. Choose 'vector', 'keyword', or 'hybrid'.")
+            raise ValueError(
+                "Invalid search type. Choose 'vector', 'keyword', or 'hybrid'."
+            )
 
     def _run_vector_search(self, query: str, k: int) -> List[Tuple[Document, float]]:
         """
@@ -78,7 +89,7 @@ class MemgraphVector:
             embeddings = []
             docs = []
             for record in results:
-                doc_embedding = np.array(record["embedding"], dtype='float32')
+                doc_embedding = np.array(record["embedding"], dtype="float32")
                 if doc_embedding.ndim == 1:
                     doc_embedding = doc_embedding.reshape(1, -1)
                 embeddings.append(doc_embedding)
@@ -126,10 +137,18 @@ class MemgraphVector:
                 doc_text = record["text_data"]
                 metadata = dict(record["n"].items())
                 document = Document(page_content=doc_text, metadata=metadata)
-                docs_and_scores.append((document, 1.0))  # Keyword match score is set to 1
+                docs_and_scores.append(
+                    (document, 1.0)
+                )  # Keyword match score is set to 1
         return docs_and_scores
 
-    def _run_hybrid_search(self, query: str, k: int, keyword_weight: float = 0.5, vector_weight: float = 0.5) -> List[Tuple[Document, float]]:
+    def _run_hybrid_search(
+        self,
+        query: str,
+        k: int,
+        keyword_weight: float = 0.5,
+        vector_weight: float = 0.5,
+    ) -> List[Tuple[Document, float]]:
         """
         Run the hybrid search combining keyword and vector search.
 
@@ -155,21 +174,31 @@ class MemgraphVector:
         for document, score in keyword_results:
             doc_text = document.page_content
             if doc_text not in combined_results:
-                combined_results[doc_text] = {'document': document, 'score': score * keyword_weight}
+                combined_results[doc_text] = {
+                    "document": document,
+                    "score": score * keyword_weight,
+                }
             else:
-                combined_results[doc_text]['score'] += score * keyword_weight
+                combined_results[doc_text]["score"] += score * keyword_weight
 
         for document, similarity_score in vector_results:
             doc_text = document.page_content
             if doc_text not in combined_results:
-                combined_results[doc_text] = {'document': document, 'score': similarity_score * vector_weight}
+                combined_results[doc_text] = {
+                    "document": document,
+                    "score": similarity_score * vector_weight,
+                }
             else:
-                combined_results[doc_text]['score'] += similarity_score * vector_weight
+                combined_results[doc_text]["score"] += similarity_score * vector_weight
 
-        sorted_results = sorted(combined_results.values(), key=lambda x: x['score'], reverse=True)
-        return [(result['document'], result['score']) for result in sorted_results[:k]]
+        sorted_results = sorted(
+            combined_results.values(), key=lambda x: x["score"], reverse=True
+        )
+        return [(result["document"], result["score"]) for result in sorted_results[:k]]
 
-    def search(self, query: str, search_type: Optional[str] = None, k: int = 4, **kwargs) -> List[Document]:
+    def search(
+        self, query: str, search_type: Optional[str] = None, k: int = 4, **kwargs
+    ) -> List[Document]:
         """
         Search function to handle different search types (vector, keyword, or hybrid).
 
@@ -182,9 +211,16 @@ class MemgraphVector:
         Returns:
             List[Document]: List of documents based on the chosen search method.
         """
-        return [doc for doc, _ in self._similarity_search_with_score(query, k=k, search_type=search_type, **kwargs)]
+        return [
+            doc
+            for doc, _ in self._similarity_search_with_score(
+                query, k=k, search_type=search_type, **kwargs
+            )
+        ]
 
-    def retrieve(self, query: str, top_k: int = 5, search_type: Optional[str] = None, **kwargs) -> Tuple[List[str], List[float]]:
+    def retrieve(
+        self, query: str, top_k: int = 5, search_type: Optional[str] = None, **kwargs
+    ) -> Tuple[List[str], List[float]]:
         """
         Retrieve relevant documents and their scores for a given query, supporting different search types.
 
@@ -197,7 +233,9 @@ class MemgraphVector:
         Returns:
             Tuple[List[str], List[float]]: A tuple containing a list of document contents and their respective scores.
         """
-        docs_and_scores = self._similarity_search_with_score(query, k=top_k, search_type=search_type, **kwargs)
+        docs_and_scores = self._similarity_search_with_score(
+            query, k=top_k, search_type=search_type, **kwargs
+        )
         context = [doc.page_content for doc, _ in docs_and_scores]
         scores = [score for _, score in docs_and_scores]
         return context, scores

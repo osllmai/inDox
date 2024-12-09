@@ -1,8 +1,8 @@
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/Demo/hf_mistral_SimpleReader.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDoxRag/blob/master/Demo/hf_mistral_SimpleReader.ipynb)
 
-# How to use Indox Retrieval Augmentation for PDF files
+# How to use IndoxRag Retrieval Augmentation for PDF files
 
-In this notebook, we will demonstrate how to handle `inDox` as system
+In this notebook, we will demonstrate how to handle `inDoxRag` as system
 for question answering system with open source models which are
 available on internet like `Mistral`. so firstly you should buil
 environment variables and API keys in Python using the `dotenv` library.
@@ -15,7 +15,7 @@ security and maintainability.
 
 ::: {#4deb2abc71a048be .cell .code execution_count="8" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="4deb2abc71a048be" outputId="7d64d807-ed35-4ea1-fe15-fe5479ca796d"}
 ``` python
-!pip install indox
+!pip install indoxRag
 !pip install chromadb
 !pip install semantic_text_splitter
 !pip install sentence-transformers
@@ -24,11 +24,11 @@ security and maintainability.
 
 ::: {#2d6948cfe8ce7b88 .cell .code execution_count="2" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="2d6948cfe8ce7b88" outputId="e4e00368-40e9-46e3-b200-14b8bbc229f0"}
 ``` python
-!wget https://raw.githubusercontent.com/osllmai/inDox/master/Demo/sample.txt
+!wget https://raw.githubusercontent.com/osllmai/inDoxRag/master/Demo/sample.txt
 ```
 
 ::: {.output .stream .stdout}
-    --2024-07-02 09:10:03--  https://raw.githubusercontent.com/osllmai/inDox/master/Demo/sample.txt
+    --2024-07-02 09:10:03--  https://raw.githubusercontent.com/osllmai/inDoxRag/master/Demo/sample.txt
     Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.109.133, 185.199.108.133, 185.199.110.133, ...
     Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.109.133|:443... connected.
     HTTP request sent, awaiting response... 200 OK
@@ -56,12 +56,12 @@ HUGGINGFACE_API_KEY = os.getenv('HUGGINGFACE_API_KEY')
 ::: {#d97666fa4a136fa4 .cell .markdown id="d97666fa4a136fa4"}
 ### Import Essential Libraries
 
-Then, we import essential libraries for our `Indox` question answering
+Then, we import essential libraries for our `IndoxRag` question answering
 system:
 
 -   `IndoxRetrievalAugmentation`: Enhances the retrieval process for
     better QA performance.
--   `MistralQA`: A powerful QA model from Indox, built on top of the
+-   `MistralQA`: A powerful QA model from IndoxRag, built on top of the
     Hugging Face model.
 -   `HuggingFaceEmbedding`: Utilizes Hugging Face embeddings for
     improved semantic understanding.
@@ -70,25 +70,25 @@ system:
 
 ::: {#71cea6a5876fa5fe .cell .code execution_count="6" ExecuteTime="{\"end_time\":\"2024-07-02T07:44:47.832652Z\",\"start_time\":\"2024-07-02T07:44:38.872557Z\"}" id="71cea6a5876fa5fe"}
 ``` python
-from indox import IndoxRetrievalAugmentation
-from indox.llms import HuggingFaceModel
-from indox.embeddings import HuggingFaceEmbedding
-from indox.data_loader_splitter.SimpleLoadAndSplit import SimpleLoadAndSplit
+from indoxRag import IndoxRetrievalAugmentation
+from indoxRag.llms import HuggingFaceModel
+from indoxRag.embeddings import HuggingFaceEmbedding
+from indoxRag.data_loader_splitter.SimpleLoadAndSplit import SimpleLoadAndSplit
 ```
 :::
 
 ::: {#dfce2b023a435935 .cell .markdown id="dfce2b023a435935"}
-### Building the Indox System and Initializing Models
+### Building the IndoxRag System and Initializing Models
 
-Next, we will build our `inDox` system and initialize the Mistral
+Next, we will build our `inDoxRag` system and initialize the Mistral
 question answering model along with the embedding model. This setup will
-allow us to leverage the advanced capabilities of Indox for our question
+allow us to leverage the advanced capabilities of IndoxRag for our question
 answering tasks.
 :::
 
 ::: {#be7f2eb137ea4f1b .cell .code execution_count="9" ExecuteTime="{\"end_time\":\"2024-07-02T07:44:51.558601Z\",\"start_time\":\"2024-07-02T07:44:47.833775Z\"}" colab="{\"base_uri\":\"https://localhost:8080/\",\"height\":369,\"referenced_widgets\":[\"f5a5036392c9462c903364eab1388cca\",\"2c9c482359c74bba8d35bd5a99b0b272\",\"fe107afe6cc74673afce75ad1fb61206\",\"4aa9bf7557d547f6a39fa93b96a8233d\",\"f3c97aebd0ce416f858a4abc8533bc1c\",\"a688174866694716a3f833a05761509f\",\"f2ef47b784a34c218cb5346d96183da6\",\"e7a1b752ee564ed18dafb4928bbad940\",\"a0ae506462fd4de9a831f3545cb4682e\",\"f33f1beca1f54fdd99a3d1ea7d03a0f1\",\"9b8f564b15da453ea811acde3f1b5eaa\",\"010ed74be3944660a12891dc607ca1a8\",\"6dbe57883b3a422abcc78cdc86faee0e\",\"adb60c0a86384134a8b0e9d1fb93dae6\",\"d759c9ae84284362ac1c197be51ef8fd\",\"823759359e8041a298e51ddeb9e718f8\",\"1f098f05988e4336b1e05c7bdf0530d7\",\"070514ed43e44b16ad0e5851deacafed\",\"b1237265df6b40f3837c4732cafee7fb\",\"5297f72091294256bd5f19263873827e\",\"3177fadb9d1a43bcba2c077f906b64ff\",\"2c724a13f5c041e693bf57d5740b43b2\",\"946464dc055e45f9bb9c1ead93247206\",\"44e038a01938429da9a44133590f5bfd\",\"8c83104d6ef24e5ca7a4838231ffece7\",\"b8047170243e429bbe35fcddff4697ce\",\"3136aac028444d09a16a3acdb05928b5\",\"527bc850f45b42a2a9ae6993d50ecd79\",\"7834cb453fd043f38b7e540bc70c90de\",\"86c85a928644439a9e6ded6a1ad86ebf\",\"ea89fbfff4e943eba0b769edabb9ffd8\",\"4b2f7cbd45e14c068d77aad2341b672c\",\"08cb878535274af8a7d771dbb71b58e7\",\"4112edbd6b044b569660dd38ffa3f27a\",\"0af588eacff84cbc997482f0878fa780\",\"8b4a84a48fc84cfb82cdfb244c5b4f05\",\"6cb894c218e5484ca128ff284f46aeec\",\"2302727f502e4cf5a8884d2f8d423183\",\"4c6896f5a2224f3090426ccfdf55f5ab\",\"e68009bb33394e6198f1109bacae6d67\",\"9ce868b2cc944e4b86eb97765acf7745\",\"c340eac0ba674bc9bf3736115cf0d7d4\",\"c1b7d9b59d184a37abb6e0c4f01f7469\",\"3d32d7acbdbc4de0ac73d0fbcd014acd\",\"c3dd1b712c324778a91a7c1750323ca2\",\"a7c53cf410054ad580f12d7f96fb7586\",\"e937971144b9448a80e76cc58224b174\",\"e2ff74c989f642d1b3f2d4e3e9043bc2\",\"a18a05fde8e146d5a2f8f66b9c5fe1d5\",\"ba9140e635c44689a717e6f146b40aa9\",\"072dac0b06a8452dbfcdfbc142beeab8\",\"98335a7da2b545db8098e2ace1f3ac1b\",\"3ce716123194429b9c444e2182d6093a\",\"46923b21aab24aba9253cd88e09656b8\",\"99ac55283f734f3cbc598e5b5ee228b7\",\"b7b98fd3242748a3941ab86879edb1d4\",\"a6306fd2f3564bdb88b25c4aee746bd3\",\"38c6199398824a4c880ef2e02374942c\",\"51198d2b64724ebda6b9ab58419b3cf9\",\"1d5ee00b1f334307b665043b88ec78cf\",\"33af708692764a40965ff40cc1679ae7\",\"9f3ce45cbe9f4db78bc5bee85ef3fbde\",\"fcd421736ea640d397175dab615d7131\",\"d077450e52b04d9e9a58e34c66459fcb\",\"ae47d975cc42451da6ad9f67051c0690\",\"e8bd35bd61c64d3f8f4646a9f51cba4b\",\"70ca761c554c49788f39ac022a1e0a0c\",\"c2d1474fc76040b7a783baac323b72eb\",\"260eda9b2c284046b3b13eec5fa3e681\",\"15a1950ddec644a0b4dbaf6fbd2d2f2c\",\"92592fda49944fd7a71e20cf988e0736\",\"01cce2aa951a4efab6b1de0e7c434841\",\"463a01c2f5d54f718bc7acb06322b410\",\"53fb6a95bd11498d99da873bcbc351ec\",\"b91a4d38baff4c7292eda4e41e306a8e\",\"762b71dde71740d3b266b30ee9cf7d0c\",\"77c48755a5584564b6d69ee6e59742f2\",\"3c540818f4fb4c34a3e1bb92d623e356\",\"b4d20af60de343c8bd7a559146f33288\",\"62a96756539a4c9c8b37a3880cf60856\",\"3ed60db66bfd4b7a9b6ea838bbf7cde0\",\"b229d81476d04f5a9a8b208ee50932e9\",\"9d7db8511d2043368f72994dcddca546\",\"585fc10a270144899f32c66f61884c25\",\"935e798098c74c0bb7b20a400c72a604\",\"a97b422055da4cf0b801e214a9c1d615\",\"115c6e6bc812404ead523830594419b0\",\"30ef7de6651e4fb19792027e9c5560f4\",\"2782e5da9ae14a2286373625261c9ddf\",\"cdd792528ab6407b9cb3504114d0b990\",\"1c64f40e0bfd4bcba077c0488f87d799\",\"985a161dcc784e748f757f7e7b0f4b72\",\"c309ce7dc72b4229bebe1c24932f2509\",\"671ef87d01514bf19c85827e6a963c03\",\"d125bf45f8054f0298ce128ac7c80f6f\",\"f28e3776dda74ce5a99a4f44bcad7fc4\",\"eb02f73ebda64b05aba04532c70fbfe2\",\"11b857b5dfb647eb90b9b3bb75089819\",\"fcb60e61fd8046f498aac8ff4bc6ed90\",\"8ec1f824a2d6489ba28811b1ebc233db\",\"c611f11954d94f2ea08bf3f5e251513b\",\"aef9e06b527b4c09a39c92613bda68e2\",\"4110c8d535dc4e5db696827274175581\",\"458a16a9cb864cfeb67d4fd8caa15b7c\",\"549c647ee0144ec1b99264eb7b6c5b5e\",\"e410b6dde03e4c9582b14fcf86351eab\",\"ea9de2ed992f45a58b3f9774d4a27fe5\",\"5c87e1522e8043bab149034a0849118c\",\"c2ab2050de7e4c6d95ce0209b7704853\",\"1677b83b6f7941288ffea7e26f1839a1\",\"5482f2e93f464564957f3260daed3bd2\",\"1d97c86d31b34be7ac7590d28858a81f\",\"ac4c0e5652de415f9887ff795bded3ac\",\"e3f7757502a144158e9b3bb8f0f8cd4c\",\"4fa1d4de5e794d38b2f1ef1362bc0056\",\"35a7be45599b46a0aecb73ee79b6bef0\",\"74f50b06501c4bcc8209b0541eaaad02\",\"f04994abe48b44c8ae1d40b2000032b5\",\"e6c0b3f713a2412db68aca62bee3124c\",\"0a01dec7cd7042e3806fe5db88fe68ae\",\"1b367c3e496948909341c2f15a9e146d\"]}" id="be7f2eb137ea4f1b" outputId="f774310a-e877-4983-b8f0-b3c97269f97f"}
 ``` python
-indox = IndoxRetrievalAugmentation()
+indoxRag = IndoxRetrievalAugmentation()
 mistral_qa = HuggingFaceModel(api_key=HUGGINGFACE_API_KEY,model="mistralai/Mistral-7B-Instruct-v0.2")
 embed = HuggingFaceEmbedding(model="multi-qa-mpnet-base-cos-v1")
 ```
@@ -163,7 +163,7 @@ embed = HuggingFaceEmbedding(model="multi-qa-mpnet-base-cos-v1")
 ::: {#70a4fe8c3d39b341 .cell .markdown id="70a4fe8c3d39b341"}
 ### Setting Up Reference Directory and File Path
 
-To demonstrate the capabilities of our Indox question answering system,
+To demonstrate the capabilities of our IndoxRag question answering system,
 we will use a sample directory. This directory will contain our
 reference data, which we will use for testing and evaluation.
 
@@ -176,7 +176,7 @@ Let\'s define the file path for our reference data.
 
 ::: {#de47eb24481ec6f0 .cell .code}
 ``` python
-!wget https://raw.githubusercontent.com/osllmai/inDox/master/Demo/sample.txt
+!wget https://raw.githubusercontent.com/osllmai/inDoxRag/master/Demo/sample.txt
 ```
 :::
 
@@ -247,43 +247,43 @@ docs
 :::
 
 ::: {#28ba43c70a109fe4 .cell .markdown id="28ba43c70a109fe4"}
-### Connecting Embedding Model to Indox
+### Connecting Embedding Model to IndoxRag
 
 With our reference data chunked and ready, the next step is to connect
-our embedding model to the Indox system. This connection enables the
+our embedding model to the IndoxRag system. This connection enables the
 system to leverage the embeddings for better semantic understanding and
 retrieval performance.
 
 We use the `connect_to_vectorstore` method to link the
-`HuggingFaceEmbedding` model with our Indox system. By specifying the
+`HuggingFaceEmbedding` model with our IndoxRag system. By specifying the
 embeddings and a collection name, we ensure that our reference data is
 appropriately indexed and stored, facilitating efficient retrieval
 during the question-answering process.
 
-Let\'s connect the embedding model to Indox.
+Let\'s connect the embedding model to IndoxRag.
 :::
 
 ::: {#fb0c5eb8341d52d3 .cell .code execution_count="13" ExecuteTime="{\"end_time\":\"2024-07-02T07:44:53.236317Z\",\"start_time\":\"2024-07-02T07:44:52.873727Z\"}" id="fb0c5eb8341d52d3"}
 ``` python
-from indox.vector_stores import ChromaVectorStore
+from indoxRag.vector_stores import ChromaVectorStore
 db = ChromaVectorStore(collection_name="sample",embedding=embed)
 ```
 :::
 
 ::: {#bbd77c136e780844 .cell .code execution_count="14" ExecuteTime="{\"end_time\":\"2024-07-02T07:44:53.242353Z\",\"start_time\":\"2024-07-02T07:44:53.237325Z\"}" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="bbd77c136e780844" outputId="3dc71f1c-96a0-4c0f-cb44-611f2db058c0"}
 ``` python
-indox.connect_to_vectorstore(vectorstore_database=db)
+indoxRag.connect_to_vectorstore(vectorstore_database=db)
 ```
 
 ::: {.output .execute_result execution_count="14"}
-    <indox.vector_stores.Chroma.ChromaVectorStore at 0x7a1e30ccee90>
+    <indoxRag.vector_stores.Chroma.ChromaVectorStore at 0x7a1e30ccee90>
 :::
 :::
 
 ::: {#7a2de351e4cb5e24 .cell .markdown id="7a2de351e4cb5e24"}
 ### Storing Data in the Vector Store
 
-After connecting our embedding model to the Indox system, the next step
+After connecting our embedding model to the IndoxRag system, the next step
 is to store our chunked reference data in the vector store. This process
 ensures that our data is indexed and readily available for retrieval
 during the question-answering process.
@@ -298,18 +298,18 @@ Let\'s proceed with storing the data in the vector store.
 
 ::: {#8b53fee18caed89c .cell .code execution_count="15" ExecuteTime="{\"end_time\":\"2024-07-02T07:45:07.044107Z\",\"start_time\":\"2024-07-02T07:45:03.390792Z\"}" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="8b53fee18caed89c" outputId="ab39b1ac-03de-44e1-977b-b2157538f9a9"}
 ``` python
-indox.store_in_vectorstore(docs)
+indoxRag.store_in_vectorstore(docs)
 ```
 
 ::: {.output .execute_result execution_count="15"}
-    <indox.vector_stores.Chroma.ChromaVectorStore at 0x7a1e30ccee90>
+    <indoxRag.vector_stores.Chroma.ChromaVectorStore at 0x7a1e30ccee90>
 :::
 :::
 
 ::: {#a2ac994fc0fb7ca0 .cell .markdown id="a2ac994fc0fb7ca0"}
-## Query from RAG System with Indox
+## Query from RAG System with IndoxRag
 
-With our Retrieval-Augmented Generation (RAG) system built using Indox,
+With our Retrieval-Augmented Generation (RAG) system built using IndoxRag,
 we are now ready to test it with a sample question. This test will
 demonstrate how effectively our system can retrieve and generate
 accurate answers based on the reference data stored in the vector store.
@@ -318,7 +318,7 @@ We\'ll use a sample query to test our system:
 
 -   **Query**: \"How did Cinderella reach her happy ending?\"
 
-This question will be processed by our Indox system to retrieve relevant
+This question will be processed by our IndoxRag system to retrieve relevant
 information and generate an appropriate response.
 
 Let\'s test our RAG system with the sample question
@@ -331,7 +331,7 @@ query = "How cinderella reach her happy ending?"
 :::
 
 ::: {#905f5aeb288a9ea3 .cell .markdown id="905f5aeb288a9ea3"}
-Now that our Retrieval-Augmented Generation (RAG) system with Indox is
+Now that our Retrieval-Augmented Generation (RAG) system with IndoxRag is
 fully set up, we can test it with a sample question. We\'ll use the
 `invoke` submethod to get a response from the system.
 
@@ -347,7 +347,7 @@ We\'ll pass this query to the `invoke` method and print the response.
 
 ::: {#5a87158e90e6cb32 .cell .code execution_count="17" ExecuteTime="{\"end_time\":\"2024-07-02T07:45:09.503644Z\",\"start_time\":\"2024-07-02T07:45:09.500273Z\"}" id="5a87158e90e6cb32"}
 ``` python
-retriever = indox.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5)
+retriever = indoxRag.QuestionAnswer(vector_database=db,llm=mistral_qa,top_k=5)
 ```
 :::
 
@@ -395,7 +395,7 @@ context
 
 ::: {#d6362d3145cb9f05 .cell .code ExecuteTime="{\"end_time\":\"2024-07-02T07:46:07.503919Z\",\"start_time\":\"2024-07-02T07:46:05.038476Z\"}" id="d6362d3145cb9f05"}
 ``` python
-from indox.evaluation import Evaluation
+from indoxRag.evaluation import Evaluation
 evaluator = Evaluation(["BertScore"])
 ```
 :::

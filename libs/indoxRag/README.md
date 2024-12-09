@@ -7,9 +7,7 @@
     </a>
 </div>
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/osllmai/inDox/master/docs/assets/lite-logo%201.png" alt="inDox Lite Logo">
-</p>
+
 </br>
 
 [![License](https://img.shields.io/github/license/osllmai/inDox)](https://github.com/osllmai/inDox/blob/main/LICENSE)

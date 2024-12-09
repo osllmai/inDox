@@ -1,18 +1,18 @@
-from indox.core import Document
+from indoxRag.core import Document
 from loguru import logger
 import sys
 
-from indox.core.vectorstore import VectorStore
+from indoxRag.core.vectorstore import VectorStore
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 
 class PGVector(VectorStore):
@@ -39,6 +39,7 @@ class PGVector(VectorStore):
         from langchain_community.vectorstores.pgvector import PGVector
         from .pgvector_setup import PGVectorSetup as PGVector
         from .pgvector_setup import DistanceStrategy as PGDistancesTRATEGY
+
         self.embeddings = embedding
         self.host = host
         self.port = port
@@ -49,7 +50,7 @@ class PGVector(VectorStore):
             embedding_function=embedding,
             collection_name=collection_name,
             connection_string=self._build_conn_string(),
-            distance_strategy=PGDistancesTRATEGY.COSINE
+            distance_strategy=PGDistancesTRATEGY.COSINE,
         )
 
     def _build_conn_string(self):
@@ -93,7 +94,4 @@ class PGVector(VectorStore):
         # scores = [d[1] for d in retrieved]
         # return context, scores
         embedding = self.embeddings.embed_query(text=query)
-        return self.db.similarity_search_by_vector(
-            embedding=embedding,
-            k=k
-        )
+        return self.db.similarity_search_by_vector(embedding=embedding, k=k)

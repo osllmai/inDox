@@ -7,16 +7,17 @@ YoutubeTranscriptReader is a data connector for loading transcripts from YouTube
 To use YoutubeTranscriptReader:
 
 ```python
-from indox.data_connectors import YoutubeTranscriptReader
+from indoxRag.data_connectors import YoutubeTranscriptReader
 
 reader = YoutubeTranscriptReader()
 documents = reader.load_data(ytlinks=["https://www.youtube.com/watch?v=dN0lsF2cvm4&t=44s"])
 ```
+
 # Class Attributes
 
 - **languages** [tuple]: Tuple of language codes for transcript retrieval (default is ("en",) for English).
 
-## Methods 
+## Methods
 
 **class_name()**
 Returns the name of the class as a string.
@@ -26,38 +27,52 @@ Returns the name of the class as a string.
 Loads transcript data from the specified YouTube video links.
 
 **Parameters:**
+
 - **ytlinks** [List[str]]: List of YouTube video URLs to retrieve transcripts from.
 - **load_kwargs** [Any]: Additional keyword arguments (not used in current implementation).
 
 **Returns:**
+
 - **List[Document]**: List of Document objects containing transcript text and metadata.
 
 ## Usage
+
 ### Setting Up the Python Environment
+
 **Windows**
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-indox\Scripts\activate
+indoxRag\Scripts\activate
 ```
+
 ### macOS/Linux
+
 1. **Create the virtual environment:**
+
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
+
 2. **Activate the virtual environment:**
+
 ```bash
-source indox/bin/activate
+source indoxRag/bin/activate
 ```
 
 ## Get Started
+
 ### Import Essential Libraries and Use YoutubeTranscriptReader
 
 ```python
-from indox.data_connectors import YoutubeTranscriptReader
+from indoxRag.data_connectors import YoutubeTranscriptReader
 
 # Initialize the reader
 reader = YoutubeTranscriptReader()
@@ -75,4 +90,5 @@ for doc in documents:
     print(f"Transcript preview: {doc.content[:200]}...")
     print("---")
 ```
+
 This example demonstrates how to use YoutubeTranscriptReader to retrieve transcripts from specific YouTube videos and access their content and metadata.

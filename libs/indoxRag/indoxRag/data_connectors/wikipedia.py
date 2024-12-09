@@ -1,4 +1,4 @@
-from indox.data_connectors.utils import Document
+from indoxRag.data_connectors.utils import Document
 from typing import Any, List
 
 
@@ -31,7 +31,9 @@ class WikipediaReader:
         """
         return "WikipediaReader"
 
-    def load_data(self, pages: List[str], **load_kwargs: Any) -> List[Document] | Document:
+    def load_data(
+        self, pages: List[str], **load_kwargs: Any
+    ) -> List[Document] | Document:
         """Load data from specified Wikipedia pages.
 
         Args:
@@ -62,7 +64,11 @@ class WikipediaReader:
                     "url": wiki_page.url,
                     "summary": wiki_page.summary,
                 }
-                documents.append(Document(source="Wikipedia", content=page_content, metadata=metadata))
+                documents.append(
+                    Document(
+                        source="Wikipedia", content=page_content, metadata=metadata
+                    )
+                )
             except wikipedia.exceptions.DisambiguationError as e:
                 print(f"DisambiguationError for page '{page}': {e.options}")
             except wikipedia.exceptions.PageError:

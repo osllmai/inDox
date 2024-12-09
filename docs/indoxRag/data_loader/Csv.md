@@ -1,4 +1,3 @@
-
 ---
 
 # Csv Loader
@@ -20,16 +19,16 @@ pip install indox
 1. **Import the `Csv` Function**
 
    ```python
-   from your_module import Csv
+   from indoxRag.data_loaders import CSV
    ```
 
 2. **Load and Parse a CSV File**
 
-   - Call the `Csv` function with the file path to your CSV file.
+   - Call the `CSV` function with the file path to your CSV file.
 
    ```python
    file_path = 'path/to/your/csv_file.csv'
-   documents = Csv(file_path)
+   documents = CSV(file_path)
    ```
 
 3. **Access the Document Content and Metadata**
@@ -42,7 +41,7 @@ pip install indox
    print(document.page_content)
    ```
 
-## Function `Csv`
+## Function `CSV`
 
 ### Parameters
 
@@ -67,11 +66,11 @@ pip install indox
 ### Example Usage
 
 ```python
-from your_module import Csv
+from indoxRag.data_loaders import Csv
 
 # Load and parse the CSV file
 file_path = 'data.csv'
-documents = Csv(file_path)
+documents = CSV(file_path)
 
 # Access the document's metadata and content
 document = documents[0]
@@ -84,5 +83,4 @@ print(document.page_content)  # Prints the content of the CSV row
 - Ensure the CSV file exists and is accessible at the provided `file_path`.
 - The metadata includes the absolute file path and a default page number of `1`.
 
---- 
-
+---

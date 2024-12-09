@@ -1,6 +1,6 @@
 import warnings
 from typing import Optional, Dict, Any, List, Tuple, Type, Callable, Iterable
-from indox.core import VectorStore, Embeddings, Document
+from indoxRag.core import VectorStore, Embeddings, Document
 import uuid
 from loguru import logger
 import sys
@@ -9,13 +9,13 @@ warnings.filterwarnings("ignore")
 
 # Set up logging
 logger.remove()  # Remove the default logger
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
 
 DEFAULT_K = 4  # Default number of results to return
 
@@ -42,20 +42,21 @@ class Chroma:
 
 
     """
+
     # import chromadb.config
     # from chromadb.api.types import ID, OneOrMany, Where, WhereDocument
 
     _INDOX_DEFAULT_COLLECTION_NAME = "indox_collection"
 
     def __init__(
-            self,
-            collection_name: str = _INDOX_DEFAULT_COLLECTION_NAME,
-            embedding_function: Optional[Embeddings] = None,
-            persist_directory: Optional[str] = None,
-            client_settings: Optional['chromadb.config.Settings'] = None,
-            collection_metadata: Optional[Dict] = None,
-            client: Optional['chromadb.Client'] = None,
-            relevance_score_fn: Optional[Callable[[float], float]] = None,
+        self,
+        collection_name: str = _INDOX_DEFAULT_COLLECTION_NAME,
+        embedding_function: Optional[Embeddings] = None,
+        persist_directory: Optional[str] = None,
+        client_settings: Optional["chromadb.config.Settings"] = None,
+        collection_metadata: Optional[Dict] = None,
+        client: Optional["chromadb.Client"] = None,
+        relevance_score_fn: Optional[Callable[[float], float]] = None,
     ) -> None:
         """Initialize with a Chroma client."""
         try:
@@ -76,7 +77,7 @@ class Chroma:
                 # If client_settings is provided with persist_directory specified,
                 # then it is "in-memory and persisting to disk" mode.
                 client_settings.persist_directory = (
-                        persist_directory or client_settings.persist_directory
+                    persist_directory or client_settings.persist_directory
                 )
                 if client_settings.persist_directory is not None:
                     # Maintain backwards compatibility with chromadb < 0.4.0
@@ -100,7 +101,7 @@ class Chroma:
             self._client_settings = _client_settings
             self._client = chromadb.Client(_client_settings)
             self._persist_directory = (
-                    _client_settings.persist_directory or persist_directory
+                _client_settings.persist_directory or persist_directory
             )
 
         self._embedding_function = embedding_function
@@ -116,11 +117,11 @@ class Chroma:
         return self._embedding_function
 
     def _add_texts(
-            self,
-            texts: Iterable[str],
-            metadatas: Optional[List[dict]] = None,
-            ids: Optional[List[str]] = None,
-            **kwargs: Any,
+        self,
+        texts: Iterable[str],
+        metadatas: Optional[List[dict]] = None,
+        ids: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> List[str]:
         """Run more texts through the embeddings and add to the vectorstore.
 
@@ -166,9 +167,7 @@ class Chroma:
                         ids=ids_with_metadata,
                     )
                 except ValueError as e:
-                    raise ValueError(
-                        f"Failed to add documents with metadatas: {e}"
-                    )
+                    raise ValueError(f"Failed to add documents with metadatas: {e}")
 
             if empty_ids:
                 texts_without_metadatas = [texts[j] for j in empty_ids]
@@ -220,12 +219,12 @@ class Chroma:
         logger.info("Documents stored successfully")
 
     def _similarity_search_with_score(
-            self,
-            query: str,
-            k: int = DEFAULT_K,
-            filter: Optional[Dict[str, str]] = None,
-            where_document: Optional[Dict[str, str]] = None,
-            **kwargs: Any,
+        self,
+        query: str,
+        k: int = DEFAULT_K,
+        filter: Optional[Dict[str, str]] = None,
+        where_document: Optional[Dict[str, str]] = None,
+        **kwargs: Any,
     ) -> List[Tuple[Document, float]]:
         """Run similarity search with Chroma with distance.
 
@@ -258,6 +257,7 @@ class Chroma:
             )
 
         return _results_to_docs_and_scores(results)
+
     def _similarity_search(
         self,
         query: str,
@@ -285,13 +285,13 @@ class Chroma:
         self._client.delete_collection(self._collection.name)
 
     def get(
-            self,
-            ids: Optional['OneOrMany[ID]'] = None,
-            where: Optional['Where'] = None,
-            limit: Optional[int] = None,
-            offset: Optional[int] = None,
-            where_document: Optional['WhereDocument'] = None,
-            include: Optional[List[str]] = None,
+        self,
+        ids: Optional["OneOrMany[ID]"] = None,
+        where: Optional["Where"] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+        where_document: Optional["WhereDocument"] = None,
+        include: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """Gets the collection.
 
@@ -348,16 +348,16 @@ class Chroma:
         embeddings = self._embedding_function.embed_documents(text)
 
         if hasattr(
-                self._collection._client, "max_batch_size"
+            self._collection._client, "max_batch_size"
         ):  # for Chroma 0.4.10 and above
             from chromadb.utils.batch_utils import create_batches
 
             for batch in create_batches(
-                    api=self._collection._client,
-                    ids=ids,
-                    metadatas=metadata,
-                    documents=text,
-                    embeddings=embeddings,
+                api=self._collection._client,
+                ids=ids,
+                metadatas=metadata,
+                documents=text,
+                embeddings=embeddings,
             ):
                 self._collection.update(
                     ids=batch[0],
@@ -386,13 +386,13 @@ class Chroma:
         return self._collection.count()
 
     def __query_collection(
-            self,
-            query_texts: Optional[List[str]] = None,
-            query_embeddings: Optional[List[List[float]]] = None,
-            n_results: int = 4,
-            where: Optional[Dict[str, str]] = None,
-            where_document: Optional[Dict[str, str]] = None,
-            **kwargs: Any,
+        self,
+        query_texts: Optional[List[str]] = None,
+        query_embeddings: Optional[List[List[float]]] = None,
+        n_results: int = 4,
+        where: Optional[Dict[str, str]] = None,
+        where_document: Optional[Dict[str, str]] = None,
+        **kwargs: Any,
     ):
         """Query the chroma collection."""
         try:
