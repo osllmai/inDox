@@ -2,18 +2,17 @@
 
 <div style="position: relative; width: 100%; text-align: center;">
     <h1>inDox</h1>
-    <a href="https://github.com/osllmai/inDox">
+    <a href="https://github.com/osllmai/inDox/libs/indoxRag">
         <img src="https://readme-typing-svg.demolab.com?font=Georgia&size=16&duration=3000&pause=500&multiline=true&width=700&height=100&lines=InDox;Advanced+Search+and+Retrieval+Augmentation+Generative+%7C+Open+Source;Copyright+©️+OSLLAM.ai" alt="Typing SVG" style="margin-top: 20px;"/>
     </a>
 </div>
 
-
 </br>
 
 [![License](https://img.shields.io/github/license/osllmai/inDox)](https://github.com/osllmai/inDox/blob/main/LICENSE)
-[![PyPI](https://badge.fury.io/py/Indox.svg)](https://pypi.org/project/Indox/0.1.31/)
-[![Python](https://img.shields.io/pypi/pyversions/Indox.svg)](https://pypi.org/project/Indox/0.1.31/)
-[![Downloads](https://static.pepy.tech/badge/indox)](https://pepy.tech/project/indox)
+[![PyPI](https://badge.fury.io/py/indoxRag.svg)](https://pypi.org/project/indoxRag/0.1.31/)
+[![Python](https://img.shields.io/pypi/pyversions/indoxRag.svg)](https://pypi.org/project/indoxRag/0.1.31/)
+[![Downloads](https://static.pepy.tech/badge/indoxRag)](https://pepy.tech/project/indoxRag)
 
 [![Discord](https://img.shields.io/discord/1223867382460579961?label=Discord&logo=Discord&style=social)](https://discord.com/invite/ossllmai)
 [![GitHub stars](https://img.shields.io/github/stars/osllmai/inDox?style=social)](https://github.com/osllmai/inDox)
@@ -98,26 +97,7 @@ workflow, bringing clarity and organization to your data retrieval needs.
 The following command will install the latest stable inDox
 
 ```
-pip install Indox
-```
-
-To install the latest development version, you may run
-
-```
-pip install git+https://github.com/osllmai/inDox@master
-```
-
-Clone the repository and navigate to the directory:
-
-```bash
-git clone https://github.com/osllmai/inDox.git
-cd inDox
-```
-
-Install the required Python packages:
-
-```bash
-pip install -r requirements.txt
+pip install indoxRag
 ```
 
 ## Setting Up the Python Environment
@@ -129,13 +109,13 @@ If you are running this project in your local IDE, please create a Python enviro
 1. **Create the virtual environment:**
 
 ```bash
-  python -m venv indox
+  python -m venv indoxRag
 ```
 
 2. **Activate the virtual environment:**
 
 ```bash
-  indox\Scripts\activate
+  indoxRag\Scripts\activate
 ```
 
 ### macOS/Linux
@@ -143,14 +123,14 @@ If you are running this project in your local IDE, please create a Python enviro
 1. **Create the virtual environment:**
 
    ```bash
-   python3 -m venv indox
+   python3 -m venv indoxRag
 
    ```
 
 2. **Activate the virtual environment:**
 
 ```bash
-  source indox/bin/activate
+  source indoxRag/bin/activate
 ```
 
 ### Install Dependencies
@@ -164,48 +144,48 @@ Once the virtual environment is activated, install the required dependencies by 
 ### Preparing Your Data
 
 1. **Define the File Path**: Specify the path to your text or PDF file.
-2. **Load LLM And Embedding Models**: Initialize your embedding model from Indox's selection of pre-trained models.
+2. **Load LLM And Embedding Models**: Initialize your embedding model from IndoxRag's selection of pre-trained models.
 
 # Quick Start
 
 ### Install the Required Packages
 
 ```bash
-pip install indox
+pip install indoxRag
 pip install openai
 pip install chromadb
 ```
 
 ## Setting Up the Python Environment
 
-If you are running this project in your local IDE, please create a Python environment to ensure all dependencies are correctly managed. You can follow the steps below to set up a virtual environment named `indox`:
+If you are running this project in your local IDE, please create a Python environment to ensure all dependencies are correctly managed. You can follow the steps below to set up a virtual environment named `indoxRag`:
 
 ### Windows
 
 1. **Create the virtual environment:**
 
 ```bash
-python -m venv indox
+python -m venv indoxRag
 ```
 
 2. **Activate the virtual environment:**
 
 ```bash
-indox_judge\Scripts\activate
+indoxRag_judge\Scripts\activate
 ```
 
 ### macOS/Linux
 
 1. **Create the virtual environment:**
    ```bash
-   python3 -m venv indox
+   python3 -m venv indoxRag
    ```
 
 ````
 
 2. **Activate the virtual environment:**
     ```bash
-   source indox/bin/activate
+   source indoxRag/bin/activate
 ````
 
 ### Install Dependencies
@@ -229,30 +209,30 @@ load_dotenv()
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 ```
 
-## Import Indox Package
+## Import IndoxRag Package
 
-Import the necessary classes from the Indox package.
+Import the necessary classes from the IndoxRag package.
 
 ```python
-from indox import IndoxRetrievalAugmentation
+from indoxRag import IndoxRetrievalAugmentation
 ```
 
 ### Importing LLM and Embedding Models
 
 ```python
-from indox.llms import OpenAi
+from indoxRag.llms import OpenAi
 ```
 
 ```python
-from indox.embeddings import OpenAiEmbedding
+from indoxRag.embeddings import OpenAiEmbedding
 ```
 
-### Initialize Indox
+### Initialize IndoxRag
 
 Create an instance of IndoxRetrievalAugmentation.
 
 ```python
-Indox = IndoxRetrievalAugmentation()
+IndoxRag = IndoxRetrievalAugmentation()
 ```
 
 ```python
@@ -270,7 +250,7 @@ organizing the document into manageable sections for further
 processing.
 
 ```python
-from indox.data_loader_splitter import UnstructuredLoadAndSplit
+from indoxRag.data_loader_splitter import UnstructuredLoadAndSplit
 ```
 
 ```python
@@ -287,10 +267,10 @@ vector representations and storing them in a vector store, you can
 perform rapid similarity searches and other vector-based operations.
 
 ```python
-from indox.vector_stores import ChromaVectorStore
+from indoxRag.vector_stores import ChromaVectorStore
 db = ChromaVectorStore(collection_name="sample",embedding=embed_openai)
-Indox.connect_to_vectorstore(db)
-Indox.store_in_vectorstore(docs)
+IndoxRag.connect_to_vectorstore(db)
+IndoxRag.store_in_vectorstore(docs)
 ```
 
     2024-05-14 15:33:04,916 - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
@@ -308,7 +288,7 @@ query = "how cinderella reach her happy ending?"
 ```
 
 ```python
-retriever = indox.QuestionAnswer(vector_database=db,llm=openai_qa,top_k=5)
+retriever = IndoxRag.QuestionAnswer(vector_database=db,llm=openai_qa,top_k=5)
 retriever.invoke(query)
 ```
 
