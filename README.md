@@ -47,8 +47,7 @@ Powerful data extraction and mining tool leveraging LLMs.
 
 ### 3. 📊 [IndoxJudge](https://github.com/osllmai/indoxJudge)
 
-Comprehensive LLM and RAG evaluation framework.
-
+Comprehensive LLM and RAG evaluation framework.\
 - Multiple evaluation metrics (Faithfulness, Toxicity, BertScore, etc.)
 - Safety and bias assessment
 - Multi-model comparison capabilities
