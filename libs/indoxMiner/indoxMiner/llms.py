@@ -20,9 +20,9 @@ class BaseLLM(ABC):
     This class defines the common interface that all LLM providers (e.g., OpenAI, Anthropic) must implement.
 
     Methods:
-        generate(prompt: str) -> str: 
+        generate(prompt: str) -> str:
             Abstract method to generate a response from the model based on a given prompt.
-    
+
     Example:
         # This is an abstract base class; no direct instantiation.
         pass
@@ -54,7 +54,6 @@ class AsyncOpenAi(BaseLLM):
         # ai_provider = AsyncOpenAi(api_key="your-api-key")
         # result = await ai_provider.generate("Tell me a joke.")
     """
-
 
     def __init__(
         self,
@@ -116,7 +115,6 @@ class OpenAi(BaseLLM):
         # result = ai_provider.generate("Tell me a joke.")
     """
 
-
     def __init__(
         self,
         api_key: str,
@@ -177,7 +175,6 @@ class AsyncAnthropic(BaseLLM):
         # result = await ai_provider.generate("What's the weather like today?")
     """
 
-
     def __init__(
         self,
         api_key: str,
@@ -228,7 +225,6 @@ class Anthropic(BaseLLM):
         # result = ai_provider.generate("What's the weather like today?")
     """
 
-
     def __init__(
         self,
         api_key: str,
@@ -276,7 +272,6 @@ class AsyncOllama(BaseLLM):
         # ai_provider = AsyncOllama(model="llama2", host="http://localhost:11434")
         # result = await ai_provider.generate("What's the weather like today?")
     """
-
 
     def __init__(self, model: str = "llama2", host: str = "http://localhost:11434"):
         from ollama import AsyncClient
@@ -380,23 +375,47 @@ class AsyncNerdTokenApi(BaseLLM):
         # result = await ai_provider.generate("Provide a summary of the latest news.", system_prompt="Be concise.", max_tokens=100)
     """
 
+    def __init__(
+        self,
+        api_key: str,
+        max_tokens: int = 4000,
+        temperature: float = 0.3,
+        stream: bool = False,
+        presence_penalty: float = 0,
+        frequency_penalty: float = 0,
+        top_p: float = 1,
+        prompt_template: str = None,
+    ):
+        """
+        Initializes the NerdTokenApi with the specified API key, model, and an optional prompt template.
 
-    def __init__(self, api_key: str, model: str):
+        Args:
+            api_key (str): The API key for accessing the Indox API.
+            max_tokens (int, optional): The maximum number of tokens for the response. Defaults to 4000.
+            temperature (float, optional): Sampling temperature. Defaults to 0.3.
+            stream (bool, optional): Whether to stream responses. Defaults to False.
+            presence_penalty (float, optional): Presence penalty for text generation. Defaults to 0.
+            frequency_penalty (float, optional): Frequency penalty for text generation. Defaults to 0.
+            top_p (float, optional): Nucleus sampling parameter. Defaults to 1.
+            prompt_template (str, optional): The template for formatting prompts. Defaults to None.
+        """
         self.api_key = api_key
-        self.model = model
+        self.max_tokens = max_tokens
+        self.temperature = temperature
+        self.stream = stream
+        self.presence_penalty = presence_penalty
+        self.frequency_penalty = frequency_penalty
+        self.top_p = top_p
+        self.prompt_template = (
+            prompt_template or "Context: {context}\nQuestion: {question}\nAnswer:"
+        )
 
     async def generate(
         self,
         prompt: str,
         system_prompt: str = "You are a precise data extraction assistant. Extract exactly what is asked for, nothing more.",
-        max_tokens: int = 4000,
-        temperature: float = 0.3,
-        stream: bool = True,
-        presence_penalty: float = 0,
-        frequency_penalty: float = 0,
-        top_p: float = 1,
     ) -> str:
-        url = "https://api-token.nerdstudio.ai/v1/api/text_generation/generate/"
+        url = "https://api-token.nerdstudio.ai/api/v1/text_generation/generate/"
         headers = {
             "accept": "*/*",
             "Authorization": f"Bearer {self.api_key}",
@@ -404,17 +423,17 @@ class AsyncNerdTokenApi(BaseLLM):
         }
 
         data = {
-            "frequency_penalty": frequency_penalty,
-            "max_tokens": max_tokens,
+            "frequency_penalty": self.frequency_penalty,
+            "max_tokens": self.max_tokens,
             "messages": [
                 {"content": system_prompt, "role": "system"},
                 {"content": prompt, "role": "user"},
             ],
-            "model": self.model,
-            "presence_penalty": presence_penalty,
-            "stream": stream,
-            "temperature": temperature,
-            "top_p": top_p,
+            "model": "openai/gpt-4o-mini",
+            "presence_penalty": self.presence_penalty,
+            "stream": self.stream,
+            "temperature": self.temperature,
+            "top_p": self.top_p,
         }
 
         async with httpx.AsyncClient() as client:
@@ -432,96 +451,63 @@ class AsyncNerdTokenApi(BaseLLM):
                 )
 
 
-# class NerdTokenApi(BaseLLM):
-#     """Synchronous Nerd Token API"""
-#
-#     def __init__(self, api_key: str, model: str):
-#         self.api_key = api_key
-#         self.model = model
-#
-#     def generate(
-#         self,
-#         prompt: str,
-#         system_prompt: str = "You are a precise data extraction assistant. Extract exactly what is asked for, nothing more.",
-#         max_tokens: int = 4000,
-#         temperature: float = 0.3,
-#         stream: bool = False,
-#         presence_penalty: float = 0,
-#         frequency_penalty: float = 0,
-#         top_p: float = 1,
-#     ) -> str:
-#         url = "https://api-token.nerdstudio.ai/v1/api/text_generation/generate/"
-#         headers = {
-#             "accept": "application/json",
-#             "Authorization": f"Bearer {self.api_key}",
-#             "Content-Type": "application/json",
-#         }
-#
-#         data = {
-#             "frequency_penalty": frequency_penalty,
-#             "max_tokens": max_tokens,
-#             "messages": [
-#                 {"content": system_prompt, "role": "system"},
-#                 {"content": prompt, "role": "user"},
-#             ],
-#             "model": self.model,
-#             "presence_penalty": presence_penalty,
-#             "stream": stream,
-#             "temperature": temperature,
-#             "top_p": top_p,
-#         }
-#
-#         response = requests.post(url, headers=headers, json=data)
-#         print(response)
-#         if response.status_code == 200:
-#             answer_data = response.json()
-#             generated_text = answer_data.get("text_message", "")
-#             return generated_text
-#         else:
-#             logger.error(
-#                 f"Error From Nerd Token API: {response.status_code}, {response.text}"
-#             )
-#             raise Exception(
-#                 f"Error From Nerd Token API: {response.status_code}, {response.text}"
-#             )
+class NerdTokenApi:
+    def __init__(
+        self,
+        api_key: str,
+        max_tokens: int = 4000,
+        temperature: float = 0.3,
+        stream: bool = False,
+        presence_penalty: float = 0,
+        frequency_penalty: float = 0,
+        top_p: float = 1,
+        prompt_template: str = None,
+    ):
+        """
+        Initializes the NerdTokenApi with the specified API key, model, and an optional prompt template.
 
-class NerdTokenApi(BaseLLM):
-    """
-    Synchronous NerdToken API provider.
-
-    This class interacts with NerdToken API to generate text completions synchronously.
-
-    Attributes:
-        api_key (str): The API key for authenticating with NerdToken API.
-        model (str): The model to use.
-
-    Methods:
-        generate(prompt: str, system_prompt: str, max_tokens: int, temperature: float, stream: bool, presence_penalty: float, frequency_penalty: float, top_p: float) -> str:
-            Synchronously generates a response from NerdToken API based on the provided prompt and settings.
-
-    Example:
-        # To use this provider:
-        # ai_provider = NerdTokenApi(api_key="your-api-key", model="your-model")
-        # result = ai_provider.generate("Provide a summary of the latest news.", system_prompt="Be concise.", max_tokens=100)
-    """
-
-
-    def __init__(self, api_key: str, model: str):
+        Args:
+            api_key (str): The API key for accessing the Indox API.
+            max_tokens (int, optional): The maximum number of tokens for the response. Defaults to 4000.
+            temperature (float, optional): Sampling temperature. Defaults to 0.3.
+            stream (bool, optional): Whether to stream responses. Defaults to False.
+            presence_penalty (float, optional): Presence penalty for text generation. Defaults to 0.
+            frequency_penalty (float, optional): Frequency penalty for text generation. Defaults to 0.
+            top_p (float, optional): Nucleus sampling parameter. Defaults to 1.
+            prompt_template (str, optional): The template for formatting prompts. Defaults to None.
+        """
         self.api_key = api_key
-        self.model = model
+        self.max_tokens = max_tokens
+        self.temperature = temperature
+        self.stream = stream
+        self.presence_penalty = presence_penalty
+        self.frequency_penalty = frequency_penalty
+        self.top_p = top_p
+        self.prompt_template = (
+            prompt_template or "Context: {context}\nQuestion: {question}\nAnswer:"
+        )
 
-    def generate(
-            self,
-            prompt: str,
-            system_prompt: str = "You are a precise data extraction assistant. Extract exactly what is asked for, nothing more.",
-            max_tokens: int = 4000,
-            temperature: float = 0.3,
-            stream: bool = False,
-            presence_penalty: float = 0,
-            frequency_penalty: float = 0,
-            top_p: float = 1,
-    ) -> str:
-        url = "https://api-token.nerdstudio.ai/v1/api/text_generation/generate/"
+    def _send_request(self, system_prompt: str, user_prompt: str) -> str:
+        """
+        Sends a request to the Indox API to generate a response.
+        Implements exponential backoff retry mechanism for API calls.
+
+        Args:
+            system_prompt (str): The system prompt to include in the request.
+            user_prompt (str): The user prompt to generate a response for.
+
+        Returns:
+            str: The generated response text.
+
+        Raises:
+            Exception: If there is an error during the API request after all retry attempts.
+
+        Retries:
+            - Up to 6 attempts (1 initial + 5 retries)
+            - Exponential backoff with randomization (1-20 seconds)
+        """
+        url = "https://api-token.nerdstudio.ai/api/v1/text_generation/generate/"
+
         headers = {
             "accept": "application/json",
             "Authorization": f"Bearer {self.api_key}",
@@ -529,29 +515,44 @@ class NerdTokenApi(BaseLLM):
         }
 
         data = {
-            "frequency_penalty": frequency_penalty,
-            "max_tokens": max_tokens,
+            "frequency_penalty": self.frequency_penalty,
+            "max_tokens": self.max_tokens,
             "messages": [
-                {"content": prompt, "role": "user"},
                 {"content": system_prompt, "role": "system"},
+                {"content": user_prompt, "role": "user"},
             ],
-            "model": self.model,
-            "presence_penalty": presence_penalty,
-            "stream": stream,
-            "temperature": temperature,
-            "top_p": top_p,
+            "model": "openai/gpt-4o-mini",
+            "presence_penalty": self.presence_penalty,
+            "stream": self.stream,
+            "temperature": self.temperature,
+            "top_p": self.top_p,
         }
+        try:
+            response = requests.post(url, headers=headers, json=data)
+            if response.status_code == 200:
+                answer_data = response.json()
+                generated_text = answer_data["choices"][0]["message"]["content"]
+                return generated_text
+            else:
+                error_message = (
+                    f"Error from Indox API: {response.status_code}, {response.text}"
+                )
+                logger.error(error_message)
+                raise Exception(error_message)
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Request error: {e}")
+            raise
 
-        response = requests.post(url, headers=headers, json=data)
-        if response.status_code == 200:
-            answer_data = response.json()
-            generated_text = answer_data["choices"][0]["message"]["content"]
-            return generated_text
-        else:
-            print(f"Error From Nerd Token API: {response.status_code}, {response.text}")
-            raise Exception(
-                f"Error From Nerd Token API: {response.status_code}, {response.text}"
-            )
+    def generate(
+        self,
+        prompt: str,
+        system_prompt: str = "You are a precise data extraction assistant. Extract exactly what is asked for, nothing more.",
+    ) -> str:
+
+        return self._send_request(
+            system_prompt=system_prompt,
+            user_prompt=prompt,
+        )
 
 
 class AsyncVLLM(BaseLLM):

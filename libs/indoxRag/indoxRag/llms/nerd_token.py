@@ -65,7 +65,7 @@ class NerdToken:
                 {"content": system_prompt, "role": "system"},
                 {"content": user_prompt, "role": "user"},
             ],
-            "model": "gpt-4o-mini",
+            "model": "openai/gpt-4o-mini",
             "presence_penalty": self.presence_penalty,
             "stream": self.stream,
             "temperature": self.temperature,
@@ -80,9 +80,7 @@ class NerdToken:
                 generated_text = answer_data["choices"][0]["message"]["content"]
                 return generated_text
             else:
-                error_message = (
-                    f"Error from Indox API: {response.status_code}, {response.text}"
-                )
+                error_message = f"Error from Nerd Token API: {response.status_code}, {response.text}"
                 logger.error(error_message)
                 raise Exception(error_message)
         except requests.exceptions.RequestException as e:

@@ -108,63 +108,34 @@ class NerdTokenApi:
             logger.error(f"Request error: {e}")
             raise
 
-    def generate_evaluation_response(self, prompt: str) -> str:
+    def _attempt_answer_question(
+        self,
+        context,
+        question,
+    ):
         """
-        Generates an evaluation response using the Indox API.
-
-        This method adds a system prompt indicating that the response is for evaluation purposes,
-        and then sends the prompt to the API for generating a response.
+        Generates an answer to a question based on the given context using the Indox API.
 
         Args:
-            prompt (str): The prompt to evaluate.
+            context (str): The text to base the answer on.
+            question (str): The question to be answered.
 
         Returns:
-            str: The generated evaluation response.
+            str: The generated answer.
         """
-        try:
-            system_prompt = "You are an assistant for LLM evaluation."
+        system_prompt = "You are a helpful assistant."
+        user_prompt = self.prompt_template.format(
+            context=context,
+            question=question,
+        )
+        return self._send_request(system_prompt, user_prompt)
 
-            response = self._send_request(system_prompt, prompt)
-            if response.startswith("```json") and response.endswith("```"):
-                response = response[7:-3].strip()
-            return response
-        except Exception as e:
-            logger.error(f"Error generating evaluation response: {e}")
-            return str(e)
-
-    def generate_interpretation(self, models_data, mode):
-        prompt = ""
-        if mode == "comparison":
-            from .interpretation_template.comparison_template import (
-                ModelComparisonTemplate,
-            )
-
-            prompt = ModelComparisonTemplate.generate_comparison(
-                models=models_data, mode="llm model quality"
-            )
-        elif mode == "rag":
-            from .interpretation_template.rag_interpretation_template import (
-                RAGEvaluationTemplate,
-            )
-
-            prompt = RAGEvaluationTemplate.generate_interpret(data=models_data)
-        elif mode == "safety":
-            from .interpretation_template.safety_interpretation_template import (
-                SafetyEvaluationTemplate,
-            )
-
-            prompt = SafetyEvaluationTemplate.generate_interpret(data=models_data)
-        elif mode == "llm":
-            from .interpretation_template.llm_interpretation_template import (
-                LLMEvaluatorTemplate,
-            )
-
-            prompt = LLMEvaluatorTemplate.generate_interpret(data=models_data)
-
-        response = self._send_request(
-            system_prompt="You are a helpful assistant to analyze charts",
+    def chat(
+        self,
+        prompt,
+        system_prompt="You are a helpful assistant",
+    ):
+        return self._send_request(
+            system_prompt=system_prompt,
             user_prompt=prompt,
         )
-        if response.startswith("```json") and response.endswith("```"):
-            response = response[7:-3].strip()
-        return response

@@ -8,10 +8,11 @@ from .GAN.evaluation import (
     evaluate_statistical_similarity,
     evaluate_privacy,
     plot_distributions,
-    evaluate_data_drift
+    evaluate_data_drift,
 )
 
 import importlib.metadata
 
 # Ensure the package name is correct here
-__version__ = importlib.metadata.version("indoxGen_tensor")
+# __version__ = importlib.metadata.version("indoxGen_tensor")
+__version__ = "0.2.0"
