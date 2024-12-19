@@ -31,7 +31,7 @@ from indoxJudge.metrics import (
 )
 
 # Set up logging
-logger.remove()  # Remove the default logger
+logger.remove()
 logger.add(
     sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
 )

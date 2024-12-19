@@ -6,9 +6,10 @@ from .GAN.evaluation import (
     evaluate_statistical_similarity,
     evaluate_privacy,
     plot_distributions,
-    evaluate_data_drift
+    evaluate_data_drift,
 )
 
 import importlib.metadata
 
 # __version__ = importlib.metadata.version("indoxGen_torch")
+__version__ = "0.1.0"
