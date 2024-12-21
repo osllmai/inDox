@@ -21,7 +21,7 @@ from .object_detection.models.RT_DETR.rtdetr import RTDETRModel
 from .object_detection.models.DETR.detr import DETRModel
 from .object_detection.models.DETR_CLIP.detr_clip_model import DETRCLIPModel
 from .object_detection.models.llava_next.llava_next import LLaVANextObjectDetector
-from .object_detection.models.GroundingDINO.groundingdino import GroundingDINOObjectDetector
+from .object_detection.models.GroundingDINO.groundingdino import GroundingDINOModel
 from .object_detection.models.YOLOX.yolox_model import YOLOXModel
 from .object_detection.models.OWL_ViT.owlvit import OWLVitModel
 from .object_detection.models.Detectron2.detectron2_model import Detectron2Model
