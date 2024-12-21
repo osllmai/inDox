@@ -6,7 +6,7 @@ from groundingdino.util.inference import load_model, load_image, predict, annota
 import cv2
 from google.colab.patches import cv2_imshow  # For Colab compatibility
 
-class GroundingDINOObjectDetector:
+class GroundingDINOModel:
     def __init__(self, config_path, model_weights_path, device='cuda', box_threshold=0.35, text_threshold=0.25):
         """
         Initializes the Grounding DINO object detection model.
@@ -24,7 +24,8 @@ class GroundingDINOObjectDetector:
         self.box_threshold = box_threshold
         self.text_threshold = text_threshold
 
-    def detect_objects(self, image_path, text_prompt):
+    def detect_objects(self, image_path, text_prompt:"person, bicycle, car, motorcycle, airplane, bus, train, truck, boat, traffic light, fire hydrant, stop sign, parking meter, bench, bird, cat, dog, horse, sheep, cow, elephant, bear, zebra, giraffe, backpack, umbrella, handbag, tie, suitcase, frisbee, skis, snowboard, sports ball, kite, baseball bat, baseball glove, skateboard, surfboard, tennis racket, bottle, wine glass, cup, fork, knife, spoon, bowl, banana, apple, sandwich, orange, broccoli, carrot, hot dog, pizza, donut, cake, chair, couch, potted plant, bed, dining table, toilet, tv, laptop, mouse, remote, keyboard, cell phone, microwave, oven, toaster, sink, refrigerator, book, clock, vase, scissors, teddy bear, hair drier, toothbrush"
+):
         """
         Detect objects in the image using the given text prompt.
 
