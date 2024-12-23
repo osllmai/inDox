@@ -76,11 +76,11 @@ class ObjectDetection:
             if not self._install_detectron2():
                 raise RuntimeError("Failed to install Detectron2")
 
-            from .models.detectron2_model import Detectron2Model
+            from .models.detectron2.detectron2_model import Detectron2Model
 
             return Detectron2Model(device=device, **kwargs)
 
         elif model == "detr":
-            from .models.detr import DETRModel
+            from .models.detr.detr import DETRModel
 
             return DETRModel(device=device, **kwargs)
