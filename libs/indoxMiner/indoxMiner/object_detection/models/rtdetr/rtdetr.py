@@ -5,7 +5,7 @@ from transformers import AutoImageProcessor, AutoModelForObjectDetection
 import matplotlib.pyplot as plt
 
 
-class RTDETRModel:
+class RTDETR:
     """
     RT-DETR object detection model.
     """
@@ -13,7 +13,9 @@ class RTDETRModel:
     def __init__(self, checkpoint="PekingU/rtdetr_r50vd_coco_o365", device="cuda"):
         """Initialize the RT-DETR model."""
         self.device = torch.device(device if torch.cuda.is_available() else "cpu")
-        self.model = AutoModelForObjectDetection.from_pretrained(checkpoint).to(self.device)
+        self.model = AutoModelForObjectDetection.from_pretrained(checkpoint).to(
+            self.device
+        )
         self.processor = AutoImageProcessor.from_pretrained(checkpoint)
 
     def detect_objects(self, image_path, threshold=0.1):
@@ -69,7 +71,9 @@ class RTDETRModel:
         annotated_image = box_annotator.annotate(scene=image, detections=detections)
 
         label_annotator = sv.LabelAnnotator()
-        annotated_image = label_annotator.annotate(scene=annotated_image, detections=detections, labels=labels)
+        annotated_image = label_annotator.annotate(
+            scene=annotated_image, detections=detections, labels=labels
+        )
 
         # Display the annotated image
         plt.imshow(annotated_image)

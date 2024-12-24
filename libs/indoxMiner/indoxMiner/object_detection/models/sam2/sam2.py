@@ -7,8 +7,10 @@ import matplotlib.pyplot as plt
 import supervision as sv
 
 
-class SAM2Model:
-    def __init__(self, config_name_or_path=None, weights_name_or_path=None, device="cuda"):
+class SAM2:
+    def __init__(
+        self, config_name_or_path=None, weights_name_or_path=None, device="cuda"
+    ):
         """
         Initializes the SAM2 object segmentation model.
 
@@ -23,19 +25,30 @@ class SAM2Model:
         self._install_sam2()
 
         # Automatically download config and weight files if necessary
-        self.config_path = self._get_file(config_name_or_path, "config") if config_name_or_path else self._get_file(
-            "sam2_hiera_l.yaml", "config"
+        self.config_path = (
+            self._get_file(config_name_or_path, "config")
+            if config_name_or_path
+            else self._get_file("sam2_hiera_l.yaml", "config")
         )
-        self.weights_path = self._get_file(weights_name_or_path, "weights") if weights_name_or_path else self._get_file(
-            "sam2_hiera_large.pt", "weights"
+        self.weights_path = (
+            self._get_file(weights_name_or_path, "weights")
+            if weights_name_or_path
+            else self._get_file("sam2_hiera_large.pt", "weights")
         )
 
         # Load the SAM2 model (after ensuring the package is installed)
         from sam2.build_sam import build_sam2
-        self.model = build_sam2(self.config_path, self.weights_path, device=self.device, apply_postprocessing=False)
+
+        self.model = build_sam2(
+            self.config_path,
+            self.weights_path,
+            device=self.device,
+            apply_postprocessing=False,
+        )
 
         # Initialize mask generator
         from sam2.automatic_mask_generator import SAM2AutomaticMaskGenerator
+
         self.mask_generator = SAM2AutomaticMaskGenerator(self.model)
 
     def _install_sam2(self):
@@ -47,13 +60,15 @@ class SAM2Model:
         except ImportError:
             print("SAM2 not found. Installing...")
             try:
-                subprocess.check_call([
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "install",
-                    "git+https://github.com/facebookresearch/sam2.git"
-                ])
+                subprocess.check_call(
+                    [
+                        sys.executable,
+                        "-m",
+                        "pip",
+                        "install",
+                        "git+https://github.com/facebookresearch/sam2.git",
+                    ]
+                )
             except subprocess.CalledProcessError as e:
                 raise RuntimeError(f"Error installing SAM2: {e}")
 
@@ -127,7 +142,9 @@ class SAM2Model:
         """
         image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
         box_annotator = sv.BoxAnnotator(color_lookup=sv.ColorLookup.INDEX)
-        annotated_image_with_boxes = box_annotator.annotate(scene=image_rgb.copy(), detections=detections)
+        annotated_image_with_boxes = box_annotator.annotate(
+            scene=image_rgb.copy(), detections=detections
+        )
 
         plt.figure(figsize=(10, 10))
         plt.imshow(annotated_image_with_boxes)
@@ -143,10 +160,9 @@ class SAM2Model:
 
         Displays the individual masks in a grid.
         """
-        masks = [mask['segmentation'] for mask in sorted(sam2_result, key=lambda x: x['area'], reverse=True)]
+        masks = [
+            mask["segmentation"]
+            for mask in sorted(sam2_result, key=lambda x: x["area"], reverse=True)
+        ]
 
-        sv.plot_images_grid(
-            images=masks[:16],
-            grid_size=(4, 4),
-            size=(12, 12)
-        )
+        sv.plot_images_grid(images=masks[:16], grid_size=(4, 4), size=(12, 12))

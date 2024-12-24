@@ -1,10 +1,21 @@
 import torch
-from transformers import CLIPProcessor, CLIPModel, DetrImageProcessor, DetrForObjectDetection
+from transformers import (
+    CLIPProcessor,
+    CLIPModel,
+    DetrImageProcessor,
+    DetrForObjectDetection,
+)
 from PIL import Image, UnidentifiedImageError
 import matplotlib.pyplot as plt
 
-class DETRCLIPModel:
-    def __init__(self, clip_model_name="openai/clip-vit-base-patch32", detr_model_name="facebook/detr-resnet-50", device="cuda"):
+
+class DETRCLIP:
+    def __init__(
+        self,
+        clip_model_name="openai/clip-vit-base-patch32",
+        detr_model_name="facebook/detr-resnet-50",
+        device="cuda",
+    ):
         """
         Initialize the DETR and CLIP models.
         Args:
@@ -19,24 +30,103 @@ class DETRCLIPModel:
         self.clip_processor = CLIPProcessor.from_pretrained(clip_model_name)
 
         # Initialize DETR model and processor
-        self.detr_model = DetrForObjectDetection.from_pretrained(detr_model_name).to(self.device)
+        self.detr_model = DetrForObjectDetection.from_pretrained(detr_model_name).to(
+            self.device
+        )
         self.detr_processor = DetrImageProcessor.from_pretrained(detr_model_name)
         self.detr_model.eval()
 
         # COCO class labels (91 classes)
         self.coco_classes = [
-            "N/A", "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat",
-            "traffic light", "fire hydrant", "N/A", "stop sign", "parking meter", "bench", "bird", "cat",
-            "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "N/A", "backpack",
-            "umbrella", "N/A", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball",
-            "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle",
-            "N/A", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich",
-            "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "couch",
-            "potted plant", "bed", "N/A", "dining table", "N/A", "toilet", "N/A", "tv", "laptop", "mouse",
-            "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator",
-            "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"
+            "N/A",
+            "person",
+            "bicycle",
+            "car",
+            "motorcycle",
+            "airplane",
+            "bus",
+            "train",
+            "truck",
+            "boat",
+            "traffic light",
+            "fire hydrant",
+            "N/A",
+            "stop sign",
+            "parking meter",
+            "bench",
+            "bird",
+            "cat",
+            "dog",
+            "horse",
+            "sheep",
+            "cow",
+            "elephant",
+            "bear",
+            "zebra",
+            "giraffe",
+            "N/A",
+            "backpack",
+            "umbrella",
+            "N/A",
+            "handbag",
+            "tie",
+            "suitcase",
+            "frisbee",
+            "skis",
+            "snowboard",
+            "sports ball",
+            "kite",
+            "baseball bat",
+            "baseball glove",
+            "skateboard",
+            "surfboard",
+            "tennis racket",
+            "bottle",
+            "N/A",
+            "wine glass",
+            "cup",
+            "fork",
+            "knife",
+            "spoon",
+            "bowl",
+            "banana",
+            "apple",
+            "sandwich",
+            "orange",
+            "broccoli",
+            "carrot",
+            "hot dog",
+            "pizza",
+            "donut",
+            "cake",
+            "chair",
+            "couch",
+            "potted plant",
+            "bed",
+            "N/A",
+            "dining table",
+            "N/A",
+            "toilet",
+            "N/A",
+            "tv",
+            "laptop",
+            "mouse",
+            "remote",
+            "keyboard",
+            "cell phone",
+            "microwave",
+            "oven",
+            "toaster",
+            "sink",
+            "refrigerator",
+            "book",
+            "clock",
+            "vase",
+            "scissors",
+            "teddy bear",
+            "hair drier",
+            "toothbrush",
         ]
-
 
     def load_image(self, image_path):
         """
@@ -87,7 +177,7 @@ class DETRCLIPModel:
         clip_text_inputs = self.clip_processor(
             text=[f"a photo of a {cls}" for cls in self.coco_classes],
             return_tensors="pt",
-            padding=True
+            padding=True,
         ).to(self.device)
 
         with torch.no_grad():
@@ -95,12 +185,16 @@ class DETRCLIPModel:
             text_features /= text_features.norm(dim=-1, keepdim=True)
 
         detected_objects = []
-        for score, label, box in zip(results["scores"], results["labels"], results["boxes"]):
+        for score, label, box in zip(
+            results["scores"], results["labels"], results["boxes"]
+        ):
             xmin, ymin, xmax, ymax = box.tolist()
 
             # Crop the detected region
             cropped_image = image.crop((xmin, ymin, xmax, ymax))
-            clip_image_input = self.clip_processor(images=cropped_image, return_tensors="pt").to(self.device)
+            clip_image_input = self.clip_processor(
+                images=cropped_image, return_tensors="pt"
+            ).to(self.device)
 
             # Get CLIP image features for the cropped region
             with torch.no_grad():
@@ -114,14 +208,15 @@ class DETRCLIPModel:
                 detected_class = self.coco_classes[detected_class_idx]
                 detected_prob = probs[0, detected_class_idx].item()
 
-            detected_objects.append({
-                "box": (xmin, ymin, xmax, ymax),
-                "label": detected_class,
-                "score": detected_prob
-            })
+            detected_objects.append(
+                {
+                    "box": (xmin, ymin, xmax, ymax),
+                    "label": detected_class,
+                    "score": detected_prob,
+                }
+            )
 
         return detected_objects, image
-
 
     def visualize_results(self, image, detections):
         """
@@ -140,10 +235,25 @@ class DETRCLIPModel:
             score = detection["score"]
 
             # Draw bounding box
-            ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin, fill=False, color="red", linewidth=2))
-            ax.text(xmin, ymin, f"{label}: {score:.3f}", color="yellow", fontsize=10, bbox=dict(facecolor='black', alpha=0.5))
+            ax.add_patch(
+                plt.Rectangle(
+                    (xmin, ymin),
+                    xmax - xmin,
+                    ymax - ymin,
+                    fill=False,
+                    color="red",
+                    linewidth=2,
+                )
+            )
+            ax.text(
+                xmin,
+                ymin,
+                f"{label}: {score:.3f}",
+                color="yellow",
+                fontsize=10,
+                bbox=dict(facecolor="black", alpha=0.5),
+            )
 
         plt.axis("off")
         plt.title("DETR + CLIP Object Detection")
         plt.show()
-

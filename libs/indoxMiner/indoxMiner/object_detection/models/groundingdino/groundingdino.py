@@ -9,7 +9,7 @@ import sys
 import requests
 
 
-class GroundingDINOModel:
+class GroundingDINO:
     def __init__(
         self,
         config_name_or_path,

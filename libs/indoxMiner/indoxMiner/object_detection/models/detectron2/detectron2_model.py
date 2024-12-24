@@ -8,7 +8,7 @@ import requests
 import os
 
 
-class Detectron2Model:
+class Detectron2:
     def __init__(
         self,
         config_path="COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml",

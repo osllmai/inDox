@@ -4,7 +4,8 @@ from transformers import DetrImageProcessor, DetrForObjectDetection
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
-class DETRModel:
+
+class DETR:
     def __init__(self, checkpoint="facebook/detr-resnet-50", device="cuda"):
         """
         Initialize the DETR model and processor.
@@ -67,7 +68,9 @@ class DETRModel:
         plt.imshow(image)
         ax = plt.gca()
 
-        for box, score, label in zip(results["boxes"], results["scores"], results["labels"]):
+        for box, score, label in zip(
+            results["boxes"], results["scores"], results["labels"]
+        ):
             x_min, y_min, x_max, y_max = box.cpu().numpy()
             rect = Rectangle(
                 (x_min, y_min),

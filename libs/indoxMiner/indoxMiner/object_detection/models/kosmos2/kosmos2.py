@@ -5,7 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from transformers import AutoProcessor, AutoModelForVision2Seq
 
-class Kosmos2Model:
+
+class Kosmos2:
     """
     Kosmos-2 object detection model.
     """
@@ -32,7 +33,9 @@ class Kosmos2Model:
 
         image = Image.fromarray(cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB))
         prompt = "<grounding> Describe the image in detail: "
-        inputs = self.processor(text=prompt, images=image, return_tensors="pt").to(self.device)
+        inputs = self.processor(text=prompt, images=image, return_tensors="pt").to(
+            self.device
+        )
 
         generated_ids = self.model.generate(
             pixel_values=inputs["pixel_values"],
@@ -43,9 +46,13 @@ class Kosmos2Model:
             use_cache=True,
             max_new_tokens=128,
         )
-        generated_text = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+        generated_text = self.processor.batch_decode(
+            generated_ids, skip_special_tokens=True
+        )[0]
 
-        _, entities = self.processor.post_process_generation(generated_text, cleanup_and_extract=True)
+        _, entities = self.processor.post_process_generation(
+            generated_text, cleanup_and_extract=True
+        )
 
         objects = []
         for entity in entities:
@@ -79,7 +86,15 @@ class Kosmos2Model:
             x_max = int(x_max * w)
             y_max = int(y_max * h)
             cv2.rectangle(image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
-            cv2.putText(image, entity_name, (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+            cv2.putText(
+                image,
+                entity_name,
+                (x_min, y_min - 10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.9,
+                (0, 255, 0),
+                2,
+            )
 
         # Convert from BGR to RGB for display with Matplotlib
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
