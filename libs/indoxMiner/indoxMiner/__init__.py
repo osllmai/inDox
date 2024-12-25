@@ -12,4 +12,11 @@ __available_models__ = [
     "owlvit",
     "rtdetr",
     "sam2",
+    "yolov5",
+    "yolov6",
+    "yolov7",
+    "yolov8",
+    "yolov10",
+    "yolov11",
+    "yolox",
 ]
