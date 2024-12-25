@@ -3,6 +3,8 @@ loguru==0.7.2
 pandas~=2.2.2
 setuptools==75.3.0
 unstructured~=0.16.4
+matplotlib==3.8.4
+numpy==2.2.1
 
 utils~=1.0.2
 requests~=2.32.3
@@ -12,3 +14,15 @@ tesseract==0.1.3
 pdfminer.six==20231228
 nltk==3.9.1
 pi_heif==0.20.0
+
+
+opencv_contrib_python==4.10.0.84
+opencv_python==4.10.0.84
+opencv_python_headless==4.10.0.84
+Pillow==11.0.0
+protobuf==3.20.3
+Requests==2.32.3
+supervision==0.25.1
+torch==2.5.1
+transformers==4.45.2
+ultralytics==8.3.28

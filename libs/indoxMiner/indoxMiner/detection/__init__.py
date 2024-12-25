@@ -1,10 +1,10 @@
-from .detector import ObjectDetection
-from .models.detectron2.detectron2_model import Detectron2
-from .models.detr.detr import DETR
-from .models.detr_clip.detr_clip import DETRCLIP
-from .models.groundingdino.groundingdino import GroundingDINO
+# from .detector import ObjectDetection
+from .models.Detectron2.detectron2_model import Detectron2
+from .models.DETR.detr import DETR
+from .models.DETR_CLIP.detr_clip import DETRCLIP
+from .models.GroundingDINO.groundingdino import GroundingDINO
 from .models.kosmos2.kosmos2 import Kosmos2
-from .models.owl_vit.owlvit import OWLVit
+from .models.owlvit.owlvit import OWLVit
 from .models.rtdetr.rtdetr import RTDETR
 from .models.sam2.sam2 import SAM2
 from .models.YOLO.YOLOv5.yolov5 import YOLOv5
