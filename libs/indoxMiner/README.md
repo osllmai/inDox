@@ -1,4 +1,3 @@
-```markdown
 # IndoxMiner
 
 [![PyPI version](https://badge.fury.io/py/indoxminer.svg)](https://badge.fury.io/py/indoxminer)
