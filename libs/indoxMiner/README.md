@@ -3,7 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/indoxminer.svg)](https://badge.fury.io/py/indoxminer)
 [![License: MIT](https://img.shields.io/badge/License-AGPL-yellow.svg)](https://opensource.org/licenses/AGPL)
 
-IndoxMiner is a powerful Python library that leverages Large Language Models (LLMs) for data extraction and advanced object detection. It combines schema-based data extraction from unstructured data sources such as text, PDFs, and images, with state-of-the-art object detection models. IndoxMiner enables seamless automation for document processing and visual recognition tasks.
+IndoxMiner is a powerful Python library that leverages Large Language Models (LLMs) for **data extraction** and advanced **object detection**. It combines schema-based data extraction from unstructured data sources such as text, PDFs, and images, with state-of-the-art object detection models. IndoxMiner enables seamless automation for document processing and visual recognition tasks.
 
 ## 🚀 Key Features
 
@@ -33,7 +33,11 @@ pip install 'git+https://github.com/facebookresearch/detectron2.git'
 pip install ultralytics
 ```
 
-## 🎯 Quick Start
+---
+
+## 📝 Data Extraction
+
+IndoxMiner allows you to extract structured data from various formats like text, PDFs, and images using **schema-based extraction** and integration with powerful language models (LLMs).
 
 ### Basic Text Extraction
 
@@ -141,7 +145,9 @@ documents = processor.process()
 
 ## 📷 Object Detection
 
-IndoxMiner now includes powerful object detection capabilities using pre-trained models. This part of the library leverages state-of-the-art models to perform object detection tasks on images, making it perfect for applications like automated document scanning, inventory management, or visual analysis of images. The following models are available for detection:
+IndoxMiner includes powerful object detection capabilities using pre-trained models. The library supports a wide range of models suitable for real-time and high-accuracy object detection tasks.
+
+### Supported Detection Models
 
 - **Detectron2** (from Facebook AI Research)
 - **DETR** (DEtection TRansformers)
@@ -155,17 +161,11 @@ IndoxMiner now includes powerful object detection capabilities using pre-trained
 - **YOLOv6, YOLOv7, YOLOv8, YOLOv10, YOLOv11** (Updated versions of the popular YOLO object detection models)
 - **YOLOX** (A robust, scalable version of the YOLO family)
 
-These models are highly optimized for speed and accuracy, providing precise bounding boxes, class labels, and confidence scores for various objects in the image.
+These models are optimized for speed and accuracy, providing precise bounding boxes, class labels, and confidence scores for various objects in the image.
 
-### 🔧 Installation of Object Detection Models
+### 🚀 Quick Start - Object Detection
 
-You can use the object detection models directly after installing **IndoxMiner**.
-
-IndoxMiner will automatically handle dependencies and installation of the required object detection libraries.
-
-### 🚀 Quick Start
-
-Here’s a quick guide to using the IndoxMiner object detection models. This example demonstrates using the **YOLOv5** model for object detection:
+Here's a guide to using the IndoxMiner object detection models. This example demonstrates using the **YOLOv5** model for object detection:
 
 #### Using YOLOv5 for Object Detection
 
@@ -186,11 +186,9 @@ detector.visualize_results(detections)
 detector.save_results(detections, "output.jpg")
 ```
 
-In this example, the `ObjectDetection` class is initialized with the model name `"yolov5"`. The `detect_objects()` method detects objects in the image, and the `visualize_results()` method draws bounding boxes around the detected objects.
-
 #### Supported Detection Models
 
-The `ObjectDetection` class in IndoxMiner can use any of the following models. You simply need to specify the model name when initializing:
+The `ObjectDetection` class in IndoxMiner can use any of the following models:
 
 ```python
 detector = ObjectDetection(model="detectron2")  # for Detectron2
@@ -207,6 +205,7 @@ IndoxMiner provides simple methods to visualize detection results, such as bound
 ```python
 detector.visualize_results(detections)  # Display bounding boxes and labels
 ```
+
 ### ⚙️ Configuration Options
 
 You can configure various parameters of the object detection models for improved accuracy and performance:
@@ -288,7 +287,9 @@ Available validation options:
 - `required`: Required fields
 - `custom`: Custom validation functions
 
-## ⚙️ Configuration Options
+##
+
+ ⚙️ Configuration Options
 
 ### ProcessingConfig
 
