@@ -1,0 +1,4 @@
+torch==2.1.0
+transformers==4.30.0
+pillow==9.3.0
+matplotlib==3.6.2
