@@ -1,5 +1,3 @@
-Here's an integrated and updated `README` file for the IndoxMiner library, including both the extraction and object detection features:
-
 ```markdown
 # IndoxMiner
 
