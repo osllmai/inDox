@@ -1,5 +1,5 @@
 # Package metadata
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __author__ = "IndoxMiner Team"
 __description__ = "A comprehensive document extraction and processing library"
 
