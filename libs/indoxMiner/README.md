@@ -104,21 +104,23 @@ IndoxMiner provides powerful **object detection** capabilities with support for 
 
 | Model         | Supported ✅ |
 |---------------|:------------:|
-| **Detectron2** | [ ]          |
-| **DETR**       | [ ]          |
-| **DETR-CLIP**  | [ ]          |
-| **GroundingDINO** | [ ]       |
-| **Kosmos2**    | [ ]          |
-| **OWL-ViT**    | [ ]          |
-| **RT-DETR**    | [ ]          |
-| **SAM2**       | [ ]          |
-| **YOLOv5**     | [ ]          |
-| **YOLOv6**     | [ ]          |
-| **YOLOv7**     | [ ]          |
-| **YOLOv8**     | [ ]          |
-| **YOLOv10**    | [ ]          |
-| **YOLOv11**    | [ ]          |
-| **YOLOX**      | [ ]          |
+| **Detectron2** | ✅          |
+| **DETR**       | ✅          |
+| **DETR-CLIP**  | ✅          |
+| **GroundingDINO** | ✅       |
+| **Kosmos2**    | ✅          |
+| **OWL-ViT**    | ✅          |
+| **RT-DETR**    | ✅          |
+| **SAM2**       | ✅          |
+| **YOLOv5**     | ✅          |
+| **YOLOv6**     | ✅          |
+| **YOLOv7**     | ✅          |
+| **YOLOv8**     | ✅          |
+| **YOLOv10**    | ✅          |
+| **YOLOv11**    | ✅          |
+| **YOLOX**      | ✅          |
+| **YOLO-World**      | ❌          |
+
 
 ---
 

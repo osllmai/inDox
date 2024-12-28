@@ -1,7 +1,3 @@
-Here's a more refined and engaging README specific to the object detection part of IndoxMiner, incorporating the points you mentioned:
-
----
-
 # IndoxMiner - Object Detection
 
 [![PyPI version](https://badge.fury.io/py/indoxminer.svg)](https://badge.fury.io/py/indoxminer)
@@ -147,7 +143,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Documentation**: [Full documentation](https://indoxminer.readthedocs.io/)
 - **Issues**: [GitHub Issues](https://github.com/username/indoxminer/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/username/indoxminer/discussions)
-
----
-
-This version of the README focuses on making the object detection setup and usage easy to understand while highlighting the automation features like model installation and handling checkpoints. Let me know if you'd like any adjustments!
