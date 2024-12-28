@@ -5,7 +5,7 @@ import cv2
 import torch
 import matplotlib.pyplot as plt
 
-class Detectron2Model:
+class Detectron2:
     def __init__(self, config_name="COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", score_thresh=0.5, device=None):
         """
         Initializes the Detectron2 model and prepares it for inference.

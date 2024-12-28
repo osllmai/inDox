@@ -20,7 +20,7 @@ class DETR:
     def detect_objects(self, image_path, resize_width=800, score_threshold=0.7):
         """
         Perform object detection on an image given its path.
-        Args:
+        Args: 
             image_path (str): Path to the image file.
             resize_width (int): Width to resize image while maintaining aspect ratio.
             score_threshold (float): Minimum confidence score for detections.

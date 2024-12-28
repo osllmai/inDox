@@ -13,7 +13,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="indoxMiner",
-    version="0.1.1",
+    version="0.1.3",
+
     license="AGPL-3.0",
     packages=find_packages(),
     include_package_data=True,
