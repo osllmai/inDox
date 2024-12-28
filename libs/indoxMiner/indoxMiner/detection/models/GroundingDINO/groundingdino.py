@@ -3,7 +3,6 @@ import torch
 from PIL import Image
 import matplotlib.pyplot as plt
 import cv2
-from google.colab.patches import cv2_imshow  # For Colab compatibility
 import subprocess
 import sys
 import requests
@@ -147,22 +146,27 @@ class GroundingDINO:
 
     def visualize_results(self, result):
         """
-        Visualize the detection results on the image.
+        Visualize detection results in Colab.
 
         Args:
-            result (dict): Dictionary containing the image and detection results, including boxes, logits, and phrases.
+            result (dict): Contains image and detection results (boxes, logits, phrases)
         """
         from groundingdino.util.inference import annotate
+        from google.colab.patches import cv2_imshow
+        import cv2
 
         image_source = result["image_source"]
         boxes = result["boxes"]
         logits = result["logits"]
         phrases = result["phrases"]
 
-        # Annotate the image with the detected boxes and phrases
         annotated_frame = annotate(
             image_source=image_source, boxes=boxes, logits=logits, phrases=phrases
         )
 
-        # Display the annotated image using cv2_imshow in Colab
-        cv2_imshow(annotated_frame)
+        # Convert BGR to RGB if needed (depending on your image format)
+        annotated_frame_rgb = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
+
+        # Display
+        cv2_imshow(annotated_frame_rgb)
+        cv2.waitKey(0)

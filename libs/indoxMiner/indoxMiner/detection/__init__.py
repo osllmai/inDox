@@ -4,7 +4,7 @@ from .models.detr.detr import DETR
 from .models.detr_clip.detr_clip import DETRCLIP
 from .models.groundingdino.groundingdino import GroundingDINO
 from .models.kosmos2.kosmos2 import Kosmos2
-from .models.owl_vit.owlvit import OWLVit
+from .models.owlvit.owlvit import OWLVit
 from .models.rtdetr.rtdetr import RTDETR
 from .models.sam2.sam2 import SAM2
 from .models.YOLO.YOLOv5.yolov5 import YOLOv5
