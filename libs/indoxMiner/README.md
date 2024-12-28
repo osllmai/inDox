@@ -3,11 +3,9 @@
 [![PyPI version](https://badge.fury.io/py/indoxminer.svg)](https://badge.fury.io/py/indoxminer)
 [![License: MIT](https://img.shields.io/badge/License-AGPL-yellow.svg)](https://opensource.org/licenses/AGPL)
 
-<<<<<<< HEAD
 IndoxMiner is a powerful Python library that leverages Large Language Models (LLMs) to extract structured information from unstructured data sources including text, PDFs, and images. Using a flexible schema-based approach, it enables precise data extraction, validation, and transformation, making it ideal for automating document processing workflows.
 =======
 IndoxMiner is a powerful Python library that leverages Large Language Models (LLMs) for **data extraction** and advanced **object detection**. It combines schema-based data extraction from unstructured data sources such as text, PDFs, and images, with state-of-the-art object detection models. IndoxMiner enables seamless automation for document processing and visual recognition tasks.
->>>>>>> 18e56cc1e583b9efff4efa6ba05f11624780a538
 
 ## 🚀 Key Features
 
@@ -146,8 +144,6 @@ processor = DocumentProcessor(
 documents = processor.process()
 ```
 
-<<<<<<< HEAD
-=======
 ---
 
 ## 📷 Object Detection
@@ -255,7 +251,7 @@ The available models and their pre-trained weights are downloaded automatically 
 
 ---
 
->>>>>>> 18e56cc1e583b9efff4efa6ba05f11624780a538
+
 ## 🔧 Core Components
 
 ### ExtractorSchema
@@ -295,13 +291,8 @@ Available validation options:
 - `required`: Required fields
 - `custom`: Custom validation functions
 
-<<<<<<< HEAD
-##⚙️ Configuration Options
-=======
-##
 
- ⚙️ Configuration Options
->>>>>>> 18e56cc1e583b9efff4efa6ba05f11624780a538
+## ⚙️ Configuration Options
 
 ### ProcessingConfig
 
@@ -357,9 +348,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🌟 Star History
 
-<<<<<<< HEAD
-[![Star History Chart](https://api.star-history.com/svg?repos=username/indoxminer&type=Date)](https://star-history.com/#username/indoxminer&Date)
-=======
+
 [![Star History Chart](https://api.star-history.com/svg?repos=username/indoxminer&type=Date)](https://star-history.com/#username/indoxminer&Date)
 ```
->>>>>>> 18e56cc1e583b9efff4efa6ba05f11624780a538
