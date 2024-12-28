@@ -1,5 +1,5 @@
-from .detector import ObjectDetection
-from .models.detectron2.detectron2_model import Detectron2
+# from .detector import ObjectDetection
+from .models.detectron2.detectron2 import Detectron2
 from .models.detr.detr import DETR
 from .models.detr_clip.detr_clip import DETRCLIP
 from .models.groundingdino.groundingdino import GroundingDINO
