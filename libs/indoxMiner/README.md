@@ -120,6 +120,7 @@ IndoxMiner provides powerful **object detection** capabilities with support for 
 | **YOLOv11**    | ✅          |
 | **YOLOX**      | ✅          |
 | **YOLO-World**      | ❌          |
+| **Grounded-SAM2**      | ❌          |
 
 
 ---
