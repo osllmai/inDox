@@ -1,6 +1,6 @@
-import subprocess
-import sys
-import os
+# import subprocess
+# import sys
+# import os
 import cv2
 import torch
 import matplotlib.pyplot as plt
@@ -25,7 +25,7 @@ class Detectron2:
         self.device = device
 
         # Install detectron2 if not already installed
-        self._install_detectron2()
+        # self._install_detectron2()
 
         # Now import the necessary modules after installation
         from detectron2 import model_zoo
@@ -38,22 +38,22 @@ class Detectron2:
         # Download config files and prepare the model
         self.cfg = self._configure_model(model_zoo, get_cfg, DefaultPredictor)
 
-    def _install_detectron2(self):
-        """Installs Detectron2 if it's not already installed."""
-        try:
-            import detectron2
-        except ImportError:
-            print("Detectron2 library not found. Installing...")
-            subprocess.check_call(
-                [
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "install",
-                    "git+https://github.com/facebookresearch/detectron2.git",
-                ]
-            )
-            print("Detectron2 installed successfully.")
+    # def _install_detectron2(self):
+    #     """Installs Detectron2 if it's not already installed."""
+    #     try:
+    #         import detectron2
+    #     except ImportError:
+    #         print("Detectron2 library not found. Installing...")
+    #         subprocess.check_call(
+    #             [
+    #                 sys.executable,
+    #                 "-m",
+    #                 "pip",
+    #                 "install",
+    #                 "git+https://github.com/facebookresearch/detectron2.git",
+    #             ]
+    #         )
+    #         print("Detectron2 installed successfully.")
 
     def _configure_model(self, model_zoo, get_cfg, DefaultPredictor):
         """Configures the Detectron2 model with the chosen config file."""
