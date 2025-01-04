@@ -7,6 +7,7 @@ from .models.kosmos2.kosmos2 import Kosmos2
 from .models.owlvit.owlvit import OWLVit
 from .models.rtdetr.rtdetr import RTDETR
 from .models.sam2.sam2 import SAM2
+from .models.groundedsam2.groundedsam2 import GroundedSAM2
 from .models.YOLO.YOLOv5.yolov5 import YOLOv5
 from .models.YOLO.YOLOv6.yolov6 import YOLOv6
 from .models.YOLO.YOLOv7.yolov7 import YOLOv7
