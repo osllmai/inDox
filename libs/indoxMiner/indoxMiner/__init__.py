@@ -10,6 +10,7 @@ __available_object_detection_models__ = [
     "GroundingDINO",
     "Kosmos2",
     "OWLVit",
+    "OWLv2",
     "RTDETR",
     "SAM2",
     "YOLOv5",
@@ -19,4 +20,6 @@ __available_object_detection_models__ = [
     "YOLOv10",
     "YOLO11",
     "YOLOX",
+    "GroundedSAM2",
+    "GroundedSAM2Florence2"
 ]
