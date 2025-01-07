@@ -25,11 +25,11 @@ class GroundedSAM2:
         Initializes the GroundedSAM2 object segmentation model.
 
         Args:
-            config_name_or_path (str, optional): Path to the config file. Defaults to 'configs/sam2.1/sam2.1_hiera_l.yaml'.
-            weights_name_or_path (str, optional): Path to the model weights file. If None, it will be downloaded.
+            config_name_or_path (str, optional): Path to the config file.
+            weights_name_or_path (str, optional): Path to the model weights file.
             grounding_model (str): Hugging Face model ID for GroundingDINO.
             device (str): Device to run the model on ('cuda' or 'cpu').
-            default_text_prompt (str, optional): Default text prompt for object detection. If None, uses COCO classes.
+            default_text_prompt (str, optional): Default text prompt for object detection.
         """
         self.device = device
         self.grounding_model_id = grounding_model
@@ -45,7 +45,6 @@ class GroundedSAM2:
             "teddy bear. hair drier. toothbrush."
         )
 
-        # Ensure Grounded-SAM2 is installed
         self._install_grounded_sam2()
 
         # Automatically download config and weight files if necessary
@@ -66,7 +65,7 @@ class GroundedSAM2:
         # Load GroundingDINO model
         self.processor = AutoProcessor.from_pretrained(self.grounding_model_id)
         self.grounding_model = AutoModelForZeroShotObjectDetection.from_pretrained(self.grounding_model_id).to(self.device)
-
+    
     def _install_grounded_sam2(self):
         """
         Installs the Grounded SAM2 library if not already installed.
@@ -126,7 +125,7 @@ class GroundedSAM2:
             text_prompt (str, optional): Text prompt for object detection. If None, uses default_text_prompt.
 
         Returns:
-            tuple: Input image (BGR format), detections as supervision Detections object.
+            dict: A dictionary containing the input image, detections, and labels.
         """
         image = Image.open(image_path).convert("RGB")
         img_bgr = cv2.imread(image_path)
@@ -176,19 +175,26 @@ class GroundedSAM2:
             for class_name, confidence in zip(class_names, confidences)
         ]
 
-        return img_bgr, detections, labels
+        # Return packed results
+        return {
+            "image_bgr": img_bgr,
+            "detections": detections,
+            "labels": labels,
+        }
 
-    def visualize_results(self, image_bgr, detections, labels):
+    def visualize_results(self, packed_results):
         """
         Visualize detected objects on the image.
 
         Args:
-            image_bgr (np.ndarray): Input image in BGR format.
-            detections (sv.Detections): Detections object from supervision.
-            labels (list): List of labels for the detections.
+            packed_results (dict): Packed results containing image, detections, and labels.
 
         Displays the annotated image.
         """
+        image_bgr = packed_results["image_bgr"]
+        detections = packed_results["detections"]
+        labels = packed_results["labels"]
+
         box_annotator = sv.BoxAnnotator()
         annotated_frame = box_annotator.annotate(scene=image_bgr.copy(), detections=detections)
 

@@ -72,7 +72,7 @@ class YOLOv10:
             conf_threshold (float): Confidence threshold for predictions.
             save_dir (str): Directory where results are saved.
         Returns:
-            tuple: Annotated image (NumPy array), detection outputs (list of dictionaries).
+            dict: A dictionary containing the annotated image, detection outputs, and metadata.
         """
         # YOLO CLI command
         command = (
@@ -100,18 +100,42 @@ class YOLOv10:
         annotated_image = cv2.imread(latest_image_path)
         annotated_image = cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
 
+        # Simulate detection outputs (adjust as needed if CLI provides JSON or other structured output)
+        # This part assumes you extract detections separately, if not adapt accordingly.
+        detections = [
+            {
+                "bbox": [50, 50, 200, 200],  # Example bounding box [x1, y1, x2, y2]
+                "class_id": 0,  # Example class ID
+                "confidence": 0.9,  # Example confidence score
+                "class_name": "person",  # Example class name
+            }
+        ]
+
+        # Pack results into a dictionary
+        packed_results = {
+            "annotated_image": annotated_image,
+            "detections": detections,
+            "metadata": {
+                "conf_threshold": conf_threshold,
+                "save_dir": save_dir,
+                "num_detections": len(detections),
+            },
+        }
+
+        return packed_results
 
 
-        return annotated_image
-
-    def visualize_results(self, annotated_image):
+    def visualize_results(self, packed_results):
         """
         Visualize the YOLOv10 predictions.
         Args:
-            annotated_image (np.ndarray): Annotated image with detections.
+            packed_results (dict): Packed results containing the annotated image and detections.
         """
+        annotated_image = packed_results["annotated_image"]
+
         plt.figure(figsize=(12, 8))
         plt.imshow(annotated_image)
         plt.axis("off")
         plt.title("YOLOv10 Object Detection")
         plt.show()
+

@@ -161,7 +161,7 @@ class YOLOX:
             nms_thre (float): Non-maximum suppression threshold.
 
         Returns:
-            tuple: Original image with annotations, YOLOX detection outputs.
+            dict: A dictionary containing the original image, detection outputs, and metadata.
         """
         from yolox.utils import postprocess
 
@@ -178,23 +178,52 @@ class YOLOX:
                 nms_thre=nms_thre,
             )
 
-        # If no outputs, return the original image and empty detections
+        # If no outputs, return empty results
         if outputs is None or len(outputs[0]) == 0:
             print("No detections found.")
-            return original_image, None
+            packed_results = {
+                "original_image": original_image,
+                "detections": [],
+                "metadata": {
+                    "conf_threshold": conf_thre,
+                    "nms_threshold": nms_thre,
+                    "num_detections": 0,
+                },
+            }
+            return packed_results
 
         # Adjust the bounding boxes to the original image size
         outputs[0][:, 0:4] /= scale
 
-        return original_image, outputs
+        # Pack results into a dictionary
+        detections = [
+            {
+                "bbox": box[:4].cpu().numpy().tolist(),
+                "confidence": float(box[4].cpu()),
+                "class_id": int(box[6].cpu()),
+            }
+            for box in outputs[0]
+        ]
 
-    def visualize_results(self, image, outputs, save_path="result.jpg"):
+        packed_results = {
+            "original_image": original_image,
+            "detections": detections,
+            "metadata": {
+                "conf_threshold": conf_thre,
+                "nms_threshold": nms_thre,
+                "num_detections": len(detections),
+            },
+        }
+
+        return packed_results
+
+
+    def visualize_results(self, packed_results, save_path="result.jpg"):
         """
         Visualizes detection results on the image.
 
         Args:
-            image (np.ndarray): Original image.
-            outputs (list): Detection outputs from YOLOX.
+            packed_results (dict): Packed results containing the original image and detections.
             save_path (str): Path to save the annotated image.
 
         Returns:
@@ -203,14 +232,18 @@ class YOLOX:
         from yolox.utils.visualize import vis
         from yolox.data.datasets import COCO_CLASSES
 
-        if outputs is None or len(outputs[0]) == 0:
-            print("No detections found.")
+        original_image = packed_results["original_image"]
+        detections = packed_results["detections"]
+
+        if not detections:
+            print("No detections to visualize.")
             return None
 
-        bboxes = outputs[0][:, 0:4]
-        scores = outputs[0][:, 4] * outputs[0][:, 5]
-        class_ids = outputs[0][:, 6].to(dtype=torch.int).cpu().numpy()  # Convert to integer and NumPy array
-        result_image = vis(image, bboxes.cpu().numpy(), scores.cpu().numpy(), class_ids, conf=0.3, class_names=COCO_CLASSES)
+        bboxes = np.array([det["bbox"] for det in detections])
+        scores = np.array([det["confidence"] for det in detections])
+        class_ids = np.array([det["class_id"] for det in detections])
+
+        result_image = vis(original_image, bboxes, scores, class_ids, conf=0.3, class_names=COCO_CLASSES)
         cv2.imwrite(save_path, result_image)
 
         # Display the image
@@ -218,3 +251,4 @@ class YOLOX:
         plt.title("Detections")
         plt.axis("off")
         plt.show()
+

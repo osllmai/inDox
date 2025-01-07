@@ -5,6 +5,7 @@ import requests
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import torch
+import sys
 
 
 class YOLOv11:

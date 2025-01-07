@@ -147,7 +147,7 @@ class GroundedSAM2Florence2:
             image_path (str): Path to the input image.
 
         Returns:
-            tuple: Input image (BGR format), detections, and labels.
+            dict: A dictionary containing the input image (BGR format), detections, and labels.
         """
         image = Image.open(image_path).convert("RGB")
         results = self.run_florence2(self.task_prompt["object_detection"], None, image)
@@ -174,19 +174,28 @@ class GroundedSAM2Florence2:
             mask=masks.astype(bool),
             class_id=class_ids,
         )
-        return img_bgr, detections, class_names
 
-    def visualize_results(self, image_bgr, detections, labels):
+        # Return packed results
+        return {
+            "image_bgr": img_bgr,
+            "detections": detections,
+            "labels": class_names,
+        }
+
+
+    def visualize_results(self, packed_results):
         """
         Visualize detected objects and masks on the image.
 
         Args:
-            image_bgr (np.ndarray): Input image in BGR format.
-            detections (sv.Detections): Detections object from supervision.
-            labels (list): List of labels for the detections.
+            packed_results (dict): Packed results containing image, detections, and labels.
 
         Displays the annotated image.
         """
+        image_bgr = packed_results["image_bgr"]
+        detections = packed_results["detections"]
+        labels = packed_results["labels"]
+
         box_annotator = sv.BoxAnnotator()
         annotated_frame = box_annotator.annotate(scene=image_bgr.copy(), detections=detections)
 
@@ -200,6 +209,7 @@ class GroundedSAM2Florence2:
         plt.imshow(cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB))
         plt.axis("off")
         plt.show()
+
 
 
 # Task Prompts Explanation:
