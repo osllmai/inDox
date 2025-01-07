@@ -1,4 +1,5 @@
 import torch
+import torchvision.ops as ops
 from transformers import (
     CLIPProcessor,
     CLIPModel,
@@ -36,97 +37,17 @@ class DETRCLIP:
         self.detr_processor = DetrImageProcessor.from_pretrained(detr_model_name)
         self.detr_model.eval()
 
-        # COCO class labels (91 classes)
-        self.coco_classes = [
-            "N/A",
-            "person",
-            "bicycle",
-            "car",
-            "motorcycle",
-            "airplane",
-            "bus",
-            "train",
-            "truck",
-            "boat",
-            "traffic light",
-            "fire hydrant",
-            "N/A",
-            "stop sign",
-            "parking meter",
-            "bench",
-            "bird",
-            "cat",
-            "dog",
-            "horse",
-            "sheep",
-            "cow",
-            "elephant",
-            "bear",
-            "zebra",
-            "giraffe",
-            "N/A",
-            "backpack",
-            "umbrella",
-            "N/A",
-            "handbag",
-            "tie",
-            "suitcase",
-            "frisbee",
-            "skis",
-            "snowboard",
-            "sports ball",
-            "kite",
-            "baseball bat",
-            "baseball glove",
-            "skateboard",
-            "surfboard",
-            "tennis racket",
-            "bottle",
-            "N/A",
-            "wine glass",
-            "cup",
-            "fork",
-            "knife",
-            "spoon",
-            "bowl",
-            "banana",
-            "apple",
-            "sandwich",
-            "orange",
-            "broccoli",
-            "carrot",
-            "hot dog",
-            "pizza",
-            "donut",
-            "cake",
-            "chair",
-            "couch",
-            "potted plant",
-            "bed",
-            "N/A",
-            "dining table",
-            "N/A",
-            "toilet",
-            "N/A",
-            "tv",
-            "laptop",
-            "mouse",
-            "remote",
-            "keyboard",
-            "cell phone",
-            "microwave",
-            "oven",
-            "toaster",
-            "sink",
-            "refrigerator",
-            "book",
-            "clock",
-            "vase",
-            "scissors",
-            "teddy bear",
-            "hair drier",
-            "toothbrush",
-        ]
+        self.clip_label_set = ["N/A", "person", "bicycle", "car", "motorcycle", "airplane",
+            "bus", "train", "truck", "boat", "traffic light", "fire hydrant", "N/A", "stop sign",
+            "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant",
+            "bear", "zebra", "giraffe", "backpack", "umbrella", "N/A", "handbag", "tie", "suitcase",
+            "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat", "baseball glove",
+            "skateboard", "surfboard", "tennis racket", "bottle", "N/A", "wine glass", "cup", "fork",
+            "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli", "carrot",
+            "hot dog", "pizza", "donut", "cake", "chair", "couch", "potted plant", "bed", "N/A",
+            "dining table", "N/A", "toilet", "N/A", "tv", "laptop", "mouse", "remote", "keyboard",
+            "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock",
+            "vase", "scissors", "teddy bear", "hair drier", "toothbrush"]
 
     def load_image(self, image_path):
         """
@@ -142,22 +63,23 @@ class DETRCLIP:
         except (FileNotFoundError, UnidentifiedImageError):
             raise ValueError(f"Error: Cannot load image from path: {image_path}")
 
-    def detect_objects(self, image=None, image_path=None, threshold=0.5):
+    def detect_objects(self, image=None, image_path=None, threshold=0.7, iou_threshold=0.5):
         """
         Perform object detection using DETR and classify detected regions using CLIP.
+        - Applies a higher confidence threshold to reduce spurious DETR boxes.
+        - Applies Non-Max Suppression (NMS) to merge overlapping boxes.
+        - Uses a smaller text prompt set for CLIP to reduce confusion.
+        
         Args:
             image (PIL.Image.Image, optional): Input image.
             image_path (str, optional): Path to the input image.
-            threshold (float): Confidence threshold for detections.
+            threshold (float): Confidence threshold for DETR detection.
+            iou_threshold (float): IOU threshold for NMS.
         Returns:
-            list: Detected objects with bounding boxes, class labels, and probabilities.
-            PIL.Image.Image: Loaded image (if image_path was provided).
+            dict: A dictionary containing image, detected objects, and additional metadata.
         """
         if image is None and image_path is not None:
-            try:
-                image = Image.open(image_path).convert("RGB")
-            except (FileNotFoundError, UnidentifiedImageError):
-                raise ValueError(f"Error: Cannot load image from path: {image_path}")
+            image = self.load_image(image_path)
         elif image is None:
             raise ValueError("Either an image object or image_path must be provided.")
 
@@ -173,21 +95,29 @@ class DETRCLIP:
             outputs, target_sizes=target_sizes, threshold=threshold
         )[0]
 
-        # Preprocess COCO classes for CLIP
-        clip_text_inputs = self.clip_processor(
-            text=[f"a photo of a {cls}" for cls in self.coco_classes],
-            return_tensors="pt",
-            padding=True,
-        ).to(self.device)
+        # Extract raw boxes, scores, and labels
+        boxes = results["boxes"]        # (num_detections, 4)
+        scores = results["scores"]      # (num_detections,)
+        labels = results["labels"]      # (num_detections,)
 
+        # Apply NMS to reduce overlapping boxes
+        keep_indices = ops.nms(boxes, scores, iou_threshold=iou_threshold)
+        boxes = boxes[keep_indices]
+        scores = scores[keep_indices]
+        labels = labels[keep_indices]
+
+        clip_text_prompts = [f"a photo of a {cls}" for cls in self.clip_label_set]
         with torch.no_grad():
+            clip_text_inputs = self.clip_processor(
+                text=clip_text_prompts,
+                return_tensors="pt",
+                padding=True,
+            ).to(self.device)
             text_features = self.clip_model.get_text_features(**clip_text_inputs)
             text_features /= text_features.norm(dim=-1, keepdim=True)
 
         detected_objects = []
-        for score, label, box in zip(
-            results["scores"], results["labels"], results["boxes"]
-        ):
+        for (box, score_detr, label_detr) in zip(boxes, scores, labels):
             xmin, ymin, xmax, ymax = box.tolist()
 
             # Crop the detected region
@@ -202,39 +132,53 @@ class DETRCLIP:
                 image_features /= image_features.norm(dim=-1, keepdim=True)
 
                 # Compute cosine similarity
-                similarity = torch.matmul(image_features, text_features.T)
-                probs = similarity.softmax(dim=-1)
-                detected_class_idx = probs.argmax().item()
-                detected_class = self.coco_classes[detected_class_idx]
-                detected_prob = probs[0, detected_class_idx].item()
+                similarity = torch.matmul(image_features, text_features.T)  # shape: (1, len(self.clip_label_set))
+                probs = similarity.softmax(dim=-1)  # shape: (1, len(self.clip_label_set))
+
+                # Best label index according to CLIP
+                best_idx = probs.argmax(dim=1).item()
+                clip_label = self.clip_label_set[best_idx]
+                clip_prob = probs[0, best_idx].item()
 
             detected_objects.append(
                 {
                     "box": (xmin, ymin, xmax, ymax),
-                    "label": detected_class,
-                    "score": detected_prob,
+                    "detr_label_id": label_detr.item(),
+                    "detr_score": score_detr.item(),
+                    "clip_label": clip_label,
+                    "clip_score": clip_prob,
                 }
             )
 
-        return detected_objects, image
+        return {
+            "image": image,
+            "detections": detected_objects,
+            "metadata": {
+                "threshold": threshold,
+                "iou_threshold": iou_threshold,
+                "input_size": image.size,
+                "clip_label_set": self.clip_label_set,
+            },
+        }
 
-    def visualize_results(self, image, detections):
+    def visualize_results(self, packed_results):
         """
         Visualize bounding boxes and class labels on the image.
         Args:
-            image (PIL.Image.Image): Original image.
-            detections (list): Detected objects with bounding boxes, labels, and scores.
+            packed_results (dict): Packed results containing image and detections.
         """
+        image = packed_results["image"]
+        detections = packed_results["detections"]
+
         plt.figure(figsize=(12, 9))
         plt.imshow(image)
         ax = plt.gca()
 
         for detection in detections:
             xmin, ymin, xmax, ymax = detection["box"]
-            label = detection["label"]
-            score = detection["score"]
+            clip_label = detection["clip_label"]
+            clip_prob = detection["clip_score"]
 
-            # Draw bounding box
             ax.add_patch(
                 plt.Rectangle(
                     (xmin, ymin),
@@ -248,12 +192,12 @@ class DETRCLIP:
             ax.text(
                 xmin,
                 ymin,
-                f"{label}: {score:.3f}",
+                f"{clip_label}: {clip_prob:.3f}",
                 color="yellow",
                 fontsize=10,
                 bbox=dict(facecolor="black", alpha=0.5),
             )
 
         plt.axis("off")
-        plt.title("DETR + CLIP Object Detection")
+        plt.title("DETR + CLIP Object Detection (with NMS & limited classes)")
         plt.show()

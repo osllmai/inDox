@@ -29,9 +29,6 @@ class YOLOv7:
         self._download_weights()
 
     def _install_yolov7(self):
-        """
-        Install YOLOv7 from the official repository if not already installed.
-        """
         if not os.path.exists("yolov7"):
             print("Cloning YOLOv7 repository...")
             subprocess.run(["git", "clone", "https://github.com/WongKinYiu/yolov7"], check=True)
@@ -41,9 +38,6 @@ class YOLOv7:
         os.chdir("..")
 
     def _download_weights(self):
-        """
-        Download the YOLOv7 weights file if it doesn't exist.
-        """
         if not os.path.exists(self.weights_path):
             print(f"Downloading weights for {self.model_name} from {self.weights_url}...")
             urllib.request.urlretrieve(self.weights_url, self.weights_path)
@@ -60,7 +54,7 @@ class YOLOv7:
             conf_threshold (float): Confidence threshold for detections.
 
         Returns:
-            tuple: Annotated image (NumPy array), detection outputs (list of dictionaries).
+            dict: A dictionary containing the annotated image and detections.
         """
         # Save the original working directory
         original_cwd = os.getcwd()
@@ -79,9 +73,7 @@ class YOLOv7:
             ]
 
             print("Running YOLOv7 inference...")
-            result = subprocess.run(command, check=True, capture_output=True, text=True)
-            print("STDOUT:", result.stdout)  # Log standard output
-            print("STDERR:", result.stderr)  # Log error output
+            subprocess.run(command, check=True, capture_output=True, text=True)
 
             # Determine the latest experiment folder
             output_dir = max(glob.glob("runs/detect/exp*"), key=os.path.getctime)
@@ -112,19 +104,15 @@ class YOLOv7:
             # Restore the original working directory
             os.chdir(original_cwd)
 
-        return annotated_image, detections
+        # Pack results into a dictionary
+        results = {
+            "annotated_image": annotated_image,
+            "detections": detections
+        }
 
-
-
+        return results
 
     def _parse_labels(self, label_path):
-        """
-        Parse the label file to extract detection outputs.
-        Args:
-            label_path (str): Path to the YOLOv7 label file.
-        Returns:
-            list: List of detection dictionaries containing class, confidence, and bounding boxes.
-        """
         detections = []
         with open(label_path, "r") as file:
             for line in file:
@@ -139,16 +127,15 @@ class YOLOv7:
                 })
         return detections
 
-    def visualize_results(self, annotated_image, detections):
+    def visualize_results(self, results):
         """
         Visualize and display annotated objects in the image.
         Args:
-            annotated_image (np.ndarray): Annotated image with detections.
-            detections (list): List of detection outputs.
+            results (dict): A dictionary containing the annotated image and detections.
         """
+        annotated_image = results["annotated_image"]
         plt.figure(figsize=(12, 8))
         plt.imshow(annotated_image)
         plt.title(f"YOLOv7 ({self.model_name}) Detection Results")
         plt.axis("off")
-
         plt.show()

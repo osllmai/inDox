@@ -18,7 +18,7 @@ class RTDETR:
         )
         self.processor = AutoImageProcessor.from_pretrained(checkpoint)
 
-    def detect_objects(self, image_path, threshold=0.1):
+    def detect_objects(self, image_path, threshold=0.2):
         """
         Detect objects in an image.
 
@@ -27,8 +27,7 @@ class RTDETR:
             threshold (float): Detection confidence threshold.
 
         Returns:
-            PIL.Image.Image: The input image.
-            dict: Detected objects with bounding boxes and scores.
+            dict: A dictionary containing the input image, bounding boxes, scores, and labels.
         """
         try:
             image = Image.open(image_path).convert("RGB")
@@ -46,18 +45,9 @@ class RTDETR:
         w, h = image.size
         results = self.processor.post_process_object_detection(
             outputs, target_sizes=[(h, w)], threshold=threshold
-        )
-        return image, results[0]
+        )[0]
 
-    def visualize_results(self, image, results):
-        """
-        Visualize detected objects in the image.
-
-        Args:
-            image (PIL.Image.Image): The input image.
-            results (dict): The results from the detect_objects method.
-        """
-        # Convert detections from the model's output
+        # Convert detections to supervision format
         detections = sv.Detections.from_transformers(results)
 
         # Generate labels for the detections
@@ -65,6 +55,26 @@ class RTDETR:
             f"{self.model.config.id2label[class_id]} {confidence:.2f}"
             for class_id, confidence in zip(detections.class_id, detections.confidence)
         ]
+
+        # Pack results into a dictionary
+        packed_results = {
+            "image": image,
+            "detections": detections,
+            "labels": labels,
+        }
+
+        return packed_results
+
+    def visualize_results(self, packed_results):
+        """
+        Visualize detected objects in the image.
+
+        Args:
+            packed_results (dict): Packed results containing the input image, detections, and labels.
+        """
+        image = packed_results["image"]
+        detections = packed_results["detections"]
+        labels = packed_results["labels"]
 
         # Annotate the image
         box_annotator = sv.BoxAnnotator()
@@ -80,3 +90,4 @@ class RTDETR:
         plt.axis("off")
         plt.title("Annotated Image")
         plt.show()
+

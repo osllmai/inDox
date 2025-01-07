@@ -5,12 +5,12 @@ class OCRProcessor:
     """
     A class for processing images and extracting text using different OCR models.
 
-    This class supports Tesseract, EasyOCR, and PaddleOCR for Optical Character Recognition (OCR).
+    This class supports Tesseract, EasyOCR, PaddleOCR, and Surya OCR for Optical Character Recognition (OCR).
     It provides functionality to preprocess images and extract text from them using the selected OCR model.
 
     Attributes:
-        model (str): The OCR model to use (options: 'tesseract', 'paddle', 'easyocr').
-        ocr (object): The OCR instance for the selected model (PaddleOCR, EasyOCR, or None for Tesseract).
+        model (str): The OCR model to use (options: 'tesseract', 'paddle', 'easyocr', 'surya').
+        ocr (object): The OCR instance for the selected model (PaddleOCR, EasyOCR, or None for Tesseract and Surya).
 
     Methods:
         __init__(model: str = 'tesseract'):
@@ -25,6 +25,8 @@ class OCRProcessor:
             Extracts text from an image using EasyOCR.
         extract_text_with_paddle(image_path: str) -> str:
             Extracts text from an image using PaddleOCR.
+        extract_text_with_surya(image_path: str) -> str:
+            Extracts text from an image using Surya OCR.
         extract_text(image_path: str) -> str:
             Extracts text from an image using the selected OCR model.
     
@@ -40,14 +42,18 @@ class OCRProcessor:
         # Using PaddleOCR:
         processor = OCRProcessor(model='paddle')
         text = processor.extract_text('image_path.png')
+
+        # Using Surya OCR:
+        processor = OCRProcessor(model='surya')
+        text = processor.extract_text('image_path.png')
     """
 
-    def __init__(self, model: str = 'tesseract'):
+    def __init__(self, model: str = 'surya'):
         """
         Initializes the OCRProcessor with the selected OCR model.
 
         Args:
-            model (str): The OCR model to use (options: 'tesseract', 'paddle', 'easyocr').
+            model (str): The OCR model to use (options: 'tesseract', 'paddle', 'easyocr', 'surya').
         
         Example:
             processor = OCRProcessor(model='easyocr')
@@ -69,6 +75,22 @@ class OCRProcessor:
                 self.ocr = easyocr.Reader(['en'])
             except ImportError:
                 raise ImportError("Please install easyocr package to use EasyOCR")
+        
+        elif self.model == 'surya':
+            try:
+                from surya.ocr import run_ocr
+                from surya.model.detection.model import load_model as load_det_model
+                from surya.model.detection.processor import load_processor as load_det_processor
+                from surya.model.recognition.model import load_model as load_rec_model
+                from surya.model.recognition.processor import load_processor as load_rec_processor
+
+                self.run_ocr = run_ocr
+                self.det_processor, self.det_model = load_det_processor(), load_det_model()
+                self.rec_model, self.rec_processor = load_rec_model(), load_rec_processor()
+            except ImportError:
+                raise ImportError("Please install surya package to use Surya OCR")
+            except Exception as e:
+                raise RuntimeError(f"Error initializing Surya OCR: {e}")
 
     def preprocess_image_for_tesseract(self, image_path: str):
         """
@@ -175,13 +197,48 @@ class OCRProcessor:
         result = self.ocr.ocr(image_path, rec=True)
         text_lines = [line[1][0] for res in result for line in res if line[1][0].strip()]
         return "\n".join(text_lines)
+    
+    def extract_text_with_surya(self, image_path: str) -> str:
+        """
+        Extracts text from an image using Surya OCR.
+
+        Args:
+            image_path (str): The path to the image file.
+
+        Returns:
+            str: The extracted text.
+
+        Example:
+            text = processor.extract_text_with_surya('image_path.png')
+        """
+        try:
+            image = Image.open(image_path)
+            langs = ["en"]  # Replace with supported languages as needed
+            ocr_results = self.run_ocr(
+                [image],
+                [langs],
+                self.det_model,
+                self.det_processor,
+                self.rec_model,
+                self.rec_processor,
+            )
+
+            # Combine text from all OCRResult objects
+            all_text = []
+            for ocr_result in ocr_results:
+                for line in ocr_result.text_lines:
+                    all_text.append(line.text)
+
+            return "\n".join(all_text).strip()
+        except Exception as e:
+            raise RuntimeError(f"Error during Surya OCR processing: {e}")
 
     def extract_text(self, image_path: str):
         """
         Extracts text from an image using the selected OCR model.
 
         This method calls the appropriate OCR extraction method based on the chosen model 
-        ('tesseract', 'easyocr', or 'paddle').
+        ('tesseract', 'easyocr', 'paddle', or 'surya').
 
         Args:
             image_path (str): The path to the image file.
@@ -199,5 +256,7 @@ class OCRProcessor:
             return self.extract_text_with_paddle(image_path)
         elif self.model == 'easyocr':
             return self.extract_text_with_easyocr(image_path)
+        elif self.model == 'surya':
+            return self.extract_text_with_surya(image_path)
         else:
-            raise ValueError("Invalid OCR model selected. Choose 'tesseract', 'paddle', or 'easyocr'.")
+            raise ValueError("Invalid OCR model selected. Choose 'tesseract', 'paddle', 'easyocr', or 'surya'.")
