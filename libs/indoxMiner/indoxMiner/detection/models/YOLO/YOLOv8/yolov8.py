@@ -14,7 +14,7 @@ class YOLOv8:
             weight_name (str): Name or path to the YOLOv8 model weights.
         """
         # Ensure ultralytics is installed
-        self._install_ultralytics()
+        # self._install_ultralytics()
 
         # Import YOLO after ensuring ultralytics is installed
         from ultralytics import YOLO
@@ -22,23 +22,23 @@ class YOLOv8:
         self.model_path = self._get_model_weights(weight_name)
         self.model = YOLO(self.model_path)
 
-    def _install_ultralytics(self):
-        """
-        Installs the ultralytics library if not already installed.
-        """
-        try:
-            import ultralytics
-        except ImportError:
-            print("Ultralytics library not found. Installing...")
-            try:
-                subprocess.check_call(
-                    [sys.executable, "-m", "pip", "install", "ultralytics"],
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                )
-                print("Ultralytics installed successfully.")
-            except subprocess.CalledProcessError as e:
-                raise RuntimeError(f"Failed to install ultralytics: {e}")
+    # def _install_ultralytics(self):
+    #     """
+    #     Installs the ultralytics library if not already installed.
+    #     """
+    #     try:
+    #         import ultralytics
+    #     except ImportError:
+    #         print("Ultralytics library not found. Installing...")
+    #         try:
+    #             subprocess.check_call(
+    #                 [sys.executable, "-m", "pip", "install", "ultralytics"],
+    #                 stdout=subprocess.DEVNULL,
+    #                 stderr=subprocess.DEVNULL,
+    #             )
+    #             print("Ultralytics installed successfully.")
+    #         except subprocess.CalledProcessError as e:
+    #             raise RuntimeError(f"Failed to install ultralytics: {e}")
 
     def _get_model_weights(self, weight_name):
         """
@@ -60,7 +60,9 @@ class YOLOv8:
             print(f"Model weights downloaded: {weight_name}")
             return weight_name
         else:
-            raise RuntimeError(f"Failed to download model weights from {url} (status code: {response.status_code})")
+            raise RuntimeError(
+                f"Failed to download model weights from {url} (status code: {response.status_code})"
+            )
 
     def detect_objects(self, image_path):
         """
@@ -76,11 +78,16 @@ class YOLOv8:
         # Extract detections
         detections = []
         for box in results[0].boxes:
-            detections.append({
-                "bbox": box.xyxy[0].cpu().numpy().tolist(),  # Bounding box coordinates [x1, y1, x2, y2]
-                "class_id": int(box.cls[0]),  # Class ID
-                "confidence": float(box.conf[0])  # Confidence score
-            })
+            detections.append(
+                {
+                    "bbox": box.xyxy[0]
+                    .cpu()
+                    .numpy()
+                    .tolist(),  # Bounding box coordinates [x1, y1, x2, y2]
+                    "class_id": int(box.cls[0]),  # Class ID
+                    "confidence": float(box.conf[0]),  # Confidence score
+                }
+            )
 
         # Get the original image
         orig_image = results[0].orig_img
@@ -95,16 +102,86 @@ class YOLOv8:
             detections (list): Detection results.
         """
         class_names = [
-            "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat",
-            "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat",
-            "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack",
-            "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball",
-            "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket",
-            "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple",
-            "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake",
-            "chair", "couch", "potted plant", "bed", "dining table", "toilet", "TV", "laptop",
-            "mouse", "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink",
-            "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"
+            "person",
+            "bicycle",
+            "car",
+            "motorcycle",
+            "airplane",
+            "bus",
+            "train",
+            "truck",
+            "boat",
+            "traffic light",
+            "fire hydrant",
+            "stop sign",
+            "parking meter",
+            "bench",
+            "bird",
+            "cat",
+            "dog",
+            "horse",
+            "sheep",
+            "cow",
+            "elephant",
+            "bear",
+            "zebra",
+            "giraffe",
+            "backpack",
+            "umbrella",
+            "handbag",
+            "tie",
+            "suitcase",
+            "frisbee",
+            "skis",
+            "snowboard",
+            "sports ball",
+            "kite",
+            "baseball bat",
+            "baseball glove",
+            "skateboard",
+            "surfboard",
+            "tennis racket",
+            "bottle",
+            "wine glass",
+            "cup",
+            "fork",
+            "knife",
+            "spoon",
+            "bowl",
+            "banana",
+            "apple",
+            "sandwich",
+            "orange",
+            "broccoli",
+            "carrot",
+            "hot dog",
+            "pizza",
+            "donut",
+            "cake",
+            "chair",
+            "couch",
+            "potted plant",
+            "bed",
+            "dining table",
+            "toilet",
+            "TV",
+            "laptop",
+            "mouse",
+            "remote",
+            "keyboard",
+            "cell phone",
+            "microwave",
+            "oven",
+            "toaster",
+            "sink",
+            "refrigerator",
+            "book",
+            "clock",
+            "vase",
+            "scissors",
+            "teddy bear",
+            "hair drier",
+            "toothbrush",
         ]
 
         # Convert the image from BGR to RGB for correct display with matplotlib
@@ -127,9 +204,14 @@ class YOLOv8:
                 label = f"Class {class_id}: {confidence:.2f}"
 
             # Draw the bounding box
-            ax.add_patch(plt.Rectangle((x1, y1), x2 - x1, y2 - y1, fill=False, color='red', linewidth=2))
-            ax.text(x1, y1 - 10, label, color="red", fontsize=10, backgroundcolor="white")
+            ax.add_patch(
+                plt.Rectangle(
+                    (x1, y1), x2 - x1, y2 - y1, fill=False, color="red", linewidth=2
+                )
+            )
+            ax.text(
+                x1, y1 - 10, label, color="red", fontsize=10, backgroundcolor="white"
+            )
 
-        plt.axis('off')  # Remove axis
+        plt.axis("off")  # Remove axis
         plt.show()
-

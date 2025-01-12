@@ -23,23 +23,24 @@ class YOLOv10:
         self.device = device if torch.cuda.is_available() else "cpu"
 
         # Ensure YOLO CLI is installed
-        self._install_yolo_cli()
 
-    def _install_yolo_cli(self):
-        """
-        Ensures that YOLO CLI is installed.
-        """
-        try:
-            subprocess.run(["yolo", "--help"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        except FileNotFoundError:
-            print("YOLO CLI not found. Installing...")
-            try:
-                subprocess.run(
-                    [sys.executable, "-m", "pip", "install", "ultralytics"],
-                    check=True,
-                )
-            except subprocess.CalledProcessError as e:
-                raise RuntimeError(f"Failed to install YOLO CLI: {e}")
+    #     self._install_yolo_cli()
+
+    # def _install_yolo_cli(self):
+    #     """
+    #     Ensures that YOLO CLI is installed.
+    #     """
+    #     try:
+    #         subprocess.run(["yolo", "--help"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    #     except FileNotFoundError:
+    #         print("YOLO CLI not found. Installing...")
+    #         try:
+    #             subprocess.run(
+    #                 [sys.executable, "-m", "pip", "install", "ultralytics"],
+    #                 check=True,
+    #             )
+    #         except subprocess.CalledProcessError as e:
+    #             raise RuntimeError(f"Failed to install YOLO CLI: {e}")
 
     def _get_model_weights(self, weight_name):
         """
@@ -62,7 +63,9 @@ class YOLOv10:
             print(f"Model weights downloaded: {model_path}")
             return model_path
         else:
-            raise RuntimeError(f"Failed to download model weights from {url} (status code: {response.status_code})")
+            raise RuntimeError(
+                f"Failed to download model weights from {url} (status code: {response.status_code})"
+            )
 
     def detect_objects(self, image_path, conf_threshold=0.25, save_dir="./runs/detect"):
         """
@@ -92,15 +95,15 @@ class YOLOv10:
             raise FileNotFoundError(f"Result directory not found: {result_dir}")
 
         # Locate the latest result image
-        latest_image_path = max(glob.glob(f"{result_dir}/*.jpg"), key=os.path.getctime, default=None)
+        latest_image_path = max(
+            glob.glob(f"{result_dir}/*.jpg"), key=os.path.getctime, default=None
+        )
         if not latest_image_path:
             raise FileNotFoundError(f"No output image found in {result_dir}")
 
         # Read the annotated image as a NumPy array
         annotated_image = cv2.imread(latest_image_path)
         annotated_image = cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
-
-
 
         return annotated_image
 

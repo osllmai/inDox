@@ -25,8 +25,8 @@ class YOLOX:
         self.model_name = model_name
         self.device = device if torch.cuda.is_available() else "cpu"
 
-        # Ensure YOLOX is installed
-        self._install_yolox()
+        # # Ensure YOLOX is installed
+        # self._install_yolox()
 
         # Download or locate the experiment and weights files
         self.exp_file = self._get_file(self.model_name, "exp")
@@ -37,24 +37,31 @@ class YOLOX:
         self.exp.num_classes = self._get_coco_classes_length()
         self.model = self._load_model(self.model_file)
 
-    def _install_yolox(self):
-        """
-        Ensures that YOLOX library is installed.
-        """
-        try:
-            subprocess.run(["yolo", "--help"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        except FileNotFoundError:
-            print("YOLOX library not found. Installing...")
-            try:
-                subprocess.check_call([
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "install",
-                    "git+https://github.com/Megvii-BaseDetection/YOLOX.git"
-                ])
-            except subprocess.CalledProcessError as e:
-                raise RuntimeError(f"Failed to install YOLOX library: {e}")
+    # def _install_yolox(self):
+    #     """
+    #     Ensures that YOLOX library is installed.
+    #     """
+    #     try:
+    #         subprocess.run(
+    #             ["yolo", "--help"],
+    #             check=True,
+    #             stdout=subprocess.PIPE,
+    #             stderr=subprocess.PIPE,
+    #         )
+    #     except FileNotFoundError:
+    #         print("YOLOX library not found. Installing...")
+    #         try:
+    #             subprocess.check_call(
+    #                 [
+    #                     sys.executable,
+    #                     "-m",
+    #                     "pip",
+    #                     "install",
+    #                     "git+https://github.com/Megvii-BaseDetection/YOLOX.git",
+    #                 ]
+    #             )
+    #         except subprocess.CalledProcessError as e:
+    #             raise RuntimeError(f"Failed to install YOLOX library: {e}")
 
     def _get_file(self, model_name, file_type):
         """
@@ -89,7 +96,9 @@ class YOLOX:
             print(f"{file_type.capitalize()} file downloaded: {file_name}")
             return file_name
         else:
-            raise RuntimeError(f"Failed to download {file_type} file from {url} (status code: {response.status_code})")
+            raise RuntimeError(
+                f"Failed to download {file_type} file from {url} (status code: {response.status_code})"
+            )
 
     def _load_experiment(self, exp_file):
         """
@@ -102,6 +111,7 @@ class YOLOX:
             YOLOX experiment object.
         """
         from yolox.exp import get_exp
+
         return get_exp(exp_file, None)
 
     def _get_coco_classes_length(self):
@@ -112,6 +122,7 @@ class YOLOX:
             int: Number of COCO classes.
         """
         from yolox.data.datasets import COCO_CLASSES
+
         return len(COCO_CLASSES)
 
     def _load_model(self, model_path):
@@ -148,7 +159,9 @@ class YOLOX:
         image = cv2.imread(image_path)  # BGR format
         input_size = self.exp.test_size
         tensor_image, scale = preproc(image, input_size)
-        tensor_image = torch.from_numpy(tensor_image).unsqueeze(0).float().to(self.device)
+        tensor_image = (
+            torch.from_numpy(tensor_image).unsqueeze(0).float().to(self.device)
+        )
         return image, tensor_image, scale
 
     def detect_objects(self, image_path, conf_thre=0.25, nms_thre=0.45):
@@ -209,8 +222,17 @@ class YOLOX:
 
         bboxes = outputs[0][:, 0:4]
         scores = outputs[0][:, 4] * outputs[0][:, 5]
-        class_ids = outputs[0][:, 6].to(dtype=torch.int).cpu().numpy()  # Convert to integer and NumPy array
-        result_image = vis(image, bboxes.cpu().numpy(), scores.cpu().numpy(), class_ids, conf=0.3, class_names=COCO_CLASSES)
+        class_ids = (
+            outputs[0][:, 6].to(dtype=torch.int).cpu().numpy()
+        )  # Convert to integer and NumPy array
+        result_image = vis(
+            image,
+            bboxes.cpu().numpy(),
+            scores.cpu().numpy(),
+            class_ids,
+            conf=0.3,
+            class_names=COCO_CLASSES,
+        )
         cv2.imwrite(save_path, result_image)
 
         # Display the image
