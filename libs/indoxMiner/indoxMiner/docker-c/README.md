@@ -112,6 +112,49 @@ curl -X POST http://localhost:8001/detect -F "image=@/path/to/your/image.jpg"
 
 ---
 
+## 🔧 Port Mapping and User Manual
+
+Here is a detailed guide on the ports used by each model in the Dockerized IndoxMiner application:
+
+| Model                  | Port Mapping | Description                                   |
+| ---------------------- | ------------ | --------------------------------------------- |
+| DETR                   | 8001:8000    | Detection Transformers                        |
+| Detectron2             | 8002:8000    | Facebook AI Research model                    |
+| DETR-CLIP              | 8003:8000    | Enhanced with CLIP for better performance     |
+| GroundingDINO          | 8004:8000    | Grounding vision-language model               |
+| Kosmos2                | 8005:8000    | Cross-modal vision-language model             |
+| OWLVit                 | 8006:8000    | Open-Vocabulary Vision Transformer            |
+| RT-DETR                | 8007:8000    | Real-Time Detection Transformer               |
+| SAM2                   | 8008:8000    | Segment Anything Model                        |
+| YOLOv5                 | 8009:8000    | Real-time object detection                    |
+| YOLOv6                 | 8010:8000    | Advanced YOLO version                         |
+| YOLOv7                 | 8011:8000    | Enhanced accuracy and speed                   |
+| YOLOv8                 | 8012:8000    | Latest YOLO version with optimizations        |
+| YOLOv10                | 8013:8000    | Experimental YOLO version                     |
+| YOLOv11                | 8014:8000    | Latest YOLO variant                           |
+| YOLOX                  | 8015:8000    | Scalable YOLO model                           |
+| GroundedSAM2           | 8016:8000    | Advanced segmentation model                   |
+| GroundedSAM2 Florence2 | 8017:8000    | Enhanced version with better context handling |
+
+### How to Use the Ports
+
+- **Access the API Endpoints:**
+
+  - Use `http://localhost:<port>` to access the service, replacing `<port>` with the respective port number.
+  - For example, to access the **DETR** model:
+    ```bash
+    curl http://localhost:8001/detect -F "image=@/path/to/your/image.jpg"
+    ```
+
+- **Health Check:**
+  - Use `http://localhost:<port>/health` to check if the service is running.
+  - Example:
+    ```bash
+    curl http://localhost:8001/health
+    ```
+
+---
+
 ## 🔧 Configuration Options
 
 You can customize the deployment by modifying the `docker-compose.yml` file:
