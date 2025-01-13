@@ -15,3 +15,4 @@ from .sql import Sql
 from .joblib import Joblib
 from .scipy import Scipy
 from .unstructured import Unstructured
+from .docling import DoclingReader
