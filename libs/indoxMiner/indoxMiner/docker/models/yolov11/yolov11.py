@@ -4,6 +4,7 @@ import glob
 import requests
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import sys
 import torch
 
 
@@ -19,24 +20,29 @@ class YOLOv11:
         self.device = device if torch.cuda.is_available() else "cpu"
         self.model_path = self._get_model_weights(model_name)
 
-    #     # Ensure YOLO CLI is installed
-    #     self._install_yolo_cli()
+        # Ensure YOLO CLI is installed
+        self._install_yolo_cli()
 
-    # def _install_yolo_cli(self):
-    #     """
-    #     Ensures that YOLO CLI is installed.
-    #     """
-    #     try:
-    #         subprocess.run(["yolo", "--help"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    #     except FileNotFoundError:
-    #         print("YOLO CLI not found. Installing...")
-    #         try:
-    #             subprocess.run(
-    #                 [sys.executable, "-m", "pip", "install", "ultralytics"],
-    #                 check=True,
-    #             )
-    #         except subprocess.CalledProcessError as e:
-    #             raise RuntimeError(f"Failed to install YOLO CLI: {e}")
+    def _install_yolo_cli(self):
+        """
+        Ensures that YOLO CLI is installed.
+        """
+        try:
+            subprocess.run(
+                ["yolo", "--help"],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+        except FileNotFoundError:
+            print("YOLO CLI not found. Installing...")
+            try:
+                subprocess.run(
+                    [sys.executable, "-m", "pip", "install", "ultralytics"],
+                    check=True,
+                )
+            except subprocess.CalledProcessError as e:
+                raise RuntimeError(f"Failed to install YOLO CLI: {e}")
 
     def _get_model_weights(self, model_name):
         """

@@ -25,8 +25,8 @@ class YOLOX:
         self.model_name = model_name
         self.device = device if torch.cuda.is_available() else "cpu"
 
-        # # Ensure YOLOX is installed
-        # self._install_yolox()
+        # Ensure YOLOX is installed
+        self._install_yolox()
 
         # Download or locate the experiment and weights files
         self.exp_file = self._get_file(self.model_name, "exp")
@@ -37,31 +37,24 @@ class YOLOX:
         self.exp.num_classes = self._get_coco_classes_length()
         self.model = self._load_model(self.model_file)
 
-    # def _install_yolox(self):
-    #     """
-    #     Ensures that YOLOX library is installed.
-    #     """
-    #     try:
-    #         subprocess.run(
-    #             ["yolo", "--help"],
-    #             check=True,
-    #             stdout=subprocess.PIPE,
-    #             stderr=subprocess.PIPE,
-    #         )
-    #     except FileNotFoundError:
-    #         print("YOLOX library not found. Installing...")
-    #         try:
-    #             subprocess.check_call(
-    #                 [
-    #                     sys.executable,
-    #                     "-m",
-    #                     "pip",
-    #                     "install",
-    #                     "git+https://github.com/Megvii-BaseDetection/YOLOX.git",
-    #                 ]
-    #             )
-    #         except subprocess.CalledProcessError as e:
-    #             raise RuntimeError(f"Failed to install YOLOX library: {e}")
+    def _install_yolox(self):
+        """
+        Ensures that YOLOX library is installed.
+        """
+        try:
+            subprocess.run(["yolo", "--help"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except FileNotFoundError:
+            print("YOLOX library not found. Installing...")
+            try:
+                subprocess.check_call([
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "git+https://github.com/Megvii-BaseDetection/YOLOX.git"
+                ])
+            except subprocess.CalledProcessError as e:
+                raise RuntimeError(f"Failed to install YOLOX library: {e}")
 
     def _get_file(self, model_name, file_type):
         """
@@ -96,9 +89,7 @@ class YOLOX:
             print(f"{file_type.capitalize()} file downloaded: {file_name}")
             return file_name
         else:
-            raise RuntimeError(
-                f"Failed to download {file_type} file from {url} (status code: {response.status_code})"
-            )
+            raise RuntimeError(f"Failed to download {file_type} file from {url} (status code: {response.status_code})")
 
     def _load_experiment(self, exp_file):
         """
@@ -111,7 +102,6 @@ class YOLOX:
             YOLOX experiment object.
         """
         from yolox.exp import get_exp
-
         return get_exp(exp_file, None)
 
     def _get_coco_classes_length(self):
@@ -122,7 +112,6 @@ class YOLOX:
             int: Number of COCO classes.
         """
         from yolox.data.datasets import COCO_CLASSES
-
         return len(COCO_CLASSES)
 
     def _load_model(self, model_path):
@@ -159,9 +148,7 @@ class YOLOX:
         image = cv2.imread(image_path)  # BGR format
         input_size = self.exp.test_size
         tensor_image, scale = preproc(image, input_size)
-        tensor_image = (
-            torch.from_numpy(tensor_image).unsqueeze(0).float().to(self.device)
-        )
+        tensor_image = torch.from_numpy(tensor_image).unsqueeze(0).float().to(self.device)
         return image, tensor_image, scale
 
     def detect_objects(self, image_path, conf_thre=0.25, nms_thre=0.45):
@@ -174,7 +161,7 @@ class YOLOX:
             nms_thre (float): Non-maximum suppression threshold.
 
         Returns:
-            dict: A dictionary containing the original image, detection outputs, and metadata.
+            tuple: Original image with annotations, YOLOX detection outputs.
         """
         from yolox.utils import postprocess
 
@@ -191,52 +178,23 @@ class YOLOX:
                 nms_thre=nms_thre,
             )
 
-        # If no outputs, return empty results
+        # If no outputs, return the original image and empty detections
         if outputs is None or len(outputs[0]) == 0:
             print("No detections found.")
-            packed_results = {
-                "original_image": original_image,
-                "detections": [],
-                "metadata": {
-                    "conf_threshold": conf_thre,
-                    "nms_threshold": nms_thre,
-                    "num_detections": 0,
-                },
-            }
-            return packed_results
+            return original_image, None
 
         # Adjust the bounding boxes to the original image size
         outputs[0][:, 0:4] /= scale
 
-        # Pack results into a dictionary
-        detections = [
-            {
-                "bbox": box[:4].cpu().numpy().tolist(),
-                "confidence": float(box[4].cpu()),
-                "class_id": int(box[6].cpu()),
-            }
-            for box in outputs[0]
-        ]
+        return original_image, outputs
 
-        packed_results = {
-            "original_image": original_image,
-            "detections": detections,
-            "metadata": {
-                "conf_threshold": conf_thre,
-                "nms_threshold": nms_thre,
-                "num_detections": len(detections),
-            },
-        }
-
-        return packed_results
-
-
-    def visualize_results(self, packed_results, save_path="result.jpg"):
+    def visualize_results(self, image, outputs, save_path="result.jpg"):
         """
         Visualizes detection results on the image.
 
         Args:
-            packed_results (dict): Packed results containing the original image and detections.
+            image (np.ndarray): Original image.
+            outputs (list): Detection outputs from YOLOX.
             save_path (str): Path to save the annotated image.
 
         Returns:
@@ -245,19 +203,14 @@ class YOLOX:
         from yolox.utils.visualize import vis
         from yolox.data.datasets import COCO_CLASSES
 
-        original_image = packed_results["original_image"]
-        detections = packed_results["detections"]
-
-        if not detections:
-            print("No detections to visualize.")
+        if outputs is None or len(outputs[0]) == 0:
+            print("No detections found.")
             return None
 
-
-        bboxes = np.array([det["bbox"] for det in detections])
-        scores = np.array([det["confidence"] for det in detections])
-        class_ids = np.array([det["class_id"] for det in detections])
-
-        result_image = vis(original_image, bboxes, scores, class_ids, conf=0.3, class_names=COCO_CLASSES)
+        bboxes = outputs[0][:, 0:4]
+        scores = outputs[0][:, 4] * outputs[0][:, 5]
+        class_ids = outputs[0][:, 6].to(dtype=torch.int).cpu().numpy()  # Convert to integer and NumPy array
+        result_image = vis(image, bboxes.cpu().numpy(), scores.cpu().numpy(), class_ids, conf=0.3, class_names=COCO_CLASSES)
         cv2.imwrite(save_path, result_image)
 
         # Display the image
@@ -265,4 +218,3 @@ class YOLOX:
         plt.title("Detections")
         plt.axis("off")
         plt.show()
-
