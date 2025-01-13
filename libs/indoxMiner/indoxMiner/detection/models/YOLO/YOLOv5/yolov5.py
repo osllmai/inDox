@@ -34,7 +34,7 @@ class YOLOv5:
             conf_thres (float): Confidence threshold for detections.
             iou_thres (float): Intersection-over-union threshold for NMS.
         Returns:
-            tuple: Original image (BGR format), detections as a list of dictionaries.
+            dict: A dictionary containing the original image, detections, and other metadata.
         """
         # Read image
         img_bgr = cv2.imread(image_path)
@@ -58,15 +58,29 @@ class YOLOv5:
                 "class_name": self.model.names[int(cls)]
             })
 
-        return img_bgr, detections
+        # Pack results into a dictionary
+        packed_results = {
+            "image_bgr": img_bgr,
+            "detections": detections,
+            "metadata": {
+                "conf_thres": conf_thres,
+                "iou_thres": iou_thres,
+                "num_detections": len(detections)
+            }
+        }
 
-    def visualize_results(self, img_bgr, detections):
+        return packed_results
+
+    def visualize_results(self, packed_results):
         """
         Visualize the detection results on the image using matplotlib.
+
         Args:
-            img_bgr (np.ndarray): Original BGR image.
-            detections (list): List of detection dictionaries.
+            packed_results (dict): Packed results containing the image and detections.
         """
+        img_bgr = packed_results["image_bgr"]
+        detections = packed_results["detections"]
+
         if len(detections) == 0:
             print("No detections to visualize.")
             return
@@ -74,7 +88,7 @@ class YOLOv5:
         # Convert image to RGB for plotting
         img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
 
-        # Create the figure and axis once
+        # Create the figure and axis
         fig, ax = plt.subplots(figsize=(12, 8))
         ax.imshow(img_rgb)
 
@@ -95,8 +109,12 @@ class YOLOv5:
                 color='white', fontsize=10, backgroundcolor='red'
             )
 
-        # Customize plot and display
+        # Customize plot
         ax.axis('off')
         plt.title("YOLOv5 Detection Results")
+
+        # Display and clear the figure
         plt.show()
+        plt.close(fig)  # Close the figure after displaying to prevent caching
+
 

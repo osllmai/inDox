@@ -119,7 +119,7 @@ class OWLVit:
             image_path (str): Path to the input image.
 
         Returns:
-            tuple: (PIL.Image, detection results)
+            dict: A dictionary containing the input image, bounding boxes, scores, and labels.
         """
         # Load and preprocess the image
         image = Image.open(image_path).convert("RGB")
@@ -132,34 +132,40 @@ class OWLVit:
             outputs = self.model(**inputs)
 
         # Post-process outputs
-        target_sizes = torch.tensor([image.size[::-1]]).to(
-            self.device
-        )  # Image size in (height, width)
+        target_sizes = torch.tensor([image.size[::-1]]).to(self.device)
         results = self.processor.post_process_object_detection(
-            outputs=outputs, threshold=0.5, target_sizes=target_sizes
+            outputs=outputs, threshold=0.1, target_sizes=target_sizes
         )[0]
 
-        return image, results
+        # Prepare packed results
+        packed_results = {
+            "image": image,
+            "boxes": results["boxes"].cpu().tolist(),  # Convert to list
+            "scores": results["scores"].cpu().tolist(),  # Convert to list
+            "labels": [self.queries[label] for label in results["labels"].cpu().tolist()],
+        }
 
-    def visualize_results(self, image, results):
+        return packed_results
+
+
+    def visualize_results(self, packed_results):
         """
         Visualize detected objects in an image.
 
         Args:
-            image (PIL.Image): Input image.
-            results (dict): Detection results from OWL-ViT.
+            packed_results (dict): Packed results containing the image, bounding boxes, scores, and labels.
         """
+        image = packed_results["image"]
+        boxes = packed_results["boxes"]
+        scores = packed_results["scores"]
+        labels = packed_results["labels"]
+
         plt.figure(figsize=(10, 10))
         plt.imshow(image)
         ax = plt.gca()
 
-        for score, label, box in zip(
-            results["scores"], results["labels"], results["boxes"]
-        ):
-            box = [
-                round(i, 2) for i in box.tolist()
-            ]  # Convert to a list of rounded floats
-            xmin, ymin, xmax, ymax = box
+        for box, score, label in zip(boxes, scores, labels):
+            xmin, ymin, xmax, ymax = [round(coord, 2) for coord in box]
 
             # Draw bounding box
             rect = patches.Rectangle(
@@ -176,7 +182,7 @@ class OWLVit:
             ax.text(
                 xmin,
                 ymin - 5,
-                f"{self.queries[label]}: {score:.2f}",
+                f"{label}: {score:.2f}",
                 fontsize=12,
                 color="white",
                 bbox=dict(facecolor="red", alpha=0.5, edgecolor="none"),

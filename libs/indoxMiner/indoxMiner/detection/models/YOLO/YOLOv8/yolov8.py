@@ -70,7 +70,7 @@ class YOLOv8:
         Args:
             image_path (str): Path to the input image.
         Returns:
-            tuple: Original image (NumPy array), detection results (list of dictionaries).
+            dict: A dictionary containing the original image, detections, and metadata.
         """
         # Run object detection
         results = self.model(image_path)
@@ -92,15 +92,28 @@ class YOLOv8:
         # Get the original image
         orig_image = results[0].orig_img
 
-        return orig_image, detections
+        # Pack results into a dictionary
+        packed_results = {
+            "orig_image": orig_image,
+            "detections": detections,
+            "metadata": {
+                "num_detections": len(detections)
+            }
+        }
 
-    def visualize_results(self, orig_image, detections):
+        return packed_results
+
+
+    def visualize_results(self, packed_results):
         """
         Visualize YOLOv8 detection results.
         Args:
-            orig_image (np.ndarray): Original image in BGR format.
-            detections (list): Detection results.
+            packed_results (dict): Packed results containing the original image and detections.
         """
+        orig_image = packed_results["orig_image"]
+        detections = packed_results["detections"]
+
+        # Class names for COCO dataset
         class_names = [
             "person",
             "bicycle",
@@ -215,3 +228,4 @@ class YOLOv8:
 
         plt.axis("off")  # Remove axis
         plt.show()
+

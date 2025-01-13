@@ -2,17 +2,13 @@ import os
 import torch
 from PIL import Image
 import matplotlib.pyplot as plt
-import cv2
-import subprocess
-import sys
 import requests
-
+from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
 
 class GroundingDINO:
     def __init__(
         self,
-        config_name_or_path,
-        weights_name_or_path,
+        model_name_or_path="IDEA-Research/grounding-dino-tiny",
         device="cuda",
         box_threshold=0.35,
         text_threshold=0.25,
@@ -21,8 +17,7 @@ class GroundingDINO:
         Initializes the Grounding DINO object detection model.
 
         Args:
-            config_name_or_path (str): Name or path to the config file. If name is provided, it will be downloaded.
-            weights_name_or_path (str): Name or path to the model weights file. If name is provided, it will be downloaded.
+            model_name_or_path (str): Hugging Face model name or path for GroundingDINO.
             device (str): Device to run the model on ('cuda' or 'cpu').
             box_threshold (float): Threshold for box confidence.
             text_threshold (float): Threshold for text confidence.
@@ -33,86 +28,19 @@ class GroundingDINO:
 
         # Default COCO classes as text prompt
         self.text_prompt = (
-            "person, bicycle, car, motorcycle, airplane, bus, train, truck, boat, traffic light, "
-            "fire hydrant, stop sign, parking meter, bench, bird, cat, dog, horse, sheep, cow, elephant, "
-            "bear, zebra, giraffe, backpack, umbrella, handbag, tie, suitcase, frisbee, skis, snowboard, "
-            "sports ball, kite, baseball bat, baseball glove, skateboard, surfboard, tennis racket, bottle, "
-            "wine glass, cup, fork, knife, spoon, bowl, banana, apple, sandwich, orange, broccoli, carrot, "
-            "hot dog, pizza, donut, cake, chair, couch, potted plant, bed, dining table, toilet, tv, laptop, "
-            "mouse, remote, keyboard, cell phone, microwave, oven, toaster, sink, refrigerator, book, clock, "
-            "vase, scissors, teddy bear, hair drier, toothbrush"
+            "person . bicycle . car . motorcycle . airplane . bus . train . truck . boat . traffic light . "
+            "fire hydrant . stop sign . parking meter . bench . bird . cat . dog . horse . sheep . cow . elephant . "
+            "bear . zebra . giraffe . backpack . umbrella . handbag . tie . suitcase . frisbee . skis . snowboard . "
+            "sports ball . kite . baseball bat . baseball glove . skateboard . surfboard . tennis racket . bottle . "
+            "wine glass . cup . fork . knife . spoon . bowl . banana . apple . sandwich . orange . broccoli . carrot . "
+            "hot dog . pizza . donut . cake . chair . couch . potted plant . bed . dining table . toilet . tv . laptop . "
+            "mouse . remote . keyboard . cell phone . microwave . oven . toaster . sink . refrigerator . book . clock . "
+            "vase . scissors . teddy bear . hair drier . toothbrush ."
         )
 
-        # Ensure Grounding DINO is installed
-        self._install_groundingdino()
-
-        # Automatically download config and weight files if necessary
-        self.config_path = self._get_file(config_name_or_path, "config")
-        self.weights_path = self._get_file(weights_name_or_path, "weights")
-
-        # Import Grounding DINO utilities
-        from groundingdino.util.inference import load_model
-
-        # Load the model
-        self.model = load_model(self.config_path, self.weights_path)
-        self.model.to(self.device).eval()
-
-    def _install_groundingdino(self):
-        """
-        Installs the groundingdino package if not already installed.
-        """
-        try:
-            import groundingdino
-        except ImportError:
-            print("Grounding DINO not found. Installing...")
-            subprocess.check_call(
-                [
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "install",
-                    "git+https://github.com/IDEA-Research/GroundingDINO.git",
-                ]
-            )
-
-    def _get_file(self, name_or_path, file_type):
-        """
-        Downloads the config or weights file if only a name is provided.
-
-        Args:
-            name_or_path (str): Name or path to the file.
-            file_type (str): Type of file ('config' or 'weights').
-
-        Returns:
-            str: Path to the file.
-        """
-        if os.path.exists(name_or_path):
-            return name_or_path
-
-        # Define URLs for known files
-        urls = {
-            "config": "https://raw.githubusercontent.com/IDEA-Research/GroundingDINO/main/groundingdino/config/GroundingDINO_SwinT_OGC.py",
-            "weights": "https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth",
-        }
-
-        if file_type not in urls:
-            raise ValueError(f"Unknown file type: {file_type}")
-
-        file_url = urls[file_type]
-        file_name = name_or_path if name_or_path else os.path.basename(file_url)
-
-        # Download the file
-        print(f"Downloading {file_type} file: {file_name}...")
-        response = requests.get(file_url)
-        if response.status_code == 200:
-            with open(file_name, "wb") as file:
-                file.write(response.content)
-            print(f"{file_type.capitalize()} file downloaded: {file_name}")
-            return file_name
-        else:
-            raise RuntimeError(
-                f"Failed to download {file_type} file from {file_url} (status code: {response.status_code})"
-            )
+        # Load model and processor from Hugging Face
+        self.processor = AutoProcessor.from_pretrained(model_name_or_path)
+        self.model = AutoModelForZeroShotObjectDetection.from_pretrained(model_name_or_path).to(self.device)
 
     def detect_objects(self, image_path):
         """
@@ -122,51 +50,71 @@ class GroundingDINO:
             image_path (str): Path to the input image.
 
         Returns:
-            dict: Dictionary containing the image and detection results, including boxes, logits, and phrases.
+            dict: Dictionary containing the image and detection results, including boxes, scores, and labels.
         """
-        from groundingdino.util.inference import load_image, predict
+        # Load image
+        image = Image.open(image_path).convert("RGB")
 
-        image_source, image = load_image(image_path)
+        # Preprocess image and text prompt
+        inputs = self.processor(images=image, text=self.text_prompt, return_tensors="pt").to(self.device)
 
-        # Perform object detection
-        boxes, logits, phrases = predict(
-            model=self.model,
-            image=image,
-            caption=self.text_prompt,
+        # Perform inference
+        with torch.no_grad():
+            outputs = self.model(**inputs)
+
+        # Post-process results
+        results = self.processor.post_process_grounded_object_detection(
+            outputs=outputs,
+            input_ids=inputs["input_ids"],  # اضافه کردن input_ids
+            target_sizes=[image.size[::-1]],
             box_threshold=self.box_threshold,
             text_threshold=self.text_threshold,
         )
 
         return {
-            "image_source": image_source,
-            "boxes": boxes,
-            "logits": logits,
-            "phrases": phrases,
+            "image": image,
+            "boxes": results[0]["boxes"].cpu().numpy(),
+            "scores": results[0]["scores"].cpu().numpy(),
+            "labels": results[0]["labels"],
         }
+
 
     def visualize_results(self, result):
         """
-        Visualize detection results in Colab.
+        Visualize detection results.
 
         Args:
-            result (dict): Contains image and detection results (boxes, logits, phrases)
+            result (dict): Contains image and detection results (boxes, scores, labels).
         """
-        from groundingdino.util.inference import annotate
-        from google.colab.patches import cv2_imshow
-        import cv2
+        import matplotlib.patches as patches
 
-        image_source = result["image_source"]
+        image = result["image"]
         boxes = result["boxes"]
-        logits = result["logits"]
-        phrases = result["phrases"]
+        scores = result["scores"]
+        labels = result["labels"]
 
-        annotated_frame = annotate(
-            image_source=image_source, boxes=boxes, logits=logits, phrases=phrases
-        )
+        # Plot image
+        fig, ax = plt.subplots(1, figsize=(12, 12))
+        ax.imshow(image)
 
-        # Convert BGR to RGB if needed (depending on your image format)
-        annotated_frame_rgb = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
+        # Add boxes and labels
+        for box, score, label in zip(boxes, scores, labels):
+            x_min, y_min, x_max, y_max = box
+            width, height = x_max - x_min, y_max - y_min
 
-        # Display
-        cv2_imshow(annotated_frame_rgb)
-        cv2.waitKey(0)
+            # Add rectangle
+            rect = patches.Rectangle((x_min, y_min), width, height, linewidth=2, edgecolor="red", facecolor="none")
+            ax.add_patch(rect)
+
+            # Add label
+            ax.text(
+                x_min,
+                y_min - 10,
+                f"{label} {score:.2f}",
+                color="red",
+                fontsize=12,
+                bbox=dict(facecolor="white", alpha=0.5, edgecolor="none"),
+            )
+
+        plt.axis("off")
+        plt.show()
