@@ -4,6 +4,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
 from typing import List, Optional, Union
+from .base_classifier import ImageClassifier
 
 
 class ViTClassifier(ImageClassifier):

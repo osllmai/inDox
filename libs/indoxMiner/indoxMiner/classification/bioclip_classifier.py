@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import open_clip
 from typing import List, Optional, Union
+from .base_classifier import ImageClassifier
 
 
 class BioCLIPClassifier(ImageClassifier):

@@ -4,7 +4,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
 from typing import List, Optional, Union
-
+from .base_classifier import ImageClassifier
 
 class MetaCLIPClassifier(ImageClassifier):
     def __init__(self, model_name: str = "facebook/metaclip-b32-400m"):

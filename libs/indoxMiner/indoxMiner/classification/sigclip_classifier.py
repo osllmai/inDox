@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from typing import List, Optional, Union
 import numpy as np
 from PIL import Image
+from .base_classifier import ImageClassifier
 
 
 class SigCLIPClassifier(ImageClassifier):
