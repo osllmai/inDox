@@ -1,13 +1,11 @@
-Here's the updated README file that includes the **classification models** in addition to the existing features of **data extraction** and **object detection**:
-
----
-
 # IndoxMiner
 
 [![PyPI version](https://badge.fury.io/py/indoxminer.svg)](https://badge.fury.io/py/indoxminer)  
 [![License: MIT](https://img.shields.io/badge/License-AGPL-yellow.svg)](https://opensource.org/licenses/AGPL)
 
+
 IndoxMiner is a powerful Python library that leverages Large Language Models (LLMs) for **data extraction**, advanced **object detection**, and **image classification**. It combines schema-based data extraction from unstructured data sources such as text, PDFs, and images, with state-of-the-art object detection and image classification models. IndoxMiner enables seamless automation for document processing, visual recognition, and classification tasks.
+
 
 ## 🚀 Key Features
 
@@ -24,6 +22,7 @@ IndoxMiner is a powerful Python library that leverages Large Language Models (LL
 
 ## 📦 Installation
 
+You may also install required object detection dependencies like Detectron2 or YOLOv8 using:
 Install IndoxMiner with:
 
 ```bash
@@ -109,6 +108,13 @@ detector = YOLOv5()
 # Detect objects in an image
 image_path = "dog-cat-under-sheet.jpg"
 outputs = await detector.detect_objects(image_path)
+
+
+You can also switch to other models by specifying the model name, e.g., `detectron2`, `detr`, `yolov8`, etc.
+
+```python
+detector = YOLOv8()  # For YOLOv8
+
 ```
 
 ---
@@ -208,3 +214,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Documentation**: [Full documentation](https://indoxminer.readthedocs.io/)
 - **Issues**: [GitHub Issues](https://github.com/username/indoxminer/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/username/indoxminer/discussions)
+
+
+--- 
+
+## 🌟 Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=username/indoxminer&type=Date)](https://star-history.com/#username/indoxminer&Date)
+
+

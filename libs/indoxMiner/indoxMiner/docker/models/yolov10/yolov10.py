@@ -1,13 +1,11 @@
 import os
 import cv2
 import torch
-import numpy as np
 import subprocess
 import sys
 import requests
 import glob
 import matplotlib.pyplot as plt
-import warnings
 
 
 class YOLOv10:
@@ -23,24 +21,28 @@ class YOLOv10:
         self.device = device if torch.cuda.is_available() else "cpu"
 
         # Ensure YOLO CLI is installed
+        self._install_yolo_cli()
 
-    #     self._install_yolo_cli()
-
-    # def _install_yolo_cli(self):
-    #     """
-    #     Ensures that YOLO CLI is installed.
-    #     """
-    #     try:
-    #         subprocess.run(["yolo", "--help"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    #     except FileNotFoundError:
-    #         print("YOLO CLI not found. Installing...")
-    #         try:
-    #             subprocess.run(
-    #                 [sys.executable, "-m", "pip", "install", "ultralytics"],
-    #                 check=True,
-    #             )
-    #         except subprocess.CalledProcessError as e:
-    #             raise RuntimeError(f"Failed to install YOLO CLI: {e}")
+    def _install_yolo_cli(self):
+        """
+        Ensures that YOLO CLI is installed.
+        """
+        try:
+            subprocess.run(
+                ["yolo", "--help"],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+        except FileNotFoundError:
+            print("YOLO CLI not found. Installing...")
+            try:
+                subprocess.run(
+                    [sys.executable, "-m", "pip", "install", "ultralytics"],
+                    check=True,
+                )
+            except subprocess.CalledProcessError as e:
+                raise RuntimeError(f"Failed to install YOLO CLI: {e}")
 
     def _get_model_weights(self, weight_name):
         """
@@ -75,7 +77,7 @@ class YOLOv10:
             conf_threshold (float): Confidence threshold for predictions.
             save_dir (str): Directory where results are saved.
         Returns:
-            dict: A dictionary containing the annotated image, detection outputs, and metadata.
+            np.ndarray: Annotated image.
         """
         # YOLO CLI command
         command = (
@@ -83,7 +85,7 @@ class YOLOv10:
             f"source={image_path} save=True device={0 if self.device == 'cuda' else 'cpu'}"
         )
 
-        # Run the command with shell=True
+        # Run the command
         try:
             subprocess.run(command, shell=True, check=True)
         except subprocess.CalledProcessError as e:
@@ -105,40 +107,16 @@ class YOLOv10:
         annotated_image = cv2.imread(latest_image_path)
         annotated_image = cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
 
-        detections = [
-            {
-                "bbox": [50, 50, 200, 200],  # Example bounding box [x1, y1, x2, y2]
-                "class_id": 0,  # Example class ID
-                "confidence": 0.9,  # Example confidence score
-                "class_name": "person",  # Example class name
-            }
-        ]
+        return annotated_image
 
-        # Pack results into a dictionary
-        packed_results = {
-            "annotated_image": annotated_image,
-            "detections": detections,
-            "metadata": {
-                "conf_threshold": conf_threshold,
-                "save_dir": save_dir,
-                "num_detections": len(detections),
-            },
-        }
-
-        return packed_results
-
-
-    def visualize_results(self, packed_results):
+    def visualize_results(self, annotated_image):
         """
         Visualize the YOLOv10 predictions.
         Args:
-            packed_results (dict): Packed results containing the annotated image and detections.
+            annotated_image (np.ndarray): Annotated image with detections.
         """
-        annotated_image = packed_results["annotated_image"]
-
         plt.figure(figsize=(12, 8))
         plt.imshow(annotated_image)
         plt.axis("off")
         plt.title("YOLOv10 Object Detection")
         plt.show()
-
