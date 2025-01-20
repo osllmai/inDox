@@ -1,0 +1,2 @@
+git+https://github.com/IDEA-Research/Grounded-SAM-2.git
+supervision==0.25.1
