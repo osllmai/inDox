@@ -61,11 +61,18 @@ class MultiQueryRetriever(BaseRetriever):
     def __init__(self, vector_store, llm, top_k: int = 5):
         super().__init__(vector_store, top_k)
         self.llm = llm
+        self.vector_store = vector_store
 
     def retrieve(self, query: str) -> List[RetrievalResult]:
-        # Implementation of multi-query retrieval logic
-        # This would generate multiple queries and combine results
-        pass
+        from indoxArcg.tools import MultiQueryRetrieval
+
+        self.multi_query_retrieval = MultiQueryRetrieval(
+            self.llm, self.vector_store, self.top_k
+        )
+
+        logger.info("Multi-query retrieval initialized")
+
+        return self.multi_query_retrieval.run(query)
 
 
 class AnswerValidator:
@@ -76,7 +83,6 @@ class AnswerValidator:
 
     def check_hallucination(self, answer: str, context: List[str]) -> bool:
         result = self.llm.check_hallucination(context=context, answer=answer)
-        print(result)
         return result.lower() == "yes"
 
     def grade_relevance(self, context: List[str], query: str) -> List[str]:
@@ -144,48 +150,106 @@ class RAG:
         return self.llm.answer_question(context=context, question=query)
 
     def _smart_retrieve(
-        self, question: str, top_k: int, min_relevance_score: float = 0.7
+        self,
+        question: str,
+        top_k: int,
+        # min_relevance_score: float = 0.7,  # Keep for interface consistency
     ) -> List[str]:
-        """Smart retrieval with validation and web fallback"""
+        """
+        Smart retrieval with validation and web fallback
+
+        Args:
+            question: Query string
+            top_k: Number of documents to retrieve
+
+        Returns:
+            List of relevant context strings
+        """
         logger.info("Using smart retrieval")
 
-        # Initial retrieval
-        retriever = self._get_retriever(False, top_k)
-        initial_results = retriever.retrieve(question)
-        initial_context = [r.content for r in initial_results]
+        if not question.strip():
+            logger.error("Query string cannot be empty")
+            raise ValueError("Query string cannot be empty")
 
-        if not initial_context:
-            logger.warning("No initial context found")
-            return []
+        try:
+            # Initial retrieval from vector store
+            retriever = self._get_retriever(False, top_k)
+            initial_results = retriever.retrieve(question)
+            initial_context = [r.content for r in initial_results]
 
-        # Validate context
-        validator = AnswerValidator(self.llm)
-        relevance_scores = validator.grade_relevance(initial_context, question)
+            if not initial_context:
+                logger.warning("No initial context found in vector store")
+                return self._handle_web_fallback(question, top_k)
 
-        # Filter by relevance
-        good_context = [
-            ctx
-            for ctx, score in zip(initial_context, relevance_scores)
-            if score >= min_relevance_score
-        ]
+            # Grade documents using LLM's grade_docs method
+            validator = AnswerValidator(self.llm)
+            try:
+                # This will return the filtered relevant documents directly
+                grade_context = validator.grade_relevance(initial_context, question)
+                if not grade_context:
+                    logger.info("No relevant documents found in initial context")
+                    return self._handle_web_fallback(question, top_k)
 
-        # Try web fallback if needed
-        if len(good_context) < min(2, top_k):
-            logger.info("Insufficient relevant context, trying web fallback")
+            except Exception as e:
+                logger.error(f"Error in document grading: {str(e)}")
+                # Fallback to using ungraded context
+                grade_context = initial_context
+
+            # Ensure we don't exceed top_k
+            grade_context = grade_context[:top_k]
+
+            # Check for hallucination if we have context
+            if grade_context:
+                try:
+                    answer = self.llm.answer_question(
+                        context=grade_context, question=question
+                    )
+
+                    hallucination_result = validator.check_hallucination(
+                        context=grade_context, answer=answer
+                    )
+
+                    if hallucination_result.lower() == "yes":
+                        logger.info("Hallucination detected, regenerating answer")
+                        answer = self.llm.answer_question(
+                            context=grade_context, question=question
+                        )
+                except Exception as e:
+                    logger.error(
+                        f"Error in answer generation or hallucination check: {str(e)}"
+                    )
+
+            return grade_context
+
+        except Exception as e:
+            logger.error(f"Error in smart retrieval: {str(e)}")
+            raise ContextRetrievalError(f"Smart retrieval failed: {str(e)}")
+
+    def _handle_web_fallback(self, question: str, top_k: int) -> List[str]:
+        """Handle web search fallback when vector store retrieval is insufficient"""
+        try:
             web_fallback = WebSearchFallback()
             web_results = web_fallback.search(question)
 
-            # Validate web results
-            web_scores = validator.grade_relevance(web_results, question)
-            good_web_context = [
-                ctx
-                for ctx, score in zip(web_results, web_scores)
-                if score >= min_relevance_score
-            ]
+            if not web_results:
+                logger.warning("No results from web fallback")
+                return []
 
-            good_context.extend(good_web_context)
+            # Grade web results using LLM's grade_docs method
+            validator = AnswerValidator(self.llm)
+            try:
+                # This will return the filtered relevant documents directly
+                good_web_context = validator.grade_relevance(web_results, question)
+            except Exception as e:
+                logger.error(f"Error grading web results: {str(e)}")
+                # Fallback to using ungraded web results
+                good_web_context = web_results
 
-        return good_context[:top_k]
+            return good_web_context[:top_k]
+
+        except Exception as e:
+            logger.error(f"Web fallback failed: {str(e)}")
+            return []
 
     def infer(
         self,
@@ -193,8 +257,8 @@ class RAG:
         top_k: int = 5,
         use_clustering: bool = False,
         use_multi_query: bool = False,
-        use_smart_retrieval: bool = False,
-        min_relevance_score: float = 0.7,
+        smart_retrieval: bool = False,
+        # min_relevance_score: float = 0.7,
     ) -> str:
         """
         Main query method with configurable retrieval strategy
@@ -204,16 +268,24 @@ class RAG:
             top_k: Number of documents to retrieve
             use_clustering: Whether to use clustering for context processing
             use_multi_query: Whether to use multi-query retrieval
-            use_smart_retrieval: Whether to use smart retrieval with validation and web fallback
-            min_relevance_score: Minimum relevance score for smart retrieval (0-1)
+            smart_retrieval: Whether to use smart retrieval with validation and web fallback
         """
         if not question.strip():
             raise ValueError("Question cannot be empty")
 
         try:
             # Get context based on retrieval strategy
-            if use_smart_retrieval:
-                context = self._smart_retrieve(question, top_k, min_relevance_score)
+            if smart_retrieval:
+                context = self._smart_retrieve(question, top_k)
+            elif use_multi_query:
+                retriever = self._get_retriever(use_multi_query, top_k)
+                results = retriever.retrieve(question)
+                if hasattr(results[0], "page_content"):
+                    context = [r.page_content for r in results]
+                elif isinstance(results[0], str):
+                    context = results
+                else:
+                    raise ValueError("Unexpected result format from retriever")
             else:
                 retriever = self._get_retriever(use_multi_query, top_k)
                 results = retriever.retrieve(question)

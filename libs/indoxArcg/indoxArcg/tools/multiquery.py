@@ -6,13 +6,14 @@ from typing import List
 warnings.filterwarnings("ignore")
 
 logger.remove()
-logger.add(sys.stdout,
-           format="<green>{level}</green>: <level>{message}</level>",
-           level="INFO")
+logger.add(
+    sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
+)
 
-logger.add(sys.stdout,
-           format="<red>{level}</red>: <level>{message}</level>",
-           level="ERROR")
+logger.add(
+    sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
+)
+
 
 class MultiQueryRetrieval:
     """
@@ -48,7 +49,24 @@ class MultiQueryRetrieval:
         """
         prompt = f"Generate 3 different queries to gather information for answering the following question: {original_query}"
         response = self.llm.chat(prompt=prompt)
-        return [q.strip() for q in response.split('\n') if q.strip()]
+        return [q.strip() for q in response.split("\n") if q.strip()]
+
+    # def retrieve_information(self, queries: List[str]) -> List[str]:
+    #     """
+    #     Retrieve relevant information for each generated query.
+
+    #     Args:
+    #         queries (List[str]): A list of queries to use for information retrieval.
+
+    #     Returns:
+    #         List[str]: A list of relevant passages retrieved from the vector database.
+    #     """
+    #     all_relevants = []
+    #     for query in queries:
+    #         retrieved = self.vector_database._similarity_search_with_score(query, k=self.top_k)
+    #         relevants = [d[0].page_content for d in retrieved]
+    #         all_relevants.extend(relevants)
+    #     return all_relevants
 
     def retrieve_information(self, queries: List[str]) -> List[str]:
         """
@@ -62,9 +80,21 @@ class MultiQueryRetrieval:
         """
         all_relevants = []
         for query in queries:
-            retrieved = self.vector_database._similarity_search_with_score(query, k=self.top_k)
-            relevants = [d[0].page_content for d in retrieved]
-            all_relevants.extend(relevants)
+            try:
+                retrieved = self.vector_database._similarity_search_with_score(
+                    query, k=self.top_k
+                )
+                # Using page_content instead of content
+                relevants = [d[0].page_content for d in retrieved]
+                all_relevants.extend(relevants)
+            except AttributeError as e:
+                logger.error(f"Error accessing document content: {e}")
+                # If the documents are strings, use them directly
+                if isinstance(retrieved[0], tuple) and isinstance(retrieved[0][0], str):
+                    relevants = [d[0] for d in retrieved]
+                    all_relevants.extend(relevants)
+                else:
+                    raise e
         return all_relevants
 
     def generate_response(self, original_query: str, context: List[str]) -> str:

@@ -36,10 +36,12 @@ class OpenAiEmbedding(Embeddings):
             List of embeddings, one for each text.
         """
         embeddings = []
-        for text in texts:
-            try:
-                # client.embeddings.create(input=[text], model=engine).data[0].embedding
+        filtered_texts = [
+            text for text in texts if text.strip()
+        ]  # Remove empty strings
 
+        for text in filtered_texts:
+            try:
                 response = self.client.embeddings.create(model=engine, input=[text])
                 logger.debug(f"Response: {response}")
 
@@ -47,7 +49,9 @@ class OpenAiEmbedding(Embeddings):
                 embeddings.append(embedding)
 
             except Exception as e:
-                logger.error(f"Failed to fetch embeddings: {e}")
+                logger.error(
+                    f"Failed to fetch embeddings for text: '{text}'. Error: {e}"
+                )
                 raise
 
         return embeddings
