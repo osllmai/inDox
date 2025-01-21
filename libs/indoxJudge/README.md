@@ -11,7 +11,7 @@
 
 [![License](https://img.shields.io/github/license/osllmai/inDox)](https://github.com/osllmai/inDox/blob/main/LICENSE)
 [![PyPI](https://badge.fury.io/py/indoxJudge.svg)](https://pypi.org/project/IndoxJudge/0.0.14/)
-[![Python](https://img.shields.io/pypi/pyversions/indoxJudge.svg)](https://pypi.org/project/indoxJudge/0.0.14/)
+[![Python](https://img.shields.io/pypi/pyversions/indoxJudge.svg)](https://pypi.org/project/indoxJudge/0.1.1/)
 [![Downloads](https://static.pepy.tech/badge/indoxJudge)](https://pepy.tech/project/indoxJudge)
 
 [![Discord](https://img.shields.io/discord/1223867382460579961?label=Discord&logo=Discord&style=social)](https://discord.com/invite/ossllmai)
