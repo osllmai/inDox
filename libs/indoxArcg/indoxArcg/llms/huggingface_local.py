@@ -1,36 +1,28 @@
 import abc
 import torch
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import List
 from loguru import logger
 import sys
-
-
-from transformers import (
-    AutoTokenizer,
-    AutoModelForCausalLM,
-    BitsAndBytesConfig
-)
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
 from indoxArcg.core import BaseLLM
 
-class LocalHFModel(BaseLLM):
+
+class HuggingFaceLocalModel(BaseLLM):
     """
     A class to load and run inference on a Hugging Face Causal Language Model locally
     in 4-bit precision using bitsandbytes.
     """
 
-    # -- Pydantic configuration --
-    # For Pydantic v1
-    class Config:
-        arbitrary_types_allowed = True
-        extra = "allow"
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        extra="allow",
+        protected_namespaces=(),  # Disable protected namespace checking
+    )
 
-    # If you’re on Pydantic v2, you could do:
-    # model_config = ConfigDict(arbitrary_types_allowed=True, extra='allow')
-
-    # -- Fields that Pydantic should know about --
-    model_id: str = "BioMistral/BioMistral-7B"  # or any other HF model
+    # Fields with renamed attributes to avoid conflicts
+    hf_model_id: str = "BioMistral/BioMistral-7B"  # Renamed from model_id
     prompt_template: str = "Context: {context}\nQuestion: {question}\nAnswer:"
     bnb_4bit_use_double_quant: bool = True
     bnb_4bit_quant_type: str = "nf4"
@@ -39,18 +31,18 @@ class LocalHFModel(BaseLLM):
 
     def __init__(
         self,
-        model_id: str = "BioMistral/BioMistral-7B",
+        hf_model_id: str = "BioMistral/BioMistral-7B",
         prompt_template: str = "Context: {context}\nQuestion: {question}\nAnswer:",
         bnb_4bit_use_double_quant: bool = True,
         bnb_4bit_quant_type: str = "nf4",
         bnb_4bit_compute_dtype: torch.dtype = torch.bfloat16,
-        device_map: str = "auto"
+        device_map: str = "auto",
     ):
         """
         Initialize the local Hugging Face model.
 
         Args:
-            model_id (str): The Hugging Face model ID to load locally.
+            hf_model_id (str): The Hugging Face model ID to load locally.
             prompt_template (str): A default prompt format string.
             bnb_4bit_use_double_quant (bool): 4-bit quantization parameter.
             bnb_4bit_quant_type (str): 4-bit quant type (e.g., "nf4").
@@ -59,20 +51,28 @@ class LocalHFModel(BaseLLM):
         """
         # Initialize pydantic fields
         super().__init__(
-            model_id=model_id,
+            hf_model_id=hf_model_id,
             prompt_template=prompt_template,
             bnb_4bit_use_double_quant=bnb_4bit_use_double_quant,
             bnb_4bit_quant_type=bnb_4bit_quant_type,
             bnb_4bit_compute_dtype=bnb_4bit_compute_dtype,
-            device_map=device_map
+            device_map=device_map,
         )
 
         # Logger setup
         logger.remove()
-        logger.add(sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO")
-        logger.add(sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR")
+        logger.add(
+            sys.stdout,
+            format="<green>{level}</green>: <level>{message}</level>",
+            level="INFO",
+        )
+        logger.add(
+            sys.stdout,
+            format="<red>{level}</red>: <level>{message}</level>",
+            level="ERROR",
+        )
 
-        logger.info(f"Initializing local Hugging Face model: {model_id}")
+        logger.info(f"Initializing local Hugging Face model: {hf_model_id}")
 
         # Create BitsAndBytes config for 4-bit quantization
         bnb_config = BitsAndBytesConfig(
@@ -82,13 +82,15 @@ class LocalHFModel(BaseLLM):
             bnb_4bit_compute_dtype=bnb_4bit_compute_dtype,
         )
 
-        # Use private attributes so Pydantic doesn't complain
-        self._tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+        # Initialize tokenizer and model
+        self._tokenizer = AutoTokenizer.from_pretrained(
+            hf_model_id, trust_remote_code=True
+        )
         self._model = AutoModelForCausalLM.from_pretrained(
-            model_id,
+            hf_model_id,
             quantization_config=bnb_config,
             device_map=device_map,
-            trust_remote_code=True
+            trust_remote_code=True,
         )
         self._model.eval()
 
@@ -99,7 +101,7 @@ class LocalHFModel(BaseLLM):
         prompt: str,
         max_new_tokens: int = 200,
         repetition_penalty: float = 1.1,
-        **generate_kwargs
+        **generate_kwargs,
     ) -> str:
         """
         Internal method to generate text from the model given a prompt.
@@ -112,7 +114,7 @@ class LocalHFModel(BaseLLM):
                 **inputs,
                 max_new_tokens=max_new_tokens,
                 repetition_penalty=repetition_penalty,
-                **generate_kwargs
+                **generate_kwargs,
             )
 
         return self._tokenizer.decode(output_tokens[0], skip_special_tokens=True)
@@ -128,16 +130,12 @@ class LocalHFModel(BaseLLM):
             return response.split("Answer:", 1)[-1].strip()
         return response
 
-    # -------------------------------
-    # Implement the BaseLLM interface
-    # -------------------------------
-
     def answer_question(
         self,
         context: str,
         question: str,
         max_tokens: int = 200,
-        prompt_template: str = None
+        prompt_template: str = None,
     ) -> str:
         """
         Answer a question based on the given context using the local HF model.
@@ -184,9 +182,13 @@ class LocalHFModel(BaseLLM):
         )
 
         for doc in context:
-            user_prompt = f"Document:\n{doc}\nUser question:\n{question}\nAnswer yes or no:\n"
+            user_prompt = (
+                f"Document:\n{doc}\nUser question:\n{question}\nAnswer yes or no:\n"
+            )
             try:
-                response = self._generate_text(system_prompt + user_prompt, max_new_tokens=20)
+                response = self._generate_text(
+                    system_prompt + user_prompt, max_new_tokens=20
+                )
                 final_answer = response.strip().lower()
                 if final_answer.endswith("yes"):
                     logger.info("Relevant doc")
@@ -201,7 +203,7 @@ class LocalHFModel(BaseLLM):
 
     def check_hallucination(self, context: str, answer: str) -> str:
         """
-        Checks if an answer is grounded in the provided context. 
+        Checks if an answer is grounded in the provided context.
         Returns 'yes' if grounded, 'no' otherwise.
         """
         logger.info("Checking for hallucination locally with HF model...")
@@ -211,7 +213,11 @@ class LocalHFModel(BaseLLM):
         )
         user_prompt = f"Facts:\n{context}\nAnswer:\n{answer}\nIs the answer supported by these facts?\n"
         try:
-            response = self._generate_text(system_prompt + user_prompt, max_new_tokens=20).strip().lower()
+            response = (
+                self._generate_text(system_prompt + user_prompt, max_new_tokens=20)
+                .strip()
+                .lower()
+            )
             if "yes" in response:
                 return "yes"
             elif "no" in response:

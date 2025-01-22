@@ -14,7 +14,7 @@ logger.add(
 )
 
 
-class HuggingFaceModel(BaseLLM):
+class HuggingFaceAPIModel(BaseLLM):
     api_key: str
     model: str = "mistralai/Mistral-7B-Instruct-v0.2"
     prompt_template: str = ""
@@ -32,7 +32,7 @@ class HuggingFaceModel(BaseLLM):
             prompt_template (str, optional): The template for the prompt. Defaults to None.
         """
         try:
-            logger.info(f"Initializing HuggingFaceModel with model: {model}")
+            logger.info(f"Initializing HuggingFaceAPIModel with model: {model}")
             self.model = model
             self.api_key = api_key
             self.prompt_template = (
@@ -40,7 +40,7 @@ class HuggingFaceModel(BaseLLM):
             )
             if not self.api_key:
                 raise ValueError("A valid Hugging Face API key is required.")
-            logger.info("HuggingFaceModel initialized successfully")
+            logger.info("HuggingFaceAPIModel initialized successfully")
         except ValueError as ve:
             logger.error(f"ValueError during initialization: {ve}")
             raise
