@@ -271,7 +271,7 @@ class OpenAi:
             Provide the score with no preamble or explanation.
         """
         for doc in context:
-            prompt = f"Here is the retrieved document:\n{doc.strip().replace("\n", " ")}\nHere is the user question:\n{question}"
+            prompt = f"Here is the retrieved document:\n{doc.strip().replace('\\n', ' ')}\nHere is the user question:\n{question}"
             messages = [
                 {"role": "developer", "content": system_prompt},
                 {"role": "user", "content": prompt},

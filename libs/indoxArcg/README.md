@@ -11,7 +11,7 @@
 
 [![License](https://img.shields.io/github/license/osllmai/inDox)](https://github.com/osllmai/inDox/blob/main/LICENSE)
 [![PyPI](https://badge.furyIndoxQuery.svg)](https://pypi.org/pIndoxQuery/0.1.31/)
-[![Python](https://img.shields.io/pypi/pyveIndoxQuery.svg)](https://pypi.org/pIndoxQuery/0.1.31/)
+[![Python](https://img.shields.io/pypi/pyveIndoxQuery.svg)](https://pypi.org/pIndoxQuery/0.0.0/)
 [![Downloads](https://static.pepy.techIndoxQuery)](https://pepy.tech/pIndoxQuery)
 
 [![Discord](https://img.shields.io/discord/1223867382460579961?label=Discord&logo=Discord&style=social)](https://discord.com/invite/ossllmai)
