@@ -102,7 +102,12 @@ class NerdToken:
         Returns:
             str: The generated answer.
         """
-        system_prompt = "You are a helpful assistant."
+
+        system_prompt = """
+ You are a highly knowledgeable assistant. You must only provide answers based on the provided context. If the context does not contain the necessary information to answer the query, respond with: "The context does not provide sufficient information to answer this query.
+ Do not use external knowledge, make assumptions, or fabricate information. Always base your responses entirely on the context provided.
+"""
+
         user_prompt = self.prompt_template.format(
             context=context,
             question=question,
