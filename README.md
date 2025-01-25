@@ -8,7 +8,7 @@
 <div align="center">
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/osllmai/inDox/blob/master/docs/indoxRag/assets/lite-logo%201.png" alt="inDox Lite Logo">
+  <img src="https://github.com/osllmai/inDox/blob/master/docs/indoxRag/assets/lite-logo%201.png" alt="inDox Lite Logo">
 </p>
 </br>
 
