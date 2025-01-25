@@ -72,12 +72,12 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 **Import Essential Libraries**
 
 ```python
-from indoxArcg.llms import HuggingFaceModel
+from indoxArcg.llms import HuggingFaceAPIModel
 from indoxArcg.embeddings import AzureOpenAIEmbeddings
 from indoxArcg import IndoxRetrievalAugmentation
 
 indoxArcg = IndoxRetrievalAugmentation()
-mistral_qa = HuggingFaceModel(api_key=HUGGINGFACE_API_KEY,model="mistralai/Mistral-7B-Instruct-v0.2")
+mistral_qa = HuggingFaceAPIModel(api_key=HUGGINGFACE_API_KEY,model="mistralai/Mistral-7B-Instruct-v0.2")
 azure_embed = AzureOpenAIEmbeddings(api_key=OPENAI_API_KEY,model="text-embedding-3-small")
 ```
 

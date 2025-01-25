@@ -79,12 +79,12 @@ HUGGINGFACE_API_KEY = os.getenv('HUGGINGFACE_API_KEY')
 **Import Essential Libraries**
 
 ```python
-from indoxArcg.llms import HuggingFaceModel
+from indoxArcg.llms import HuggingFaceAPIModel
 from indoxArcg.embeddings import HuggingFaceEmbedding
 from indoxArcg.data_loader_splitter.SimpleLoadAndSplit import SimpleLoadAndSplit
 from indoxArcg.vector_stores import MongoDB
 
-mistral_qa = HuggingFaceModel(api_key=HUGGINGFACE_API_KEY,model="mistralai/Mistral-7B-Instruct-v0.2")
+mistral_qa = HuggingFaceAPIModel(api_key=HUGGINGFACE_API_KEY,model="mistralai/Mistral-7B-Instruct-v0.2")
 embed = HuggingFaceEmbedding(model="multi-qa-mpnet-base-cos-v1",api_key=HUGGINGFACE_API_KEY)
 ```
 
