@@ -1,5 +1,6 @@
 from .mistral import Mistral
 from .openai import OpenAi
+from .deepseek import DeepSeek
 
 # from .dspy import DspyCot
 from .nerd_token import NerdToken
