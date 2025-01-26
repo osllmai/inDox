@@ -1,6 +1,6 @@
 <div align="center">
   <h1>Indox Ecosystem</h1>
-  <a href="https://github.com/osllmai/indoxRag">
+  <a href="https://github.com/osllmai/indoxArcg">
     <img src="https://readme-typing-svg.demolab.com?font=Georgia&size=16&duration=3000&pause=500&multiline=true&width=700&height=100&lines=Indox+Ecosystem;Advanced+Search+%7C+Data+Mining+%7C+LLM+Evaluation+%7C+Synthetic+Data;Copyright+©️+OSLLAM.ai" alt="Typing SVG"/>
   </a>
 </div>
@@ -8,13 +8,14 @@
 <div align="center">
 
 <p align="center">
-  <img src="https://github.com/osllmai/inDox/blob/master/docs/indoxRag/assets/lite-logo%201.png" alt="inDox Lite Logo">
+  <img src="https://github.com/osllmai/inDox/blob/master/docs/indoxArcg/assets/lite-logo%201.png" alt="inDox Lite Logo">
 </p>
 </br>
 
-[![License](https://img.shields.io/github/license/osllmai/indoxRag)](https://github.com/osllmai/indoxRag/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/osllmai/inDox)](https://github.com/osllmai/inDox/blob/master/LICENSE)
 [![Discord](https://img.shields.io/discord/1223867382460579961?label=Discord&logo=Discord&style=social)](https://discord.com/invite/ossllmai)
-[![GitHub stars](https://img.shields.io/github/stars/osllmai/indoxRag?style=social)](https://github.com/osllmai/indoxRag)
+
+<!-- [![GitHub stars](https://img.shields.io/github/stars/osllmai/indoxArcg?style=social)](https://github.com/osllmai/inDox) -->
 
 [Official Website](https://osllm.ai) • [Documentation](https://docs.osllm.ai/index.html) • [Discord](https://discord.gg/qrCc56ZR)
 
@@ -26,14 +27,25 @@
 
 The Indox Ecosystem is a comprehensive suite of tools designed to revolutionize your AI and data workflows. Our ecosystem consists of four powerful components:
 
-### 1. 🔍 [IndoxRag](https://github.com/osllmai/indoxRag)
+### 1. 🔍 [IndoxArcg](https://github.com/osllmai/indoxArcg)
 
-Advanced Retrieval Augmentation Generation (RAG) system for intelligent information extraction and processing.
+Advanced **Retrieval-Augmented Generation (RAG)** and **Cache-Augmented Generation (CAG)** system for intelligent information extraction and processing.
 
-- Multi-format document support (PDF, HTML, Markdown, LaTeX)
-- Intelligent clustering and chunk processing
-- Support for major LLM providers (OpenAI, Google, Mistral, HuggingFace, Ollama)
-- Advanced RAG features including semantic caching and reranking
+## Key Features:
+
+- **Multi-format document support**: Handles PDF, HTML, Markdown, LaTeX, and more.
+- **Intelligent clustering and chunk processing**: Organizes and processes documents for efficient retrieval.
+- **Support for major LLM providers**: Compatible with OpenAI, Google, Mistral, HuggingFace, Ollama, and others.
+- **Advanced RAG features**:
+  - Semantic caching for faster retrieval.
+  - Multi-query retrieval for improved context extraction.
+  - Reranking and relevance scoring for high-quality results.
+- **Cache-Augmented Generation (CAG)**:
+  - Preloading and caching of documents for faster inference.
+  - Smart retrieval with validation and hallucination detection.
+  - Web search fallback for missing or insufficient context.
+- **Customizable similarity search**: Supports TF-IDF, BM25, and Jaccard similarity algorithms.
+- **Robust error handling**: Includes fallback mechanisms for retrieval failures and hallucination detection.
 
 ### 2. ⛏️ [IndoxMiner](https://github.com/osllmai/indoxMiner)
 
@@ -68,13 +80,13 @@ Advanced synthetic data generation suite with three specialized components:
 Install the entire ecosystem:
 
 ```bash
-pip install indoxrag indoxminer indoxjudge indoxgen indoxgen-tensor indoxgen-torch
+pip install indoxArcg indoxminer indoxjudge indoxgen indoxgen-tensor indoxgen-torch
 ```
 
 Or install components separately:
 
 ```bash
-pip install indoxrag       # Core RAG functionality
+pip install indoxArcg       # Core RAG or Cag functionality
 pip install indoxminer     # Data extraction
 pip install indoxjudge     # LLM evaluation
 pip install indoxgen       # Synthetic data generation
@@ -82,21 +94,21 @@ pip install indoxgen       # Synthetic data generation
 
 ## 🚀 Model Support
 
-| Model Provider | IndoxRag | IndoxJudge | IndoxGen |
-| -------------- | -------- | ---------- | -------- |
-| OpenAI         | ✅       | ✅         | ✅       |
-| Google         | ✅       | ✅         | ✅       |
-| Mistral        | ✅       | ✅         | ✅       |
-| HuggingFace    | ✅       | ✅         | ✅       |
-| Ollama         | ✅       | ✅         | ❌       |
-| Anthropic      | ❌       | ❌         | ❌       |
+| Model Provider | indoxArcg | IndoxJudge | IndoxGen |
+| -------------- | --------- | ---------- | -------- |
+| OpenAI         | ✅        | ✅         | ✅       |
+| Google         | ✅        | ✅         | ✅       |
+| Mistral        | ✅        | ✅         | ✅       |
+| HuggingFace    | ✅        | ✅         | ✅       |
+| Ollama         | ✅        | ✅         | ❌       |
+| Anthropic      | ❌        | ❌         | ❌       |
 
 ## 💡 Getting Started
 
 Check out our example notebooks:
 
-- [IndoxRag Pipeline](https://colab.research.google.com/github/osllmai/indoxRag/blob/master/Demo/indox_api_openai.ipynb)
-- [IndoxJudge Evaluation](https://colab.research.google.com/github/osllmai/indoxRag/blob/master/Demo/indoxJudge_evaluation.ipynb)
+- [indoxArcg Pipeline](https://colab.research.google.com/github/osllmai/indoxArcg/blob/master/Demo/indox_api_openai.ipynb)
+- [IndoxJudge Evaluation](https://colab.research.google.com/github/osllmai/indoxArcg/blob/master/Demo/indoxJudge_evaluation.ipynb)
 - [IndoxMiner Extraction](examples/indoxminer_extraction.ipynb)
 - [IndoxGen Data Generation](examples/indoxgen_synthetic.ipynb)
 
@@ -115,11 +127,12 @@ We welcome contributions to any component of the Indox ecosystem! Please check o
 
 ## 📄 License
 
-This project is licensed under the AGPL License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the AGPL License - see the [LICENSE](https://github.com/osllmai/inDox/blob/master/LICENSE) file for details.
 
+<!--
 ## 🌟 Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=osllmai/indoxRag,osllmai/indoxMiner,osllmai/indoxJudge,osllmai/indoxGen&type=Date)](https://star-history.com/#osllmai/indoxRag&osllmai/indoxMiner&osllmai/indoxJudge&osllmai/indoxGen)
+[![Star History Chart](https://api.star-history.com/svg?repos=osllmai/indoxArcg,osllmai/indoxMiner,osllmai/indoxJudge,osllmai/indoxGen&type=Date)](https://star-history.com/#osllmai/indoxArcg&osllmai/indoxMiner&osllmai/indoxJudge&osllmai/indoxGen) -->
 
 ---
 
