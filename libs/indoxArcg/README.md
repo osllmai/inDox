@@ -1,5 +1,3 @@
-# inDoxArcg
-
 <div style="text-align: center;">
     <h1>inDoxArcg</h1>
     <a href="https://github.com/osllmai/inDox/libs/IndoxArcg">
