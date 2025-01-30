@@ -6,6 +6,7 @@ The `multimodal/` module in IndoxMiner provides support for **vision-language mo
 Currently, the following multimodal models are supported:
 - **LLaVA-NeXT (LLaVA + LLaMA 3 8B Instruct)**
 - **BLIP-2 (Vision-Language Model for Captioning & Question Answering)**
+- **GPT-4o Turbo (Multimodal Large Language Model)**
 
 These models allow users to ask questions about images and receive **detailed natural language responses** or generate captions automatically.
 
@@ -35,14 +36,14 @@ After making the change, save the file and proceed.
 
 ## Usage
 ### **Loading Multimodal Models in IndoxMiner**
-Once installed, you can use the LLaVA or BLIP-2 models from IndoxMiner.
+Once installed, you can use the LLaVA, BLIP-2, or GPT-4o Turbo models from IndoxMiner.
 
-#### **Using LLaVA Model**
+#### **Using LLaVA**
 ```python
-from indoxminer.multimodal.llava_model import LLaVAModel
+from indoxminer.multimodal.llava import LLaVA
 
 # Initialize the model
-model = LLaVAModel()
+model = LLaVA()
 
 # Provide a local image path and a question
 image_path = "path/to/your/image.jpg"
@@ -53,12 +54,12 @@ response = model.generate_response(image_path, question)
 print("LLaVA Response:", response)
 ```
 
-#### **Using BLIP-2 Model**
+#### **Using BLIP-2**
 ```python
-from indoxminer.multimodal.blip2_model import BLIP2Model
+from indoxminer.multimodal.blip2 import BLIP2
 
 # Initialize the model
-model = BLIP2Model()
+model = BLIP2()
 
 # Provide a local image path and a question
 image_path = "path/to/your/image.jpg"
@@ -73,12 +74,29 @@ answer = model.generate_response(image_path, question)
 print("Model Answer:", answer)
 ```
 
+#### **Using GPT-4o Turbo**
+```python
+from indoxminer.multimodal.gpt4o import GPT4o
+
+# Initialize the model
+api_key = "your-api-key-here"
+model = GPT4o(api_key)
+
+# Provide a local image path and a question
+image_path = "path/to/your/image.jpg"
+question = "What is happening in this image?"
+
+# Generate response
+response = model.generate_response(image_path, question)
+print("GPT-4o Response:", response)
+```
+
 ### **Expected Output**
 ```
 Generated Caption: A person sitting on a bench with a dog.
 Model Answer: There are two dogs in the image.
+GPT-4o Response: The person appears to be sitting on a bench, observing something nearby.
 ```
-
 
 ---
 
@@ -96,4 +114,3 @@ This makes IndoxMiner a powerful **multi-task AI framework** combining **text, i
 For issues or contributions, please submit a pull request or open an issue in IndoxMiner’s GitHub repository.
 
 🚀 **Happy Coding with IndoxMiner!** 🚀
-

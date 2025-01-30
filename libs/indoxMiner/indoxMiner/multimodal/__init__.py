@@ -1,2 +1,3 @@
-from .llava_model import LLaVA
-from .blip2_model import BLIP2
+from .llava import LLaVA
+from .blip2 import BLIP2
+from .gpt4o_turbo import GPT4o
