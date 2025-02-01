@@ -26,7 +26,7 @@ LLaVA uses a default model, but for better performance, update **`conversation.p
 
 Modify this line in `LLaVA-NeXT/llava/conversation.py`:
 ```python
-pretrained = "NousResearch/Meta-Llama-3-8B-Instruct"
+tokenizer_id="NousResearch/Meta-Llama-3-8B-Instruct"
 ```
 
 After making the change, save the file and proceed.
