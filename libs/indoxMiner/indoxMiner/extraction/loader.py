@@ -20,7 +20,7 @@ def convert_latex_to_md(latex_path):
 
     Returns:
         str: The converted Markdown content, or None if there's an error.
-    
+
     Example:
         markdown_content = convert_latex_to_md('example.tex')
         if markdown_content:
@@ -71,7 +71,7 @@ class Document:
     Attributes:
         page_content (str): The textual content of the document page.
         metadata (dict): Associated metadata like filename, page number, etc.
-    
+
     Example:
         doc = Document(page_content="This is a document page.", metadata={"filename": "doc1.pdf", "page_number": 1})
         print(doc.page_content)  # Output: This is a document page.
@@ -183,7 +183,7 @@ class DocumentType(Enum):
             raise ValueError(f"Unsupported file type: {extension}")
 
 
-class DocumentProcessor:
+class UnstructuredProcessor:
     """
     A processor for extracting and structuring content from various document types.
 
@@ -481,6 +481,207 @@ class DocumentProcessor:
                     )
                 except Exception as e:
                     print(f"Failed to process {source}: {e}")
+                    results[Path(source).name] = []
+
+        return results
+
+
+class DoclingProcessor:
+    """
+    A processor for extracting and structuring content from various document types using Docling.
+
+    This class handles the extraction of text and metadata from different document formats
+    using the Docling library, supporting various export formats and chunking capabilities.
+
+    Attributes:
+        sources (List[str]): List of file paths to process.
+        config (ProcessingConfig): Configuration for document processing.
+
+    Example:
+        processor = DoclingProcessor(['document1.pdf', 'document2.pdf'])
+        documents = processor.process()
+    """
+
+    def __init__(self, sources: Union[str, Path, List[Union[str, Path]]]):
+        """
+        Initialize the DoclingProcessor with one or more sources.
+
+        Args:
+            sources: Single source or list of sources to process.
+        """
+        self.sources = (
+            [str(sources)]
+            if isinstance(sources, (str, Path))
+            else [str(s) for s in sources]
+        )
+        self._setup_logging()
+
+    def _setup_logging(self):
+        """Set up logging configuration for the processor."""
+        from loguru import logger
+        import sys
+
+        logger.remove()  # Remove default logger
+        logger.add(
+            sys.stdout,
+            format="<green>{level}</green>: <level>{message}</level>",
+            level="INFO",
+        )
+        logger.add(
+            sys.stdout,
+            format="<red>{level}</red>: <level>{message}</level>",
+            level="ERROR",
+        )
+        self.logger = logger
+
+    def _process_single_document(
+        self,
+        source: str,
+        max_num_pages: Optional[int] = None,
+        max_file_size: Optional[int] = None,
+    ) -> List[Document]:
+        """
+        Process a single document using Docling.
+
+        Args:
+            source (str): Path to the document
+            max_num_pages (Optional[int]): Maximum number of pages to process
+            max_file_size (Optional[int]): Maximum file size to process
+
+        Returns:
+            List[Document]: List of processed Document objects
+        """
+        try:
+            from docling.document_converter import DocumentConverter
+
+            converter = DocumentConverter()
+            kwargs = {}
+
+            if max_num_pages is not None:
+                kwargs["max_num_pages"] = max_num_pages
+            if max_file_size is not None:
+                kwargs["max_file_size"] = max_file_size
+
+            result = converter.convert(source=source, **kwargs)
+
+            # Create base metadata
+            metadata = {
+                "filename": Path(source).name,
+                "filetype": self._get_filetype(source),
+                "source": source,
+            }
+
+            # Create documents based on config
+            if getattr(self.config, "use_chunking", False):
+                return self._chunk_document(result, metadata)
+            else:
+                return self._create_full_document(result, metadata)
+
+        except Exception as e:
+            self.logger.error(f"Error processing {source}: {e}")
+            return []
+
+    def _chunk_document(self, docling_result, base_metadata: dict) -> List[Document]:
+        """
+        Chunk the document using Docling's HybridChunker.
+
+        Args:
+            docling_result: The result from Docling conversion
+            base_metadata (dict): Base metadata for the document
+
+        Returns:
+            List[Document]: List of chunked Document objects
+        """
+        from docling.chunking import HybridChunker
+
+        chunker = HybridChunker()
+        chunk_iter = chunker.chunk(
+            dl_doc=docling_result.document,
+            max_tokens=getattr(self.config, "chunk_size", 512),
+        )
+
+        documents = []
+        for i, chunk in enumerate(chunk_iter):
+            enriched_text = chunker.serialize(chunk=chunk)
+            metadata = {
+                **base_metadata,
+                "chunk_index": i,
+                "enriched_text": enriched_text,
+            }
+            doc = Document(page_content=chunk.text, metadata=metadata)
+            documents.append(doc)
+
+        return documents
+
+    def _create_full_document(self, docling_result, metadata: dict) -> List[Document]:
+        """
+        Create a single document without chunking.
+
+        Args:
+            docling_result: The result from Docling conversion
+            metadata (dict): Metadata for the document
+
+        Returns:
+            List[Document]: List containing single Document object
+        """
+        export_format = getattr(self.config, "export_format", "text")
+
+        if export_format == "markdown":
+            content = docling_result.document.export_to_markdown()
+        elif export_format == "html":
+            content = docling_result.document.export_to_html()
+        else:  # default to text
+            content = docling_result.document.export_to_text()
+
+        return [Document(page_content=content, metadata=metadata)]
+
+    def _get_filetype(self, source: str) -> str:
+        """Get MIME type for the file."""
+        extension = Path(source).suffix.lower().lstrip(".")
+        mime_types = {
+            "pdf": "application/pdf",
+            "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "doc": "application/msword",
+            "txt": "text/plain",
+            "md": "text/markdown",
+            "html": "text/html",
+        }
+        return mime_types.get(extension, "application/octet-stream")
+
+    def process(
+        self,
+        config: Optional[ProcessingConfig] = None,
+        max_num_pages: Optional[int] = None,
+        max_file_size: Optional[int] = None,
+    ) -> Dict[str, List[Document]]:
+        """
+        Process all documents with the given configuration.
+
+        Args:
+            config (Optional[ProcessingConfig]): Processing configuration
+            max_num_pages (Optional[int]): Maximum number of pages to process
+            max_file_size (Optional[int]): Maximum file size to process
+
+        Returns:
+            Dict[str, List[Document]]: Dictionary mapping filenames to processed documents
+        """
+        self.config = config or ProcessingConfig()
+        results = {}
+
+        with ThreadPoolExecutor(max_workers=self.config.max_workers) as executor:
+            future_to_source = {
+                executor.submit(
+                    self._process_single_document, source, max_num_pages, max_file_size
+                ): source
+                for source in self.sources
+            }
+
+            for future in as_completed(future_to_source):
+                source = future_to_source[future]
+                try:
+                    results[Path(source).name] = future.result()
+                except Exception as e:
+                    self.logger.error(f"Failed to process {source}: {e}")
                     results[Path(source).name] = []
 
         return results

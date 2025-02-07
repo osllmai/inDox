@@ -3,7 +3,7 @@ from .schema import ExtractorSchema, Schema
 from .auto_schema import AutoDetectedField, AutoExtractionRules, AutoSchema
 from .extraction_results import ExtractionResult, ExtractionResults
 from .fields import Field, ValidationRule, FieldType
-from .loader import DocumentProcessor, ProcessingConfig
+from .loader import UnstructuredProcessor, ProcessingConfig, DoclingProcessor
 
 from .llms import (
     OpenAi,
@@ -26,7 +26,6 @@ __all__ = [
     "ValidationRule",
     "FieldType",
     # Document processing related
-    "DocumentProcessor",
     "ProcessingConfig",
     # llms
     "OpenAi",
@@ -36,4 +35,9 @@ __all__ = [
     "AsyncOpenAi",
     "Ollama",
     "IndoxApi",
+    "AutoDetectedField",
+    "AutoExtractionRules",
+    "AutoSchema",
+    "UnstructuredProcessor",
+    "DoclingProcessor",
 ]

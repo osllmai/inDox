@@ -5,7 +5,6 @@ import re
 import pandas as pd
 import json
 from tabulate import tabulate
-from tabulate import tabulate
 from decimal import Decimal
 from .extraction_results import ExtractionResult, ExtractionResults
 from .fields import Field, FieldType
@@ -398,7 +397,9 @@ class Extractor:
                             for item in line_items:
                                 row = {**main_data, **item}  # Merge dictionaries
                                 rows.append(row)
-                                print("Row added:", row)  # Debug print to confirm structure
+                                print(
+                                    "Row added:", row
+                                )  # Debug print to confirm structure
                         else:
                             rows.append(res)
 
@@ -415,10 +416,6 @@ class Extractor:
         except Exception as e:
             print(f"Failed to convert to DataFrame: {e}")
             return None
-
-
-
-
 
     def to_json(
         self,
@@ -498,7 +495,6 @@ class Extractor:
             List[Union[ExtractionResult, ExtractionResults]],
         ],
     ) -> Optional[str]:
-
         """
         Convert one or multiple extraction results to a table formatted string.
 
