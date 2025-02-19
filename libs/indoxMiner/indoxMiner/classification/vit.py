@@ -7,7 +7,7 @@ from typing import List, Optional, Union
 from .base_classifier import ImageClassifier
 
 
-class ViTClassifier(ImageClassifier):
+class ViT(ImageClassifier):
     def __init__(self, model_name: str = "google/vit-base-patch16-224"):
         """
         Initialize the ViT model and processor.

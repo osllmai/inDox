@@ -7,7 +7,7 @@ from typing import List, Optional, Union
 from .base_classifier import ImageClassifier
 
 
-class MobileCLIPClassifier(ImageClassifier):
+class MobileCLIP(ImageClassifier):
     def __init__(self, model_name: str = "mobileclip_s0", pretrained_path: str = "mobileclip_s0.pt"):
         """
         Initialize the MobileCLIP model and its tokenizer.

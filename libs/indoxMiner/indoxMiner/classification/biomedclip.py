@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from typing import List, Any, Optional, Union
 from .base_classifier import ImageClassifier
 
-class BiomedCLIPClassifier(ImageClassifier):
+class BiomedCLIP(ImageClassifier):
     def __init__(
         self,
         model_name: str = "hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224"

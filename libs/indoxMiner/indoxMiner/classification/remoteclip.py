@@ -6,7 +6,7 @@ import open_clip
 from typing import List, Optional
 from .base_classifier import ImageClassifier
 
-class RemoteCLIPClassifier(ImageClassifier):
+class RemoteCLIP(ImageClassifier):
     def __init__(self, model_name: str = "ViT-L-14", pretrained_path: str = "RemoteCLIP-ViT-L-14.pt"):
         """
         Initialize the RemoteCLIP model and its tokenizer.

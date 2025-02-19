@@ -1,33 +1,26 @@
-from transformers import AutoProcessor, AutoModel
 import torch
 from PIL import Image
+from transformers import AutoProcessor, AltCLIPModel
 import matplotlib.pyplot as plt
 import numpy as np
 from typing import List, Optional, Union
 from .base_classifier import ImageClassifier
 
-class MetaCLIPClassifier(ImageClassifier):
-    def __init__(self, model_name: str = "facebook/metaclip-b32-400m"):
+
+class AltCLIP(ImageClassifier):
+    def __init__(self, model_name: str = "BAAI/AltCLIP"):
         """
-        Initialize the MetaCLIP model and processor.
-        :param model_name: Name of the MetaCLIP model to use.
+        Initialize the AltCLIP model and its processor.
+        :param model_name: Name of the AltCLIP model to use.
         """
         super().__init__(model_name)
-        self.model = AutoModel.from_pretrained(model_name)
+        self.model = AltCLIPModel.from_pretrained(model_name)
         self.processor = AutoProcessor.from_pretrained(model_name)
-        # Expanded default labels
-        self.default_labels = [
-            "a person", "a car", "a house", "a dog", "a cat", "a tree", "a mountain",
-            "a river", "a beach", "a bridge", "a chair", "a computer", "a phone",
-            "a bicycle", "a motorcycle", "a bird", "a plane", "a train", "a boat",
-            "a lamp", "a street", "a cloud", "a flower",
-            "a cell", "a protein structure", "a tissue sample",
-            "a sunset", "a forest", "a desert", "a pizza", "a burger", "a salad",
-        ]
+        self.default_labels = ["a photo of a cat", "a photo of a dog", "a photo of a bird", "a photo of a car"]
 
     def preprocess(self, images: List[Image.Image], labels: List[str]) -> dict:
         """
-        Preprocess a batch of images and text labels for MetaCLIP.
+        Preprocess a batch of images and text labels for AltCLIP.
         :param images: List of input images.
         :param labels: List of text descriptions.
         :return: Preprocessed inputs.
@@ -37,8 +30,8 @@ class MetaCLIPClassifier(ImageClassifier):
 
     def predict(self, inputs: dict) -> np.ndarray:
         """
-        Perform prediction using the MetaCLIP model for a batch of images.
-        :param inputs: Preprocessed inputs.
+        Perform prediction using the AltCLIP model for a batch of images.
+        :param inputs: Preprocessed inputs containing image and text tensors.
         :return: Softmax probabilities as a numpy array.
         """
         with torch.no_grad():
@@ -89,7 +82,7 @@ class MetaCLIPClassifier(ImageClassifier):
         :param top: Number of top predictions to display per image.
         """
         labels = labels or self.default_labels  # Use default labels if none are provided
-        if not isinstance(images, list):  # Handle a single image input
+        if not isinstance(images, list):  # Handle single image input
             images = [images]
 
         inputs = self.preprocess(images, labels)

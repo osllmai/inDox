@@ -8,7 +8,7 @@ from .base_classifier import ImageClassifier
 
 
 class CLIPClassifier(ImageClassifier):
-    def __init__(self, model_name: str = "openai/clip-vit-base-patch32"):
+    def __init__(self, model_name: str = "openai/CLIP-vit-base-patch32"):
         """
         Initializes the CLIP model for zero-shot image classification.
 

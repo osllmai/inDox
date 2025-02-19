@@ -7,7 +7,7 @@ from PIL import Image
 from .base_classifier import ImageClassifier
 
 
-class SigCLIPClassifier(ImageClassifier):
+class SigCLIP(ImageClassifier):
     def __init__(self, model_name: str = "google/siglip-base-patch16-224"):
         super().__init__(model_name)
         self.model = AutoModel.from_pretrained(model_name)

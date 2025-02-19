@@ -1,43 +1,55 @@
 import torch
 from PIL import Image
-from transformers import AutoProcessor, AltCLIPModel
 import matplotlib.pyplot as plt
 import numpy as np
+import open_clip
 from typing import List, Optional, Union
 from .base_classifier import ImageClassifier
 
 
-class AltCLIPClassifier(ImageClassifier):
-    def __init__(self, model_name: str = "BAAI/AltCLIP"):
+class BioCLIP(ImageClassifier):
+    def __init__(self, model_name: str = "hf-hub:imageomics/bioclip"):
         """
-        Initialize the AltCLIP model and its processor.
-        :param model_name: Name of the AltCLIP model to use.
+        Initialize the BioCLIP model and its tokenizer.
+        :param model_name: Name of the BioCLIP model to use.
         """
         super().__init__(model_name)
-        self.model = AltCLIPModel.from_pretrained(model_name)
-        self.processor = AutoProcessor.from_pretrained(model_name)
-        self.default_labels = ["a photo of a cat", "a photo of a dog", "a photo of a bird", "a photo of a car"]
+        self.model, self.preprocess_train, self.preprocess_val = open_clip.create_model_and_transforms(model_name)
+        self.tokenizer = open_clip.get_tokenizer(model_name)
+        # Default labels (can be customized based on BioCLIP's domain)
+        self.default_labels = ["a cell", "a tissue sample", "a protein structure", "a molecule", "a diagram"]
 
     def preprocess(self, images: List[Image.Image], labels: List[str]) -> dict:
         """
-        Preprocess a batch of images and text labels for AltCLIP.
+        Preprocess a batch of images and text labels for BioCLIP.
         :param images: List of input images.
         :param labels: List of text descriptions.
         :return: Preprocessed inputs.
         """
-        inputs = self.processor(text=labels, images=images, return_tensors="pt", padding=True)
-        return inputs
+        image_tensors = torch.stack([self.preprocess_val(image.convert("RGB")) for image in images])
+        text_tensor = self.tokenizer(labels)
+        return {"image": image_tensors, "text": text_tensor}
 
     def predict(self, inputs: dict) -> np.ndarray:
         """
-        Perform prediction using the AltCLIP model for a batch of images.
+        Perform prediction using the BioCLIP model for a batch of images.
         :param inputs: Preprocessed inputs containing image and text tensors.
         :return: Softmax probabilities as a numpy array.
         """
+        image_tensors = inputs["image"]
+        text_tensors = inputs["text"]
+
         with torch.no_grad():
-            outputs = self.model(**inputs)
-        logits_per_image = outputs.logits_per_image  # Image-text similarity scores
-        return logits_per_image.softmax(dim=-1).detach().numpy()
+            image_features = self.model.encode_image(image_tensors)
+            text_features = self.model.encode_text(text_tensors)
+
+            # Normalize features
+            image_features /= image_features.norm(dim=-1, keepdim=True)
+            text_features /= text_features.norm(dim=-1, keepdim=True)
+
+            # Compute probabilities
+            text_probs = (100.0 * image_features @ text_features.T).softmax(dim=-1)
+        return text_probs.detach().numpy()
 
     def visualize(self, images: List[Image.Image], labels: List[str], probs: np.ndarray, top: int = 5):
         """
@@ -82,7 +94,7 @@ class AltCLIPClassifier(ImageClassifier):
         :param top: Number of top predictions to display per image.
         """
         labels = labels or self.default_labels  # Use default labels if none are provided
-        if not isinstance(images, list):  # Handle single image input
+        if not isinstance(images, list):  # Handle a single image input
             images = [images]
 
         inputs = self.preprocess(images, labels)

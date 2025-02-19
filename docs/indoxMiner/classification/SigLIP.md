@@ -1,14 +1,14 @@
-# SigCLIPClassifier
+# SigLIP
 
-The `SigCLIPClassifier` is a semantic image classification model that uses text-image similarity scores for flexible and accurate predictions.
+SigLIP is a vision-language model that uses a sigmoid-based contrastive learning objective to compute text-image similarity scores. Unlike traditional classifiers, it enables zero-shot image classification by matching images to user-defined text prompts (e.g., "a photo of a {class}"), achieving flexibility and strong performance without task-specific training.
 
 ## Initialization
 
 ```python
-from indoxminer.classification import SigCLIPClassifier
+from indoxminer.classification import SigLIP
 
 # Initialize the classifier
-classifier = SigCLIPClassifier()
+classifier = SigLIP()
 ```
 
 ## Parameters
