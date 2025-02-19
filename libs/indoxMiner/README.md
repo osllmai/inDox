@@ -126,15 +126,15 @@ IndoxMiner’s **classification** module supports a variety of CLIP-based and Tr
 
 | Classifier             | Python File                      | Description                                                                                |
 |------------------------|----------------------------------|--------------------------------------------------------------------------------------------|
-| **CLIPClassifier**     | `clip.py`             | Base CLIP model for general-purpose image classification.                                  |
-| **SigLIPClassifier**  | `SigLIP.py`          | a vision-language model that uses a sigmoid-based contrastive learning objective to compute text-image similarity scores.               |
-| **ViTClassifier**      | `vit.py`              | Vision Transformer (ViT) for image classification.                                         |
-| **AltCLIPClassifier**  | `altclip.py`          | Alternative CLIP from BAAI.                                                                |
-| **BioCLIPClassifier**  | `bioclip.py`          | Specialized CLIP model for biological images.                                              |
-| **BioMedCLIPClassifier** | `biomedclip.py`     | Specialized CLIP model for biomedical or medical imaging tasks.                            |
-| **MetaCLIPClassifier** | `metaclip.py`         | Meta AI’s advanced CLIP model.                                                             |
-| **MobileCLIPClassifier** | `mobileclip.py`     | Mobile-optimized CLIP for on-device image classification.                                  |
-| **RemoteCLIPClassifier** | `remoteclip.py`     | Remote sensing–specific CLIP model for satellite or aerial imagery.                        |
+| **CLIP**     | `clip.py`             | Base CLIP model for general-purpose image classification.                                  |
+| **SigLIP**  | `SigLIP.py`          | a vision-language model that uses a sigmoid-based contrastive learning objective to compute text-image similarity scores.               |
+| **ViT**      | `vit.py`              | Vision Transformer (ViT) for image classification.                                         |
+| **AltCLIP**  | `altclip.py`          | Alternative CLIP from BAAI.                                                                |
+| **BioCLIP**  | `bioclip.py`          | Specialized CLIP model for biological images.                                              |
+| **BioMedCLIP** | `biomedclip.py`     | Specialized CLIP model for biomedical or medical imaging tasks.                            |
+| **MetaCLIP** | `metaclip.py`         | Meta AI’s advanced CLIP model.                                                             |
+| **MobileCLIP** | `mobileclip.py`     | Mobile-optimized CLIP for on-device image classification.                                  |
+| **RemoteCLIP** | `remoteclip.py`     | Remote sensing–specific CLIP model for satellite or aerial imagery.                        |
 
 #### Example: Classification with RemoteCLIP
 
