@@ -83,16 +83,15 @@ class DeepSeek:
             )
 
             if stream:
-                # If streaming, accumulate the response content
-                result = ""
+                # If streaming, yield each chunk as it arrives
                 for chunk in response:
                     content = getattr(chunk.choices[0].delta, "content", None)
                     if content is not None:
-                        result += content
-                result = result.strip()
+                        yield content
             else:
-                # For non-streaming response
+                # For non-streaming response, yield the full result as a single chunk
                 result = response.choices[0].message.content.strip()
+                yield result
 
             return result
 
