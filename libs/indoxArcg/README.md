@@ -8,8 +8,8 @@
 ---
 
 [![License](https://img.shields.io/github/license/osllmai/inDoxArcg)](https://github.com/osllmai/inDox/blob/master/LICENSE)
-[![PyPI](https://badge.furyIndoxArcg.svg)](https://pypi.org/IndoxArcg/0.0.3/)
-[![Python](https://img.shields.io/pypi/pyveIndoxArcg.svg)](https://pypi.org/pIndoxArcg/0.0.3/)
+[![PyPI](https://badge.furyIndoxArcg.svg)](https://pypi.org/IndoxArcg/0.0.4/)
+[![Python](https://img.shields.io/pypi/pyveIndoxArcg.svg)](https://pypi.org/pIndoxArcg/0.0.4/)
 [![Downloads](https://static.pepy.techIndoxArcg)](https://pepy.tech/pIndoxArcg)
 
 [![Discord](https://img.shields.io/discord/1223867382460579961?label=Discord&logo=Discord&style=social)](https://discord.com/invite/ossllmai)
