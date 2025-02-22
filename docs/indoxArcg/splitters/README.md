@@ -6,7 +6,7 @@ When dealing with large documents, splitting them into coherent chunks improves:
 2. **LLM performance**: Language models often have token limits; chunking ensures each piece stays within the model’s bounds.
 3. **Search granularity**: In RAG pipelines, chunk-level search can yield more relevant context for queries.
 
-indoxArcg provides various splitter classes, each tailored to different formats or splitting strategies. You’ll find their implementations in the `docs\indoxArcg\splitters` directory, each with its own `.md` file.
+indoxArcg provides various splitter classes, each tailored to different formats or splitting strategies. You’ll find their implementations in the `indoxArcg/splitter` directory, each with its own `.md` file.
 
 Below is a summary:
 
