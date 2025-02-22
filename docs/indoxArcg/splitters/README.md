@@ -1,7 +1,3 @@
-Below is a **unified** overview of all the text splitters in **indoxArcg**. These splitters help you break down large documents into smaller, more manageable segments—often crucial for LLM processing, chunked embeddings, and context windows in retrieval-augmented generation (RAG) pipelines.
-
----
-
 # Text Splitters in indoxArcg
 
 When dealing with large documents, splitting them into coherent chunks improves:
