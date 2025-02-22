@@ -71,11 +71,10 @@ class OpenAi:
             top_p (float): The top_p parameter for nucleus sampling.
             stream: Indicates if the response should be streamed.
 
-        Returns:
-            str: The generated response.
+        Yields:
+            str: The generated response chunks (if streaming) or the full response (if not streaming).
         """
         try:
-            # logger.info("Generating response")
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
@@ -88,18 +87,15 @@ class OpenAi:
             )
 
             if stream:
-                # If streaming, accumulate the response content
-                result = ""
+                # If streaming, yield each chunk as it arrives
                 for chunk in response:
                     content = getattr(chunk.choices[0].delta, "content", None)
                     if content is not None:
-                        result += content
-                result = result.strip()
+                        yield content
             else:
-                # For non-streaming response
+                # For non-streaming response, yield the full result as a single chunk
                 result = response.choices[0].message.content.strip()
-
-            return result
+                yield result
 
         except Exception as e:
             logger.error(f"Error generating response: {e}")
@@ -130,13 +126,15 @@ class OpenAi:
             stream: Whether to stream the response.
 
         Returns:
-            str: The generated response.
+            str: The generated response if `stream=False`.
+            generator: A generator yielding response chunks if `stream=True`.
         """
         messages = [
-            {"role": "developer", "content": system_prompt},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt},
         ]
-        return self._generate_response(
+
+        response_generator = self._generate_response(
             messages=messages,
             max_tokens=max_tokens,
             temperature=temperature,
@@ -145,6 +143,13 @@ class OpenAi:
             top_p=top_p,
             stream=stream,
         )
+
+        if stream:
+            # If streaming, return the generator directly
+            return response_generator
+        else:
+            # If not streaming, collect all chunks into a single string and return it
+            return "".join(response_generator)
 
     def answer_question(
         self,
