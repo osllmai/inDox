@@ -89,7 +89,7 @@ Enhance context-aware retrieval by linking vector embeddings with graph structur
 ## Troubleshooting  
 - **Mismatched Latency**: Ensure Purpose-Built Databases are used for latency-sensitive RAG.  
 - **Hybrid Query Limits**: Graph/General-Purpose Databases require indoxArcg `v2.1+`.  
-- **Contributing**: Report issues or suggest improvements [here](https://github.com/indoxarcg/vectorstores).  
+- **Contributing**: Report issues or suggest improvements [here](https://github.com/osllmai/inDox/tree/docs/revise_docs/libs/indoxArcg).  
 
 ---
 
@@ -99,6 +99,3 @@ Explore category-specific guides:
 2. [General-Purpose Databases](general-purpose-databases.md)  
 3. [Graph Databases](graph-databases.md)  
 4. [Embedded Libraries](embedded-libraries.md)  
-```
-
----
