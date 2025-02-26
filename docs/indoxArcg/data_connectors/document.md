@@ -1,108 +1,205 @@
-# Document
+# Document Class Reference
 
-Document is a class that represents a data document from various sources. It provides a structured way to store and manage content along with its metadata.
-
-To use the Document class:
+The `Document` class is the fundamental data structure for representing content and metadata in indoxArcg's data pipeline. It serves as the standardized format for:
+- Input from data connectors
+- Processing in RAG/CAG workflows
+- Storage in vector databases
 
 ```python
 from indoxArcg.data_connectors import Document
-
-# Create a new document
-doc = Document(source="Wikipedia", content="Wikipedia is a free online encyclopedia.")
-
-# Access document attributes
-print(doc.id_)
-print(doc.source)
-print(doc.content)
-print(doc.metadata)
-
-# Convert to dictionary
-doc_dict = doc.to_dict()
-
-# Create from dictionary
-new_doc = Document.from_dict(doc_dict)
 ```
 
-# Class Attributes
+---
 
-- **id\_** [str]: A unique identifier for the document (automatically generated).
-- **source** [str]: The source of the document (e.g., YouTube, Wikipedia).
-- **content** [str]: The actual content of the document.
-- **metadata** [Dict[str, Any]]: Additional metadata associated with the document.
+## Core Attributes
 
-**init(source: str, content: str, metadata: Optional[Dict[str, Any]] = None):**
+| Attribute  | Type                | Description                                  | Example                      |
+|------------|---------------------|----------------------------------------------|------------------------------|
+| `id_`      | `str`               | Auto-generated UUIDv4 identifier             | "550e8400-e29b-41d4-a716-446655440000" |
+| `source`   | `str`               | Origin system/format identifier              | "wikipedia", "youtube_transcript" |
+| `content`  | `str`               | Primary textual content (UTF-8 encoded)      | "Large language models..."    |
+| `metadata` | `Dict[str, Any]`    | Contextual information about the content     | `{"author": "John Doe", "timestamp": "2024-03-15"}` |
 
-Initializes a new Document object.
+---
 
-**Parameters:**
+## Key Methods
 
-- **source** [str]: The source of the document.
-- - **content** [str]: The content of the document.
-- **metadata** [Optional[Dict[str, Any]]]: Optional metadata associated with the document.
+### `__init__(source: str, content: str, metadata: Optional[Dict[str, Any]] = None)`
+**Initializes a new Document instance**
 
-**Raises:**
-
-- **TypeError:** If the source or content is not a string.
-- **ValueError:** If the source or content is empty.
-
-\***\*str**() -> str:\*\*
-
-Returns a string representation of the document.
-
-**to_dict() -> Dict[str, Any]:**
-
-Converts the document to a dictionary representation.
-
-**Returns:**
-
-- **Dict[str, Any]**: A dictionary containing the document's attributes.
-
-**from_dict(cls, data: Dict[str, Any]) -> Document:**
-
-Creates a Document object from a dictionary.
-
-**Parameters:**
-
-- **data** [Dict[str, Any]]: A dictionary containing the document's attributes.
-
-**Returns:**
-
-- **Document**: A new Document object.
-
-**Raises:**
-
-- **KeyError**: If the dictionary is missing required keys.
-- **TypeError**: If the dictionary values are not of the expected types.
-- **ValueError**: If the source or content is empty.
-
-## Usage
+Parameters:
+- `source` (str): Origin identifier for tracking document provenance  
+  - **Format**: `[system]_[type]` (e.g., `arxiv_paper`, `youtube_transcript`)
+  - **Required**: Yes
+- `content` (str): Main textual payload (minimum 10 characters)
+  - **Required**: Yes
+- `metadata` (dict): Additional context (default: empty dict)
 
 ```python
-from indoxArcg.data_connectors import Document
-
-# Create a new document
 doc = Document(
-    source="Wikipedia",
-    content="Wikipedia is a free online encyclopedia.",
-    metadata={"language": "English", "accessed_date": "2024-08-20"}
+    source="arxiv_paper",
+    content="We present a novel approach...",
+    metadata={
+        "doi": "10.1234/abcd.56789",
+        "authors": ["Smith, J.", "Lee, R."],
+        "publication_date": "2024-03-01"
+    }
 )
-
-# Access document attributes
-print(f"Document ID: {doc.id_}")
-print(f"Source: {doc.source}")
-print(f"Content: {doc.content}")
-print(f"Metadata: {doc.metadata}")
-
-# Convert to dictionary
-doc_dict = doc.to_dict()
-print("Document as dictionary:", doc_dict)
-
-# Create a new document from dictionary
-new_doc = Document.from_dict(doc_dict)
-print("New document:", new_doc)
-
-# String representation
-print(str(doc))
 ```
 
-This example demonstrates how to create Document objects, access their attributes, convert them to and from dictionaries, and get their string representations.
+---
+
+### Serialization Methods
+
+#### `to_dict() -> Dict[str, Any]`
+Converts document to portable dictionary format
+
+```python
+doc_dict = doc.to_dict()
+# {
+#     "id_": "550e8400-e29b-41d4-a716-446655440000",
+#     "source": "arxiv_paper",
+#     "content": "We present...",
+#     "metadata": {...}
+# }
+```
+
+#### `from_dict(data: Dict[str, Any]) -> Document`
+Reconstructs document from dictionary representation
+
+```python
+reconstructed_doc = Document.from_dict(doc_dict)
+```
+
+---
+
+## Usage Guidelines
+
+### Best Practices
+1. **Source Identification**
+   ```python
+   # Good - specific source
+   Document(source="wikipedia_llm_article", ...)
+   
+   # Avoid - vague source
+   Document(source="website", ...)
+   ```
+
+2. **Metadata Standards**
+   ```python
+   recommended_metadata = {
+       "author": str,          # Content creator
+       "created_date": str,    # ISO 8601 format
+       "source_url": str,      # Original location
+       "language": str,        # BCP-47 code
+       "confidence": float     # 0.0-1.0 for AI-generated content
+   }
+   ```
+
+3. **Content Validation**
+   ```python
+   # Minimum viable content check
+   if len(doc.content) < 10:
+       raise ValueError("Content too short for meaningful processing")
+   ```
+
+---
+
+## Advanced Usage
+
+### Batch Processing
+```python
+def process_documents(docs: List[Document]) -> List[Document]:
+    """Add processing timestamp to all documents"""
+    return [
+        Document(
+            source=doc.source,
+            content=doc.content,
+            metadata={**doc.metadata, "processed_at": datetime.now().isoformat()}
+        )
+        for doc in docs
+    ]
+```
+
+### Error Handling
+```python
+try:
+    doc = Document(source="", content="Invalid document") 
+except ValueError as e:
+    print(f"Validation error: {e}")
+
+invalid_dict = {"source": "test", "content": ""}
+try:
+    Document.from_dict(invalid_dict)
+except KeyError as e:
+    print(f"Missing required field: {e}")
+```
+
+---
+
+## Integration Points
+
+### With Data Connectors
+```python
+from indoxArcg.data_connectors import WikipediaReader
+
+reader = WikipediaReader()
+docs = reader.load_data(pages=["Large language models"])
+# Returns List[Document] instances
+```
+
+### With Vector Stores
+```python
+from indoxArcg.vector_stores import PineconeVectorStore
+
+vector_store = PineconeVectorStore()
+vector_store.add(documents=docs)  # Accepts List[Document]
+```
+
+---
+
+## Performance Considerations
+
+1. **Content Size**
+   - Optimal: 500-1500 characters per document
+   - Maximum: 10,000 characters (split larger content)
+
+2. **Metadata Efficiency**
+   ```python
+   # Preferred - flat structure
+   {"author": "Alice", "page_count": 12}
+   
+   # Avoid - nested data
+   {"details": {"author": {"name": "Alice"}}}
+   ```
+
+3. **Bulk Operations**
+   ```python
+   # Process 1000 documents at a time
+   batch_size = 1000
+   for i in range(0, len(docs), batch_size):
+       process_batch(docs[i:i+batch_size])
+   ```
+
+---
+
+## Security Notes
+
+1. **Sensitive Data**
+   ```python
+   # Never store raw PII in content/metadata
+   Document(
+       source="customer_service_chat",
+       content="[REDACTED]",
+       metadata={"user_id": "hash_abc123"}
+   )
+   ```
+
+2. **Validation Filters**
+   ```python
+   from html import escape
+
+   sanitized_content = escape(raw_content)
+   doc = Document(source="web", content=sanitized_content)
+   ```
+```
