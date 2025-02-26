@@ -1,252 +1,242 @@
-# Embedding Models
+# Embedding Models Integration Guide
 
-indoxArcg currently supports various embedding models. Below is a list of supported models, along with instructions on how to use each one:
+indoxArcg supports multiple state-of-the-art embedding models for text representation. This guide provides detailed instructions for configuring and using each supported model.
 
-1. **OpenAI Embedding Model**
-2. **Hugging Face Embedding Models**
-3. **indoxArcgApi Embedding Models**
-4. **Mistral Embedding Models**
-5. **Clarifai Embedding Models**
-6. **Cohere Embedding Models**
-7. **Elasticsearch Embedding Models**
-8. **GPT4All Embedding Models**
-9. **Ollama Embedding Models**
+## Table of Contents
 
-## Using OpenAI Embedding Model
+- [Prerequisites](#prerequisites)
+- [Supported Models](#supported-models)
+- [Model Configuration Guides](#model-configuration-guides)
+  - [OpenAI](#1-openai-embedding-model)
+  - [Azure OpenAI](#2-azure-openai-embedding-model)
+  - [Hugging Face](#3-hugging-face-embedding-models)
+  - [NerdToken](#4-nerdtoken-embedding-models)
+  - [Mistral](#5-mistral-embedding-model)
+  - [Clarifai](#6-clarifai-embedding-model)
+  - [Cohere](#7-cohere-embedding-model)
+  - [Elasticsearch](#8-elasticsearch-embedding-model)
+  - [GPT4All](#9-gpt4all-embedding-model)
+  - [Ollama](#10-ollama-embedding-model)
+- [Future Development](#future-development)
 
-To use the OpenAI embedding model, follow these steps:
+## Prerequisites
 
-1. Install the OpenAI Python package:
+Before using any embedding models:
 
+1. Python 3.8+ installed
+2. Install required packages:
    ```bash
-   pip install openai
+   pip install python-dotenv
    ```
 
-2. Import necessary libraries and load environment variables:
+Create a `.env` file in your project root with relevant API keys:
 
-   ```python
-   import os
-   from dotenv import load_dotenv
+```ini
+OPENAI_API_KEY=your_key_here
+NERDTOKEN_API_KEY=your_key_here
+MISTRAL_API_KEY=your_key_here
+# Add other API keys as needed
+```
 
-   load_dotenv()
+## Supported Models
 
-   OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
-   ```
+| #   | Model Provider | Class Name              | Requirements                      |
+| --- | -------------- | ----------------------- | --------------------------------- |
+| 1   | OpenAI         | OpenAiEmbedding         | pip install openai                |
+| 2   | Azure OpenAI   | AzureOpenAIEmbeddings   | pip install openai                |
+| 3   | Hugging Face   | HuggingFaceEmbedding    | pip install sentence-transformers |
+| 4   | NerdToken      | NerdTokenEmbedding      | API key required                  |
+| 5   | Mistral        | MistralEmbedding        | pip install mistralai             |
+| 6   | Clarifai       | ClarifaiEmbeddings      | pip install clarifai              |
+| 7   | Cohere         | CohereEmbeddings        | pip install cohere                |
+| 8   | Elasticsearch  | ElasticsearchEmbeddings | Elasticsearch instance running    |
+| 9   | GPT4All        | GPT4AllEmbeddings       | pip install gpt4all               |
+| 10  | Ollama         | OllamaEmbeddings        | Local Ollama server running       |
 
-3. Import indoxArcg modules and set the OpenAI embedding model:
+## Model Configuration Guides
 
-   ```python
-   from indoxArcg import IndoxRetrievalAugmentation
-   from indoxArcg.embeddings import OpenAiEmbedding
+### 1. OpenAI Embedding Model
 
-   rag_pipeline = IndoxRetrievalAugmentation()
-   openai_embeddings = OpenAiEmbedding(model="text-embedding-3-small", openai_api_key=OPENAI_API_KEY)
-   ```
+Recommended Models: text-embedding-3-small, text-embedding-3-large
 
-## Using indoxArcgApi Embedding Model
+```python
+import os
+from dotenv import load_dotenv
+from indoxArcg.embeddings import OpenAiEmbedding
 
-To use the indoxArcgApi embedding model, follow these steps:
+load_dotenv()
 
-1. Import necessary libraries and load environment variables:
+embeddings = OpenAiEmbedding(
+    model="text-embedding-3-small",
+    api_key=os.getenv('OPENAI_API_KEY') # Required
+)
+```
 
-   ```python
-   import os
-   from dotenv import load_dotenv
+### 2. Azure OpenAI Embedding Model
 
-   load_dotenv()
+Required Parameters:
 
-   indoxArcg_API_KEY = os.environ['indoxArcg_API_KEY']
-   ```
+- azure_endpoint: Your Azure deployment endpoint
+- deployment: Your model deployment name
+- api_version: API version (e.g., "2023-05-15")
 
-2. Import indoxArcg modules and set the indoxArcgApi embedding model:
+```python
+from indoxArcg.embeddings import AzureOpenAIEmbeddings
 
-   ```python
-   from indoxArcg.embeddings import indoxArcgApiEmbedding
+azure_embeddings = AzureOpenAIEmbeddings(
+    azure_endpoint="https://your-resource.openai.azure.com",
+    deployment="your-deployment-name",
+    api_version="2023-05-15",
+    api_key=os.getenv('AZURE_OPENAI_KEY'),
+    model="text-embedding-3-small"
+)
+```
 
-   rag_pipeline = RAG()
-   embed_openai_indoxArcg = indoxArcgApiEmbedding(api_key=indoxArcg_API_KEY, model="text-embedding-3-small")
-   ```
+### 3. Hugging Face Embedding Models
 
-## Using Mistral Embedding Model
+Popular Models:
 
-To use the Mistral embedding model, follow these steps:
+- sentence-transformers/all-MiniLM-L6-v2
+- multi-qa-mpnet-base-cos-v1
 
-1. Install the Mistral Python package:
+```bash
+pip install sentence-transformers
+```
 
-   ```bash
-   pip install mistralai
-   ```
+```python
+from indoxArcg.embeddings import HuggingFaceEmbedding
 
-2. Load environment variables:
+hf_embeddings = HuggingFaceEmbedding(
+    model="sentence-transformers/all-MiniLM-L6-v2",
+    api_key=os.getenv('HUGGING_FACE_API_KEY')  # Optional
+)
+```
 
-   ```python
-   import os
-   from dotenv import load_dotenv
+### 4. NerdToken Embedding Models
 
-   load_dotenv()
+```python
+from indoxArcg.embeddings import NerdTokenEmbedding
 
-   MISTRAL_API_KEY = os.environ['MISTRAL_API_KEY']
-   ```
+nt_embeddings = NerdTokenEmbedding(
+    api_key=os.getenv('NERDTOKEN_API_KEY'),
+    model="text-embedding-3-small",
+)
+```
 
-3. Import indoxArcg modules and set the Mistral embedding model:
+### 5. Mistral Embedding Model
 
-   ```python
-   from indoxArcg.embeddings import MistralEmbedding
+Current Model: mistral-embed (1280-dimension embeddings)
 
-   mistral_embedding = MistralEmbedding(api_key=MISTRAL_API_KEY)
-   ```
+```python
+from indoxArcg.embeddings import MistralEmbedding
 
-## Using Hugging Face Embedding Model
+mistral_embeddings = MistralEmbedding(
+    api_key=os.getenv('MISTRAL_API_KEY'),
+    model="mistral-embed",
+)
+```
 
-To use the Hugging Face embedding model, follow these steps:
+### 6. Clarifai Embedding Model
 
-1. Load environment variables:
+Finding Model IDs:
 
-   ```python
-   import os
-   from dotenv import load_dotenv
+1. Log in to Clarifai Portal
+2. Navigate to your application
+3. Copy model ID from model details
 
-   load_dotenv()
-   HUGGINGFACE_API_KEY = os.getenv('HUGGINGFACE_API_KEY')
-   ```
+```python
+from indoxArcg.embeddings import ClarifaiEmbeddings
 
-2. Import indoxArcg modules and set the Hugging Face embedding model:
+clarifai_embeddings = ClarifaiEmbeddings(
+    pat=os.getenv('CLARIFAI_PAT'),
+    model_id="your-clarifai-model-id",
+    user_id="clarifai-user-id",
+    app_id="your-application-id"
+)
+```
 
-   ```python
-   from indoxArcg.embeddings import HuggingFaceEmbedding
+### 7. Cohere Embedding Model
 
-   embed = HuggingFaceEmbedding(model="multi-qa-mpnet-base-cos-v1")
-   ```
+Recommended Models: embed-english-v3.0, embed-multilingual-v3.0
 
-## Using Clarifai Embedding Model
+```python
+from indoxArcg.embeddings import CohereEmbeddings
 
-To use the Clarifai embedding model, follow these steps:
+cohere_embeddings = CohereEmbeddings(
+    api_key=os.getenv('COHERE_API_KEY'),
+    model_name="embed-english-v3.0",
+)
+```
 
-1. Install the Clarifai Python package:
+### 8. Elasticsearch Embedding Model
 
-   ```bash
-   pip install clarifai
-   ```
+Prerequisites:
 
-2. Load environment variables and import the indoxArcg modules:
+- Running Elasticsearch cluster (version 8.0+)
+- Deployed embedding model via Eland
 
-   ```python
-   import os
-   from dotenv import load_dotenv
+```bash
+pip install elasticsearch
+```
 
-   load_dotenv()
+```python
+from elasticsearch import Elasticsearch
+from indoxArcg.embeddings import ElasticsearchEmbeddings
 
-   CLARIFAI_PAT = os.environ['CLARIFAI_PAT']
+es = Elasticsearch(
+    hosts=["http://localhost:9200"],
+    basic_auth=("username", "password")
+)
 
-   from indoxArcg.embeddings import ClarifaiEmbeddings
+es_embeddings = ElasticsearchEmbeddings(
+    client=es,
+    model_id=".multilingual-e5-small"  # Example model ID
+)
+```
 
-   clarifai_embeddings = ClarifaiEmbeddings(pat=CLARIFAI_PAT, model_id="model-id")
-   ```
+### 9. GPT4All Embedding Model
 
-## Using Cohere Embedding Model
+Available Models:
 
-To use the Cohere embedding model, follow these steps:
+- all-MiniLM-L6-v2
+- gpt4all-lora
 
-1. Install the Cohere Python package:
+```python
+from indoxArcg.embeddings import GPT4AllEmbeddings
 
-   ```bash
-   pip install cohere
-   ```
+gpt4all_embeddings = GPT4AllEmbeddings(
+    model_name="all-MiniLM-L6-v2",
+    device="nvidia"  # or "cpu", "amd", "intel"
+)
+```
 
-2. Load environment variables and import the indoxArcg modules:
+### 10. Ollama Embedding Model
 
-   ```python
-   import os
-   from dotenv import load_dotenv
+Setup:
 
-   load_dotenv()
+```bash
+curl -fsSL https://ollama.ai/install.sh | sh
+ollama pull llama2
+```
 
-   COHERE_API_KEY = os.environ['COHERE_API_KEY']
+```python
+from indoxArcg.embeddings import OllamaEmbeddings
 
-   from indoxArcg.embeddings import CohereEmbeddings
+ollama_embeddings = OllamaEmbeddings(
+    base_url="http://localhost:11434",
+    model="llama2",
+    temperature=0.3  # Control randomness
+)
+```
 
-   cohere_embeddings = CohereEmbeddings(cohere_api_key=COHERE_API_KEY)
-   ```
+## Future Development
 
-## Using Elasticsearch Embedding Model
+Planned enhancements include:
 
-To use the Elasticsearch embedding model, follow these steps:
+- Integration with Google Vertex AI embedding models
+- Support for multimodal embeddings (image+text)
+- Batch embedding generation optimizations
+- Dynamic model selection based on content type
+- Enhanced error handling and retry mechanisms
 
-1. Ensure you have an embedding model loaded and deployed in your Elasticsearch cluster.
-
-2. Import necessary libraries and set the Elasticsearch embedding model:
-
-   ```python
-   from elasticsearch import Elasticsearch
-   from indoxArcg.embeddings import ElasticsearchEmbeddings
-
-   es_client = Elasticsearch("http://localhost:9200")
-   es_embeddings = ElasticsearchEmbeddings(client=es_client, model_id="model-id")
-   ```
-
-## Using GPT4All Embedding Model
-
-To use the GPT4All embedding model, follow these steps:
-
-1. Install the GPT4All Python package:
-
-   ```bash
-   pip install gpt4all
-   ```
-
-2. Import indoxArcg modules and set the GPT4All embedding model:
-
-   ```python
-   from indoxArcg.embeddings import GPT4AllEmbeddings
-
-   gpt4all_embeddings = GPT4AllEmbeddings(model_name="gpt4all-lora")
-   ```
-
-## Using Ollama Embedding Model
-
-To use the Ollama embedding model, follow these steps:
-
-1. Follow the instructions at [Ollama](https://ollama.ai/) to set up the model locally.
-
-2. Import indoxArcg modules and set the Ollama embedding model:
-
-   ```python
-   from indoxArcg.embeddings import OllamaEmbeddings
-
-   ollama_embeddings = OllamaEmbeddings(base_url="http://localhost:11434", model="llama2")
-   ```
-
-## Using Azure OpenAi Embedding Model
-
-To use the Azure OpenAI embedding model, follow these steps:
-
-1. Install the OpenAI Python package:
-
-   ```bash
-   pip install openai
-   ```
-
-2. Import necessary libraries and load environment variables:
-
-   ```python
-   import os
-   from dotenv import load_dotenv
-
-   load_dotenv()
-
-   OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
-   ```
-
-3. Import indoxArcg modules and set the Azure OpenAI embedding model:
-
-   ```python
-   from indoxArcg import IndoxRetrievalAugmentation
-   from indoxArcg.embeddings import AzureOpenAIEmbeddings
-
-   rag_pipeline = IndoxRetrievalAugmentation()
-   openai_embeddings = AzureOpenAIEmbeddings(api_key=OPENAI_API_KEY,model="text-embedding-3-small")
-   ```
-
-### Future Plans
-
-We are committed to continuously improving indoxArcg and will be adding support for more embedding models in the future.
+For feature requests or issues, please visit our GitHub repository.
