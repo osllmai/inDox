@@ -60,10 +60,10 @@ class CohereEmbeddings(Embeddings):
     async_client: Any  #: :meta private:
     model: str = "embed-english-v2.0"
     truncate: Optional[str] = None
-    cohere_api_key: Optional[str] = None
+    api_key: Optional[str] = None
     max_retries: int = 3
     request_timeout: Optional[float] = None
-    user_agent: str = "langchain"
+    user_agent: str = "indoxArcg"
 
     class Config:
         extra = "forbid"

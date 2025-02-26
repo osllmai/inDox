@@ -1,56 +1,30 @@
 import requests
 from loguru import logger
 import sys
-from indoxArcg.core import BaseLLM
 
 # Set up logging
 logger.remove()  # Remove the default logger
 logger.add(
     sys.stdout, format="<green>{level}</green>: <level>{message}</level>", level="INFO"
 )
-
 logger.add(
     sys.stdout, format="<red>{level}</red>: <level>{message}</level>", level="ERROR"
 )
 
 
 class NerdToken:
-    def __init__(
-        self,
-        api_key: str,
-        max_tokens: int = 4000,
-        temperature: float = 0.3,
-        stream: bool = False,
-        presence_penalty: float = 0,
-        frequency_penalty: float = 0,
-        top_p: float = 1,
-        prompt_template: str = None,
-    ):
+    def __init__(self, api_key: str, model: str = "openai/gpt-4o-mini"):
         """
-        Initializes the NerdTokenApi with the specified API key, model, and an optional prompt template.
+        Initializes the NerdTokenApi with the API key and model.
 
         Args:
             api_key (str): The API key for accessing the Indox API.
-            max_tokens (int, optional): The maximum number of tokens for the response. Defaults to 4000.
-            temperature (float, optional): Sampling temperature. Defaults to 0.3.
-            stream (bool, optional): Whether to stream responses. Defaults to False.
-            presence_penalty (float, optional): Presence penalty for text generation. Defaults to 0.
-            frequency_penalty (float, optional): Frequency penalty for text generation. Defaults to 0.
-            top_p (float, optional): Nucleus sampling parameter. Defaults to 1.
-            prompt_template (str, optional): The template for formatting prompts. Defaults to None.
+            model (str, optional): The model to use. Defaults to "openai/gpt-4o-mini".
         """
         self.api_key = api_key
-        self.max_tokens = max_tokens
-        self.temperature = temperature
-        self.stream = stream
-        self.presence_penalty = presence_penalty
-        self.frequency_penalty = frequency_penalty
-        self.top_p = top_p
-        self.prompt_template = (
-            prompt_template or "Context: {context}\nQuestion: {question}\nAnswer:"
-        )
+        self.model = model
 
-    def _send_request(self, system_prompt, user_prompt):
+    def _send_request(self, system_prompt, user_prompt, **kwargs):
         url = "https://api-token.nerdstudio.ai/v1/api/text_generation/generate/"
         headers = {
             "accept": "application/json",
@@ -58,18 +32,19 @@ class NerdToken:
             "Content-Type": "application/json",
         }
 
+        # Default parameters
         data = {
-            "frequency_penalty": self.frequency_penalty,
-            "max_tokens": self.max_tokens,
+            "frequency_penalty": kwargs.get("frequency_penalty", 0),
+            "max_tokens": kwargs.get("max_tokens", 4000),
             "messages": [
                 {"content": system_prompt, "role": "system"},
                 {"content": user_prompt, "role": "user"},
             ],
-            "model": "openai/gpt-4o-mini",
-            "presence_penalty": self.presence_penalty,
-            "stream": self.stream,
-            "temperature": self.temperature,
-            "top_p": self.top_p,
+            "model": self.model,
+            "presence_penalty": kwargs.get("presence_penalty", 0),
+            "stream": kwargs.get("stream", False),
+            "temperature": kwargs.get("temperature", 0.3),
+            "top_p": kwargs.get("top_p", 1),
         }
 
         try:
@@ -87,64 +62,46 @@ class NerdToken:
             logger.error(f"Request error: {e}")
             raise
 
-    def _attempt_answer_question(
+    def answer_question(
         self,
-        context,
-        question,
+        context: str,
+        question: str,
+        prompt_template: str = "Context: {context}\nQuestion: {question}\nAnswer:",
+        **kwargs,
     ):
         """
-        Generates an answer to a question based on the given context using the Indox API.
+        Answer a question based on the given context using the Indox API.
 
         Args:
             context (str): The text to base the answer on.
             question (str): The question to be answered.
-
-        Returns:
-            str: The generated answer.
-        """
-
-        system_prompt = """
- You are a highly knowledgeable assistant. You must only provide answers based on the provided context. If the context does not contain the necessary information to answer the query, respond with: "The context does not provide sufficient information to answer this query.
- Do not use external knowledge, make assumptions, or fabricate information. Always base your responses entirely on the context provided.
-"""
-
-        user_prompt = self.prompt_template.format(
-            context=context,
-            question=question,
-        )
-        return self._send_request(
-            system_prompt,
-            user_prompt,
-        )
-
-    def answer_question(
-        self,
-        context,
-        question,
-    ):
-        """
-        Answer a question based on the given context using the Indox API.
+            prompt_template (str, optional): Template for formatting the prompt.
+            **kwargs: Additional parameters for API call (temperature, max_tokens, etc.)
 
         Returns:
             str: The generated answer.
         """
         try:
-            # prompt_template = prompt_template or self.prompt_template
-            return self._attempt_answer_question(
-                context,
-                question,
+            system_prompt = """
+You are a highly knowledgeable assistant. You must only provide answers based on the provided context. If the context does not contain the necessary information to answer the query, respond with: "The context does not provide sufficient information to answer this query."
+Do not use external knowledge, make assumptions, or fabricate information. Always base your responses entirely on the context provided.
+"""
+            user_prompt = prompt_template.format(
+                context=context,
+                question=question,
             )
+            return self._send_request(system_prompt, user_prompt, **kwargs)
         except Exception as e:
             logger.error(e)
             return str(e)
 
-    def get_summary(
-        self,
-        documentation,
-    ):
+    def get_summary(self, documentation: str, **kwargs):
         """
         Generates a detailed summary of the provided documentation.
 
+        Args:
+            documentation (str): The documentation to summarize.
+            **kwargs: Additional parameters for API call (temperature, max_tokens, etc.)
 
         Returns:
             str: The generated summary.
@@ -152,21 +109,19 @@ class NerdToken:
         try:
             system_prompt = "You are a helpful assistant."
             user_prompt = f"You are a helpful assistant. Give a detailed summary of the documentation provided.\n\nDocumentation:\n {documentation}"
-            return self._send_request(
-                system_prompt=system_prompt,
-                user_prompt=user_prompt,
-            )
+            return self._send_request(system_prompt, user_prompt, **kwargs)
         except Exception as e:
             logger.error(e)
             return str(e)
 
-    def grade_docs(
-        self,
-        context,
-        question,
-    ):
+    def grade_docs(self, context: list, question: str, **kwargs):
         """
-        Answers a question using an agent-based approach with access to tools.
+        Grades the relevance of documents to a question.
+
+        Args:
+            context (list): List of documents to grade.
+            question (str): The question to compare against.
+            **kwargs: Additional parameters for API call (temperature, max_tokens, etc.)
 
         Returns:
             list: Filtered list of relevant documents.
@@ -178,20 +133,17 @@ class NerdToken:
             Give a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question.
             Provide the score with no preamble or explanation.
             """
-            for i in range(len(context)):
+            for doc in context:
                 user_prompt = f"""
                 Here is the retrieved document:
-                {context[i]}
+                {doc}
                 Here is the user question:
                 {question}
                 """
-                response = self._send_request(
-                    system_prompt=system_prompt,
-                    user_prompt=user_prompt,
-                )
+                response = self._send_request(system_prompt, user_prompt, **kwargs)
                 if response.lower() == "yes":
                     logger.info("Relevant doc")
-                    filtered_docs.append(context[i])
+                    filtered_docs.append(doc)
                 elif response.lower() == "no":
                     logger.info("Not Relevant doc")
             return filtered_docs
@@ -199,17 +151,14 @@ class NerdToken:
             logger.error(f"Error generating agent answer: {e}")
             return str(e)
 
-    def check_hallucination(
-        self,
-        context,
-        answer,
-    ):
+    def check_hallucination(self, context: str, answer: str, **kwargs):
         """
         Checks if an answer is grounded in the provided context.
 
         Args:
             context (str): The text to base the answer on.
             answer (str): The answer to check for hallucination.
+            **kwargs: Additional parameters for API call (temperature, max_tokens, etc.)
 
         Returns:
             str: 'yes' if the answer is grounded, 'no' otherwise.
@@ -225,30 +174,23 @@ class NerdToken:
             \n -------- \n
             Here is the answer: {answer}
             """
-            response = self._send_request(
-                system_prompt=system_prompt,
-                user_prompt=user_prompt,
-            )
-            return response
+            return self._send_request(system_prompt, user_prompt, **kwargs)
         except Exception as e:
             logger.error(f"Error generating agent answer: {e}")
             return str(e)
 
-    # def _assistant(self, system_prompt, user_prompt, role, history):
-    #     try:
-    #         response = self._send_request(system_prompt=system_prompt, user_prompt=user_prompt, role=role,
-    #                                       history=history)
-    #         return response
-    #     except Exception as e:
-    #         logger.error(f"Error generating agent answer: {e}")
-    #         return str(e)
-
     def chat(
-        self,
-        prompt,
-        system_prompt="You are a helpful assistant",
+        self, prompt: str, system_prompt: str = "You are a helpful assistant", **kwargs
     ):
-        return self._send_request(
-            system_prompt=system_prompt,
-            user_prompt=prompt,
-        )
+        """
+        Simple chat interface with the model.
+
+        Args:
+            prompt (str): The user's input prompt.
+            system_prompt (str, optional): System prompt to set the context.
+            **kwargs: Additional parameters for API call (temperature, max_tokens, etc.)
+
+        Returns:
+            str: The model's response.
+        """
+        return self._send_request(system_prompt, prompt, **kwargs)
