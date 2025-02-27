@@ -1,8 +1,5 @@
-```markdown
-# Cache-Augmented Generation (CAG) Pipeline - Enterprise Documentation
+# Cache-Augmented Generation (CAG) Pipeline
 
-![CAG Architecture](imaginary_cag_diagram.png)  
-*(Knowledge Cache → Context Fusion → Validation Layer → Adaptive Generation)*
 
 ## Next-Gen Features 🚀
 
