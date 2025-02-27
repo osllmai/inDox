@@ -27,22 +27,36 @@ class CAG:
 - **Adaptive Validation**: Configurable thresholds for quality control
 
 ### 2. Knowledge Cache System
+
 ```python
 class KVCache:
-    """High-performance cache manager"""
-    def save_cache(key, documents)  # Serializes text + embeddings
-    def load_cache(key) -> List[CacheEntry]  # Optimized bulk loading
+    """High-performance hierarchical cache manager"""
+    
+    def save_cache(self, key: str, documents: List[CacheEntry]) -> None:
+        """Serializes text + embeddings with version control"""
+        
+    def load_cache(self, key: str) -> List[CacheEntry]:
+        """Optimized bulk loading with cache warming"""
 ```
 
+**Cache Lifecycle Flow** 🔄
 ```mermaid
 graph TD
-    A[Raw Documents] --> B[Chunking]
-    B --> C[Embedding Generation]
-    C --> D[Versioned Storage]
+    A[("📄 Raw Documents")] --> B[Chunking]
+    B --> C{{Embedding Generation}}
+    C --> D[(Versioned Storage)]
     D --> E[Cache Indexing]
-    E --> F[Retrieval Engine]
-    F --> G[Relevance Filter]
-    G --> H[Context Assembly]
+    E --> F{Retrieval Engine}
+    F --> G[/Relevance Filter/]
+    G --> H[["Context Assembly"]]
+    
+    style A fill:#f9f,stroke:#333
+    style H fill:#8f8,stroke:#2b2
+    classDef process fill:#eef,stroke:#00f;
+    class B,C,E,F,G process;
+    
+    note right of D: Storage Formats:\n- JSON\n- Parquet\n- Pickle\n- Versioned
+    note left of F: Supports:\nTF-IDF\nBM25\nJaccard
 ```
 
 ### 3. Conversational Brain
