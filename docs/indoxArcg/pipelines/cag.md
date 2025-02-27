@@ -34,6 +34,7 @@ class KVCache:
     def load_cache(key) -> List[CacheEntry]  # Optimized bulk loading
 ```
 
+```mermaid
 graph TD
     A[Raw Documents] --> B[Chunking]
     B --> C[Embedding Generation]
@@ -42,6 +43,7 @@ graph TD
     E --> F[Retrieval Engine]
     F --> G[Relevance Filter]
     G --> H[Context Assembly]
+```
 
 ### 3. Conversational Brain
 ```python
