@@ -55,8 +55,6 @@ graph TD
     classDef process fill:#eef,stroke:#00f;
     class B,C,E,F,G process;
     
-    note right of D: Storage Formats:\n- JSON\n- Parquet\n- Pickle\n- Versioned
-    note left of F: Supports:\nTF-IDF\nBM25\nJaccard
 ```
 
 ### 3. Conversational Brain
