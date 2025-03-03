@@ -17,7 +17,7 @@
 
 <!-- [![GitHub stars](https://img.shields.io/github/stars/osllmai/indoxArcg?style=social)](https://github.com/osllmai/inDox) -->
 
-[Official Website](https://osllm.ai) • [Documentation](https://docs.osllm.ai/index.html) • [Discord](https://discord.gg/qrCc56ZR)
+[Official Website](https://osllm.ai) • [Documentation](https://docs.osllm.ai/index.html) • [Discord](https://discord.gg/xGz5tQYaeq)
 
 **NEW:** [Subscribe to our mailing list](https://docs.google.com/forms/d/1CQXJvxLUqLBSXnjqQmRpOyZqD6nrKubLz2WTcIJ37fU/prefill) for updates and news!
 
