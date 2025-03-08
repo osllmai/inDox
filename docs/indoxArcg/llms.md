@@ -1,118 +1,222 @@
-# LLMs
+# Large Language Models (LLMs) Integration Guide
 
-indoxArcg supports three different types of question-answer (QA) models.
-These models are:
+indoxArcg provides unified access to state-of-the-art LLMs through a consistent interface. All models implement common methods for question answering, document grading, and hallucination checking.
 
-1.  **OpenAI Model**
-2.  **Mistral Model**
-3.  **HuggingFace Models**
-4.  **GoogleAi Models**
-5.  **Ollama**
+## Table of Contents
 
-## Initial Setup
+- [Prerequisites](#prerequisites)
+- [Supported Models](#supported-models)
+- [Common Interface](#common-interface)
+- [Model Configuration Guides](#model-configuration-guides)
+  - [OpenAI](#1-openai)
+  - [Mistral](#2-mistral)
+  - [Hugging Face](#3-hugging-face)
+  - [Google AI](#4-google-ai)
+  - [Ollama](#5-ollama)
+  - [DeepSeek](#6-deepseek)
+  - [NerdToken](#7-nerdtoken)
+  - [Azure OpenAI](#8-azure-openai)
+- [Local Inference](#9-local-inference-with-huggingface)
+- [Troubleshooting](#troubleshooting)
+- [Future Development](#future-development)
 
-For all QA models, the initial setup is the same. Start by importing the
-necessary indoxArcg module and creating an instance of
-`RAG`:
+## Prerequisites
 
-```python
-from indoxArcg.pipelines.rag import RAG
-indoxArcg = RAG()
+1. Python 3.8+ environment
+2. Install base package:
+   ```bash
+   pip install python-dotenv
+   ```
+
+## .env file with API keys:
+
+```ini
+OPENAI_API_KEY=your_key
+MISTRAL_API_KEY=your_key
+GOOGLE_API_KEY=your_key
+HF_API_KEY=your_key
 ```
 
-## Using OpenAI Model
+## Supported Models
 
-To use the OpenAI QA model, follow these steps:
-First install the OpenAI Python package:
+| #   | Provider     | Class Name          | Requirements                    |
+| --- | ------------ | ------------------- | ------------------------------- |
+| 1   | OpenAI       | OpenAi              | pip install openai              |
+| 2   | Mistral      | Mistral             | pip install mistralai           |
+| 3   | Hugging Face | HuggingFaceAPIModel | pip install requests            |
+| 4   | Google AI    | GoogleAi            | pip install google-generativeai |
+| 5   | Ollama       | Ollama              | Local Ollama server             |
+| 6   | DeepSeek     | DeepSeek            | pip install openai              |
+| 7   | NerdToken    | NerdToken           | API key required                |
+| 8   | Azure OpenAI | AzureOpenAi         | Azure deployment                |
+
+## Common Interface
+
+All LLM classes implement these core methods:
 
 ```python
-pip install openai
+class BaseLLM:
+    def answer_question(self, context: str, question: str) -> str: ...
+    def get_summary(self, documentation: str) -> str: ...
+    def grade_docs(self, context: list, question: str) -> list: ...
+    def check_hallucination(self, context: str, answer: str) -> str: ...
+    def chat(self, prompt: str, system_prompt: str) -> str: ...
 ```
 
-1.  Import necessary libraries and load environment variables:
+## Model Configuration Guides
 
-```python
-import os
-from dotenv import load_dotenv
+### 1. OpenAI
 
-load_dotenv()
-
-OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
-```
-
-1.  Import indoxArcg modules and set the OpenAI model:
+Recommended Models: gpt-4-turbo, gpt-3.5-turbo
 
 ```python
 from indoxArcg.llms import OpenAi
-
-openai_qa = OpenAi(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo-0125")
-retriever = RAG(vector_database=db,llm=openai_qa)
-retriever.infer(query)
-```
-
-## Using Mistral Model
-
-First install the Hugging Face Python package:
-
-```python
-pip install mistralai
-```
-
-To use the Mistral model, follow these steps:
-
-1.  Import necessary libraries and load environment variables:
-
-```python
-import os
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
-MISTRAL_API_KEY = os.getenv('MISTRAL_API_KEY')
+llm = OpenAi(
+    api_key=os.getenv('OPENAI_API_KEY'),
+    model="gpt-4-turbo",
+)
+
+response = llm.answer_question(
+    context="Climate change refers to...",
+    question="What are main causes of global warming?"
+    temperature=0.3
+)
 ```
 
-1.  Import indoxArcg modules and set the Mistral model:
+### 2. Mistral
+
+Recommended Models: mistral-large-latest, codestral-latest
 
 ```python
 from indoxArcg.llms import Mistral
 
-mistral_qa = Mistral(api_key=MISTRAL_API_KEY, model="mistralai/Mistral-7B-Instruct-v0.2")
-retriever = RAG(vector_database=db,llm=mistral_qa)
-retriever.infer(query)
+mistral_llm = Mistral(
+    api_key=os.getenv('MISTRAL_API_KEY'),
+    model="mistral-large-latest",
+)
 ```
 
-## Using GoogleAi Model
-
-First install the Hugging Face Python package:
+### 3. Hugging Face
 
 ```python
-pip install google-generativeai
+from indoxArcg.llms import HuggingFaceAPIModel
+
+hf_llm = HuggingFaceAPIModel(
+    api_key=os.getenv('HF_API_KEY'),
+    model="meta-llama/Meta-Llama-3-70B-Instruct",
+    prompt_template="[INST] {context}\nQuestion: {question} [/INST]"
+)
 ```
 
-To use the GoogleAi model, follow these steps:
-
-1.  Import necessary libraries and load environment variables:
-
-```python
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
-```
-
-1.  Import indoxArcg modules and set the Mistral model:
+### 4. Google AI
 
 ```python
 from indoxArcg.llms import GoogleAi
 
-mistral_qa = GoogleAi(api_key=GOOGLE_API_KEY, model="gemini-1.5-flash-latest")
-retriever = RAG(vector_database=db,llm=mistral_qa)
-retriever.infer(query)
+gemini = GoogleAi(
+    api_key=os.getenv('GOOGLE_API_KEY'),
+    model="gemini-1.5-flash",
+)
 ```
 
-### Future Plans
+### 5. Ollama (Local)
 
-We are committed to continuously improving indoxArcg and will be adding
-support for more QA models in the future.
+Setup:
+
+```bash
+curl -fsSL https://ollama.ai/install.sh | sh
+ollama pull llama2
+```
+
+```python
+from indoxArcg.llms import Ollama
+
+local_llm = Ollama(
+    model="llama2:13b",
+)
+```
+
+### 6. DeepSeek
+
+```python
+from indoxArcg.llms import DeepSeek
+
+ds_llm = DeepSeek(
+    api_key="your_deepseek_key",
+    model="deepseek-chat",
+)
+```
+
+### 7. NerdToken
+
+```python
+from indoxArcg.llms import NerdToken
+
+nt_llm = NerdToken(
+    api_key=os.getenv('NERDTOKEN_API_KEY'),
+    model="openai/gpt-4o-turbo",
+)
+```
+
+### 8. Azure OpenAI
+
+```python
+from indoxArcg.llms import AzureOpenAi
+
+azure_llm = AzureOpenAi(
+    api_key=os.getenv('AZURE_OPENAI_KEY'),
+    endpoint="https://your-resource.openai.azure.com",
+    deployment_name="gpt-4-turbo-deployment",
+    api_version="2024-02-01"
+)
+```
+
+### 9. Local Inference with HuggingFace
+
+For private/offline use with 4-bit quantization:
+
+```python
+from indoxArcg.llms import HuggingFaceLocalModel
+
+local_llm = HuggingFaceLocalModel(
+    hf_model_id="BioMistral/BioMistral-7B",
+    device_map="auto",
+    bnb_4bit_quant_type="nf4",
+    max_new_tokens=512
+)
+
+response = local_llm.answer_question(
+    context="Mitochondria are...",
+    question="What is the function of mitochondria?"
+)
+```
+
+Requirements:
+
+```bash
+pip install torch transformers accelerate bitsandbytes
+```
+
+## Troubleshooting
+
+Common Issues:
+
+- APIError: Invalid API Key: Verify .env file loading and key permissions
+- Timeout Errors: Increase timeout parameter for local models
+- CUDA Out of Memory: Reduce max_new_tokens or use smaller model
+- Formatting Issues: Adjust prompt_template for model-specific formats
+
+## Future Development
+
+Planned enhancements:
+
+- Streaming response support for all models
+- Automatic model fallback strategies
+- Integrated token counting
+- Advanced caching mechanisms
+- Multi-modal capabilities (image+text)
