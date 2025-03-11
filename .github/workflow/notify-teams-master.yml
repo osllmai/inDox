@@ -1,0 +1,64 @@
+name: GitHub to Teams Notification (Master)
+
+on:
+  push:
+    branches: [ "master"  ]
+  workflow_dispatch:
+
+jobs:
+  notify_teams:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          clean: false
+
+      - name: Gather Deployment Information
+        id: gather_info
+        run: |
+          echo "DEPLOY_NUMBER=#${{ github.run_number }}" >> $GITHUB_ENV
+          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "EVENT_TYPE=${{ github.event_name }}" >> $GITHUB_ENV
+          echo "ACTOR=@${{ github.actor }}" >> $GITHUB_ENV
+          echo "COMMIT_AUTHOR=@$(git log -1 --pretty=format:'%an')" >> $GITHUB_ENV
+          echo "REPO=${{ github.repository }}" >> $GITHUB_ENV
+          echo "BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          echo "COMMIT_MSG=$(git log -1 --pretty=%B | head -n 1)" >> $GITHUB_ENV
+          echo "TIMESTAMP=$(date -u "+%A, %B %d %Y, %I:%M:%S %p UTC")" >> $GITHUB_ENV
+          echo "GITHUB_RUN_URL=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
+
+      - name: Get Changed Files and Stats
+        id: changed_files
+        run: |
+          CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD | awk '{print "- " $0}' | tr '\n' ' \\n ')
+          FILE_COUNT=$(echo "$CHANGED_FILES" | grep -o '\\n' | wc -l)
+          FILE_COUNT=$((FILE_COUNT+1)) # Adjust for single-file cases
+          echo "CHANGED_FILES=${CHANGED_FILES}" >> $GITHUB_ENV
+          echo "FILE_COUNT=$FILE_COUNT" >> $GITHUB_ENV
+
+      - name: Send GitHub Event Notification to Microsoft Teams
+        env:
+          WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_MASTER_URL }}
+        run: |
+          MESSAGE="🚀 New Deployment in the 🌿 Branch: [$BRANCH](https://github.com/$REPO/tree/$BRANCH) Initiated!\\n\\n"
+          MESSAGE+="📦 Deploy: $DEPLOY_NUMBER\\n\\n"
+          MESSAGE+="🔗 [View Workflow Run]($GITHUB_RUN_URL)\\n\\n"
+          MESSAGE+="🔄 Commit: [$COMMIT_HASH](https://github.com/$REPO/commit/$COMMIT_HASH)\\n\\n"
+          MESSAGE+="👤 Triggered by: **$ACTOR**\\n\\n"
+          MESSAGE+="📅 Timestamp: $TIMESTAMP\\n\\n"
+          MESSAGE+="📢 Event Type: $EVENT_TYPE\\n\\n"
+          MESSAGE+="📂 Repository: [$REPO](https://github.com/$REPO)\\n\\n"
+          MESSAGE+="🌿 Branch: [$BRANCH](https://github.com/$REPO/tree/$BRANCH)\\n\\n"
+          MESSAGE+="💬 Commit Message: _${COMMIT_MSG}_\\n\\n"
+
+          if [ "$FILE_COUNT" -gt "0" ]; then
+            MESSAGE+="📑 Files Changed ($FILE_COUNT):\\n\\n"
+            MESSAGE+="$CHANGED_FILES\\n\\n"
+          fi
+
+          MESSAGE+="🔄 Status: IN_PROGRESS\\n\\n"
+
+          curl -H "Content-Type: application/json" -X POST -d \
+          "{\"text\": \"${MESSAGE}\"}" "${WEBHOOK_URL}"
