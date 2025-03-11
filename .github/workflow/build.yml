@@ -1,0 +1,40 @@
+name: Build and Test inDox
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Check Formatting with Black
+      run: |
+        pip install black
+        black --check .
+
+    - name: Run Linter (Flake8)
+      run: |
+        pip install flake8
+        flake8 .
+
+    - name: Run Tests with Pytest
+      run: |
+        pip install pytest
+        pytest tests/
