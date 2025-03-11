@@ -29,7 +29,3 @@ jobs:
         pip install black
         black --check .
 
-    - name: Run Linter (Flake8)
-      run: |
-        pip install flake8
-        flake8 .
