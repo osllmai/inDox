@@ -1,177 +1,82 @@
-### MobileCLIPClassifier Documentation
+# MobileCLIP Documentation 
 
-The `MobileCLIPClassifier` provides a lightweight and efficient solution for image classification, optimized for mobile environments. Built on MobileCLIP, it supports flexible classification tasks with batch processing and custom labels.
+## Overview
+MobileCLIP is a lightweight version of the CLIP model optimized for mobile and edge devices. It enables efficient and fast image classification without compromising accuracy, making it ideal for mobile applications and real-time image recognition tasks.
 
----
+## Key Features
+- **Optimized for Mobile**: Lightweight architecture for efficient execution on mobile and embedded devices.
+- **Fast Inference**: Reduced computational requirements for real-time classification.
+- **Custom Labels**: Define label sets to suit application-specific needs.
+- **Batch Processing**: Supports classification of multiple images in a single call.
+- **Visualization**: Generates intuitive bar plots for classification results.
 
-## 🔧 Installation
-
-Before using the `MobileCLIPClassifier`, ensure you have the required dependencies installed:
-
-### Install MobileCLIP
-```bash
-pip install git+https://github.com/apple/ml-mobileclip.git --no-deps
-```
-
-### Install PyTorch and OpenCLIP
-```bash
-pip install torch==2.1.0 torchvision==0.16.0
-pip install open-clip-torch
-```
-
----
-
-## 📥 Downloading Pretrained Checkpoints
-
-You can download the pretrained MobileCLIP checkpoint from its official repository or another hosting location. Ensure the checkpoint is accessible at a known path.
-
-For example:
-- Download and save the `mobileclip_s0.pt` checkpoint to `/content/mobileclip_s0.pt`.
-
----
-
-## 🧠 Using MobileCLIPClassifier
-
-The `MobileCLIPClassifier` in the `IndoxMiner` library streamlines classification tasks by providing a simple API for single and batch image processing.
-
-### Initialization
-
-```python
-from indoxminer.classification import MobileCLIPClassifier
-
-# Initialize the classifier with the pretrained checkpoint
-classifier = MobileCLIPClassifier(pretrained_path="/content/mobileclip_s0.pt")
-```
-
----
-
-### Parameters
-
-| Parameter         | Type     | Default           | Description                                             |
-|-------------------|----------|-------------------|---------------------------------------------------------|
-| `model_name`      | `str`    | `"mobileclip_s0"` | Name of the MobileCLIP model variant.                  |
-| `pretrained_path` | `str`    | `None`            | Path to the pretrained weights file.                   |
-
----
-
-## 🚀 Usage
+## Quick Start
 
 ### Single Image Classification
-
 ```python
+from indoxminer.classification import MobileCLIP
 from PIL import Image
+
+# Initialize classifier
+classifier = MobileCLIP()
 
 # Load an image
 image = Image.open("/path/to/image.jpg")
 
-# Classify the image
-classifier.classify(image, top=5)
+# Classify the image with default labels
+classifier.classify(image)
 ```
 
 ### Batch Image Classification
-
 ```python
-from pathlib import Path
-
 # Load multiple images
-image_paths = [Path("/path/to/image1.jpg"), Path("/path/to/image2.jpg")]
-images = [Image.open(path) for path in image_paths]
+images = [Image.open("/path/to/image1.jpg"), Image.open("/path/to/image2.jpg")]
 
 # Classify the batch of images
-classifier.classify(images, top=5)
+classifier.classify(images)
 ```
 
 ### Custom Labels
-
 ```python
-custom_labels = ["a tiger", "a mountain", "a river", "a boat", "a forest"]
-classifier.classify(images, labels=custom_labels, top=5)
+# Define custom labels
+labels = ["a tree", "a car", "a house"]
+
+# Classify the image with custom labels
+classifier.classify(image, labels=labels)
 ```
 
----
+## Advanced Features
 
-## 🔍 Visualization
-
-The `classify` method generates visualizations for each image, including:
-1. **Input Image**: Displays the input image.
-2. **Bar Chart**: Shows the top predictions and their probabilities.
-
----
-
-## 🔬 Advanced Usage
-
-For more control, you can directly use the classifier's methods:
-
-### Preprocessing
-
+### Customizable Workflows
+MobileCLIP allows users to interact directly with its internal components for flexible integration.
 ```python
-inputs = classifier.preprocess(images, labels=["a cat", "a dog"])
-```
+# Preprocess the image and labels
+inputs = classifier.preprocess(image, labels)
 
-### Prediction
-
-```python
+# Predict probabilities
 probs = classifier.predict(inputs)
+
+# Visualize results
+classifier.visualize(image, labels, probs, top=5)
 ```
 
-### Visualization
+### Model-Specific Capabilities
+- Optimized to run efficiently on mobile processors and low-power devices.
+- Maintains high classification accuracy despite reduced model size.
+- Tailored for real-time applications requiring fast inference.
 
-```python
-classifier.visualize(images, labels, probs, top=5)
-```
+## Example Use Cases
+- **Mobile Apps**: Implement real-time image classification in smartphone applications.
+- **Augmented Reality**: Enhance AR experiences by recognizing objects in real time.
+- **Edge Computing**: Deploy AI-powered classification on embedded systems and IoT devices.
 
----
+## Visualization
+The `classify` method generates bar plots displaying predicted probabilities, allowing users to interpret results effectively.
 
-## 🌐 Example Workflow
+## Why Use MobileCLIP?
+- Efficient and lightweight for mobile and edge device deployment.
+- Real-time classification with fast inference.
+- Customizable for application-specific requirements.
 
-```python
-from pathlib import Path
-from PIL import Image
-from indoxminer.classification import MobileCLIPClassifier
+For more details, refer to the main [IndoxMiner Classification Module Documentation](../Classification_Module.md).
 
-# Step 1: Load images
-image_paths = [Path("/path/to/image1.jpg"), Path("/path/to/image2.jpg")]
-images = [Image.open(path) for path in image_paths]
-
-# Step 2: Initialize the classifier
-classifier = MobileCLIPClassifier(pretrained_path="/path/to/mobileclip_s0.pt")
-
-# Step 3: Classify the images with default labels
-classifier.classify(images, top=5)
-
-# Step 4: Classify the images with custom labels
-custom_labels = ["a forest", "a river", "a mountain"]
-classifier.classify(images, labels=custom_labels, top=5)
-```
-
----
-
-## 🔧 Supported Features
-
-- **Custom Labels**: Define specific categories for image classification.
-- **Batch Processing**: Efficiently classify multiple images in a single call.
-- **Visualization**: Automatically generates bar plots for results.
-
----
-
-## 🛠️ Troubleshooting
-
-### 1. **Missing Checkpoint**
-   - Ensure the `pretrained_path` is correct and accessible.
-
-### 2. **CUDA Not Available**
-   - Verify that your system supports CUDA and PyTorch is installed with CUDA capabilities.
-
-### 3. **Dependency Errors**
-   - Ensure all required dependencies (`torch`, `open-clip-torch`, and `mobileclip`) are installed.
-
----
-
-## 🌟 Summary
-
-The `MobileCLIPClassifier` provides a powerful, lightweight solution for mobile-friendly image classification. Its features include:
-- Support for custom labels and batch processing.
-- Clear and intuitive visualizations.
-- Seamless integration with `IndoxMiner` for broader use cases.
-
-Explore the [full documentation](https://indoxminer.readthedocs.io/) for further details.

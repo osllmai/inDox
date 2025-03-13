@@ -1,188 +1,82 @@
-### RemoteCLIPClassifier Documentation
+# RemoteCLIP Documentation 
 
-The `RemoteCLIPClassifier` is a specialized classifier based on the CLIP framework, tailored for remote sensing and general image classification tasks. It supports various model variants, including `RN50`, `ViT-B-32`, and `ViT-L-14`.
+## Overview
+RemoteCLIP is a specialized image classification model designed for remote sensing and satellite imagery analysis. Leveraging CLIP’s vision-language capabilities, this model excels in identifying and categorizing features in aerial and geospatial images.
 
----
+## Key Features
+- **Optimized for Remote Sensing**: Designed specifically for satellite and aerial image classification.
+- **CLIP-Based Model**: Uses vision-language understanding for semantic classification.
+- **Custom Labels**: Define domain-specific labels for geospatial analysis.
+- **Batch Processing**: Efficiently processes multiple images at once.
+- **Visualization**: Generates bar plots for intuitive result interpretation.
 
-## 🔧 Installation
-
-Before using the `RemoteCLIPClassifier`, ensure you have the `open-clip-torch` library installed. This library provides the required framework for working with RemoteCLIP models.
-
-### Install OpenCLIP
-
-```bash
-pip install open-clip-torch
-```
-
----
-
-## 📥 Downloading Pretrained Checkpoints
-
-The pretrained checkpoints for RemoteCLIP are available on Hugging Face. You can download them programmatically using the `huggingface_hub` library:
-
-### Example: Download Checkpoints
-
-```python
-from huggingface_hub import hf_hub_download
-
-# Download checkpoints for all supported models
-for model_name in ['RN50', 'ViT-B-32', 'ViT-L-14']:
-    checkpoint_path = hf_hub_download("chendelong/RemoteCLIP", f"RemoteCLIP-{model_name}.pt", cache_dir='checkpoints')
-    print(f'{model_name} is downloaded to {checkpoint_path}.')
-```
-
-Alternatively, you can clone the repository using Git LFS to manually download the files.
-
----
-
-## 🧠 Using RemoteCLIPClassifier
-
-The `RemoteCLIPClassifier` in the `IndoxMiner` library simplifies the process of using RemoteCLIP models for image classification.
-
-### Initialization
-
-```python
-from indoxminer.classification import RemoteCLIPClassifier
-
-# Initialize the classifier with a specific model and checkpoint
-model_name = "ViT-L-14"  # Options: 'RN50', 'ViT-B-32', 'ViT-L-14'
-checkpoint_path = "/path/to/RemoteCLIP-ViT-L-14.pt"
-
-classifier = RemoteCLIPClassifier(model_name=model_name, checkpoint_path=checkpoint_path)
-```
-
----
-
-### Parameters
-
-| Parameter         | Type     | Default       | Description                                             |
-|-------------------|----------|---------------|---------------------------------------------------------|
-| `model_name`      | `str`    | `"ViT-L-14"`  | Specifies the RemoteCLIP model to use.                 |
-| `checkpoint_path` | `str`    | `None`        | Path to the pretrained checkpoint file.                |
-
----
-
-## 🚀 Usage
+## Quick Start  
 
 ### Single Image Classification
-
 ```python
+from indoxminer.classification import RemoteCLIP
 from PIL import Image
 
+# Initialize classifier
+classifier = RemoteCLIP()
+
 # Load an image
-image = Image.open("/path/to/image.jpg")
+image = Image.open("/path/to/satellite_image.jpg")
 
-# Define labels for classification
-labels = ["An airport", "A university", "A stadium"]
-
-# Classify the image
-classifier.classify(image, labels, top=3)
+# Classify the image with default labels
+classifier.classify(image)
 ```
 
 ### Batch Image Classification
-
 ```python
 # Load multiple images
 images = [Image.open("/path/to/image1.jpg"), Image.open("/path/to/image2.jpg")]
 
 # Classify the batch of images
-classifier.classify(images, labels, top=3)
+classifier.classify(images)
 ```
 
 ### Custom Labels
-
 ```python
-custom_labels = ["A tiger", "A mountain", "A river"]
-classifier.classify(image, labels=custom_labels, top=3)
+# Define custom labels
+labels = ["urban area", "forest", "water body", "desert"]
+
+# Classify the image with custom labels
+classifier.classify(image, labels=labels)
 ```
 
----
+## Advanced Features
 
-## 🔍 Visualization
-
-The `classify` method automatically generates visualizations:
-1. **Image**: Displays the input image.
-2. **Bar Chart**: Shows the top `N` predictions and their probabilities.
-
-Example:
-
-```plaintext
-Image 1 predictions:
-[{'An airport': 85.3}, {'A stadium': 10.2}, {'A university': 4.5}]
-```
-
----
-
-## 🔬 Advanced Usage
-
-For more control, use the `preprocess`, `predict`, and `visualize` methods directly:
-
+### Customizable Workflows
+RemoteCLIP allows users to interact with internal components for more precise control.
 ```python
 # Preprocess the image and labels
-inputs = classifier.preprocess(images, labels)
+inputs = classifier.preprocess(image, labels)
 
 # Predict probabilities
 probs = classifier.predict(inputs)
 
-# Visualize the results
-classifier.visualize(images, labels, probs, top=3)
+# Visualize results
+classifier.visualize(image, labels, probs, top=5)
 ```
 
----
+### Model-Specific Capabilities
+- Fine-tuned for satellite, aerial, and drone imagery.
+- Recognizes geographic features, land use patterns, and environmental conditions.
+- Can be integrated with GIS and remote sensing applications.
 
-## 📜 Supported Models
+## Example Use Cases
+- **Environmental Monitoring**: Identify deforestation, water levels, and land changes.
+- **Urban Planning**: Classify and analyze city structures and expansions.
+- **Disaster Response**: Assess damage after natural disasters using satellite imagery.
 
-| Model Name   | Description                          |
-|--------------|--------------------------------------|
-| `RN50`       | ResNet-50-based RemoteCLIP model.    |
-| `ViT-B-32`   | Vision Transformer with 32x32 patches. |
-| `ViT-L-14`   | Larger Vision Transformer model.     |
+## Visualization
+The `classify` method generates bar plots displaying predicted probabilities, helping users interpret geospatial classification results effectively.
 
----
+## Why Use RemoteCLIP?
+- Designed for geospatial and aerial image classification.
+- Supports custom workflows tailored to remote sensing applications.
+- Provides insightful visualizations for better analysis.
 
-## Example End-to-End Workflow
+For more details, refer to the main [IndoxMiner Classification Module Documentation](../Classification_Module.md).
 
-```python
-from PIL import Image
-from indoxminer.classification import RemoteCLIPClassifier
-
-# Step 1: Initialize the classifier
-model_name = "ViT-L-14"
-checkpoint_path = "/path/to/RemoteCLIP-ViT-L-14.pt"
-classifier = RemoteCLIPClassifier(model_name=model_name, checkpoint_path=checkpoint_path)
-
-# Step 2: Load the image
-image = Image.open("/path/to/airport.jpg")
-
-# Step 3: Define labels
-labels = ["An airport", "A university", "A stadium"]
-
-# Step 4: Classify the image
-classifier.classify(image, labels, top=3)
-```
-
----
-
-## 🛠️ Common Issues and Solutions
-
-### 1. **Missing Checkpoints**
-   - Ensure the pretrained checkpoint is downloaded and accessible at the specified `checkpoint_path`.
-
-### 2. **CUDA Errors**
-   - Check that your system supports CUDA and that `torch.cuda.is_available()` returns `True`.
-
-### 3. **Installation Issues**
-   - Ensure `open-clip-torch` and all dependencies are installed.
-
----
-
-## 🌟 Summary
-
-The `RemoteCLIPClassifier` is a powerful tool for image classification, supporting multiple model variants and flexible input handling. It integrates seamlessly with `IndoxMiner`, offering:
-- Batch processing.
-- Custom label support.
-- Visualization of results.
-
-For further details, refer to the official [documentation](https://indoxminer.readthedocs.io/).
-
----
