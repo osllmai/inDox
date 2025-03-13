@@ -1,4 +1,4 @@
-### Classification Module
+### Classification Module 
 
 The **classification module** in `IndoxMiner` provides a powerful and flexible framework for image classification, leveraging state-of-the-art deep learning models. Designed for high accuracy, scalability, and ease of use, it supports **single-image and batch processing**, **custom label definitions**, and **intuitive result visualizations**.
 

@@ -1,4 +1,4 @@
-# BiomedCLIP Documentation
+# BiomedCLIP Documentation 
 
 ## Overview
 BiomedCLIP is a specialized image classification model tailored for biomedical imaging tasks. It utilizes CLIP's vision-language capabilities, fine-tuned for medical and healthcare applications, making it ideal for analyzing X-rays, MRIs, pathology slides, and other biomedical images.

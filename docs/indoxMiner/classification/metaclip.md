@@ -1,4 +1,4 @@
-# MetaCLIP Documentation
+# MetaCLIP Documentation 
 
 ## Overview
 MetaCLIP is an advanced image classification model developed by Meta AI. It is designed for high-performance classification tasks by leveraging the power of CLIP-based vision-language models. This classifier is optimized for diverse applications, including general image recognition and domain-specific classification.

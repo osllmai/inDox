@@ -1,4 +1,4 @@
-# AltCLIP Documentation
+# AltCLIP Documentation 
 
 ## Overview
 AltCLIP is an alternative CLIP-based image classification model developed by BAAI. It offers powerful multi-modal classification capabilities and is optimized for diverse applications, making it an excellent choice for a wide range of use cases.

@@ -1,4 +1,4 @@
-# ViT Documentation
+# ViT Documentation 
 
 ## Overview
 ViT is an implementation of the Vision Transformer (ViT) model within IndoxMiner. It provides powerful image classification capabilities by leveraging self-attention mechanisms, making it suitable for a wide range of classification tasks, from general image recognition to domain-specific applications.

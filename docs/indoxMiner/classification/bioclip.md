@@ -1,4 +1,4 @@
-# BioCLIP Documentation
+# BioCLIP Documentation 
 
 ## Overview
 BioCLIP is a specialized image classification model designed for biological image analysis. It leverages CLIP’s vision-language capabilities to categorize biological data efficiently, making it an essential tool for researchers, healthcare professionals, and bioinformatics applications.

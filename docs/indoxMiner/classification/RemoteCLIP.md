@@ -1,4 +1,4 @@
-# RemoteCLIP Documentation
+# RemoteCLIP Documentation 
 
 ## Overview
 RemoteCLIP is a specialized image classification model designed for remote sensing and satellite imagery analysis. Leveraging CLIP’s vision-language capabilities, this model excels in identifying and categorizing features in aerial and geospatial images.
@@ -10,7 +10,7 @@ RemoteCLIP is a specialized image classification model designed for remote sensi
 - **Batch Processing**: Efficiently processes multiple images at once.
 - **Visualization**: Generates bar plots for intuitive result interpretation.
 
-## Quick Start
+## Quick Start  
 
 ### Single Image Classification
 ```python

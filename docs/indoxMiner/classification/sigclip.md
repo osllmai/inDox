@@ -1,4 +1,4 @@
-# SigCLIP Documentation
+# SigCLIP Documentation 
 
 ## Overview
 SigCLIP is a semantic image classification model integrated into IndoxMiner. It is designed to leverage CLIP's capabilities for classifying images based on textual labels, allowing users to define their own categories and achieve high adaptability across diverse classification tasks.

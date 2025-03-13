@@ -1,4 +1,4 @@
-# MobileCLIP Documentation
+# MobileCLIP Documentation 
 
 ## Overview
 MobileCLIP is a lightweight version of the CLIP model optimized for mobile and edge devices. It enables efficient and fast image classification without compromising accuracy, making it ideal for mobile applications and real-time image recognition tasks.
