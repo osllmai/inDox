@@ -1,0 +1,91 @@
+name: GitHub Auto Tag & Release
+
+on:
+  push:
+    branches: [ "master", "development" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write  # Ensures GitHub Actions can push tags and create releases
+
+jobs:
+  tag_and_release:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch full history to get all tags
+
+      - name: Determine Branch and Set Label
+        id: branch_label
+        run: |
+          BRANCH_NAME=${{ github.ref_name }}
+
+          if [[ "$BRANCH_NAME" == "master" ]]; then
+            LABEL="Master"
+          elif [[ "$BRANCH_NAME" == "development" ]]; then
+            LABEL="Dev"
+          else
+            echo "Error: Unsupported branch '$BRANCH_NAME'."
+            exit 1
+          fi
+
+          echo "LABEL=$LABEL"
+          echo "LABEL=$LABEL" >> $GITHUB_ENV
+
+      - name: Fetch Latest Tag and Determine Next Version
+        id: versioning
+        run: |
+          # Fetch all tags
+          git fetch --tags
+
+          # Get latest tag for the current branch (Master or Development)
+          LATEST_TAG=$(git tag -l "v*-${LABEL}" --sort=-v:refname | head -n 1 | tr -d '\r')
+
+          # If no tags exist, start with v0.1.0-Master or v0.1.0-Dev
+          if [[ -z "$LATEST_TAG" ]]; then
+            NEW_TAG="v0.1.0-${LABEL}"
+          else
+            # Extract version numbers from LATEST_TAG
+            if [[ "$LATEST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)-${LABEL}$ ]]; then
+              MAJOR="${BASH_REMATCH[1]}"
+              MINOR="${BASH_REMATCH[2]}"
+              PATCH="${BASH_REMATCH[3]}"
+            else
+              echo "Error: Could not parse latest tag '$LATEST_TAG'"
+              exit 1
+            fi
+
+            # Increment patch version (e.g., v0.1.0-Master → v0.1.1-Master)
+            PATCH=$((PATCH + 1))
+            NEW_TAG="v$MAJOR.$MINOR.$PATCH-${LABEL}"
+          fi
+
+          echo "LATEST_TAG=$LATEST_TAG"
+          echo "NEW_TAG=$NEW_TAG"
+
+          # Store variables in GitHub Actions environment
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+
+      - name: Configure Git User
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Create and Push New Git Tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag "$NEW_TAG"
+          git push origin "$NEW_TAG"
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$NEW_TAG" \
+            --title "Release $NEW_TAG" \
+            --notes "Automated release generated for $NEW_TAG."
