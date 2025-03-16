@@ -1,15 +1,12 @@
-name: GitHub Auto Tag & Release
+name: GitHub to Discord & Telegram Notification
 
 on:
   push:
-    branches: [ "master", "development" ]
+    branches: [ "master" ]
   workflow_dispatch:
 
-permissions:
-  contents: write  # Ensures GitHub Actions can push tags and create releases
-
 jobs:
-  tag_and_release:
+  notify_discord_telegram:
     runs-on: ubuntu-latest
     steps:
 
@@ -18,74 +15,139 @@ jobs:
         with:
           fetch-depth: 0  # Fetch full history to get all tags
 
-      - name: Determine Branch and Set Label
-        id: branch_label
+      - name: Gather Deployment Information
+        id: gather_info
         run: |
-          BRANCH_NAME=${{ github.ref_name }}
+          TIMESTAMP=$(date -u "+%A, %B %d %Y, %I:%M:%S %p UTC")
+          echo "TIMESTAMP=$TIMESTAMP" | tee -a $GITHUB_ENV
+          echo "REPO=${{ github.repository }}" | tee -a $GITHUB_ENV
+          echo "MARKDOWN_URL=https://github.com/osllmai/Indox_Documents/blob/master/README.md" | tee -a $GITHUB_ENV
 
-          if [[ "$BRANCH_NAME" == "master" ]]; then
-            LABEL="Master"
-          elif [[ "$BRANCH_NAME" == "development" ]]; then
-            LABEL="Dev"
-          else
-            echo "Error: Unsupported branch '$BRANCH_NAME'."
-            exit 1
-          fi
-
-          echo "LABEL=$LABEL"
-          echo "LABEL=$LABEL" >> $GITHUB_ENV
+      - name: Fetch README.md Content
+        id: fetch_readme
+        run: |
+          README_URL="https://raw.githubusercontent.com/osllmai/Indox_Documents/refs/heads/master/README.md"
+          README_CONTENT=$(curl -s $README_URL | head -c 750)
+          README_CONTENT="${README_CONTENT//$'\n'/' '}"  # Remove newlines for better formatting
+          echo "README_PREVIEW=$README_CONTENT" >> $GITHUB_ENV
+          echo "✅ Fetched README preview successfully."
 
       - name: Fetch Latest Tag and Determine Next Version
         id: versioning
         run: |
-          # Fetch all tags
+          echo "🔍 DEBUG: Fetching latest tags..."
           git fetch --tags
+          LATEST_TAG=$(git tag -l "v*" --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-Master)?$' | head -n 1 | tr -d '\r')
+          echo "📌 Latest Tag Found: $LATEST_TAG"
 
-          # Get latest tag for the current branch (Master or Development)
-          LATEST_TAG=$(git tag -l "v*-${LABEL}" --sort=-v:refname | head -n 1 | tr -d '\r')
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          SUFFIX=""
 
-          # If no tags exist, start with v0.1.0-Master or v0.1.0-Dev
+          if [[ "$BRANCH_NAME" == "master" ]]; then
+            SUFFIX="-Master"
+          fi
+
           if [[ -z "$LATEST_TAG" ]]; then
-            NEW_TAG="v0.1.0-${LABEL}"
+            NEW_TAG="v0.1.0$SUFFIX"
           else
-            # Extract version numbers from LATEST_TAG
-            if [[ "$LATEST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)-${LABEL}$ ]]; then
+            if [[ "$LATEST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)(-Master)?$ ]]; then
               MAJOR="${BASH_REMATCH[1]}"
               MINOR="${BASH_REMATCH[2]}"
               PATCH="${BASH_REMATCH[3]}"
+              PATCH=$((PATCH + 1))
+              NEW_TAG="v$MAJOR.$MINOR.$PATCH$SUFFIX"
+              echo "✅ Next Tag: $NEW_TAG"
             else
-              echo "Error: Could not parse latest tag '$LATEST_TAG'"
+              echo "❌ ERROR: Could not parse latest tag '$LATEST_TAG'"
               exit 1
             fi
-
-            # Increment patch version (e.g., v0.1.0-Master → v0.1.1-Master)
-            PATCH=$((PATCH + 1))
-            NEW_TAG="v$MAJOR.$MINOR.$PATCH-${LABEL}"
           fi
 
-          echo "LATEST_TAG=$LATEST_TAG"
-          echo "NEW_TAG=$NEW_TAG"
+          echo "NEW_TAG=$NEW_TAG" | tee -a $GITHUB_ENV
 
-          # Store variables in GitHub Actions environment
-          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
-          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
-
-      - name: Configure Git User
+      - name: Create and Push Git Tag
         run: |
-          git config --global user.name "github-actions"
+          echo "🔍 Creating and pushing Git tag..."
+          git config --global user.name "GitHub Actions"
           git config --global user.email "github-actions@github.com"
-
-      - name: Create and Push New Git Tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git tag "$NEW_TAG"
+          git tag -a "$NEW_TAG" -m "Release $NEW_TAG"
           git push origin "$NEW_TAG"
+          echo "✅ Tag $NEW_TAG created and pushed."
 
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "$NEW_TAG" \
-            --title "$NEW_TAG" \
-            --notes "Automated release generated for $NEW_TAG."
+          echo "🚀 Creating GitHub release..."
+          gh release create "$NEW_TAG" --title "$NEW_TAG" --notes "Automated release for version $NEW_TAG."
+          echo "✅ Release $NEW_TAG created."
+
+      - name: Prepare Message
+        id: prepare_message
+        run: |
+          RELEASE_MESSAGE="🚀 *New Release: $NEW_TAG*\n\n\
+          📂 Repository: [$REPO](https://github.com/$REPO)\n\
+          📜 Documentation Update Preview:\n\
+          $README_PREVIEW...\n\n\
+          To continue reading, please visit: [Full Documentation]($MARKDOWN_URL)\n\
+          🏷️ Version: $NEW_TAG\n\n\
+          🔔 Stay updated with the latest releases!"
+
+          echo "MESSAGE_PAYLOAD=$RELEASE_MESSAGE" >> $GITHUB_ENV
+          echo "✅ Message prepared successfully."
+
+      - name: Send GitHub Event Notification to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_MASTER_URL }}
+        run: |
+          echo "🔍 DEBUG: Sending message to Discord..."
+          JSON_PAYLOAD=$(jq -n \
+            --arg repo "$REPO" \
+            --arg markdown_url "$MARKDOWN_URL" \
+            --arg tag "$NEW_TAG" \
+            --arg readme_preview "$README_PREVIEW" \
+            '{
+              "username": "Pheonix Bot",
+              "avatar_url": "https://raw.githubusercontent.com/osllmai/phoenix/refs/heads/master/phoenix_qt/media/image_company/Phoenix.png",
+              "embeds": [
+                {
+                  "title": "🚀 Release \($tag)",
+                  "description": "New release deployed automatically!",
+                  "fields": [
+                    {
+                      "name": "📂 Repository",
+                      "value": "[\($repo)](https://github.com/\($repo))",
+                      "inline": false
+                    },
+                    {
+                      "name": "📜 Documentation Update Preview",
+                      "value": "\($readme_preview)...\n\n[Read More](\($markdown_url))",
+                      "inline": false
+                    },
+                    {
+                      "name": "🏷️ Version",
+                      "value": "\($tag)",
+                      "inline": false
+                    }
+                  ]
+                }
+              ]
+            }')
+
+          RESPONSE=$(curl -H "Content-Type: application/json" -X POST -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK_URL")
+          echo "✅ Discord Response: $RESPONSE"
+
+      - name: Send GitHub Event Notification to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_NAME: ${{ secrets.TELEGRAM_CHANNEL_NAME }}
+        run: |
+          echo "🔍 DEBUG: Sending message to Telegram..."
+          TELEGRAM_URL="https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage"
+
+          RESPONSE=$(curl -s -G "$TELEGRAM_URL" \
+            --data-urlencode "chat_id=$TELEGRAM_CHANNEL_NAME" \
+            --data-urlencode "text=$MESSAGE_PAYLOAD" \
+            --data-urlencode "parse_mode=Markdown")
+
+          echo "✅ Telegram Response: $RESPONSE"
