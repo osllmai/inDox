@@ -1,0 +1,256 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #4b16c6;
+  --ifm-color-primary-dark: #3f13aa;
+  --ifm-color-primary-darker: #3a119e;
+  --ifm-color-primary-darkest: #2e0d7d;
+  --ifm-color-primary-light: #5d2ae6;
+  --ifm-color-primary-lighter: #6a3ae9;
+  --ifm-color-primary-lightest: #7d51ed;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-link-color: #c929d5;
+
+  /* Custom brand colors */
+  --indox-purple: #c929d5;
+  --indox-deep-purple: #32177e;
+  --indox-pink: #e306c5;
+  --indox-violet: #4b16c6;
+  --indox-dark-pink: #6d0568;
+
+  /* Font settings */
+  --ifm-font-family-base: "Segoe UI", system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  --ifm-heading-font-weight: 600;
+  --ifm-heading-line-height: 1.2;
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme="dark"] {
+  --ifm-color-primary: #c929d5;
+  --ifm-color-primary-dark: #b324be;
+  --ifm-color-primary-darker: #a621b1;
+  --ifm-color-primary-darkest: #881b92;
+  --ifm-color-primary-light: #e306c5;
+  --ifm-color-primary-lighter: #f0f0f0;
+  --ifm-color-primary-lightest: #ffffff;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-link-color: #e306c5;
+  --ifm-background-color: #0f0518;
+  --ifm-background-surface-color: #1a0a2e;
+}
+
+/* Homepage specific styles */
+.homepage-wrapper {
+  --ifm-navbar-height: 0px;
+}
+
+.homepage-wrapper .navbar {
+  position: absolute;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  width: 100%;
+  z-index: 10;
+}
+
+.homepage-wrapper .navbar__inner {
+  padding: 1rem 0;
+}
+
+/* Enhanced hero section */
+.hero {
+  background: linear-gradient(
+    135deg,
+    var(--indox-deep-purple) 0%,
+    var(--indox-violet) 50%,
+    var(--indox-purple) 100%
+  );
+  color: white;
+  padding: 4rem 0;
+}
+
+.hero__title {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, #ffffff 0%, #f0f0f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.hero__subtitle {
+  font-size: 1.2rem;
+  line-height: 1.5;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  opacity: 0.9;
+}
+
+.button--secondary {
+  background-color: white;
+  color: var(--indox-violet);
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.button--secondary:hover {
+  background-color: white;
+  color: var(--indox-purple);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Enhanced navbar with subtle gradient */
+.navbar {
+  background: linear-gradient(
+    90deg,
+    rgba(50, 23, 126, 0.98) 0%,
+    rgba(75, 22, 198, 0.98) 100%
+  );
+  backdrop-filter: saturate(180%) blur(5px);
+  /* Removing both the box-shadow and border-bottom */
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+  /* border-bottom: 1px solid rgba(255, 255, 255, 0.1); */
+}
+
+.navbar__title {
+  font-weight: 700;
+  font-size: 1.5rem;
+  background: linear-gradient(90deg, #ffffff 0%, #f0f0f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.navbar__link {
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+  color: white;
+}
+
+.navbar__link:hover {
+  opacity: 0.8;
+  color: white;
+}
+
+/* Active link indicator */
+.navbar__link--active {
+  color: white;
+}
+
+.navbar__link--active::before {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  right: 0;
+  height: 2px;
+}
+
+/* Improved footer */
+.footer {
+  background-color: var(--indox-deep-purple);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.footer__title {
+  font-weight: 600;
+  color: white;
+}
+
+.footer__link-item {
+  transition: opacity 0.2s ease;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer__link-item:hover {
+  opacity: 0.8;
+  text-decoration: none;
+  color: white;
+}
+
+/* Subtle code block enhancements */
+pre {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+[data-theme="dark"] pre {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Better contrast for headings */
+h1,
+h2,
+h3 {
+  letter-spacing: -0.03em;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+/* Responsive table overflow */
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Branded callout boxes */
+div[class^="alert"] {
+  border-left-width: 4px;
+}
+
+.alert--primary {
+  --ifm-alert-background-color: rgba(75, 22, 198, 0.05);
+  border-left-color: var(--ifm-color-primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 996px) {
+  .navbar__link--active::before {
+    bottom: -4px;
+  }
+
+  .navbar__items--right {
+    padding-right: 1rem;
+  }
+
+  .hero__title {
+    font-size: 2.5rem;
+  }
+
+  .hero__subtitle {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+
+  .homepage-wrapper .navbar {
+    background: linear-gradient(
+      90deg,
+      rgba(50, 23, 126, 0.98) 0%,
+      rgba(75, 22, 198, 0.98) 100%
+    );
+  }
+}
