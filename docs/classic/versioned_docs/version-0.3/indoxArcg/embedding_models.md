@@ -4,20 +4,22 @@ indoxArcg supports multiple state-of-the-art embedding models for text represent
 
 ## Table of Contents
 
-- [Prerequisites](#prerequisites)
-- [Supported Models](#supported-models)
-- [Model Configuration Guides](#model-configuration-guides)
-  - [OpenAI](#1-openai-embedding-model)
-  - [Azure OpenAI](#2-azure-openai-embedding-model)
-  - [Hugging Face](#3-hugging-face-embedding-models)
-  - [NerdToken](#4-nerdtoken-embedding-models)
-  - [Mistral](#5-mistral-embedding-model)
-  - [Clarifai](#6-clarifai-embedding-model)
-  - [Cohere](#7-cohere-embedding-model)
-  - [Elasticsearch](#8-elasticsearch-embedding-model)
-  - [GPT4All](#9-gpt4all-embedding-model)
-  - [Ollama](#10-ollama-embedding-model)
-- [Future Development](#future-development)
+- [Embedding Models](#embedding-models)
+  - [Table of Contents](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+  - [Supported Models](#supported-models)
+  - [Model Configuration Guides](#model-configuration-guides)
+    - [1. OpenAI Embedding Model](#1-openai-embedding-model)
+    - [2. Azure OpenAI Embedding Model](#2-azure-openai-embedding-model)
+    - [3. Hugging Face Embedding Models](#3-hugging-face-embedding-models)
+    - [4. NerdToken Embedding Models](#4-nerdtoken-embedding-models)
+    - [5. Mistral Embedding Model](#5-mistral-embedding-model)
+    - [6. Clarifai Embedding Model](#6-clarifai-embedding-model)
+    - [7. Cohere Embedding Model](#7-cohere-embedding-model)
+    - [8. Elasticsearch Embedding Model](#8-elasticsearch-embedding-model)
+    - [9. GPT4All Embedding Model](#9-gpt4all-embedding-model)
+    - [10. Ollama Embedding Model](#10-ollama-embedding-model)
+  - [Future Development](#future-development)
 
 ## Prerequisites
 

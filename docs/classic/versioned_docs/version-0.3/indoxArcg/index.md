@@ -7,4 +7,12 @@ With a focus on adaptability and user-centric design, Indox aims to deliver futu
 
 ## Join Us
 
-Join us in exploring how Indox can revolutionize your document processing workflow, bringing clarity and organization to your data retrieval needs.
+Join us in exploring how Indox can revolutionize your document processing workflow, bringing clarity and organization to your data retrieval needs. Connect with us and become part of our growing community through the platforms below:
+
+## Community
+
+- [Discord](https://discord.com/invite/xGz5tQYaeq)
+- [X (Twitter)](https://x.com/osllmai)
+- [LinkedIn](https://www.linkedin.com/company/osllmai/)
+- [YouTube](https://www.youtube.com/@osllm-rb9pr)
+- [Telegram](https://t.me/osllmai)

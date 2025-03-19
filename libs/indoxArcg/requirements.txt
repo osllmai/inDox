@@ -16,3 +16,4 @@ unstructured==0.15.8
 nltk==3.9.1
 pillow_heif==0.18.0
 rank_bm25==0.2.2
+duckduckgo-search==4.1.1

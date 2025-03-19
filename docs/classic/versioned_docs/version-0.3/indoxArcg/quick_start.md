@@ -3,22 +3,27 @@
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/cookbook/indoxArcg/quick_start.ipynb)
 
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/osllmai/inDox/blob/master/cookbook/indoxArcg/quick_start.ipynb)
 
 
 ## Overview
 
-This documentation provides a detailed explanation of how to use the
-`IndoxArcg` package for QA model and embedding
-selection, document splitting, and storing in a vector store.
+This guide explains how to use the `IndoxArcg` package for QA model and embedding selection, document splitting, and storing in a vector store.
 
 ## Setup
 
-### Install the Required Packages
+### Install Required Packages
+
+Install the necessary dependencies:
 
 ```python
 !pip install indoxArcg
 !pip install openai
 !pip install chromadb
+```
+
+```python
+!pip install indoxArcg openai chromadb
 ```
 
 ### Load Environment Variables
@@ -30,7 +35,6 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 ```
 
@@ -89,14 +93,16 @@ indoxArcg.connect_to_vectorstore(db)
 indoxArcg.store_in_vectorstore(docs)
 ```
 
-## Quering
+## Querying
+
+Retrieve relevant information using a natural language query:
 
 ```python
 query = "Your query here"
-```
+retriever = RAG(vector_database=db, llm=openai_qa)
+results = retriever.infer(query, top_k=5)
 
-```python
-retriever = RAG(vector_database=db,llm=openai_qa)
-retriever.infer(query,top_k=5)
+for result in results:
+    print(result)
 ```
 

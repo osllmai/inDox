@@ -29,6 +29,8 @@ git clone [repository-url]
 cd Indox_Documents
 ```
 
+> **Note:** Replace `[repository-url]` with the actual URL of the repository.
+
 ### Step 2: Navigate to the Documentation Directory
 
 ```bash
@@ -46,8 +48,31 @@ npm install
 Or using Yarn:
 
 ```bash
-yarn
+yarn install
 ```
+
+> **Note:** Ensure you have either npm or Yarn installed before proceeding.
+
+You can remove the build directory (if it exists) and then run the build command.
+For Unix/Linux/macOS:
+
+```bash
+rm -rf build && npm run build && npm run serve
+```
+
+For Windows PowerShell:
+
+```bash
+Remove-Item -Recurse -Force build; npm run build; npm run serve
+```
+
+For Windows Command Prompt:
+
+```bash
+rmdir /s /q build && npm run build && npm run serve
+```
+
+> **Note:** The `/q` parameter is valid only in Command Prompt, not in PowerShell.
 
 ### Step 4: Build the Documentation
 
@@ -113,6 +138,12 @@ GIT_USER=<Your GitHub username> yarn deploy
   ```bash
   export NODE_OPTIONS=--max_old_space_size=4096  # For Unix/Linux/macOS
   set NODE_OPTIONS=--max_old_space_size=4096     # For Windows
+  ```
+- If you encounter persistent issues, try clearing the `node_modules` directory and reinstalling dependencies:
+  ```bash
+  rm -rf node_modules package-lock.json  # For Unix/Linux/macOS
+  del /s /q node_modules package-lock.json  # For Windows
+  npm install
   ```
 
 ## Additional Information

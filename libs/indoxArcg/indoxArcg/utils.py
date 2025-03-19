@@ -23,7 +23,14 @@ def show_indox_logo():
 
 
 def search_duckduckgo(query, max_retries=5, delay=2):
-    from duckduckgo_search import DDGS
+    """Search DuckDuckGo for query results"""
+    try:
+        from duckduckgo_search import DDGS
+    except ImportError:
+        print("Error: duckduckgo-search package not found. Please install it using:")
+        print("pip install duckduckgo-search==4.1.1")
+        return []
+
     ddgs = DDGS()
     for attempt in range(max_retries):
         results = []
@@ -35,11 +42,15 @@ def search_duckduckgo(query, max_retries=5, delay=2):
                 max_results=5
             )
             for res in result:
-                results.append(res['body'])
-            return results
+                if 'body' in res:
+                    results.append(res['body'])
+            if results:
+                return results
+            return []
         except Exception as e:
             if attempt < max_retries - 1:
                 time.sleep(delay)
             else:
-                print("Max retries reached. Exiting.")
-    return None
+                print(
+                    f"Error in DuckDuckGo search after {max_retries} attempts: {str(e)}")
+    return []

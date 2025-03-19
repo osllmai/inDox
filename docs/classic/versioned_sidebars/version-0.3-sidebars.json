@@ -13,8 +13,8 @@
         "description": "Learn how to use IndoxArcg for advanced Retrieval-Augmented Generation (RAG) and Cache-Augmented Generation (CAG)."
       },
       "items": [
-        "indoxArcg/index",
         "indoxArcg/quick_start",
+        "indoxArcg/index",
         "indoxArcg/llms",
         "indoxArcg/embedding_models",
         {

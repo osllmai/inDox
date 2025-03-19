@@ -102,25 +102,52 @@ class AnswerValidator:
         return result
 
     def grade_relevance(self, context: List[str], query: str) -> List[str]:
-        # Retrieve the generator (or list) of graded documents
+        """Grade the relevance of documents to the query"""
+        try:
+            result = self.llm.grade_docs(context=context, question=query)
 
-        graded_docs = self.llm.grade_docs(context=context, question=query)
-        
-        # Convert to a list if needed (if it's already a list, this is harmless)
-        graded_docs_list = list(graded_docs)
-        
-        # Check that every item is a string
-        if not all(isinstance(doc, str) for doc in graded_docs_list):
-            raise TypeError("grade_docs returned non-string values")
+            # If result is already a list, return it
+            if isinstance(result, list):
+                return result
 
-        # Now it’s safe to apply string methods like strip()
-        # (Or any other string operation you need.)
-        # If you want to strip them, for example:
-        graded_docs_list = [doc.strip() for doc in graded_docs_list]
+            # Handle streaming response
+            if hasattr(result, '__iter__') and not isinstance(result, str):
+                try:
+                    full_result = ""
+                    for chunk in result:
+                        if isinstance(chunk, str):
+                            full_result += chunk
+                        elif hasattr(chunk, 'text'):
+                            full_result += chunk.text
+                        elif hasattr(chunk, 'content'):
+                            full_result += chunk.content
 
-        return "graded_docs_list:" , graded_docs_list
+                    # Process the resulting string
+                    if full_result:
+                        # Split by newlines if it appears to be a list
+                        if '\n' in full_result:
+                            return [item.strip() for item in full_result.split('\n') if item.strip()]
+                        return [full_result]
+                    return context  # Return original context if no valid result
+                except Exception as e:
+                    logger.error(
+                        f"Error processing streaming response in grade_relevance: {e}")
+                    return context  # Return original context as fallback
 
+            # If result is a string, convert to list
+            if isinstance(result, str):
+                if '\n' in result:
+                    return [item.strip() for item in result.split('\n') if item.strip()]
+                return [result]
 
+            # If we get here, something unexpected happened
+            logger.warning(
+                f"Unexpected result type in grade_relevance: {type(result)}")
+            return context
+
+        except Exception as e:
+            logger.error(f"Error in grade_relevance: {str(e)}")
+            return context  # Return original context as fallback
 
 
 class WebSearchFallback:

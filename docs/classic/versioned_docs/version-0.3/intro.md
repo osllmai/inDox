@@ -18,11 +18,11 @@ Advanced **Retrieval-Augmented Generation (RAG)** and **Cache-Augmented Generati
 
 **Key Features:**
 
-- **Multi-format document support**: Handles PDF, HTML, Markdown, LaTeX, and more
-- **Intelligent clustering and chunk processing**: Organizes and processes documents for efficient retrieval
-- **Support for major LLM providers**: Compatible with OpenAI, Google, Mistral, HuggingFace, Ollama, and others
-- **Advanced RAG features**: Semantic caching, multi-query retrieval, reranking and relevance scoring
-- **Cache-Augmented Generation (CAG)**: Preloading and caching of documents for faster inference
+- **Multi-format document support**: Handles PDF, HTML, Markdown, LaTeX, and more.
+- **Intelligent clustering and chunk processing**: Organizes and processes documents for efficient retrieval.
+- **Support for major LLM providers**: Compatible with OpenAI, Google, Mistral, HuggingFace, Ollama, and others.
+- **Advanced RAG features**: Semantic caching, multi-query retrieval, reranking, and relevance scoring.
+- **Cache-Augmented Generation (CAG)**: Preloading and caching of documents for faster inference.
 
 ### 2. ⛏️ IndoxMiner
 
