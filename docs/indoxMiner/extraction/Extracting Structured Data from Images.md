@@ -5,7 +5,7 @@ IndoxMiner provides a powerful and flexible way to extract structured data from 
 ## Key Features
 
 - 📸 **Image to Structured Data**: Extract information from images and convert it into structured formats.
-- 🔠 **OCR Integration**: Supports multiple OCR models, including PaddleOCR and EasyOCR, for text extraction from images.
+- 🔠 **OCR Integration**: Supports multiple OCR models, including PaddleOCR, EasyOCR, Tesseract, and Mistral OCR, for text extraction from images.
 - 🔍 **Custom Extraction Schemas**: Define and validate the data fields you want to extract, tailored to document types like passports and invoices.
 - ✅ **Built-in Validation Rules**: Ensures data accuracy with customizable validation options.
 - 📊 **Easy Conversion to DataFrames**: Seamlessly convert results to pandas DataFrames for analysis and manipulation.
@@ -34,7 +34,7 @@ from indoxminer import OpenAi, DocumentProcessor, ProcessingConfig, Schema, Extr
 openai_api = OpenAi(api_key="YOUR_API_KEY")  # Replace with your actual API key
 
 # Initialize OCR processor with configuration
-config = ProcessingConfig(ocr_for_images=True, ocr_model='paddle')  # Change to 'easyocr' or 'tesseract' as needed
+config = ProcessingConfig(ocr_for_images=True, ocr_model='paddle')  # Change to 'easyocr', 'tesseract', or 'mistral' as needed
 ```
 
 ### Step 2: Define Image Paths and Schema
@@ -116,13 +116,19 @@ The `Extractor` is the main class responsible for interacting with the LLM, vali
 
 Validation rules ensure data quality by setting constraints on each field within a schema.
 
+## Supported OCR Models
+
+- **PaddleOCR**: A deep learning-based OCR engine for recognizing text from images.
+- **EasyOCR**: An OCR tool that supports more than 80 languages.
+- **Tesseract**: An open-source OCR engine.
+- **Mistral OCR**: A powerful OCR model for text extraction from images, integrated with API key input.
 
 ## Supported Output Formats
 
 - **JSON**: Returns structured data in JSON format, suitable for further processing or storage.
 - **DataFrame**: Converts the results to a pandas DataFrame for analysis and manipulation.
 - **Dictionary**: Access the raw extraction results as dictionaries for flexible handling.
-- **Markdown**: 
+- **Markdown**: Display OCR results in Markdown format for easy reading.
 
 ## Conclusion
 
