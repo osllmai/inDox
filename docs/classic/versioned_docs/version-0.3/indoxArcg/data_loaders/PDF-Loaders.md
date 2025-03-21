@@ -57,7 +57,7 @@ docs = loader.load("financial_report.pdf")
 ```python
 from indoxArcg.data_loaders import PyPDF2
 
-loader = PyPDF2(password="secure123")
+loader = PyPDF2(password="your_password")
 docs = loader.load("encrypted.pdf")
 ```
 
@@ -119,7 +119,7 @@ documents = loader.load("document.pdf")
 ```python
 from indoxArcg.data_loaders import PyPDF4
 
-loader = PyPDF4(password="company@123")
+loader = PyPDF4(password="your_password")
 documents = loader.load("secured_doc.pdf")
 ```
 
@@ -201,6 +201,4 @@ documents = loader.load("large_document.pdf")
 - [Advanced Table Extraction Guide](#)
 - [PDF Security Features](#)
 
-```
 
-```

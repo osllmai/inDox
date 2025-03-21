@@ -4,6 +4,7 @@ indoxArcg supports multiple state-of-the-art embedding models for text represent
 
 ## Table of Contents
 
+
 - [Prerequisites](#prerequisites)
 - [Supported Models](#supported-models)
 - [Model Configuration Guides](#model-configuration-guides)

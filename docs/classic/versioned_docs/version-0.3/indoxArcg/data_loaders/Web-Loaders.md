@@ -8,6 +8,8 @@ This guide covers web content and rich text format processors supported in indox
 
 ### 1. HTML Loader (BeautifulSoup)
 
+[BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) is a Python library for parsing HTML and XML documents. It creates parse trees from page source codes that can be used to extract data easily.
+
 **Best for**: Web content extraction and DOM analysis
 
 #### Features

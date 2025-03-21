@@ -4,6 +4,8 @@
 
 Docling is a powerful document processing library integrated with indoxArcg that provides comprehensive document parsing and intelligent chunking capabilities. It excels at converting documents across multiple formats while preserving their semantic structure.
 
+[Docling GitHub Repository](https://github.com/docling-project/docling)    
+
 ## Key Features
 
 - **Document Conversion**: Transform documents between various formats while maintaining structure
@@ -13,14 +15,16 @@ Docling is a powerful document processing library integrated with indoxArcg that
 
 ## Installation
 
-```bash
+```python
 # Basic installation
 pip install docling
-
+```
 # With PDF support
+```python
 pip install "docling[pdf]"
-
+```
 # Full installation with all dependencies
+```python
 pip install "docling[all]"
 ```
 

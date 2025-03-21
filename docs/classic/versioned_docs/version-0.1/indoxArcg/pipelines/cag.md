@@ -68,8 +68,11 @@ class ConversationSession:
     def add_to_history(query, response)  # Auto-formatting storage
 ```
 
+
 - **3 Context Strategies**:  
-  `recent` (last N turns) | `relevant` (BM25 search) | `full` (complete history)
+    - `recent`: Uses the last N conversation turns for immediate context continuity
+    - `relevant`: Employs BM25 search against conversation history to find semantically related exchanges
+    - `full`: Maintains complete conversation history for comprehensive context awareness
 
 ---
 

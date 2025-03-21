@@ -203,4 +203,3 @@ documents = loader.load("large_document.pdf")
 
 ```
 
-```

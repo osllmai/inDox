@@ -130,7 +130,3 @@ docx_content = docx_loader.load("document.docx")
 4. [Web Content Extraction](Web-Loaders.md)
 5. [Scientific Data Loading](Scientific-Loaders.md)
 6. [Text Processing Basics](Text-Loaders.md)
-
-```
-
-```
