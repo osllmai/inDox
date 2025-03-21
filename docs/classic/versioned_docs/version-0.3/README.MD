@@ -1,7 +1,3 @@
----
-sidebar_position: 1
----
-
 # Welcome to Indox Documentation
 
 Welcome to the official documentation for the Indox ecosystem. This comprehensive guide will help you understand and use all the components of the Indox ecosystem.
