@@ -16,5 +16,5 @@ tenacity==8.2.2
 tiktoken==0.8.0
 torch==2.5.1
 tqdm==4.66.4
-transformers==4.46.1
+transformers==4.48.0
 scikit-criteria==0.8.7
