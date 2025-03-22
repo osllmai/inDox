@@ -4,7 +4,6 @@
 | Platform |
 |----------|
 | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/cookbook/indoxArcg/quick_start.ipynb) |
-| [![Kaggle](https://img.shields.io/badge/Kaggle-Notebook-blue?logo=kaggle)](https://www.kaggle.com/code/scratchpad/notebook35a81d384c/edit) |
 | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/osllmai/inDox/blob/master/cookbook/indoxArcg/quick_start.ipynb) |
 
 

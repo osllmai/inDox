@@ -1,5 +1,13 @@
 # Cache-Augmented Generation (CAG)
 
+in the below address you can find the CAG pipeline and run it on google colab, kaggle or your local machine.
+
+| Platform |
+|----------|
+| [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/cookbook/indoxArcg/cag.ipynb) |
+| [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/osllmai/inDox/blob/master/cookbook/indoxArcg/cag.ipynb) |
+
+
 ## Next-Gen Features 🚀
 
 | Capability                  | Innovation                               | Impact                       |
