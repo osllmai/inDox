@@ -17,6 +17,7 @@
         "indoxArcg/index",
         "indoxArcg/llms",
         "indoxArcg/embedding_models",
+
         {
           "type": "category",
           "label": "Pipelines",

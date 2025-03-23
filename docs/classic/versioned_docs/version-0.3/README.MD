@@ -73,3 +73,8 @@ Explore our detailed guides for each component:
 - [IndoxMiner Documentation](/docs/category/indoxminer)
 - [IndoxJudge Documentation](/docs/category/indoxjudge)
 - [IndoxGen Documentation](/docs/category/indoxgen)
+
+
+
+
+*Reviewed by: Ali Nemati - March, 22, 2025*

@@ -33,6 +33,7 @@ const sidebars: SidebarsConfig = {
         "indoxArcg/quick_start",
         "indoxArcg/llms",
         "indoxArcg/embedding_models",
+        
         {
           type: "category",
           label: "Pipelines",
