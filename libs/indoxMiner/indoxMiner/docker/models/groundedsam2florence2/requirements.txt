@@ -1,2 +1,0 @@
-supervision==0.25.1
-transformers==4.47.1

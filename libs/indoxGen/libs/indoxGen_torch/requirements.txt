@@ -1,9 +1,0 @@
-dython==0.7.8
-matplotlib==3.8.4
-numpy==1.24.4
-pandas==2.2.2
-scikit_learn==1.4.2
-scipy==1.13.1
-seaborn==0.13.2
-setuptools==69.5.1
-torch==2.4.1
