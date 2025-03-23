@@ -8,6 +8,33 @@ in the below address you can find the CAG pipeline and run it on google colab, k
 | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/osllmai/inDox/blob/master/cookbook/indoxArcg/cag.ipynb) |
 
 
+
+- [Cache-Augmented Generation (CAG)](#cache-augmented-generation-cag)
+  - [Next-Gen Features 🚀](#next-gen-features-)
+  - [Architectural Components 🏗️](#architectural-components-️)
+    - [1. Core Engine (CAG Class)](#1-core-engine-cag-class)
+    - [2. Knowledge Cache System](#2-knowledge-cache-system)
+    - [3. Conversational Brain](#3-conversational-brain)
+  - [Configuration Matrix ⚙️](#configuration-matrix-️)
+    - [Inference Parameters](#inference-parameters)
+    - [Performance Tuning](#performance-tuning)
+  - [Usage Scenarios 🛠️](#usage-scenarios-️)
+    - [1. Domain-Specific QA](#1-domain-specific-qa)
+    - [2. Conversational Agent](#2-conversational-agent)
+    - [3. Research Assistant](#3-research-assistant)
+  - [Intelligent Retrieval Flow 🔄](#intelligent-retrieval-flow-)
+  - [Optimization Guide 🏎️](#optimization-guide-️)
+    - [Algorithm Selection](#algorithm-selection)
+    - [Cache Management](#cache-management)
+    - [Session Strategies](#session-strategies)
+  - [Enterprise Patterns 🏢](#enterprise-patterns-)
+    - [Multi-Tenant Isolation](#multi-tenant-isolation)
+    - [Audit Integration](#audit-integration)
+    - [Custom Validators](#custom-validators)
+  - [Troubleshooting 🔧](#troubleshooting-)
+  - [Evolution Roadmap 🌐](#evolution-roadmap-)
+
+
 ## Next-Gen Features 🚀
 
 | Capability                  | Innovation                               | Impact                       |

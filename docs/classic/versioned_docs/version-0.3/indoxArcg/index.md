@@ -1,5 +1,12 @@
 # IndoxArcg
 
+
+## Table of Contents
+- [IndoxArcg](#indoxarcg)
+  - [Table of Contents](#table-of-contents)
+  - [Join Us](#join-us)
+  - [Community](#community)
+
 **IndoxArcg** is an innovative application designed to streamline information extraction from a wide range of document types, including text files, PDF, HTML, Markdown, and LaTeX. Whether structured or unstructured, Indox provides users with a powerful toolset to efficiently extract relevant data.
 
 Indox Retrieval Augmentation is an innovative application designed to streamline information extraction from a wide range of document types, including text files, PDF, HTML, Markdown, and LaTeX. Whether structured or unstructured, Indox provides users with a powerful toolset to efficiently extract relevant data. One of its key features is the ability to intelligently cluster primary chunks to form more robust groupings, enhancing the quality and relevance of the extracted information.

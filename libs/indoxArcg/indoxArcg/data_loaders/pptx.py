@@ -1,5 +1,5 @@
 from indoxArcg.core.document_object import Document
-from typing import List, Dict
+from typing import List
 import os
 
 
@@ -8,33 +8,25 @@ class Pptx:
     Load a PowerPoint (.pptx) file and extract its text and metadata.
 
     Parameters:
-    - file_path (str): The path to the PowerPoint file to be loaded.
+    - include_notes (bool): Whether to include notes from each slide (default: False)
 
     Methods:
-    - load_file(): Loads the PowerPoint file and returns a list of `Document` objects, each containing
-                   the text content of a slide and the associated metadata.
-
-    Raises:
-    - RuntimeError: If there is an error in loading the PowerPoint file.
-
-    Notes:
-    - Each slide's text is extracted and stored in a separate `Document` object.
-    - Metadata includes the file name and the number of slides in the presentation.
+    - load(file_path): Loads the PowerPoint file and returns a list of `Document` objects, each containing
+                       the text content of a slide and the associated metadata.
     """
 
-    def __init__(self, file_path: str):
-        self.file_path = os.path.abspath(file_path)
+    def __init__(self, include_notes: bool = False):
+        self.include_notes = include_notes
 
-    def load(self) -> List[Document]:
+    def load(self, file_path: str) -> List[Document]:
         from pptx import Presentation
 
         try:
-            presentation = Presentation(self.file_path)
+            presentation = Presentation(file_path)
             documents = []
 
-            # Create metadata
             metadata_dict = {
-                "source": self.file_path,
+                "source": os.path.abspath(file_path),
                 "num_slides": len(presentation.slides),
             }
 
@@ -44,7 +36,12 @@ class Pptx:
                     if hasattr(shape, "text"):
                         text.append(shape.text)
 
-                # Create a Document for each slide
+                if self.include_notes and slide.has_notes_slide:
+                    notes_slide = slide.notes_slide
+                    if notes_slide and notes_slide.notes_text_frame:
+                        notes_text = notes_slide.notes_text_frame.text
+                        text.append("\n--- Notes ---\n" + notes_text)
+
                 document = Document(
                     page_content="\n".join(text), slide_number=i + 1, **metadata_dict
                 )
@@ -58,5 +55,7 @@ class Pptx:
         from indoxRag.data_loader.utils import load_and_process_input
 
         return load_and_process_input(
-            loader=self.load, splitter=splitter, remove_stopwords=remove_stopwords
+            loader=lambda: self.load(self.file_path),
+            splitter=splitter,
+            remove_stopwords=remove_stopwords,
         )

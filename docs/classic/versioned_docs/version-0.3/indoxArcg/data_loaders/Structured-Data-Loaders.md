@@ -2,7 +2,36 @@
 
 This guide covers structured data format processors supported in indoxArcg, organized by file type and processing capability.
 
+
+
 ---
+
+## Table of Contents
+
+- [Structured Data](#structured-data)
+  - [Table of Contents](#table-of-contents)
+  - [Supported Loaders](#supported-loaders)
+    - [1. CSV Loader](#1-csv-loader)
+      - [Features](#features)
+    - [2. JSON Loader](#2-json-loader)
+      - [Features](#features-1)
+    - [3. SQL Loader](#3-sql-loader)
+      - [Features](#features-2)
+    - [4. MD Loader](#4-md-loader)
+      - [Features](#features-3)
+  - [Comparison Table](#comparison-table)
+  - [Installation](#installation)
+  - [Basic Usage](#basic-usage)
+    - [CSV Processing](#csv-processing)
+    - [JSON Handling](#json-handling)
+    - [SQL Analysis](#sql-analysis)
+    - [Markdown Processing](#markdown-processing)
+  - [Advanced Configuration](#advanced-configuration)
+    - [Custom CSV Metadata](#custom-csv-metadata)
+    - [JSON Streaming](#json-streaming)
+    - [SQL Parameterization](#sql-parameterization)
+  - [Troubleshooting](#troubleshooting)
+    - [Common Issues](#common-issues)
 
 ## Supported Loaders
 
@@ -204,3 +233,10 @@ loader = Sql(
    ```
 
 ---
+
+
+Reviewed by: Ali Nemati - March, 22, 2025
+
+*Note: some issue had been reported!*
+
+*lack of demo*

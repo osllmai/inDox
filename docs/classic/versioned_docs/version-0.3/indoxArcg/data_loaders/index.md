@@ -2,7 +2,23 @@
 
 This documentation organizes supported data loaders into logical categories based on file formats and use cases. Each loader handles specific document types within indoxArcg's RAG/CAG pipeline.
 
----
+## Table of Contents
+
+- [Categories Overview](#categories-overview)
+  - [Table of Contents](#table-of-contents)
+    - [1. PDF Processors](#1-pdf-processors)
+    - [2. Office Document Loaders](#2-office-document-loaders)
+    - [3. Structured Data Formats](#3-structured-data-formats)
+    - [4. Web \& Rich Text](#4-web--rich-text)
+    - [5. Scientific Data Formats](#5-scientific-data-formats)
+    - [6. Text Files](#6-text-files)
+    - [7. Document Processing Libraries](#7-document-processing-libraries)
+  - [Loader Comparison](#loader-comparison)
+  - [Quick Start Guide](#quick-start-guide)
+    - [Installation](#installation)
+    - [Basic Usage](#basic-usage)
+  - [Troubleshooting](#troubleshooting)
+  - [Detailed Guides](#detailed-guides)
 
 ### 1. [PDF Processors](PDF-Loaders.md)
 
@@ -150,6 +166,6 @@ docling_content = docling_reader.load()
 6. [Text Processing Basics](Text-Loaders.md)
 7. [Document Processing Libraries](Document-Processing-Libraries.md)
 
-```
 
-```
+Reviewed by: Ali Nemati - March, 22, 2025
+

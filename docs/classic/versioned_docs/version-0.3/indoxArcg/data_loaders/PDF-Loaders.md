@@ -2,7 +2,39 @@
 
 This guide covers PDF processors supported in indoxArcg, organized by capability and use case.
 
+| Platform |
+|----------|
+| [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/osllmai/inDox/blob/master/cookbook/indoxArcg/PdfLoader.ipynb) |
+| [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/osllmai/inDox/blob/master/cookbook/indoxArcg/PdfLoader.ipynb) |
+
+
 ---
+
+## Table of Contents
+
+- [PDF Loaders](#pdf-loaders)
+  - [Table of Contents](#table-of-contents)
+  - [Supported Loaders](#supported-loaders)
+    - [1. PdfMiner](#1-pdfminer)
+      - [Features](#features)
+    - [2. PdfPlumber](#2-pdfplumber)
+      - [Features](#features-1)
+    - [3. PyPDF2](#3-pypdf2)
+      - [Features](#features-2)
+    - [4. PyPDF4](#4-pypdf4)
+      - [Features](#features-3)
+  - [Comparison Table](#comparison-table)
+  - [Installation](#installation)
+  - [Basic Usage](#basic-usage)
+    - [Simple Text Extraction](#simple-text-extraction)
+    - [Encrypted PDF Handling](#encrypted-pdf-handling)
+    - [Table Extraction](#table-extraction)
+  - [Advanced Configuration](#advanced-configuration)
+    - [Custom Metadata Handling](#custom-metadata-handling)
+    - [Parallel Processing](#parallel-processing)
+  - [Troubleshooting](#troubleshooting)
+    - [Common Issues](#common-issues)
+  - [Further Reading](#further-reading)
 
 ## Supported Loaders
 
@@ -202,3 +234,7 @@ documents = loader.load("large_document.pdf")
 - [PDF Security Features](#)
 
 
+Reviewed by: Ali Nemati - March, 22, 2025
+
+*Note: some issue had been reported!*
+*lack of demo*

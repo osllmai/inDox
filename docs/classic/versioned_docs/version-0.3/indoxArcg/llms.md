@@ -4,21 +4,24 @@ indoxArcg provides unified access to state-of-the-art LLMs through a consistent 
 
 ## Table of Contents
 
-- [Prerequisites](#prerequisites)
-- [Supported Models](#supported-models)
-- [Common Interface](#common-interface)
-- [Model Configuration Guides](#model-configuration-guides)
-  - [OpenAI](#1-openai)
-  - [Mistral](#2-mistral)
-  - [Hugging Face](#3-hugging-face)
-  - [Google AI](#4-google-ai)
-  - [Ollama](#5-ollama)
-  - [DeepSeek](#6-deepseek)
-  - [NerdToken](#7-nerdtoken)
-  - [Azure OpenAI](#8-azure-openai)
-- [Local Inference](#9-local-inference-with-huggingface)
-- [Troubleshooting](#troubleshooting)
-- [Future Development](#future-development)
+- [Large Language Models (LLMs)](#large-language-models-llms)
+  - [Table of Contents](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+  - [.env file with API keys:](#env-file-with-api-keys)
+  - [Supported Models](#supported-models)
+  - [Common Interface](#common-interface)
+  - [Model Configuration Guides](#model-configuration-guides)
+    - [1. OpenAI](#1-openai)
+    - [2. Mistral](#2-mistral)
+    - [3. Hugging Face](#3-hugging-face)
+    - [4. Google AI](#4-google-ai)
+    - [5. Ollama](#5-ollama)
+    - [6. DeepSeek](#6-deepseek)
+    - [7. NerdToken](#7-nerdtoken)
+    - [8. Azure OpenAI](#8-azure-openai)
+    - [9. Local Inference with HuggingFace](#9-local-inference-with-huggingface)
+  - [Troubleshooting](#troubleshooting)
+  - [Future Development](#future-development)
 
 ## Prerequisites
 
@@ -220,3 +223,7 @@ Planned enhancements:
 - Integrated token counting
 - Advanced caching mechanisms
 - Multi-modal capabilities (image+text)
+
+
+Reviewed by: Ali Nemati - March, 22, 2025
+
