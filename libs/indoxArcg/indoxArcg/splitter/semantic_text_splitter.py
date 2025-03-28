@@ -23,7 +23,7 @@ class SemanticTextSplitter:
         Initialize the SemanticTextSplitter.
 
         Args:
-            chunk_size (int): The maximum number of tokens allowed in each chunk. Defaults to 512.
+            chunk_size (int): The maximum number of tokens allowed in each chunk. Defaults to 400.
             model_name (str): The name of the pre-trained model to use for the tokenizer. Defaults to "bert-base-uncased".
         """
         from semantic_text_splitter import TextSplitter
@@ -45,17 +45,20 @@ class SemanticTextSplitter:
         """
         return self.splitter.chunks(text)
 
-def semantic_text_splitter(text: str, max_tokens: int, model_name: str = "bert-base-uncased") -> List[str]:
-    """
-    Function to split text into semantically meaningful chunks.
 
+def semantic_text_splitter(text: str, chunk_size: int = 400, model_name: str = "bert-base-uncased") -> List[str]:
+    """
+    Split text into semantically meaningful chunks.
+    
+    This is a convenience function that wraps the SemanticTextSplitter class.
+    
     Args:
         text (str): The input text to be split into chunks.
-        max_tokens (int): The maximum number of tokens allowed in each chunk.
+        chunk_size (int): The maximum number of tokens allowed in each chunk. Defaults to 400.
         model_name (str): The name of the pre-trained model to use for the tokenizer. Defaults to "bert-base-uncased".
-
+        
     Returns:
         List[str]: A list of text chunks, where each chunk is a string.
     """
-    splitter = SemanticTextSplitter(chunk_size=max_tokens, model_name=model_name)
+    splitter = SemanticTextSplitter(chunk_size=chunk_size, model_name=model_name)
     return splitter.split_text(text)
