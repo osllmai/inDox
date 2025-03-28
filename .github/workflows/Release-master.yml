@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write  # Ensures GitHub Actions can push tags and create releases
+  contents: write
 
 jobs:
   tag_and_release:
@@ -16,7 +16,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetch full history to get all tags
+          fetch-depth: 0
 
       - name: Determine Branch and Set Label
         id: branch_label
@@ -32,23 +32,18 @@ jobs:
             exit 1
           fi
 
-          echo "LABEL=$LABEL"
           echo "LABEL=$LABEL" >> $GITHUB_ENV
 
       - name: Fetch Latest Tag and Determine Next Version
         id: versioning
         run: |
-          # Fetch all tags
           git fetch --tags
 
-          # Get latest tag for the current branch (Master or Development)
           LATEST_TAG=$(git tag -l "v*-${LABEL}" --sort=-v:refname | head -n 1 | tr -d '\r')
 
-          # If no tags exist, start with v0.1.0-Master or v0.1.0-Dev
           if [[ -z "$LATEST_TAG" ]]; then
             NEW_TAG="v0.1.0-${LABEL}"
           else
-            # Extract version numbers from LATEST_TAG
             if [[ "$LATEST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)-${LABEL}$ ]]; then
               MAJOR="${BASH_REMATCH[1]}"
               MINOR="${BASH_REMATCH[2]}"
@@ -58,15 +53,10 @@ jobs:
               exit 1
             fi
 
-            # Increment patch version (e.g., v0.1.0-Master → v0.1.1-Master)
             PATCH=$((PATCH + 1))
             NEW_TAG="v$MAJOR.$MINOR.$PATCH-${LABEL}"
           fi
 
-          echo "LATEST_TAG=$LATEST_TAG"
-          echo "NEW_TAG=$NEW_TAG"
-
-          # Store variables in GitHub Actions environment
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
 
@@ -82,15 +72,70 @@ jobs:
           git tag "$NEW_TAG"
           git push origin "$NEW_TAG"
 
+      - name: Prepare Deployment Message
+        id: prepare_message
+        run: |
+          BRANCH=${{ github.ref_name }}
+          REPO=${{ github.repository }}
+          DEPLOY_NUMBER=${{ github.run_number }}
+          GITHUB_RUN_URL="https://github.com/${REPO}/actions/runs/${{ github.run_id }}"
+          COMMIT_HASH=${{ github.sha }}
+          ACTOR=${{ github.actor }}
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          EVENT_TYPE=${{ github.event_name }}
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          WORKFLOW_NAME="${{ github.workflow }}"
+          STATUS="${{ job.status }}"
+
+          # Changed files
+          CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r $COMMIT_HASH | sed 's/^/- /')
+          FILE_COUNT=$(echo "$CHANGED_FILES" | grep -c '^' || true)
+
+          # Pull request number (if any)
+          PR_LINE=""
+          if [[ "$EVENT_TYPE" == "pull_request" ]]; then
+            PR_NUMBER=${{ github.event.pull_request.number }}
+            PR_LINE="📬 Pull Request: [#${PR_NUMBER}](https://github.com/${REPO}/pull/${PR_NUMBER})\\n\\n"
+          fi
+
+          # Build final Markdown message
+          MESSAGE="## 🚀 New Deployment to [$BRANCH](https://github.com/$REPO/tree/$BRANCH)\\n\\n"
+          MESSAGE+="**📦 Deploy Number:** $DEPLOY_NUMBER\\n\\n"
+          MESSAGE+="**🧪 Workflow:** $WORKFLOW_NAME\\n\\n"
+          MESSAGE+="$PR_LINE"
+          MESSAGE+="**🔗 [View Workflow Run]($GITHUB_RUN_URL)**\\n\\n"
+          MESSAGE+="**🔄 Commit:** [$COMMIT_HASH](https://github.com/$REPO/commit/$COMMIT_HASH)\\n\\n"
+          MESSAGE+="**👤 Triggered by:** $ACTOR\\n\\n"
+          MESSAGE+="**📅 Timestamp:** $TIMESTAMP\\n\\n"
+          MESSAGE+="**📢 Event Type:** $EVENT_TYPE\\n\\n"
+          MESSAGE+="**📂 Repository:** [$REPO](https://github.com/$REPO)\\n\\n"
+          MESSAGE+="**💬 Commit Message:** _${COMMIT_MSG}_\\n\\n"
+
+          if [ "$FILE_COUNT" -gt "0" ]; then
+            MESSAGE+="## 📑 Files Changed ($FILE_COUNT)\\n\\n"
+            MESSAGE+="$CHANGED_FILES\\n\\n"
+          fi
+
+          MESSAGE+="## 📍 Status\\n\\n"
+          MESSAGE+="**$STATUS**\\n\\n"
+
+          echo "MESSAGE<<EOF" >> $GITHUB_ENV
+          echo -e "$MESSAGE" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MESSAGE: ${{ env.MESSAGE }}
         run: |
-          # Get the latest commit message
-          COMMIT_MSG=$(git log -1 --pretty=%B)
-          
-          # Create release with commit message
           gh release create "$NEW_TAG" \
             --title "$NEW_TAG" \
-            --notes "$COMMIT_MSG"
+            --notes "$MESSAGE"
 
+
+      - name: Send GitHub Event Notification to Microsoft Teams
+        env:
+          WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_MASTER_URL }}
+        run: |
+              curl -H "Content-Type: application/json" -X POST -d \
+              "{\"text\": \"${MESSAGE}\"}" "${WEBHOOK_URL}"
