@@ -86,6 +86,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Get the latest commit message
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          
+          # Create release with commit message
           gh release create "$NEW_TAG" \
             --title "$NEW_TAG" \
-            --notes "Automated release generated for $NEW_TAG."
+            --notes "$COMMIT_MSG"
+
