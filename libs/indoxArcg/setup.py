@@ -13,7 +13,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="indoxArcg",
-    version="0.0.6",
+    version="0.0.11",
     license="AGPL-3.0",
     packages=find_packages(),
     include_package_data=True,
