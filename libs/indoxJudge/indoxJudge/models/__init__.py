@@ -5,5 +5,6 @@ from .huggingface import HuggingFaceModel
 from .mistral import Mistral
 from .azure_openai import AzureOpenAi
 from .anthropic import Anthropic
+from .indoxrouter import IndoxRouter
 
 # from .ollama import Ollama
