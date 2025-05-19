@@ -13,7 +13,7 @@ python-dotenv==1.0.1
 rank_bm25==0.2.2
 Requests==2.32.3
 semantic-text-splitter==0.25.1
-setuptools==69.1.1
+setuptools==78.1.1
 tenacity==8.2.3
 tiktoken==0.6.0
 tokenizers==0.15.2
